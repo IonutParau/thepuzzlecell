@@ -66,7 +66,7 @@ void doGen(int x, int y, int dir, int gendir,
   if (push(ox, oy, dir, 1)) {
     final remaining = grid.at(ox, oy);
     if (moveInsideOf.contains(remaining.id) && remaining.id != "empty") {
-      if (remaining.id == "digger") {
+      if (remaining.id == "wormhole") {
         moveCell(gx, gy, ox, oy);
         grid.set(gx, gy, toGenerate);
       } else {
