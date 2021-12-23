@@ -1,0 +1,38 @@
+{
+  "title": "Impossible?",
+  "description": "This level is the hardest one ever made.",
+  "width": 10,
+  "height": 10,
+  "cells": {
+    "empty": [
+      "0 7 0 true",
+      "0 8 0 true",
+      "1 7 0 true",
+      "1 8 0 true",
+      "1 9 0 true",
+      "2 7 0 true",
+      "2 8 0 true",
+      "2 9 0 true",
+      "0 9 3 true"
+    ],
+    "puzzle": [
+      "2 4 0 false"
+    ],
+    "antipuzzle": [
+      "8 0 0 false",
+      "8 1 0 false",
+      "8 2 0 false",
+      "8 3 0 false",
+      "8 4 0 false",
+      "8 5 0 false",
+      "8 6 0 false",
+      "8 7 0 false",
+      "8 8 0 false",
+      "8 9 0 false"
+    ],
+    "flag": [
+      "9 4 0 false"
+    ]
+  },
+  "wrap": true
+}

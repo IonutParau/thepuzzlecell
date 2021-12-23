@@ -1,0 +1,27 @@
+{
+  "title": "Spherical",
+  "description": "More than meets the eye",
+  "width": 3,
+  "height": 3,
+  "cells": {
+    "key": [
+      "0 0 0 false"
+    ],
+    "enemy": [
+      "0 1 0 false"
+    ],
+    "ghost": [
+      "1 0 0 false"
+    ],
+    "puzzle": [
+      "1 2 0 false"
+    ],
+    "flag": [
+      "2 0 0 false"
+    ],
+    "lock": [
+      "2 1 0 false"
+    ]
+  },
+  "wrap": true
+}

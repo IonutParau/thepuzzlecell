@@ -1,0 +1,32 @@
+name: the_puzzle_cell
+description: The Puzzle Cell
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  clipboard: ^0.1.3
+  cupertino_icons: ^1.0.2
+  dart_vlc: ^0.1.8
+  flame: ^1.0.0
+  flutter:
+    sdk: flutter
+  sizer: ^2.0.15
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/audio/
+    - assets/puzzles/
+    - assets/puzzles/easy/
+    - assets/puzzles/medium/
+    - assets/puzzles/hard/
