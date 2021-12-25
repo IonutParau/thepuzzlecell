@@ -14,7 +14,7 @@ void movers() {
       (cell, x, y) {
         if (!cell.updated && cell.id == "mover") {
           cell.updated = true;
-          push(x, y, cell.rot, 1);
+          push(x, y, cell.rot, 0);
         }
       },
       rot,
