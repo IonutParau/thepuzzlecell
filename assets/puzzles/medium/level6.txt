@@ -1,0 +1,1 @@
+P1;65;r;h;empty,key,lock,enemy,flag,mirror,wall,puzzle;Reflection;A wall of mirrors stands before you, you need to eat some keys and kill enemies;0|0|t|;1|0|w|;0|0|u|;2|0|w|;3|0|w|;4|0|w|;0|0|w|;5|0|s|;6|0|t|;7|0|w|;0|0|y|;1|0|w|;0|0|t|;2|0|w|;3|0|w|;4|0|w|;0|0|w|;

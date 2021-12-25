@@ -39,6 +39,15 @@ class Cell {
 
 Grid grid = Grid(100, 100);
 
+class GridUpdateConstraints {
+  int sx;
+  int sy;
+  int ex;
+  int ey;
+
+  GridUpdateConstraints(this.sx, this.sy, this.ex, this.ey);
+}
+
 class Grid {
   late List<List<Cell>> grid;
   late List<List<bool>> place;
@@ -51,6 +60,8 @@ class Grid {
   bool wrap = false;
 
   Set<String> cells = {};
+
+  GridUpdateConstraints? updateConstraints;
 
   void remake() {
     grid = [];
@@ -65,10 +76,26 @@ class Grid {
     }
   }
 
+  void setConstraints(int sx, int sy, int ex, int ey) {
+    updateConstraints = GridUpdateConstraints(sx, sy, ex, ey);
+  }
+
   void forEach(void Function(Cell cell, int x, int y) callback,
       [int? wantedDirection]) {
-    for (var x = 0; x < width; x++) {
-      for (var y = 0; y < height; y++) {
+    var sx = 0;
+    var sy = 0;
+    var ex = width;
+    var ey = height;
+
+    if (updateConstraints != null) {
+      sx = updateConstraints!.sx;
+      sy = updateConstraints!.sy;
+      ex = updateConstraints!.ex;
+      ey = updateConstraints!.ey;
+    }
+
+    for (var x = sx; x < ex; x++) {
+      for (var y = sy; y < ey; y++) {
         final cell = at(x, y);
         if (cell.rot == (wantedDirection ?? cell.rot)) {
           callback(cell, x, y);

@@ -12,7 +12,8 @@ Map<LogicalKeyboardKey, bool> keys = {};
 
 const halfPi = pi / 2;
 
-const cellSize = 40;
+var defaultCellSize = 40;
+var cellSize = defaultCellSize;
 
 final cells = [
   "empty",
@@ -260,9 +261,10 @@ Offset rotateOff(Offset o, double r) {
 }
 
 Offset interpolate(Offset o1, Offset o2, double t) {
-  final off = (o2 - o1) * t;
+  final ax = lerp(o1.dx, o2.dx, t);
+  final ay = lerp(o1.dy, o2.dy, t);
 
-  return (o1 + off);
+  return Offset(ax, ay);
 }
 
 double lerp(num a, num b, double t) {
@@ -308,10 +310,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   @override
   Future<void>? onLoad() async {
+    cellSize = defaultCellSize;
     keys = {};
     puzzleWin = false;
     await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
     await Flame.images.load("enemy_particles.png");
+    delay = storage.getDouble("delay") ?? 0.15;
 
     return super.onLoad();
   }
@@ -429,13 +433,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       while (itime > delay) {
         itime -= delay;
-
+        if (storage.getBool("update_visible") == true) {
+          final sx = max(floor(-offX / cellSize), 0);
+          final sy = max(floor(-offY / cellSize), 0);
+          final ex = min(ceil((canvasSize.x - offX) / cellSize), grid.width);
+          final ey = min(ceil((canvasSize.y - offY) / cellSize), grid.height);
+          grid.setConstraints(sx, sy, ex, ey);
+        }
         grid.update(); // Update the cells boizz
       }
     }
 
-    if ((!running || keys[LogicalKeyboardKey.controlLeft] == true) &&
-        keys[LogicalKeyboardKey.altLeft] != true) {
+    bool canMoveCam = false;
+    if (running) {
+      canMoveCam = keys[LogicalKeyboardKey.controlLeft] == true;
+    } else {
+      canMoveCam = keys[LogicalKeyboardKey.controlLeft] != true;
+    }
+
+    if ((canMoveCam) && keys[LogicalKeyboardKey.altLeft] != true) {
       const speed = 600;
       if (keys[LogicalKeyboardKey.keyW] == true) {
         offY += speed * dt;
@@ -566,8 +582,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
         } else if (keysPressed.contains(LogicalKeyboardKey.controlLeft) &&
-            keysPressed.contains(LogicalKeyboardKey.keyS)) {
-          FlutterClipboard.controlC(saveGrid(grid));
+            keysPressed.contains(LogicalKeyboardKey.keyS) &&
+            !running) {
+          FlutterClipboard.controlC(P1.encode(grid));
         } else if (keysPressed.contains(LogicalKeyboardKey.controlLeft) &&
             keysPressed.contains(LogicalKeyboardKey.keyL) &&
             !running) {
@@ -578,7 +595,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   grid = loadGrid(jsonDecode(val));
                   cellsToPlace = ["empty"];
                   cellsCount = [1];
-                } catch (e) {}
+                } catch (e) {
+                  grid = P1.decode(val);
+                }
               },
             );
           } catch (e) {}
@@ -592,6 +611,28 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             keys[LogicalKeyboardKey.arrowRight] != true) {
           currentSeletion = (currentSeletion + 1) %
               (edType == EditorType.making ? cells : cellsToPlace).length;
+        } else if (keysPressed.contains(LogicalKeyboardKey.equal) &&
+            keys[LogicalKeyboardKey.equal] != true) {
+          if (cellSize < (defaultCellSize) * 16) {
+            cellSize *= 2;
+            offX -= canvasSize.x / 2;
+            offY -= canvasSize.y / 2;
+            offX *= 2;
+            offY *= 2;
+            offX += canvasSize.x / 2;
+            offY += canvasSize.y / 2;
+          }
+        } else if (keysPressed.contains(LogicalKeyboardKey.minus) &&
+            keys[LogicalKeyboardKey.minus] != true) {
+          if (cellSize > (defaultCellSize) / 16) {
+            cellSize ~/= 2;
+            offX -= canvasSize.x / 2;
+            offY -= canvasSize.y / 2;
+            offX /= 2;
+            offY /= 2;
+            offX += canvasSize.x / 2;
+            offY += canvasSize.y / 2;
+          }
         }
       }
       keys[event.logicalKey] = true;

@@ -82,8 +82,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
       movingTo.id != "musical" &&
       movingTo.id != "wormhole") {
     if (movingTo.id == "enemy") {
-      destroySound.stop();
-      destroySound.play();
+      playSound(destroySound);
       grid.set(nx, ny, Cell(nx, ny));
       game.add(
         ParticleComponent(
@@ -110,8 +109,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
     }
   } else {
     if (movingTo.id == "trash") {
-      destroySound.stop();
-      destroySound.play();
+      playSound(destroySound);
     } else if (movingTo.id == "wormhole") {
       if (grid.wrap) {
         final dx = grid.width - nx - 1;
@@ -128,8 +126,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
         // }
         grid.set(dx, dy, moving);
       } else if (!grid.wrap) {
-        destroySound.stop();
-        destroySound.play();
+        playSound(destroySound);
       }
     }
   }
@@ -214,7 +211,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
 
   // Check if movable
   var depth = 1;
-  final depthLimit = (dir % 2 == 0 ? grid.width : grid.height);
+  final depthLimit = 9999;
   var cx = x;
   var cy = y;
   while (true) {

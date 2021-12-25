@@ -1,10 +1,13 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:dart_vlc/dart_vlc.dart';
+
+import 'logic/logic.dart';
 
 void main() async {
   //await Flame.device.setLandscape();
@@ -18,6 +21,8 @@ void main() async {
   );
 
   initSound();
+
+  storage = await SharedPreferences.getInstance();
 
   runApp(const MyApp());
 }
@@ -38,6 +43,7 @@ class MyApp extends StatelessWidget {
             '/game': (ctx) => GameUI(),
             '/game-loaded': (ctx) => GameUI(editorType: EditorType.loaded),
             '/puzzles': (ctx) => Puzzles(),
+            '/settings': (ctx) => SettingsPage(),
           },
         );
       },

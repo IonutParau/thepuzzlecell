@@ -14,7 +14,7 @@ void movers() {
       (cell, x, y) {
         if (!cell.updated && cell.id == "mover") {
           cell.updated = true;
-          push(x, y, cell.rot, 0);
+          push(x, y, cell.rot, 1);
         }
       },
       rot,
@@ -594,6 +594,9 @@ void karls() {
             velY--;
           if (grid.at(x, y - 1).id == "wall") velY--; // Get to food dammit
         }
+
+        velX = clamp(velX, -1, 1).toInt();
+        velY = clamp(velY, -1, 1).toInt();
 
         if (velX == 0 && velY == 0) {
           velX = cell.data['velX'] ?? 0;

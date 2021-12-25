@@ -1,0 +1,1 @@
+P1;65;r;r;key,enemy,empty,ghost,puzzle,flag,lock;Spherical;More than meets the eye;WRAP;0|0|w|;1|0|w|;2|0|w|;3|0|w|;2|0|w|;4|0|w|;5|0|w|;6|0|w|;2|0|w|;

@@ -1,0 +1,1 @@
+P1;65;a;i;empty,puzzle,mirror,antipuzzle,wall,lock,key,flag;Mirrored Reality;Mirrors can swap cells;0|0|a|;1|0|w|;0|0|<|;2|0|w|;0|0|r|;3|0|r|;4|0|w|;5|0|w|;4|0|e|;0|0|r|;4|0|w|;0|0|t|;6|0|w|;0|0|w|;4|0|w|;0|0|w|;7|0|w|;0|0|t|;4|0|w|;0|0|r|;

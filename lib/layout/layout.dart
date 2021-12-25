@@ -1,6 +1,7 @@
 library layout;
 
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:dart_vlc/dart_vlc.dart';
@@ -19,3 +20,4 @@ export 'other/other.dart';
 part 'game_ui.dart';
 part 'game_audio.dart';
 part 'puzzles.dart';
+part 'settings.dart';

@@ -94,7 +94,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           FlutterClipboard.paste().then(
                             (clipboard) {
                               try {
-                                grid = loadGrid(jsonDecode(clipboard));
+                                grid = P1.decode(clipboard);
                                 puzzleIndex = null;
                                 Navigator.of(context).pushNamed('/game-loaded');
                               } catch (e) {
@@ -113,6 +113,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                             },
                           );
                         },
+                        hoverColor: Colors.blue,
+                      ),
+                    ),
+                    Padding(
+                      padding: buttonPadding,
+                      child: MaterialButton(
+                        child: Text('Settings', style: buttonStyle),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/settings'),
                         hoverColor: Colors.blue,
                       ),
                     ),

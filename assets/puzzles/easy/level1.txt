@@ -1,0 +1,1 @@
+P1;65;a;i;empty,puzzle,flag;Where it begins;You can move with WASD;0|0|a|;1|0|w|;0|0|6|;2|0|w|;0|0|a|;

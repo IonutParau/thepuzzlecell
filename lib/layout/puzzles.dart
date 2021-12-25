@@ -1,20 +1,20 @@
 part of layout;
 
 final puzzles = [
-  "easy/level1.json",
-  "easy/level2.json",
-  "easy/level3.json",
-  "easy/level4.json",
-  "easy/level5.json",
-  "medium/level1.json",
-  "medium/level2.json",
-  "medium/level3.json",
-  "medium/level4.json",
-  "medium/level5.json",
-  "medium/level6.json",
-  "hard/level1.json",
-  "hard/level2.json",
-  "hard/level3.json",
+  "easy/level1.txt",
+  "easy/level2.txt",
+  "easy/level3.txt",
+  "easy/level4.txt",
+  "easy/level5.txt",
+  "medium/level1.txt",
+  "medium/level2.txt",
+  "medium/level3.txt",
+  "medium/level4.txt",
+  "medium/level5.txt",
+  "medium/level6.txt",
+  "hard/level1.txt",
+  "hard/level2.txt",
+  "hard/level3.txt",
 ];
 
 int? puzzleIndex;
@@ -32,9 +32,7 @@ class Puzzles extends StatefulWidget {
 }
 
 Future<void> loadPuzzle(int index) async {
-  final data =
-      jsonDecode(await loadJsonData('assets/puzzles/${puzzles[index]}'));
-  grid = loadGrid(data);
+  grid = P1.decode(await loadJsonData('assets/puzzles/${puzzles[index]}'));
   puzzleIndex = index;
 }
 
@@ -74,10 +72,11 @@ class _PuzzlesState extends State<Puzzles> {
             future: loadJsonData('assets/puzzles/${puzzles[i]}'),
             builder: (ctx, snap) {
               if (snap.hasData) {
-                final data = jsonDecode(snap.data!);
+                final title = snap.data!.split(';')[5];
+                final desc = snap.data!.split(';')[6];
                 return ListTile(
-                  title: Text(data['title']!),
-                  subtitle: Text(data['description'] ?? 'No description'),
+                  title: Text(title),
+                  subtitle: Text(desc),
                   leading: tierToIcon(puzzles[i].split('/').first),
                   onTap: () {
                     loadPuzzle(i).then(

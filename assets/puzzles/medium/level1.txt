@@ -1,0 +1,1 @@
+P1;65;8;8;empty,mirror,puzzle,gear_cw,flag,antipuzzle,generator_cw;No time to think;This level is quite difficult;0|0|so|;1|1|w|;0|0|6|;2|0|w|;3|0|w|;4|2|w|;0|0|6|;5|1|w|;0|0|[|;6|2|w|;0|0|7|;6|0|w|;0|0|n?|;
