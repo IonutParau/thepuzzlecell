@@ -7,6 +7,7 @@ enum MoveType {
   pull,
   puzzle,
   grab,
+  tunnel,
 }
 
 bool canMove(int x, int y, int dir, MoveType mt) {
@@ -20,6 +21,8 @@ bool canMove(int x, int y, int dir, MoveType mt) {
         return (dir - rot) % 2 == 0;
       case "mirror":
         return ((dir - rot) % 2 == 1 || mt != MoveType.puzzle);
+      case "tunnel":
+        return mt == MoveType.mirror ? (dir != rot) : true;
       case "wall":
         return false;
       case "lock":
@@ -49,7 +52,11 @@ final moveInsideOf = [
 ];
 
 bool canMoveAll(int x, int y, int dir, MoveType mt) {
+  var depth = 0;
+  final depthLimit = dir % 2 == 0 ? grid.width : grid.height;
   while (grid.inside(x, y)) {
+    if (depth > depthLimit) return false;
+    depth++;
     if (canMove(x, y, dir, mt)) {
       if (moveInsideOf.contains(grid.at(x, y).id)) {
         return true;

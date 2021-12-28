@@ -23,6 +23,7 @@ final cells = [
   "constructorgen",
   "crossgen",
   "replicator",
+  "tunnel",
   "karl",
   "darty",
   "floppy",
@@ -195,5 +196,9 @@ final cellInfo = <String, CellProfile>{
   "antipuzzle": CellProfile(
     "Anti-Puzzle",
     "Can be pushed by any cell except the puzzle cell",
+  ),
+  "tunnel": CellProfile(
+    "Tunnel",
+    "Moves the cell from the back to the front instantly",
   ),
 };

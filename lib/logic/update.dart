@@ -55,6 +55,10 @@ void doGen(int x, int y, int dir, int gendir,
 
   final toGenerate = grid.at(gx, gy).copy;
 
+  if (toGenerate.tags.contains("gend")) return;
+
+  toGenerate.tags.add("gend");
+
   if (ungennable.contains(toGenerate.id)) {
     return;
   }
@@ -823,5 +827,48 @@ void fans() {
         DoFan(cell, x, y);
       }
     }, rot);
+  }
+}
+
+void DoTunnel(int x, int y, int dir) {
+  final fx = frontX(x, dir);
+  final fy = frontY(y, dir);
+
+  final bx = frontX(x, dir + 2);
+  final by = frontY(y, dir + 2);
+
+  if (grid.inside(fx, fy) && grid.inside(bx, by)) {
+    if (!canMove(bx, by, dir, MoveType.tunnel)) {
+      return;
+    }
+
+    final moving = grid.at(bx, by).copy;
+    if (ungennable.contains(moving.id)) return;
+    if (moving.tags.contains('tunneled')) return;
+    moving.tags.add('tunneled');
+
+    if (push(fx, fy, dir, 1, MoveType.tunnel)) {
+      final remaining = grid.at(fx, fy);
+      if (remaining.id == "empty") {
+        grid.set(fx, fy, moving);
+        grid.set(bx, by, Cell(bx, by));
+      } else if (moveInsideOf.contains(remaining.id)) {
+        moveCell(bx, by, fx, fy); // Trigger movement
+      }
+    }
+  }
+}
+
+void tunnels() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (!cell.updated && cell.id == "tunnel") {
+          cell.updated = true;
+          DoTunnel(x, y, cell.rot);
+        }
+      },
+      rot,
+    );
   }
 }

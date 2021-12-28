@@ -20,6 +20,7 @@ class Cell {
   LastVars lastvars;
   bool updated = false;
   Map<String, dynamic> data = {};
+  List<String> tags = [];
 
   Cell(int x, int y) : lastvars = LastVars(0, x, y);
 
@@ -32,6 +33,9 @@ class Cell {
     c.lastvars.lastRot = lastvars.lastRot;
 
     data.forEach((key, value) => c.data[key] = value);
+    for (var tag in tags) {
+      c.tags.add(tag);
+    }
 
     return c;
   }
@@ -171,6 +175,7 @@ class Grid {
       (p0, p1, p2) {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
+        p0.tags = [];
         cells.add(p0.id);
       },
     );
@@ -200,6 +205,7 @@ class Grid {
           cells.contains("constructorgen"))
         gens,
       if (cells.contains("replicator")) reps,
+      if (cells.contains("tunnel")) tunnels,
       if (cells.contains("rotator_cw") || cells.contains("rotator_ccw")) rots,
       if (cells.contains("gear_cw") || cells.contains("gear_ccw")) gears,
       if (cells.contains("grabber")) grabbers,

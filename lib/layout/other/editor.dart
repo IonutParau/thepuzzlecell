@@ -41,6 +41,13 @@ class _EditorState extends State<Editor> {
   }
 
   @override
+  void dispose() {
+    widthController.dispose();
+    heightController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
