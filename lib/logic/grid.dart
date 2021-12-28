@@ -202,21 +202,34 @@ class Grid {
       if (cells.contains("replicator")) reps,
       if (cells.contains("rotator_cw") || cells.contains("rotator_ccw")) rots,
       if (cells.contains("gear_cw") || cells.contains("gear_ccw")) gears,
+      if (cells.contains("grabber")) grabbers,
       if (cells.contains("mover")) movers,
       if (cells.contains("puller")) pullers,
       if (cells.contains("liner")) liners,
       if (cells.contains("bird")) birds,
-      if (cells.contains("magnet")) magnets,
+      if (cells.contains("fan")) fans,
+      //if (cells.contains("magnet")) magnets,
       //if (cells.contains("digger")) diggers,
       if (cells.contains("karl")) karls,
+      if (cells.contains("darty")) dartys,
       if (cells.contains("puzzle")) puzzles,
     ];
 
-    for (var subtick in subticks) {
-      try {
-        subtick();
-      } catch (e) {
+    final subticking = storage.getBool('subtick') ?? false;
+    if (subticking) {
+      var subtick = subticks[tickCount % subticks.length];
+      if (subtick is void Function(Set<String>)) {
         subtick(cells);
+      } else {
+        subtick();
+      }
+    } else {
+      for (var subtick in subticks) {
+        if (subtick is void Function(Set<String>)) {
+          subtick(cells);
+        } else {
+          subtick();
+        }
       }
     }
   }

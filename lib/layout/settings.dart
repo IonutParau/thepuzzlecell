@@ -91,6 +91,56 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Tooltip(
+                        message:
+                            "Toggling it will make the game apply special effects to make the lighting seem more realistic, at the cost of FPS",
+                        child: Text(
+                          "Realistic Rendering: ",
+                          style: fontSize(
+                            7.sp,
+                          ),
+                        ),
+                      ),
+                      Checkbox(
+                        value: storage.getBool("realistic_render") ?? false,
+                        onChanged: (newValue) {
+                          storage
+                              .setBool(
+                                "realistic_render",
+                                newValue ?? false,
+                              )
+                              .then((e) => setState(() {}));
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Tooltip(
+                        message:
+                            "Toggling it will make cells update on their own ticks, which can improve performance and battery life",
+                        child: Text(
+                          "Subticking: ",
+                          style: fontSize(
+                            7.sp,
+                          ),
+                        ),
+                      ),
+                      Checkbox(
+                        value: storage.getBool("subtick") ?? false,
+                        onChanged: (newValue) {
+                          storage
+                              .setBool(
+                                "subtick",
+                                newValue ?? false,
+                              )
+                              .then((e) => setState(() {}));
+                        },
+                      ),
+                    ],
+                  ),
                   Spacer(),
                 ],
               ),

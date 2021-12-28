@@ -638,3 +638,190 @@ void karls() {
     },
   );
 }
+
+bool canMoveInDir(int x, int y, int dir, MoveType mt, [bool single = false]) {
+  dir %= 4;
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+
+  if (!grid.inside(fx, fy)) return false;
+
+  if (single) {
+    return canMove(fx, fy, dir, mt);
+  } else {
+    return canMoveAll(fx, fy, dir, mt);
+  }
+}
+
+Cell? inFront(int x, int y, int dir) {
+  dir %= 4;
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+
+  if (!grid.inside(fx, fy)) return null;
+
+  return grid.at(fx, fy);
+}
+
+void moveFront(int x, int y, int dir) {
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+  if (!grid.inside(fx, fy)) return;
+
+  moveCell(x, y, fx, fy, dir);
+}
+
+int frontX(int x, int dir) {
+  return x - (dir % 2 == 0 ? dir - 1 : 0);
+}
+
+int frontY(int y, int dir) {
+  return y - (dir % 2 == 1 ? dir - 2 : 0);
+}
+
+void doDartySide(int x, int y, int dir) {
+  final cell = grid.at(x, y);
+  final front = inFront(x, y, cell.rot);
+  if (front != null) {
+    if (moveInsideOf.contains(front.id)) {
+      moveFront(x, y, cell.rot);
+    } else if (front.id != "darty") {
+      grid.set(frontX(x, cell.rot), frontY(y, cell.rot), cell.copy);
+      grid.rotate(x, y, 2);
+    } else {
+      if (!push(x, y, dir, 0)) {
+        doDarty(grid.at(x, y), x, y, true);
+      }
+    }
+  }
+}
+
+void doDarty(Cell cell, int x, int y, [bool forced = false]) {
+  final order = [cell.rot, cell.rot - 1, cell.rot + 1, cell.rot + 2];
+  for (var dir in order) {
+    var canSide = true;
+    if (forced) canSide = inFront(x, y, dir)?.id != "darty";
+    if (canMoveInDir(x, y, dir % 4, MoveType.push, true) && canSide) {
+      cell.rot = dir % 4;
+      doDartySide(x, y, dir);
+      return;
+    }
+  }
+}
+
+void dartys() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (!cell.updated && cell.id == "darty") {
+          cell.updated = true;
+          doDarty(cell, x, y);
+        }
+      },
+      rot,
+    );
+  }
+}
+
+void grabSide(int x, int y, int mdir, int dir, int checkDepth) {
+  mdir %= 4;
+  final ox = x;
+  final oy = y;
+  var depth = 0;
+  final depthLimit = dir % 2 == 0 ? grid.width : grid.height;
+  while (grid.inside(x, y)) {
+    if (depth > depthLimit) return;
+    if (ox != x || oy != y) {
+      if (canMove(x, y, dir, MoveType.grab)) {
+        if (moveInsideOf.contains(grid.at(x, y).id)) {
+          break;
+        } else {
+          if (!pushDistance(x, y, dir, 1, checkDepth - 1, MoveType.grab)) {
+            break;
+          }
+        }
+      } else {
+        break;
+      }
+    }
+    depth++;
+
+    x -= (mdir % 2 == 0 ? mdir - 1 : 0);
+    y -= (mdir % 2 == 1 ? mdir - 2 : 0);
+  }
+}
+
+void doGrabber(int x, int y, int dir) {
+  int force = 1;
+  var mx = x;
+  var my = y;
+  var depth = 0;
+  var depthLimit = dir % 2 == 0 ? grid.width : grid.height;
+  while (true) {
+    mx = frontX(mx, dir);
+    my = frontY(my, dir);
+
+    if (!grid.inside(mx, my)) return;
+
+    final m = grid.at(mx, my);
+    var pushingFiltered = false;
+    if (m.id == "grabber") {
+      if (m.rot == dir) {
+        force++;
+        m.updated = true;
+        pushingFiltered = true;
+      } else if (m.rot == (dir - 2) % 4) {
+        force--;
+        m.updated = true;
+        pushingFiltered = true;
+      }
+    }
+    if (force <= 0) return;
+
+    if (depth > depthLimit) return;
+    depth++;
+
+    if (moveInsideOf.contains(grid.at(mx, my).id)) {
+      break;
+    } else if (!pushingFiltered) {
+      return;
+    }
+  }
+  push(x, y, dir, 1, MoveType.grab);
+  grabSide(x, y, dir - 1, dir, depth);
+  grabSide(x, y, dir + 1, dir, depth);
+}
+
+void grabbers() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (!cell.updated && cell.id == "grabber") {
+          cell.updated = true;
+          doGrabber(x, y, cell.rot);
+        }
+      },
+      rot,
+    );
+  }
+}
+
+void DoFan(Cell cell, int x, int y) {
+  final fx = frontX(x, cell.rot);
+  final fy = frontY(y, cell.rot);
+
+  if (grid.inside(fx, fy)) {
+    push(fx, fy, cell.rot, 1);
+  }
+}
+
+void fans() {
+  for (var rot in rotOrder) {
+    grid.forEach((cell, x, y) {
+      if (!cell.updated && cell.id == "fan") {
+        cell.updated = true;
+        DoFan(cell, x, y);
+      }
+    }, rot);
+  }
+}

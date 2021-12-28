@@ -11,5 +11,6 @@ import 'package:the_puzzle_cell/layout/layout.dart';
 part 'grid.dart';
 part 'update.dart';
 part 'move.dart';
+part 'cell_data.dart';
 
 late SharedPreferences storage;

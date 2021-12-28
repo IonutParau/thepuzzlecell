@@ -12,45 +12,6 @@ Map<LogicalKeyboardKey, bool> keys = {};
 
 const halfPi = pi / 2;
 
-var defaultCellSize = 40;
-var cellSize = defaultCellSize;
-
-final cells = [
-  "empty",
-  "place",
-  "wall",
-  "ghost",
-  "mover",
-  "puller",
-  "liner",
-  "bird",
-  "releaser",
-  "wormhole",
-  "generator",
-  "generator_cw",
-  "generator_ccw",
-  "triplegen",
-  "constructorgen",
-  "crossgen",
-  "replicator",
-  "karl",
-  "push",
-  "slide",
-  "rotator_cw",
-  "rotator_ccw",
-  "gear_cw",
-  "gear_ccw",
-  "mirror",
-  "enemy",
-  "trash",
-  "puzzle",
-  "lock",
-  "unlock",
-  "key",
-  "flag",
-  "antipuzzle",
-];
-
 var cellsPerPage = 9;
 
 class GameUI extends StatefulWidget {
@@ -80,8 +41,9 @@ class _GameUIState extends State<GameUI> {
   }
 
   Widget cellToImage(String cell) {
-    final index = (game.edType == EditorType.making ? cells : game.cellsToPlace)
-        .indexOf(cell);
+    final index =
+        (game.edType == EditorType.making ? cellbar : game.cellsToPlace)
+            .indexOf(cell);
     return Container(
       padding: EdgeInsets.all(2.w),
       child: SizedBox(
@@ -91,14 +53,27 @@ class _GameUIState extends State<GameUI> {
           children: [
             Align(
               alignment: Alignment.center,
-              child: MaterialButton(
-                onPressed: () => setState(() => game.currentSeletion = index),
-                child: Opacity(
-                  opacity: game.currentSeletion == index ? 1 : 0.3,
-                  child: RotatedBox(
-                    quarterTurns: game.currentRotation,
-                    child:
-                        Image.asset('assets/images/$cell.png', scale: 20 / 3.w),
+              child: Tooltip(
+                message: profileToMessage(cellInfo[cell] ?? defaultProfile),
+                textStyle: TextStyle(
+                  fontSize: 5.sp,
+                  color: Colors.black,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(3.sp),
+                ),
+                preferBelow: false,
+                margin: EdgeInsets.all(2.w),
+                child: MaterialButton(
+                  onPressed: () => setState(() => game.currentSeletion = index),
+                  child: Opacity(
+                    opacity: game.currentSeletion == index ? 1 : 0.3,
+                    child: RotatedBox(
+                      quarterTurns: game.currentRotation,
+                      child: Image.asset('assets/images/$cell.png',
+                          scale: 20 / 3.w),
+                    ),
                   ),
                 ),
               ),
@@ -160,92 +135,120 @@ class _GameUIState extends State<GameUI> {
         width: 100.w,
         height: 100.h,
         child: Center(
-          child: GameWidget(
-            game: game,
-            overlayBuilderMap: {
-              'CellBar': (ctx, _) {
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            width: 100.w,
-                            height: 8.w,
-                            color: Colors.grey[900],
-                            child: Scrollbar(
-                              controller: scrollController,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
+          child: Listener(
+            onPointerDown: game.onPointerDown,
+            child: GameWidget(
+              game: game,
+              overlayBuilderMap: {
+                'CellBar': (ctx, _) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: 100.w,
+                              height: 8.w,
+                              color: Colors.grey[900],
+                              child: Scrollbar(
                                 controller: scrollController,
-                                itemCount: (game.edType == EditorType.making
-                                            ? cells
-                                            : game.cellsToPlace)
-                                        .length +
-                                    1,
-                                itemBuilder: (ctx, i) {
-                                  if (i == 0) {
-                                    return MaterialButton(
-                                      height: 5.w,
-                                      child: Text(
-                                        "Back",
-                                        style: fontSize(
-                                          6.sp,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  controller: scrollController,
+                                  itemCount: (game.edType == EditorType.making
+                                              ? cellbar
+                                              : game.cellsToPlace)
+                                          .length +
+                                      1,
+                                  itemBuilder: (ctx, i) {
+                                    if (i == 0) {
+                                      return MaterialButton(
+                                        height: 5.w,
+                                        child: Text(
+                                          "Back",
+                                          style: fontSize(
+                                            6.sp,
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                    );
-                                  }
-                                  return cellToImage(
-                                      (game.edType == EditorType.making
-                                          ? cells
-                                          : game.cellsToPlace)[i - 1]);
-                                },
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) {
+                                              return AlertDialog(
+                                                title: Text("Confirm exit?"),
+                                                content: Text(
+                                                    "You have pressed the Back button, which exits the game. Do you confirm exit?"),
+                                                actions: [
+                                                  MaterialButton(
+                                                    child: Text("Yes"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                  MaterialButton(
+                                                    child: Text("No"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }
+                                    return cellToImage(
+                                        (game.edType == EditorType.making
+                                            ? cellbar
+                                            : game.cellsToPlace)[i - 1]);
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              "Info": (ctx, _) {
-                var infoText = "";
-                if (game.running) infoText += "[Playing] ";
-                if (grid.wrap && game.edType == EditorType.making)
-                  infoText += "[Wrap Mode] ";
-                return Text(infoText);
-              },
-              "Win": (ctx, _) {
-                return SizedBox(
-                  width: 100.w,
-                  height: 92.w,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Spacer(),
-                        Text(
-                          "You win!",
-                          style: fontSize(27.sp),
-                        ),
-                        if (puzzleIndex != null)
-                          MaterialButton(
-                            child: Text(
-                              "Next puzzle",
-                              style: fontSize(12.sp),
-                            ),
-                            onPressed: nextPuzzle,
+                        ],
+                      );
+                    },
+                  );
+                },
+                "Info": (ctx, _) {
+                  var infoText = "";
+                  if (game.running) infoText += "[Playing] ";
+                  if (grid.wrap && game.edType == EditorType.making)
+                    infoText += "[Wrap Mode] ";
+                  return Text(infoText);
+                },
+                "Win": (ctx, _) {
+                  return SizedBox(
+                    width: 100.w,
+                    height: 92.w,
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Spacer(),
+                          Text(
+                            "You win!",
+                            style: fontSize(27.sp),
                           ),
-                        Spacer(),
-                      ],
+                          if (puzzleIndex != null)
+                            MaterialButton(
+                              child: Text(
+                                "Next puzzle",
+                                style: fontSize(12.sp),
+                              ),
+                              onPressed: nextPuzzle,
+                            ),
+                          Spacer(),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -308,6 +311,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var bgX = 0.0;
   var bgY = 0.0;
 
+  late bool realisticRendering;
+
   @override
   Future<void>? onLoad() async {
     cellSize = defaultCellSize;
@@ -316,6 +321,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
     await Flame.images.load("enemy_particles.png");
     delay = storage.getDouble("delay") ?? 0.15;
+    realisticRendering = storage.getBool("realistic_render") ?? false;
 
     return super.onLoad();
   }
@@ -331,19 +337,26 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.translate(offX, offY);
 
-    final sx = max(floor(-offX / cellSize), 0);
-    final sy = max(floor(-offY / cellSize), 0);
-    final ex = min(ceil((canvasSize.x - offX) / cellSize), grid.width);
-    final ey = min(ceil((canvasSize.y - offY) / cellSize), grid.height);
+    var sx = floor((-offX - cellSize) / cellSize);
+    var sy = floor((-offY - cellSize) / cellSize);
+    var ex = ceil((canvasSize.x - offX) / cellSize);
+    var ey = ceil((canvasSize.y - offY) / cellSize);
+
+    if (!realisticRendering) {
+      sx = max(sx, 0);
+      sy = max(sy, 0);
+      ex = min(ex, grid.width);
+      ey = min(ey, grid.height);
+    }
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
-        renderEmpty(grid.at(x, y), x, y);
+        if (grid.inside(x, y)) renderEmpty(grid.at(x, y), x, y);
       }
     }
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
-        renderCell(grid.at(x, y), x, y);
+        if (grid.inside(x, y)) renderCell(grid.at(x, y), x, y);
       }
     }
     //grid.forEach(renderCell);
@@ -390,7 +403,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.save();
 
-    final past = cell.lastvars.lastPos * cellSize.toDouble() + center;
+    final cx = (x + grid.width) % grid.width;
+    final cy = (y + grid.height) % grid.height;
+
+    var lx = cell.lastvars.lastPos.dx.toInt();
+    var ly = cell.lastvars.lastPos.dy.toInt();
+
+    final dx = lx - cx;
+    final dy = ly - cy;
+
+    final past =
+        Offset((x + dx).toDouble(), (y + dy).toDouble()) * cellSize.toDouble() +
+            center;
     final current =
         Offset(x.toDouble(), y.toDouble()) * cellSize.toDouble() + center;
 
@@ -470,28 +494,19 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     super.update(dt);
   }
 
-  @override
-  void onTapDown(TapDownInfo info) {
-    if (running || puzzleWin) {
-      return super.onTapDown(info);
-    }
-    mouseDown = true;
-
-    final cx = (info.eventPosition.widget.x - offX) ~/ cellSize;
-    final cy = (info.eventPosition.widget.y - offY) ~/ cellSize;
+  void placeCell(int id, int rot, int cx, int cy) {
     if (edType == EditorType.making) {
       grid.set(
         cx,
         cy,
         Cell(cx, cy)
-          ..id = cells[currentSeletion]
-          ..rot = currentRotation
-          ..lastvars.lastRot = currentRotation,
+          ..id = cellbar[id]
+          ..rot = rot
+          ..lastvars.lastRot = rot,
       );
     } else if (edType == EditorType.loaded) {
       if (cellsToPlace.isNotEmpty && grid.placeable(cx, cy)) {
-        if (cellsToPlace[currentSeletion] == "empty" &&
-            grid.at(cx, cy).id != "empty") {
+        if (cellsToPlace[id] == "empty" && grid.at(cx, cy).id != "empty") {
           if (!cellsToPlace.contains(grid.at(cx, cy).id)) {
             cellsToPlace.add(grid.at(cx, cy).id);
             cellsCount.add(1);
@@ -499,21 +514,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             cellsCount[cellsToPlace.indexOf(grid.at(cx, cy).id)]++;
           }
         }
-        if (cellsToPlace[currentSeletion] != "empty" &&
-            grid.at(cx, cy).id != "empty") return;
+        if (cellsToPlace[id] != "empty" && grid.at(cx, cy).id != "empty")
+          return;
         grid.set(
           cx,
           cy,
           Cell(cx, cy)
-            ..id = cellsToPlace[currentSeletion]
-            ..rot = currentRotation
-            ..lastvars.lastRot = currentRotation,
+            ..id = cellsToPlace[id]
+            ..rot = rot
+            ..lastvars.lastRot = rot,
         );
-        if (cellsToPlace[currentSeletion] != "empty") {
-          cellsCount[currentSeletion]--;
-          if (cellsCount[currentSeletion] == 0) {
-            cellsToPlace.removeAt(currentSeletion);
-            cellsCount.removeAt(currentSeletion);
+        if (cellsToPlace[id] != "empty") {
+          cellsCount[id]--;
+          if (cellsCount[id] == 0) {
+            cellsToPlace.removeAt(id);
+            cellsCount.removeAt(id);
           }
           if (cellsToPlace.isNotEmpty) {
             //currentSeletion -= 1;
@@ -524,7 +539,47 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
       }
     }
+  }
+
+  @override
+  void onTapDown(TapDownInfo info) {
+    if (running || puzzleWin) {
+      return super.onTapDown(info);
+    }
+    mouseDown = true;
+
+    final cx = (info.eventPosition.widget.x - offX) ~/ cellSize;
+    final cy = (info.eventPosition.widget.y - offY) ~/ cellSize;
+    placeCell(currentSeletion, currentRotation, cx, cy);
+
     super.onTapDown(info);
+  }
+
+  Future<void> onPointerDown(PointerDownEvent event) async {
+    if (event.down && event.kind == PointerDeviceKind.mouse) {
+      if (event.buttons == kSecondaryMouseButton) {
+        final cx = (event.position.dx - offX) ~/ cellSize;
+        final cy = (event.position.dy - offY) ~/ cellSize;
+        if (grid.inside(cx, cy)) {
+          placeCell(0, 0, cx, cy);
+        }
+      } else if (event.buttons == kMiddleMouseButton) {
+        final cx = (event.position.dx - offX) ~/ cellSize;
+        final cy = (event.position.dy - offY) ~/ cellSize;
+
+        if (grid.inside(cx, cy)) {
+          final id = grid.at(cx, cy).id;
+
+          if (edType == EditorType.making) {
+            currentSeletion = cells.indexOf(id);
+          } else if (edType == EditorType.loaded) {
+            if (cellsToPlace.contains(id)) {
+              currentSeletion = cells.indexOf(id);
+            }
+          }
+        }
+      }
+    }
   }
 
   @override
