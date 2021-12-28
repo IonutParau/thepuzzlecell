@@ -149,11 +149,13 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
         final digging = grid.at(dx, dy);
         if (digging.id == "wormhole") return;
         if (dir != null) push(dx, dy, dir, 9999999999999);
-        // if (digging.id != "empty") {
-        //   destroySound.stop();
-        //   destroySound.play();
-        // }
-        grid.set(dx, dy, moving);
+        // If not empty attempt destruction
+        if (grid.at(dx, dy).id != "empty") {
+          moveCell(dx, dy, dx, dy);
+        }
+        if (grid.at(dx, dy).id == "empty") {
+          grid.set(dx, dy, moving);
+        }
       } else if (!grid.wrap) {
         playSound(destroySound);
       }
