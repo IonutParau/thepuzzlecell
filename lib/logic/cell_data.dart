@@ -1,7 +1,8 @@
 part of logic;
 
 var defaultCellSize = 40;
-var cellSize = defaultCellSize;
+var cellSize = defaultCellSize.toDouble();
+var wantedCellSize = defaultCellSize;
 
 final cells = [
   "empty",

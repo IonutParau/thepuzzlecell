@@ -1,5 +1,6 @@
 library logic;
 
+import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
@@ -14,3 +15,14 @@ part 'move.dart';
 part 'cell_data.dart';
 
 late SharedPreferences storage;
+late DiscordRPC discord;
+
+void setDefaultPresence() {
+  discord.updatePresence(
+    DiscordPresence(
+      startTimeStamp: DateTime.now().millisecondsSinceEpoch,
+      details: 'In menu',
+      largeImageKey: 'tpc_logo',
+    ),
+  );
+}

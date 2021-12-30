@@ -8,11 +8,24 @@ TextStyle fontSize(double fontSize) {
   );
 }
 
-Map<LogicalKeyboardKey, bool> keys = {};
+Map<PhysicalKeyboardKey, bool> keys = {};
 
 const halfPi = pi / 2;
 
 var cellsPerPage = 9;
+
+num abs(num n) => n < 0 ? -n : n;
+
+bool shouldRenderEmpty(Cell cell, int x, int y) {
+  if (cell.id == "empty") return true;
+  if (cell.lastvars.lastPos.dx == x.toDouble() &&
+      cell.lastvars.lastPos.dy == y.toDouble() &&
+      cell.lastvars.lastRot == cell.rot) return false;
+
+  //if (cell.lastvars.lastRot == cell.rot) return false;
+
+  return true;
+}
 
 class GameUI extends StatefulWidget {
   final EditorType editorType;
@@ -116,6 +129,7 @@ class _GameUIState extends State<GameUI> {
     if (puzzleIndex != null) {
       puzzleIndex = puzzleIndex! + 1;
       if (puzzleIndex! >= puzzles.length) {
+        setDefaultPresence();
         Navigator.pop(context);
         puzzleIndex = null;
         return;
@@ -183,6 +197,7 @@ class _GameUIState extends State<GameUI> {
                                                   MaterialButton(
                                                     child: Text("Yes"),
                                                     onPressed: () {
+                                                      setDefaultPresence();
                                                       Navigator.pop(context);
                                                       Navigator.pop(context);
                                                     },
@@ -293,8 +308,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   int currentRotation = 0;
 
-  double offX = 0;
-  double offY = 0;
+  double get offX =>
+      (storedOffX - canvasSize.x / 2) * (cellSize / wantedCellSize) +
+      canvasSize.x / 2;
+  double get offY =>
+      (storedOffY - canvasSize.y / 2) * (cellSize / wantedCellSize) +
+      canvasSize.y / 2;
+
+  var storedOffX = 0.0;
+  var storedOffY = 0.0;
 
   int updates = 0;
 
@@ -313,9 +335,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late bool realisticRendering;
 
+  void properlyChangeZoom(int oldzoom, int newzoom) {
+    final scale = newzoom / oldzoom;
+
+    storedOffX = (storedOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
+    storedOffY = (storedOffY - canvasSize.y / 2) * scale + canvasSize.y / 2;
+  }
+
   @override
   Future<void>? onLoad() async {
-    cellSize = defaultCellSize;
+    wantedCellSize = defaultCellSize;
+    cellSize = defaultCellSize.toDouble();
     keys = {};
     puzzleWin = false;
     await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
@@ -351,7 +381,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
-        if (grid.inside(x, y)) renderEmpty(grid.at(x, y), x, y);
+        if (grid.inside(x, y)) {
+          renderEmpty(grid.at(x, y), x, y);
+        }
       }
     }
     for (var x = sx; x < ex; x++) {
@@ -369,14 +401,28 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void renderEmpty(Cell cell, int x, int y) {
     final off = Vector2(x * cellSize.toDouble(), y * cellSize.toDouble());
     if (true) {
-      Sprite(Flame.images.fromCache('empty.png')).render(
-        canvas,
-        position: off,
-        size: Vector2(
-          cellSize.toDouble(),
-          cellSize.toDouble(),
-        ),
-      );
+      if (shouldRenderEmpty(cell, x, y)) {
+        Sprite(Flame.images.fromCache('empty.png')).render(
+          canvas,
+          position: off,
+          size: Vector2(
+            cellSize.toDouble(),
+            cellSize.toDouble(),
+          ),
+        );
+      } else {
+        canvas.drawRect(
+            off.toOffset() & Size(cellSize.toDouble(), cellSize.toDouble()),
+            Paint()..color = Colors.black);
+        Sprite(Flame.images.fromCache('empty.png')).render(
+          canvas,
+          position: off,
+          size: Vector2(
+            cellSize.toDouble(),
+            cellSize.toDouble(),
+          ),
+        );
+      }
       if (grid.placeable(x, y)) {
         Sprite(Flame.images.fromCache('place.png')).render(
           canvas,
@@ -441,6 +487,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   void update(double dt) {
     updates++;
+    cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 5);
     overlays.remove('CellBar');
     if (!overlays.isActive('CellBar')) {
       overlays.add('CellBar');
@@ -468,26 +515,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    bool canMoveCam = false;
+    bool canMoveCam = true;
     if (running) {
-      canMoveCam = keys[LogicalKeyboardKey.controlLeft] == true;
-    } else {
-      canMoveCam = keys[LogicalKeyboardKey.controlLeft] != true;
+      canMoveCam = keys[PhysicalKeyboardKey.shiftLeft] == true;
     }
 
     if ((canMoveCam) && keys[LogicalKeyboardKey.altLeft] != true) {
       const speed = 600;
-      if (keys[LogicalKeyboardKey.keyW] == true) {
-        offY += speed * dt;
+      if (keys[PhysicalKeyboardKey.keyW] == true) {
+        storedOffY += speed * dt;
       }
-      if (keys[LogicalKeyboardKey.keyS] == true) {
-        offY -= speed * dt;
+      if (keys[PhysicalKeyboardKey.keyS] == true) {
+        storedOffY -= speed * dt;
       }
-      if (keys[LogicalKeyboardKey.keyA] == true) {
-        offX += speed * dt;
+      if (keys[PhysicalKeyboardKey.keyA] == true) {
+        storedOffX += speed * dt;
       }
-      if (keys[LogicalKeyboardKey.keyD] == true) {
-        offX -= speed * dt;
+      if (keys[PhysicalKeyboardKey.keyD] == true) {
+        storedOffX -= speed * dt;
       }
     }
 
@@ -598,8 +643,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       final sX = screenSize.x / canvasSize.x;
       final sY = screenSize.y / canvasSize.y;
 
-      offX *= sX;
-      offY *= sY;
+      storedOffX *= sX;
+      storedOffY *= sY;
     }
   }
 
@@ -668,32 +713,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               (edType == EditorType.making ? cells : cellsToPlace).length;
         } else if (keysPressed.contains(LogicalKeyboardKey.equal) &&
             keys[LogicalKeyboardKey.equal] != true) {
-          if (cellSize < (defaultCellSize) * 16) {
-            cellSize *= 2;
-            offX -= canvasSize.x / 2;
-            offY -= canvasSize.y / 2;
-            offX *= 2;
-            offY *= 2;
-            offX += canvasSize.x / 2;
-            offY += canvasSize.y / 2;
+          if (wantedCellSize < (defaultCellSize) * 256) {
+            final lastZoom = wantedCellSize;
+            wantedCellSize *= 2;
+            properlyChangeZoom(lastZoom, wantedCellSize);
           }
         } else if (keysPressed.contains(LogicalKeyboardKey.minus) &&
             keys[LogicalKeyboardKey.minus] != true) {
-          if (cellSize > (defaultCellSize) / 16) {
-            cellSize ~/= 2;
-            offX -= canvasSize.x / 2;
-            offY -= canvasSize.y / 2;
-            offX /= 2;
-            offY /= 2;
-            offX += canvasSize.x / 2;
-            offY += canvasSize.y / 2;
+          if (wantedCellSize > (defaultCellSize) / 16) {
+            final lastZoom = wantedCellSize;
+            wantedCellSize ~/= 2;
+            properlyChangeZoom(lastZoom, wantedCellSize);
           }
         }
       }
-      keys[event.logicalKey] = true;
+      keys[event.physicalKey] = true;
       return KeyEventResult.handled;
     } else if (event is RawKeyUpEvent) {
-      keys[event.logicalKey] = false;
+      keys[event.physicalKey] = false;
+      //keysPressed.forEach((e) => keys[e] = true);
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;

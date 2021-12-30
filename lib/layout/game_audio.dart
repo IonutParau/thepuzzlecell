@@ -12,6 +12,7 @@ void initSound() {
     ),
     autoStart: false,
   );
+  destroySound.setVolume(0.5);
   // _audioComPort = ReceivePort();
   // Isolate.spawn(
   //   _playSound,
@@ -46,6 +47,6 @@ void initSound() {
 // }
 
 void playSound(Player sound) {
-  sound.stop();
+  sound.seek(Duration.zero);
   sound.play();
 }

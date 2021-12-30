@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,13 @@ class _EditorState extends State<Editor> {
   void play() {
     grid = Grid(width, height);
     puzzleIndex = null;
+    discord.updatePresence(
+      DiscordPresence(
+        details: 'Making a level',
+        largeImageKey: 'tpc_logo',
+        startTimeStamp: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
     Navigator.of(context).pushNamed('/game');
   }
 

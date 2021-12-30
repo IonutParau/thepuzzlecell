@@ -309,6 +309,8 @@ void doMirror(int x, int y, int dir) {
   if (dir == 0) {
     if (canMove(x + 1, y, 2, MoveType.mirror) &&
         canMove(x - 1, y, 0, MoveType.mirror)) {
+      if (grid.at(x + 1, y).tags.contains("mirrored")) return;
+      if (grid.at(x - 1, y).tags.contains("mirrored")) return;
       if ((grid.at(x + 1, y).id == "mirror" &&
               grid.at(x + 1, y).rot % 2 == 0) ||
           (grid.at(x - 1, y).id == "mirror" &&
@@ -320,6 +322,8 @@ void doMirror(int x, int y, int dir) {
   } else {
     if (canMove(x, y + 1, 3, MoveType.mirror) &&
         canMove(x, y - 1, 1, MoveType.mirror)) {
+      if (grid.at(x, y + 1).tags.contains("mirrored")) return;
+      if (grid.at(x, y - 1).tags.contains("mirrored")) return;
       if ((grid.at(x, y + 1).id == "mirror" &&
               grid.at(x, y + 1).rot % 2 == 1) ||
           (grid.at(x, y - 1).id == "mirror" &&
@@ -457,14 +461,14 @@ void puzzles(Set<String> cells) {
     (cell, x, y) {
       if (!cell.updated && cell.id == "puzzle") {
         cell.updated = true;
-        if (keys[LogicalKeyboardKey.controlLeft] == true) return;
-        if (keys[LogicalKeyboardKey.keyW] == true) {
+        if (keys[PhysicalKeyboardKey.controlLeft] == true) return;
+        if (keys[PhysicalKeyboardKey.keyW] == true) {
           doPuzzleSide(x, y, cell.rot - 1, cells);
-        } else if (keys[LogicalKeyboardKey.keyS] == true) {
+        } else if (keys[PhysicalKeyboardKey.keyS] == true) {
           doPuzzleSide(x, y, cell.rot + 1, cells);
-        } else if (keys[LogicalKeyboardKey.keyA] == true) {
+        } else if (keys[PhysicalKeyboardKey.keyA] == true) {
           doPuzzleSide(x, y, cell.rot + 2, cells);
-        } else if (keys[LogicalKeyboardKey.keyD] == true) {
+        } else if (keys[PhysicalKeyboardKey.keyD] == true) {
           doPuzzleSide(x, y, cell.rot, cells);
         }
       }
@@ -843,6 +847,9 @@ void DoTunnel(int x, int y, int dir) {
     }
 
     final moving = grid.at(bx, by).copy;
+    if (moving.id == "tunnel" && moving.rot == dir) {
+      return;
+    }
     if (ungennable.contains(moving.id)) return;
     if (moving.tags.contains('tunneled')) return;
     moving.tags.add('tunneled');

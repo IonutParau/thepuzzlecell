@@ -1,3 +1,4 @@
+import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,12 +24,52 @@ void main() async {
   initSound();
 
   storage = await SharedPreferences.getInstance();
+  DiscordRPC.initialize();
+  discord = DiscordRPC(applicationId: '926080518905290812');
+  discord.start(autoRegister: true);
+
+  setDefaultPresence();
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class LifecycleEventHandler extends WidgetsBindingObserver {
+  LifecycleEventHandler();
+
+//  @override
+//  Future<bool> didPopRoute()
+
+//  @override
+//  void didHaveMemoryPressure()
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        discord.clearPresence();
+        break;
+      case AppLifecycleState.resumed:
+        break;
+    }
+  }
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addObserver(LifecycleEventHandler());
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaleAssist(
