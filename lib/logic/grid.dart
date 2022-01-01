@@ -55,6 +55,22 @@ class GridUpdateConstraints {
 class Grid {
   late List<List<Cell>> grid;
   late List<List<bool>> place;
+  late List<List<Set<String>>> chunks;
+
+  var chunkSize = 25;
+
+  void reloadChunks() {
+    chunks = [];
+    final chunkWidth = width ~/ chunkSize;
+    final chunkHeight = height ~/ chunkSize;
+
+    for (var x = 0; x < chunkWidth; x++) {
+      chunks.add([]);
+      for (var y = 0; y < chunkHeight; y++) {
+        chunks.last.add(<String>{});
+      }
+    }
+  }
 
   int width;
   int height;
@@ -70,6 +86,7 @@ class Grid {
   void remake() {
     grid = [];
     place = [];
+    reloadChunks();
     for (var x = 0; x < width; x++) {
       grid.add([]);
       place.add([]);
@@ -85,7 +102,46 @@ class Grid {
   }
 
   void forEach(void Function(Cell cell, int x, int y) callback,
-      [int? wantedDirection]) {
+      [int? wantedDirection, String? id]) {
+    if (id != null) {
+      var sx = 0;
+      var sy = 0;
+      var ex = width ~/ chunkSize;
+      var ey = height ~/ chunkSize;
+
+      if (updateConstraints != null) {
+        sx = updateConstraints!.sx ~/ chunkSize;
+        sy = updateConstraints!.sy ~/ chunkSize;
+        ex = updateConstraints!.ex ~/ chunkSize;
+        ey = updateConstraints!.ey ~/ chunkSize;
+      }
+
+      for (var cx = sx; cx < ex; cx++) {
+        for (var cy = sy; cy < ey; cy++) {
+          if (chunks[cx][cy].contains(id)) {
+            final startx = cx * chunkSize;
+            final starty = cy * chunkSize;
+            final endx = startx + chunkSize;
+            final endy = starty + chunkSize;
+            for (var x = startx; x < endx; x++) {
+              for (var y = starty; y < endy; y++) {
+                if ((x >= 0 && x < width && y >= 0 && y < height)) {
+                  final cell = at(x, y);
+                  if (cell.updated == false) {
+                    if (cell.id == id &&
+                        cell.rot == (wantedDirection ?? cell.rot)) {
+                      cell.updated = true;
+                      callback(cell, x, y);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
     var sx = 0;
     var sy = 0;
     var ex = width;
@@ -132,6 +188,9 @@ class Grid {
         return;
       }
       grid[(x + width) % width][(y + height) % height] = cell;
+      chunks[((x + width) % width) ~/ chunkSize]
+              [((y + height) % height) ~/ chunkSize]
+          .add(cell.id);
       return;
     }
     if (!inside(x, y)) return;
@@ -140,6 +199,7 @@ class Grid {
       return;
     }
     grid[x][y] = cell;
+    chunks[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
   }
 
   bool placeable(int x, int y) {
@@ -190,9 +250,47 @@ class Grid {
     at(x, y).rot %= 4;
   }
 
+  double get emptyPercantage {
+    var empty = 0;
+    var count = 0;
+
+    forEach(
+      (element, x, y) {
+        count++;
+        if (element.id == "empty") {
+          empty++;
+        }
+      },
+    );
+
+    return empty / count;
+  }
+
+  void refreshChunks() {
+    final p = emptyPercantage;
+
+    chunkSize = 25;
+    if (p < 0.2) {
+      chunkSize = 50;
+    } else if (p > 0.6) {
+      chunkSize = 10;
+    }
+
+    reloadChunks();
+
+    forEach(
+      (cell, x, y) {
+        chunks[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
+      },
+    );
+  }
+
   void update() {
     tickCount++;
     cells = getCells();
+    if (tickCount % 10 == 0) {
+      refreshChunks();
+    }
 
     final subticks = [
       if (cells.contains("releaser")) releasers,

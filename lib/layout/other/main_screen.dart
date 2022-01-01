@@ -140,6 +140,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     Padding(
                       padding: buttonPadding,
                       child: MaterialButton(
+                        child: Text('Version', style: buttonStyle),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/version'),
+                        hoverColor: Colors.blue,
+                      ),
+                    ),
+                    Padding(
+                      padding: buttonPadding,
+                      child: MaterialButton(
                         child: Text('Quit', style: buttonStyle),
                         onPressed: () {
                           discord.clearPresence();

@@ -70,11 +70,11 @@ class _GameUIState extends State<GameUI> {
                 message: profileToMessage(cellInfo[cell] ?? defaultProfile),
                 textStyle: TextStyle(
                   fontSize: 5.sp,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(3.sp),
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(0.5.sp),
                 ),
                 preferBelow: false,
                 margin: EdgeInsets.all(2.w),

@@ -12,12 +12,10 @@ void movers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "mover") {
-          cell.updated = true;
-          push(x, y, cell.rot, 0);
-        }
+        push(x, y, cell.rot, 0);
       },
       rot,
+      "mover",
     );
   }
 }
@@ -100,79 +98,66 @@ void gens(Set cells) {
     if (cells.contains("generator")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "generator") {
-            cell.updated = true;
-            doGen(x, y, rot, rot);
-          }
+          doGen(x, y, rot, rot);
         },
         rot,
+        "generator",
       );
     }
     if (cells.contains("generator_cw")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "generator_cw") {
-            cell.updated = true;
-            doGen(x, y, rot + 1, rot);
-          }
+          doGen(x, y, rot + 1, rot);
         },
         rot,
+        "generator_cw",
       );
     }
     if (cells.contains("generator_ccw")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "generator_ccw") {
-            cell.updated = true;
-            doGen(x, y, rot - 1, rot);
-          }
+          doGen(x, y, rot - 1, rot);
         },
         rot,
+        "generator_ccw",
       );
     }
     if (cells.contains("crossgen")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "crossgen") {
-            cell.updated = true;
-            doGen(x, y, rot, rot);
-            doGen(x, y, rot - 1, rot - 1);
-          }
+          doGen(x, y, rot, rot);
+          doGen(x, y, rot - 1, rot - 1);
         },
         rot,
+        "crossgen",
       );
     }
     if (cells.contains("triplegen")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "triplegen") {
-            cell.updated = true;
-            doGen(x, y, rot, rot);
-            doGen(x, y, rot - 1, rot);
-            doGen(x, y, rot + 1, rot);
-          }
+          doGen(x, y, rot, rot);
+          doGen(x, y, rot - 1, rot);
+          doGen(x, y, rot + 1, rot);
         },
         rot,
+        "triplegen",
       );
     }
     if (cells.contains("constructorgen")) {
       grid.forEach(
         (cell, x, y) {
-          if (!cell.updated && cell.id == "constructorgen") {
-            cell.updated = true;
-            doGen(x, y, rot, rot);
-            doGen(x, y, rot - 1, rot);
-            doGen(x, y, rot + 1, rot);
-            final forward = fromDir(cell.rot) / 3 * 2;
-            final up = fromDir(cell.rot + 3);
-            final down = fromDir(cell.rot + 1);
-            doGen(x, y, rot, rot, floor(forward.dx - down.dx),
-                floor(forward.dy - down.dy));
-            doGen(x, y, rot, rot, floor(forward.dx + down.dx),
-                floor(forward.dy + down.dy));
-          }
+          doGen(x, y, rot, rot);
+          doGen(x, y, rot - 1, rot);
+          doGen(x, y, rot + 1, rot);
+          final forward = fromDir(cell.rot) / 3 * 2;
+          final down = fromDir(cell.rot + 1);
+          doGen(x, y, rot, rot, floor(forward.dx - down.dx),
+              floor(forward.dy - down.dy));
+          doGen(x, y, rot, rot, floor(forward.dx + down.dx),
+              floor(forward.dy + down.dy));
         },
         rot,
+        "constructorgen",
       );
     }
   }
@@ -187,27 +172,25 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_cw")) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "rotator_cw") {
-          cell.updated = true;
-          grid.rotate(x + 1, y, 1);
-          grid.rotate(x - 1, y, 1);
-          grid.rotate(x, y + 1, 1);
-          grid.rotate(x, y - 1, 1);
-        }
+        grid.rotate(x + 1, y, 1);
+        grid.rotate(x - 1, y, 1);
+        grid.rotate(x, y + 1, 1);
+        grid.rotate(x, y - 1, 1);
       },
+      null,
+      "rotator_cw",
     );
   }
   if (cells.contains("rotator_ccw")) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "rotator_ccw") {
-          cell.updated = true;
-          grid.rotate(x + 1, y, -1);
-          grid.rotate(x - 1, y, -1);
-          grid.rotate(x, y + 1, -1);
-          grid.rotate(x, y - 1, -1);
-        }
+        grid.rotate(x + 1, y, -1);
+        grid.rotate(x - 1, y, -1);
+        grid.rotate(x, y + 1, -1);
+        grid.rotate(x, y - 1, -1);
       },
+      null,
+      "rotator_ccw",
     );
   }
 }
@@ -287,10 +270,10 @@ void gears(cells) {
   if (cells.contains("gear_cw")) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "gear_cw") {
-          doGear(x, y, RotationalType.clockwise);
-        }
+        doGear(x, y, RotationalType.clockwise);
       },
+      null,
+      "gear_cw",
     );
   }
   if (cells.contains("gear_ccw")) {
@@ -301,6 +284,8 @@ void gears(cells) {
           doGear(x, y, RotationalType.counter_clockwise);
         }
       },
+      null,
+      "gear_ccw",
     );
   }
 }
@@ -338,11 +323,10 @@ void doMirror(int x, int y, int dir) {
 void mirrors() {
   grid.forEach(
     (cell, x, y) {
-      if (!cell.updated && cell.id == "mirror") {
-        cell.updated = true;
-        doMirror(x, y, cell.rot % 2);
-      }
+      doMirror(x, y, cell.rot % 2);
     },
+    null,
+    "mirror",
   );
 }
 
@@ -384,12 +368,10 @@ void birds() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "bird") {
-          cell.updated = true;
-          doBird(x, y, cell.rot);
-        }
+        doBird(x, y, cell.rot);
       },
       rot,
+      "bird",
     );
   }
 }
@@ -403,12 +385,10 @@ void reps() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "replicator") {
-          cell.updated = true;
-          doRep(x, y, cell.rot, cell.rot);
-        }
+        doRep(x, y, cell.rot, cell.rot);
       },
       rot,
+      "replicator",
     );
   }
 }
@@ -418,12 +398,10 @@ void pullers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "puller") {
-          cell.updated = true;
-          pull(x, y, rot, 1);
-        }
+        pull(x, y, rot, 1);
       },
       rot,
+      "puller",
     );
   }
 }
@@ -457,11 +435,10 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells) {
 }
 
 void puzzles(Set<String> cells) {
-  grid.forEach(
-    (cell, x, y) {
-      if (!cell.updated && cell.id == "puzzle") {
-        cell.updated = true;
-        if (keys[PhysicalKeyboardKey.controlLeft] == true) return;
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (keys[PhysicalKeyboardKey.shiftLeft] == true) return;
         if (keys[PhysicalKeyboardKey.keyW] == true) {
           doPuzzleSide(x, y, cell.rot - 1, cells);
         } else if (keys[PhysicalKeyboardKey.keyS] == true) {
@@ -471,28 +448,28 @@ void puzzles(Set<String> cells) {
         } else if (keys[PhysicalKeyboardKey.keyD] == true) {
           doPuzzleSide(x, y, cell.rot, cells);
         }
-      }
-    },
-  );
+      },
+      rot,
+      "puzzle",
+    );
+  }
 }
 
 void releasers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if ((!cell.updated) && cell.id == "releaser") {
-          cell.updated = true;
-          final fx = x - ((rot % 2 == 0) ? (rot - 1) : 0);
-          final fy = y - ((rot % 2 == 1) ? (rot - 2) : 0);
-          if (!grid.inside(fx, fy)) return;
-          final front = grid.at(fx, fy);
-          front.updated = true;
-          if (!push(x, y, rot, 0)) {
-            front.updated = false;
-          }
+        final fx = x - ((rot % 2 == 0) ? (rot - 1) : 0);
+        final fy = y - ((rot % 2 == 1) ? (rot - 2) : 0);
+        if (!grid.inside(fx, fy)) return;
+        final front = grid.at(fx, fy);
+        front.updated = true;
+        if (!push(x, y, rot, 0)) {
+          front.updated = false;
         }
       },
       rot,
+      "releaser",
     );
   }
 }
@@ -560,16 +537,14 @@ void liners() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "liner") {
-          cell.updated = true;
-          if (push(x, y, cell.rot, 0)) {
-            final bx = x + (cell.rot % 2 == 0 ? cell.rot - 1 : 0);
-            final by = y + (cell.rot % 2 == 1 ? cell.rot - 2 : 0);
-            pull(bx, by, cell.rot, 1);
-          }
+        if (push(x, y, cell.rot, 0)) {
+          final bx = x + (cell.rot % 2 == 0 ? cell.rot - 1 : 0);
+          final by = y + (cell.rot % 2 == 1 ? cell.rot - 2 : 0);
+          pull(bx, by, cell.rot, 1);
         }
       },
       rot,
+      "liner",
     );
   }
 }
@@ -577,73 +552,73 @@ void liners() {
 void karls() {
   grid.forEach(
     (cell, x, y) {
-      if (!cell.updated && cell.id == "karl") {
-        cell.updated = true;
-        // print(cell.data['velX']);
-        // print(cell.data['velY']);
-        var velX = 0;
-        var velY = 0;
-        if (grid.inside(x - 1, y) && grid.inside(x + 1, y)) {
-          if (grid.at(x - 1, y).id != "empty" && grid.at(x - 1, y).id != "wall")
-            velX++;
-          if (grid.at(x + 1, y).id == "wall") velX++; // Get to food dammit
+      cell.updated = true;
+      // print(cell.data['velX']);
+      // print(cell.data['velY']);
+      var velX = 0;
+      var velY = 0;
+      if (grid.inside(x - 1, y) && grid.inside(x + 1, y)) {
+        if (grid.at(x - 1, y).id != "empty" && grid.at(x - 1, y).id != "wall")
+          velX++;
+        if (grid.at(x + 1, y).id == "wall") velX++; // Get to food dammit
 
-          if (grid.at(x + 1, y).id != "empty" && grid.at(x + 1, y).id != "wall")
-            velX--;
-          if (grid.at(x - 1, y).id == "wall") velX--; // Get to food dammit
-        }
+        if (grid.at(x + 1, y).id != "empty" && grid.at(x + 1, y).id != "wall")
+          velX--;
+        if (grid.at(x - 1, y).id == "wall") velX--; // Get to food dammit
+      }
 
-        if (grid.inside(x, y - 1) && grid.inside(x, y + 1)) {
-          if (grid.at(x, y - 1).id != "empty" && grid.at(x, y - 1).id != "wall")
-            velY++;
-          if (grid.at(x, y + 1).id == "wall") velY++; // Get to food dammit
+      if (grid.inside(x, y - 1) && grid.inside(x, y + 1)) {
+        if (grid.at(x, y - 1).id != "empty" && grid.at(x, y - 1).id != "wall")
+          velY++;
+        if (grid.at(x, y + 1).id == "wall") velY++; // Get to food dammit
 
-          if (grid.at(x, y + 1).id != "empty" && grid.at(x, y + 1).id != "wall")
-            velY--;
-          if (grid.at(x, y - 1).id == "wall") velY--; // Get to food dammit
-        }
+        if (grid.at(x, y + 1).id != "empty" && grid.at(x, y + 1).id != "wall")
+          velY--;
+        if (grid.at(x, y - 1).id == "wall") velY--; // Get to food dammit
+      }
 
-        velX = clamp(velX, -1, 1).toInt();
-        velY = clamp(velY, -1, 1).toInt();
+      velX = clamp(velX, -1, 1).toInt();
+      velY = clamp(velY, -1, 1).toInt();
 
-        if (velX == 0 && velY == 0) {
-          velX = cell.data['velX'] ?? 0;
-          velY = cell.data['velY'] ?? 0;
-        } else {
-          cell.data['velX'] = velX;
-          cell.data['velY'] = velY;
-        }
+      if (velX == 0 && velY == 0) {
+        velX = cell.data['velX'] ?? 0;
+        velY = cell.data['velY'] ?? 0;
+      } else {
+        cell.data['velX'] = velX;
+        cell.data['velY'] = velY;
+      }
 
-        var fx = x + velX;
-        var fy = y + velY;
+      var fx = x + velX;
+      var fy = y + velY;
 
-        final vX = velX;
-        final vY = velY;
+      final vX = velX;
+      final vY = velY;
 
-        if (grid.inside(fx, fy)) {
-          for (var i = 0; i < 3; i++) {
-            fx = x + velX;
-            fy = y + velY;
-            if (grid.at(fx, fy).id == "wall") {
-              grid.set(fx, fy, cell.copy);
-              return;
-            } else if (grid.at(fx, fy).id == "empty") {
-              grid.set(fx, fy, cell.copy);
-              grid.set(x, y, Cell(x, y));
-              return;
-            }
-            if (i == 1) {
-              velX = 0;
-              velY = vY;
-            }
-            if (i == 2) {
-              velX = vX;
-              velY = 0;
-            }
+      if (grid.inside(fx, fy)) {
+        for (var i = 0; i < 3; i++) {
+          fx = x + velX;
+          fy = y + velY;
+          if (grid.at(fx, fy).id == "wall") {
+            grid.set(fx, fy, cell.copy);
+            return;
+          } else if (grid.at(fx, fy).id == "empty") {
+            grid.set(fx, fy, cell.copy);
+            grid.set(x, y, Cell(x, y));
+            return;
+          }
+          if (i == 1) {
+            velX = 0;
+            velY = vY;
+          }
+          if (i == 2) {
+            velX = vX;
+            velY = 0;
           }
         }
       }
     },
+    null,
+    "karl",
   );
 }
 
@@ -721,12 +696,10 @@ void dartys() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "darty") {
-          cell.updated = true;
-          doDarty(cell, x, y);
-        }
+        doDarty(cell, x, y);
       },
       rot,
+      "darty",
     );
   }
 }
@@ -804,12 +777,10 @@ void grabbers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "grabber") {
-          cell.updated = true;
-          doGrabber(x, y, cell.rot);
-        }
+        doGrabber(x, y, cell.rot);
       },
       rot,
+      "grabber",
     );
   }
 }
@@ -825,12 +796,13 @@ void DoFan(Cell cell, int x, int y) {
 
 void fans() {
   for (var rot in rotOrder) {
-    grid.forEach((cell, x, y) {
-      if (!cell.updated && cell.id == "fan") {
-        cell.updated = true;
+    grid.forEach(
+      (cell, x, y) {
         DoFan(cell, x, y);
-      }
-    }, rot);
+      },
+      rot,
+      "fan",
+    );
   }
 }
 
@@ -870,12 +842,10 @@ void tunnels() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "tunnel") {
-          cell.updated = true;
-          DoTunnel(x, y, cell.rot);
-        }
+        DoTunnel(x, y, cell.rot);
       },
       rot,
+      "tunnel",
     );
   }
 }

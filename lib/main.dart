@@ -85,6 +85,7 @@ class _MyAppState extends State<MyApp> {
             '/game-loaded': (ctx) => GameUI(editorType: EditorType.loaded),
             '/puzzles': (ctx) => Puzzles(),
             '/settings': (ctx) => SettingsPage(),
+            '/version': (ctx) => VersionPage(),
           },
         );
       },

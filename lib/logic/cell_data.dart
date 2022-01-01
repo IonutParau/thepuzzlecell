@@ -27,7 +27,6 @@ final cells = [
   "tunnel",
   "karl",
   "darty",
-  "floppy",
   "push",
   "slide",
   "rotator_cw",
