@@ -157,8 +157,135 @@ class _GameUIState extends State<GameUI> {
               game: game,
               initialActiveOverlays: [
                 "CellBar",
+                "ActionBar",
               ],
               overlayBuilderMap: {
+                'ActionBar': (ctx, _) {
+                  return LayoutBuilder(
+                    builder: (ctx, size) {
+                      final s = 8.sp;
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 5.h,
+                          child: Container(
+                            color: Colors.grey[900],
+                            child: Row(
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                Tooltip(
+                                  message: 'Save grid to clipboard',
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/save.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () => FlutterClipboard.controlC(
+                                      P1.encode(grid),
+                                    ),
+                                  ),
+                                ),
+                                Tooltip(
+                                  message: 'Load grid from clipboard',
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/load.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () {
+                                      if (!game.running) {
+                                        try {
+                                          FlutterClipboard.paste().then(
+                                            (val) {
+                                              try {
+                                                grid =
+                                                    loadGrid(jsonDecode(val));
+                                                game.cellsToPlace = ["empty"];
+                                                game.cellsCount = [1];
+                                              } catch (e) {
+                                                try {
+                                                  grid = P1.decode(val);
+                                                  game.cellsToPlace = ["empty"];
+                                                  game.cellsCount = [1];
+                                                } catch (e) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (ctx) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                          'Invalid save code',
+                                                        ),
+                                                        content: Text(
+                                                          'You are trying to load a corrupted, invalid or unsupported level code.',
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              }
+                                            },
+                                          );
+                                        } catch (e) {}
+                                        ;
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Tooltip(
+                                  message: 'Zoom in',
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/zoomin.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: game.zoomin,
+                                  ),
+                                ),
+                                Tooltip(
+                                  message: 'Zoom out',
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/zoomout.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: game.zoomout,
+                                  ),
+                                ),
+                                Tooltip(
+                                  message:
+                                      'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/wrap.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () {
+                                      if (!game.running) {
+                                        grid.wrap = !grid.wrap;
+                                        game.overlays.remove('Info');
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ].reversed.toList(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
                 'CellBar': (ctx, _) {
                   return LayoutBuilder(
                     builder: (context, constraints) {
@@ -348,7 +475,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late bool realisticRendering;
 
-  bool get validPlacePos => ((mouseY > 2.w) && (mouseY < 84.h));
+  bool get validPlacePos => ((mouseY > 5.h) && (mouseY < 84.h));
 
   void properlyChangeZoom(int oldzoom, int newzoom) {
     final scale = newzoom / oldzoom;
@@ -396,6 +523,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     sy = max(sy, 0);
     ex = min(ex, grid.width);
     ey = min(ey, grid.height);
+
+    if (realisticRendering) {
+      final extra = 5;
+      sx -= extra;
+      sy -= extra;
+      ex += extra;
+      ey += extra;
+    }
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
@@ -698,6 +833,22 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void zoomout() {
+    if (wantedCellSize > (defaultCellSize) / 16) {
+      final lastZoom = wantedCellSize;
+      wantedCellSize ~/= 2;
+      properlyChangeZoom(lastZoom, wantedCellSize);
+    }
+  }
+
+  void zoomin() {
+    if (wantedCellSize < (defaultCellSize) * 256) {
+      final lastZoom = wantedCellSize;
+      wantedCellSize *= 2;
+      properlyChangeZoom(lastZoom, wantedCellSize);
+    }
+  }
+
   @override
   KeyEventResult onKeyEvent(
       RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
@@ -731,26 +882,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               puzzleWin = false;
             }
           }
-        } else if (keysPressed.contains(LogicalKeyboardKey.controlLeft) &&
-            keysPressed.contains(LogicalKeyboardKey.keyS) &&
-            !running) {
-          FlutterClipboard.controlC(P1.encode(grid));
-        } else if (keysPressed.contains(LogicalKeyboardKey.controlLeft) &&
-            keysPressed.contains(LogicalKeyboardKey.keyL) &&
-            !running) {
-          try {
-            FlutterClipboard.paste().then(
-              (val) {
-                try {
-                  grid = loadGrid(jsonDecode(val));
-                  cellsToPlace = ["empty"];
-                  cellsCount = [1];
-                } catch (e) {
-                  grid = P1.decode(val);
-                }
-              },
-            );
-          } catch (e) {}
         } else if (keysPressed.contains(LogicalKeyboardKey.arrowLeft) &&
             keys[LogicalKeyboardKey.arrowLeft] != true) {
           currentSeletion = (currentSeletion -
@@ -763,18 +894,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               (edType == EditorType.making ? cells : cellsToPlace).length;
         } else if (keysPressed.contains(LogicalKeyboardKey.equal) &&
             keys[LogicalKeyboardKey.equal] != true) {
-          if (wantedCellSize < (defaultCellSize) * 256) {
-            final lastZoom = wantedCellSize;
-            wantedCellSize *= 2;
-            properlyChangeZoom(lastZoom, wantedCellSize);
-          }
+          zoomin();
         } else if (keysPressed.contains(LogicalKeyboardKey.minus) &&
             keys[LogicalKeyboardKey.minus] != true) {
-          if (wantedCellSize > (defaultCellSize) / 16) {
-            final lastZoom = wantedCellSize;
-            wantedCellSize ~/= 2;
-            properlyChangeZoom(lastZoom, wantedCellSize);
-          }
+          zoomout();
         }
       }
       keys[event.physicalKey] = true;

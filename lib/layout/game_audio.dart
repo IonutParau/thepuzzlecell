@@ -47,6 +47,7 @@ void initSound() {
 // }
 
 void playSound(Player sound) {
+  if (inBruteForce) return;
   if (sound.playback.isSeekable) {
     sound.seek(Duration.zero);
   }

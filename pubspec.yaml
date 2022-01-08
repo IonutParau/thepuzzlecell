@@ -32,3 +32,4 @@ flutter:
     - assets/puzzles/easy/
     - assets/puzzles/medium/
     - assets/puzzles/hard/
+    - assets/interface/

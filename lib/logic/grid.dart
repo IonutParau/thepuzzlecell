@@ -1,5 +1,7 @@
 part of logic;
 
+var inBruteForce = false;
+
 class LastVars {
   Offset lastPos;
   int lastRot;
