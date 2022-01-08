@@ -40,39 +40,46 @@ Offset fromDir(int dir) {
 final ungennable = ["empty", "ghost"];
 
 void doGen(int x, int y, int dir, int gendir,
-    [int? offX, int? offY, int preaddedRot = 0]) {
+    [int? offX, int? offY, int preaddedRot = 0, bool physical = false]) {
   offX ??= 0;
   offY ??= 0;
   dir %= 4;
   gendir %= 4;
   final addedRot = (dir - gendir + preaddedRot) % 4;
   final genOff = fromDir(gendir + 2);
-  final gx = x + genOff.dx ~/ 1;
-  final gy = y + genOff.dy ~/ 1;
+  var gx = x + genOff.dx ~/ 1;
+  var gy = y + genOff.dy ~/ 1;
   if (!grid.inside(gx, gy)) return;
 
   final toGenerate = grid.at(gx, gy).copy;
 
-  if (toGenerate.tags.contains("gend")) return;
+  if (toGenerate.tags.contains("gend $gendir")) return;
 
-  toGenerate.tags.add("gend");
+  toGenerate.tags.add("gend $gendir");
 
   if (ungennable.contains(toGenerate.id)) {
     return;
   }
 
   final outputOff = fromDir(dir);
-  final ox = x + outputOff.dx ~/ 1 + offX;
-  final oy = y + outputOff.dy ~/ 1 + offY;
+  var ox = x + outputOff.dx ~/ 1 + offX;
+  var oy = y + outputOff.dy ~/ 1 + offY;
 
-  if (push(ox, oy, dir, 1)) {
+  void gen() {
+    if (!grid.inside(ox, oy)) return;
+    if (!grid.inside(gx, gy)) return;
+    if (!grid.inside(x, y)) return;
     final remaining = grid.at(ox, oy);
     if (moveInsideOf.contains(remaining.id) && remaining.id != "empty") {
       if (remaining.id == "wormhole") {
         moveCell(gx, gy, ox, oy, dir);
         grid.set(gx, gy, toGenerate);
       } else {
-        moveCell(ox, oy, ox, oy);
+        if (remaining.id == "enemy") {
+          moveCell(ox, oy, ox, oy);
+        } else {
+          grid.addBroken(toGenerate, ox, oy, x, y);
+        }
       }
       return;
     }
@@ -80,14 +87,41 @@ void doGen(int x, int y, int dir, int gendir,
       final toGenLastrot = toGenerate.lastvars.lastRot;
       toGenerate.lastvars = grid.at(x, y).lastvars.copy;
       toGenerate.lastvars.lastRot = toGenLastrot;
+      if (physical) {
+        toGenerate.lastvars.lastPos += fromDir(gendir);
+      }
       if (toGenerate.id.startsWith("generator") ||
           toGenerate.id.contains('gen') ||
           toGenerate.id.startsWith("replicator") ||
           toGenerate.id.contains("rep")) {
-        toGenerate.updated = true;
+        if ((toGenerate.rot + addedRot) % 4 == dir) {
+          toGenerate.updated = true;
+        }
       }
       grid.set(ox, oy, toGenerate);
       grid.rotate(ox, oy, addedRot);
+    }
+  }
+
+  if (push(ox, oy, dir, 1)) {
+    gen();
+  } else {
+    if (physical) {
+      if (push(x, y, (dir + 2) % 4, 1)) {
+        final dx = frontX(0, dir);
+        final dy = frontY(0, dir);
+
+        ox -= dx;
+        oy -= dy;
+
+        // x += dx;
+        // y += dy;
+
+        gx -= dx;
+        gy -= dy;
+
+        gen();
+      }
     }
   }
 }
@@ -158,6 +192,15 @@ void gens(Set cells) {
         },
         rot,
         "constructorgen",
+      );
+    }
+    if (cells.contains("physical_gen")) {
+      grid.forEach(
+        (cell, x, y) {
+          doGen(x, y, rot, rot, null, null, 0, true);
+        },
+        rot,
+        "physical_gen",
       );
     }
   }
@@ -655,10 +698,12 @@ void moveFront(int x, int y, int dir) {
 }
 
 int frontX(int x, int dir) {
+  dir %= 4;
   return x - (dir % 2 == 0 ? dir - 1 : 0);
 }
 
 int frontY(int y, int dir) {
+  dir %= 4;
   return y - (dir % 2 == 1 ? dir - 2 : 0);
 }
 
@@ -717,6 +762,8 @@ void grabSide(int x, int y, int mdir, int dir, int checkDepth) {
         if (moveInsideOf.contains(grid.at(x, y).id)) {
           break;
         } else {
+          if (grid.at(x, y).id == "grabber" && grid.at(x, y).rot == dir)
+            grid.at(x, y).updated = true;
           if (!pushDistance(x, y, dir, 1, checkDepth - 1, MoveType.grab)) {
             break;
           }
@@ -732,45 +779,28 @@ void grabSide(int x, int y, int mdir, int dir, int checkDepth) {
   }
 }
 
-void doGrabber(int x, int y, int dir) {
-  int force = 1;
-  var mx = x;
-  var my = y;
+bool doGrabber(int x, int y, int dir, [int rdepth = 0]) {
+  grid.at(x, y).updated = true;
+  if (rdepth > 9000) return false; // ITS OVER 9000!!!
+  var fx = frontX(x, dir);
+  var fy = frontY(y, dir);
   var depth = 0;
-  var depthLimit = dir % 2 == 0 ? grid.width : grid.height;
-  while (true) {
-    mx = frontX(mx, dir);
-    my = frontY(my, dir);
-
-    if (!grid.inside(mx, my)) return;
-
-    final m = grid.at(mx, my);
-    var pushingFiltered = false;
-    if (m.id == "grabber") {
-      if (m.rot == dir) {
-        force++;
-        m.updated = true;
-        pushingFiltered = true;
-      } else if (m.rot == (dir - 2) % 4) {
-        force--;
-        m.updated = true;
-        pushingFiltered = true;
+  if (grid.inside(fx, fy)) {
+    final f = grid.at(fx, fy);
+    if ((f.id == "grabber") && (f.rot == dir)) {
+      if (doGrabber(fx, fy, dir, rdepth + 1)) {
+        depth++;
+      } else {
+        return false;
       }
-    }
-    if (force <= 0) return;
-
-    if (depth > depthLimit) return;
-    depth++;
-
-    if (moveInsideOf.contains(grid.at(mx, my).id)) {
-      break;
-    } else if (!pushingFiltered) {
-      return;
+    } else {
+      if (!moveInsideOf.contains(f.id)) return false;
     }
   }
   push(x, y, dir, 1, MoveType.grab);
   grabSide(x, y, dir - 1, dir, depth);
   grabSide(x, y, dir + 1, dir, depth);
+  return true;
 }
 
 void grabbers() {
@@ -823,17 +853,12 @@ void DoTunnel(int x, int y, int dir) {
       return;
     }
     if (ungennable.contains(moving.id)) return;
+    if (moving.id == "empty") return;
     if (moving.tags.contains('tunneled')) return;
-    moving.tags.add('tunneled');
 
     if (push(fx, fy, dir, 1, MoveType.tunnel)) {
-      final remaining = grid.at(fx, fy);
-      if (remaining.id == "empty") {
-        grid.set(fx, fy, moving);
-        grid.set(bx, by, Cell(bx, by));
-      } else if (moveInsideOf.contains(remaining.id)) {
-        moveCell(bx, by, fx, fy); // Trigger movement
-      }
+      moveCell(bx, by, fx, fy);
+      grid.at(fx, fy).tags.add("tunneled");
     }
   }
 }

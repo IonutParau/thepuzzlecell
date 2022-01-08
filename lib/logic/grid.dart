@@ -14,6 +14,40 @@ class LastVars {
       LastVars(lastRot, lastPos.dx.toInt(), lastPos.dy.toInt());
 }
 
+// For cells destroyed by entering destruction cells
+class BrokenCell {
+  String id;
+  int rot;
+  int x;
+  int y;
+  LastVars lv;
+
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv);
+
+  void render(Canvas canvas, double t) {
+    final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
+    final sx = lerp(lv.lastPos.dx, x, t);
+    final sy = lerp(lv.lastPos.dy, y, t);
+
+    final screenSize = Vector2(cellSize, cellSize);
+
+    var screenPos = Vector2(sx, sy) * cellSize + screenSize / 2;
+
+    screenPos = rotateOff(screenPos.toOffset(), -screenRot).toVector2();
+
+    screenPos -= screenSize / 2;
+
+    canvas.save();
+
+    canvas.rotate(screenRot);
+
+    Sprite(Flame.images.fromCache('$id.png'))
+        .render(canvas, position: screenPos, size: screenSize);
+
+    canvas.restore();
+  }
+}
+
 class Cell {
   String id = "empty";
   int rot = 0;
@@ -57,12 +91,23 @@ class Grid {
   late List<List<bool>> place;
   late List<List<Set<String>>> chunks;
 
+  List<BrokenCell> brokenCells = [];
+
+  void addBroken(Cell cell, int dx, int dy, [int? rlvx, int? rlvy]) {
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars);
+
+    if (rlvx != null) b.lv.lastPos = Offset(rlvx.toDouble(), b.lv.lastPos.dy);
+    if (rlvy != null) b.lv.lastPos = Offset(b.lv.lastPos.dx, rlvy.toDouble());
+
+    brokenCells.add(b);
+  }
+
   var chunkSize = 25;
 
   void reloadChunks() {
     chunks = [];
-    final chunkWidth = width ~/ chunkSize;
-    final chunkHeight = height ~/ chunkSize;
+    final chunkWidth = ceil(width / chunkSize);
+    final chunkHeight = ceil(height / chunkSize);
 
     for (var x = 0; x < chunkWidth; x++) {
       chunks.add([]);
@@ -106,14 +151,14 @@ class Grid {
     if (id != null) {
       var sx = 0;
       var sy = 0;
-      var ex = width ~/ chunkSize;
-      var ey = height ~/ chunkSize;
+      var ex = ceil(width / chunkSize);
+      var ey = ceil(height / chunkSize);
 
       if (updateConstraints != null) {
-        sx = updateConstraints!.sx ~/ chunkSize;
-        sy = updateConstraints!.sy ~/ chunkSize;
-        ex = updateConstraints!.ex ~/ chunkSize;
-        ey = updateConstraints!.ey ~/ chunkSize;
+        sx = ceil(updateConstraints!.sx / chunkSize);
+        sy = ceil(updateConstraints!.sy / chunkSize);
+        ex = ceil(updateConstraints!.ex / chunkSize);
+        ey = ceil(updateConstraints!.ey / chunkSize);
       }
 
       for (var cx = sx; cx < ex; cx++) {
@@ -156,9 +201,11 @@ class Grid {
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
-        final cell = at(x, y);
-        if (cell.rot == (wantedDirection ?? cell.rot)) {
-          callback(cell, x, y);
+        if (inside(x, y)) {
+          final cell = at(x, y);
+          if (cell.rot == (wantedDirection ?? cell.rot)) {
+            callback(cell, x, y);
+          }
         }
       }
     }
@@ -188,8 +235,8 @@ class Grid {
         return;
       }
       grid[(x + width) % width][(y + height) % height] = cell;
-      chunks[((x + width) % width) ~/ chunkSize]
-              [((y + height) % height) ~/ chunkSize]
+      chunks[floor(((x + width) % width) / chunkSize)]
+              [floor(((y + height) % height) / chunkSize)]
           .add(cell.id);
       return;
     }
@@ -199,7 +246,7 @@ class Grid {
       return;
     }
     grid[x][y] = cell;
-    chunks[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
+    chunks[floor(x / chunkSize)][floor(y / chunkSize)].add(cell.id);
   }
 
   bool placeable(int x, int y) {
@@ -230,6 +277,10 @@ class Grid {
   }
 
   Set<String> getCells() {
+    if (brokenCells.length > 0) {
+      playSound(destroySound);
+    }
+    brokenCells = [];
     final cells = <String>{};
     forEach(
       (p0, p1, p2) {
@@ -266,24 +317,7 @@ class Grid {
     return empty / count;
   }
 
-  void refreshChunks() {
-    final p = emptyPercantage;
-
-    chunkSize = 25;
-    if (p < 0.2) {
-      chunkSize = 50;
-    } else if (p > 0.6) {
-      chunkSize = 10;
-    }
-
-    reloadChunks();
-
-    forEach(
-      (cell, x, y) {
-        chunks[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
-      },
-    );
-  }
+  void refreshChunks() {}
 
   void update() {
     tickCount++;
@@ -300,7 +334,8 @@ class Grid {
           cells.contains("generator_ccw") ||
           cells.contains("crossgen") ||
           cells.contains("triplegen") ||
-          cells.contains("constructorgen"))
+          cells.contains("constructorgen") ||
+          cells.contains("physical_gen"))
         gens,
       if (cells.contains("replicator")) reps,
       if (cells.contains("tunnel")) tunnels,

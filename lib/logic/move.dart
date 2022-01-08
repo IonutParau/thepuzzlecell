@@ -111,6 +111,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
       movingTo.id != "musical" &&
       movingTo.id != "wormhole") {
     if (movingTo.id == "enemy") {
+      //grid.addBroken(moving, nx, ny);
       playSound(destroySound);
       grid.set(nx, ny, Cell(nx, ny));
       game.add(
@@ -138,7 +139,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
     }
   } else {
     if (movingTo.id == "trash") {
-      playSound(destroySound);
+      grid.addBroken(moving, nx, ny);
     } else if (movingTo.id == "wormhole") {
       if (grid.wrap) {
         final dx = grid.width - nx - 1;
@@ -152,12 +153,13 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
         // If not empty attempt destruction
         if (grid.at(dx, dy).id != "empty") {
           moveCell(dx, dy, dx, dy);
+          grid.addBroken(moving, nx, ny);
         }
         if (grid.at(dx, dy).id == "empty") {
           grid.set(dx, dy, moving);
         }
       } else if (!grid.wrap) {
-        playSound(destroySound);
+        grid.addBroken(moving, nx, ny);
       }
     }
   }
@@ -182,6 +184,30 @@ final withBias = [
   "bird",
   "darty",
 ];
+
+final noForce = [];
+
+int addedForce(Cell cell, int dir, MoveType mt) {
+  final odir = (dir + 2) % 4; // Opposite direction
+  if (withBias.contains(cell.id)) {
+    if (cell.rot == dir) {
+      cell.updated = true;
+      return 1;
+    } else if (cell.rot == odir) {
+      cell.updated = true;
+      return -1;
+    }
+    if (cell.id == "bird") {
+      cell.updated = true;
+    }
+  }
+
+  if (cell.id == "fan" && cell.rot == odir && mt == MoveType.push) {
+    return -1;
+  }
+
+  return 0;
+}
 
 bool push(int x, int y, int dir, int force,
     [MoveType mt = MoveType.push, int depth = 0]) {
@@ -209,18 +235,7 @@ bool push(int x, int y, int dir, int force,
   if (!grid.inside(x, y)) return false;
 
   if (canMove(ox, oy, dir, mt)) {
-    if (withBias.contains(c.id)) {
-      if (c.rot == dir) {
-        c.updated = true;
-        force++;
-      } else if (c.rot == (dir + 2) % 4) {
-        c.updated = true;
-        force--;
-      }
-    }
-    if (c.id == "bird") {
-      c.updated = true;
-    }
+    force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     final mightMove = push(x, y, dir, force, mt, depth + 1);
     if (mightMove) moveCell(ox, oy, x, y, dir);
@@ -297,60 +312,6 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
   return push(ox, oy, dir, oforce + 1, mt);
 }
 
-bool pushOnly(int x, int y, int dir, int force, List<String> filter,
-    [MoveType mt = MoveType.push, bool updateFiltered = false, int depth = 0]) {
-  if ((dir % 2 == 0 && depth > grid.width) ||
-      (dir % 2 == 1 && depth > grid.height)) {
-    return false;
-  }
-  dir %= 4;
-  if (!grid.inside(x, y)) return false;
-  final ox = x;
-  final oy = y;
-
-  if (dir == 0) {
-    x++;
-  } else if (dir == 2) {
-    x--;
-  } else if (dir == 1) {
-    y++;
-  } else if (dir == 3) {
-    y--;
-  }
-
-  final c = grid.at(ox, oy);
-  var isFiltered = filter.contains(c.id);
-  if (depth == 0) isFiltered = true;
-  if (isFiltered) return false;
-  if (updateFiltered) {
-    c.updated = true;
-  }
-  if (moveInsideOf.contains(c.id)) return force > 0;
-  if (!grid.inside(x, y)) return false;
-
-  if (canMove(ox, oy, dir, mt)) {
-    if (withBias.contains(c.id)) {
-      if (c.rot == dir) {
-        c.updated = true;
-        force++;
-      } else if (c.rot == (dir + 2) % 4) {
-        c.updated = true;
-        force--;
-      }
-    }
-    if (c.id == "bird") {
-      c.updated = true;
-    }
-    if (force <= 0) return false;
-    final mightMove =
-        pushOnly(x, y, dir, force, filter, mt, updateFiltered, depth + 1);
-    if (mightMove) moveCell(ox, oy, x, y, dir);
-    return mightMove;
-  } else {
-    return false;
-  }
-}
-
 bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
   if (!grid.inside(x, y)) return false;
 
@@ -378,14 +339,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     if (!grid.inside(cx, cy)) break;
     final c = grid.at(cx, cy);
     if (moveInsideOf.contains(c.id)) break;
-    if (withBias.contains(c.id)) {
-      if (c.rot == dir) {
-        c.updated = true;
-        force++;
-      } else if (c.rot == (dir + 2) % 4) {
-        force--;
-      }
-    }
+    force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     if (!canMove(cx, cy, dir, mt)) {
       break;

@@ -17,7 +17,7 @@ var cellsPerPage = 9;
 num abs(num n) => n < 0 ? -n : n;
 
 bool shouldRenderEmpty(Cell cell, int x, int y) {
-  if (cell.id == "empty") return true;
+  if (cell.id == "empty" || cell.id == "trash" || cell.id == "key") return true;
   if (cell.lastvars.lastPos.dx == x.toDouble() &&
       cell.lastvars.lastPos.dy == y.toDouble() &&
       cell.lastvars.lastRot == cell.rot) return false;
@@ -151,8 +151,13 @@ class _GameUIState extends State<GameUI> {
         child: Center(
           child: Listener(
             onPointerDown: game.onPointerDown,
+            onPointerMove: game.onPointerMove,
+            onPointerUp: game.onPointerUp,
             child: GameWidget(
               game: game,
+              initialActiveOverlays: [
+                "CellBar",
+              ],
               overlayBuilderMap: {
                 'CellBar': (ctx, _) {
                   return LayoutBuilder(
@@ -161,65 +166,69 @@ class _GameUIState extends State<GameUI> {
                         children: [
                           Align(
                             alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: 100.w,
-                              height: 8.w,
-                              color: Colors.grey[900],
-                              child: Scrollbar(
-                                controller: scrollController,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
+                            child: GestureDetector(
+                              onTap: () => game.mouseDown = false,
+                              child: Container(
+                                width: 100.w,
+                                height: 16.h,
+                                color: Colors.grey[900],
+                                child: Scrollbar(
                                   controller: scrollController,
-                                  itemCount: (game.edType == EditorType.making
-                                              ? cellbar
-                                              : game.cellsToPlace)
-                                          .length +
-                                      1,
-                                  itemBuilder: (ctx, i) {
-                                    if (i == 0) {
-                                      return MaterialButton(
-                                        height: 5.w,
-                                        child: Text(
-                                          "Back",
-                                          style: fontSize(
-                                            6.sp,
+                                  child: ListView.builder(
+                                    cacheExtent: 1080,
+                                    scrollDirection: Axis.horizontal,
+                                    controller: scrollController,
+                                    itemCount: (game.edType == EditorType.making
+                                                ? cellbar
+                                                : game.cellsToPlace)
+                                            .length +
+                                        1,
+                                    itemBuilder: (ctx, i) {
+                                      if (i == 0) {
+                                        return MaterialButton(
+                                          height: 5.w,
+                                          child: Text(
+                                            "Back",
+                                            style: fontSize(
+                                              6.sp,
+                                            ),
                                           ),
-                                        ),
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (ctx) {
-                                              return AlertDialog(
-                                                title: Text("Confirm exit?"),
-                                                content: Text(
-                                                    "You have pressed the Back button, which exits the game. Do you confirm exit?"),
-                                                actions: [
-                                                  MaterialButton(
-                                                    child: Text("Yes"),
-                                                    onPressed: () {
-                                                      setDefaultPresence();
-                                                      Navigator.pop(context);
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                  MaterialButton(
-                                                    child: Text("No"),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                      );
-                                    }
-                                    return cellToImage(
-                                        (game.edType == EditorType.making
-                                            ? cellbar
-                                            : game.cellsToPlace)[i - 1]);
-                                  },
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (ctx) {
+                                                return AlertDialog(
+                                                  title: Text("Confirm exit?"),
+                                                  content: Text(
+                                                      "You have pressed the Back button, which exits the game. Do you confirm exit?"),
+                                                  actions: [
+                                                    MaterialButton(
+                                                      child: Text("Yes"),
+                                                      onPressed: () {
+                                                        setDefaultPresence();
+                                                        Navigator.pop(context);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                    MaterialButton(
+                                                      child: Text("No"),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
+                                      return cellToImage(
+                                          (game.edType == EditorType.making
+                                              ? cellbar
+                                              : game.cellsToPlace)[i - 1]);
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
@@ -308,6 +317,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   int currentRotation = 0;
 
+  double mouseX = 0;
+  double mouseY = 0;
+  var mouseButton = -1;
+
   double get offX =>
       (storedOffX - canvasSize.x / 2) * (cellSize / wantedCellSize) +
       canvasSize.x / 2;
@@ -335,11 +348,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late bool realisticRendering;
 
+  bool get validPlacePos => ((mouseY > 2.w) && (mouseY < 84.h));
+
   void properlyChangeZoom(int oldzoom, int newzoom) {
     final scale = newzoom / oldzoom;
 
     storedOffX = (storedOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
     storedOffY = (storedOffY - canvasSize.y / 2) * scale + canvasSize.y / 2;
+  }
+
+  void onPointerMove(PointerMoveEvent event) {
+    mouseX = event.position.dx;
+    mouseY = event.position.dy;
   }
 
   @override
@@ -351,7 +371,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
     await Flame.images.load("enemy_particles.png");
     delay = storage.getDouble("delay") ?? 0.15;
-    realisticRendering = storage.getBool("realistic_render") ?? false;
+    realisticRendering = storage.getBool("realistic_render") ?? true;
 
     return super.onLoad();
   }
@@ -372,12 +392,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     var ex = ceil((canvasSize.x - offX) / cellSize);
     var ey = ceil((canvasSize.y - offY) / cellSize);
 
-    if (!realisticRendering) {
-      sx = max(sx, 0);
-      sy = max(sy, 0);
-      ex = min(ex, grid.width);
-      ey = min(ey, grid.height);
-    }
+    sx = max(sx, 0);
+    sy = max(sy, 0);
+    ex = min(ex, grid.width);
+    ey = min(ey, grid.height);
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
@@ -386,6 +404,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
       }
     }
+
+    if (realisticRendering && running) {
+      for (var b in grid.brokenCells) {
+        b.render(canvas, (itime % delay) / delay);
+      }
+    }
+
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
         if (grid.inside(x, y)) renderCell(grid.at(x, y), x, y);
@@ -414,14 +439,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         canvas.drawRect(
             off.toOffset() & Size(cellSize.toDouble(), cellSize.toDouble()),
             Paint()..color = Colors.black);
-        Sprite(Flame.images.fromCache('empty.png')).render(
-          canvas,
-          position: off,
-          size: Vector2(
-            cellSize.toDouble(),
-            cellSize.toDouble(),
-          ),
-        );
       }
       if (grid.placeable(x, y)) {
         Sprite(Flame.images.fromCache('place.png')).render(
@@ -488,7 +505,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void update(double dt) {
     updates++;
     cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 5);
-    overlays.remove('CellBar');
+    if (overlays.isActive('CellBar')) {
+      overlays.remove('CellBar');
+    }
     if (!overlays.isActive('CellBar')) {
       overlays.add('CellBar');
     }
@@ -517,7 +536,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     bool canMoveCam = true;
     if (running) {
-      canMoveCam = keys[PhysicalKeyboardKey.shiftLeft] == true;
+      canMoveCam = (keys[PhysicalKeyboardKey.shiftLeft] == true) &&
+          (keys[PhysicalKeyboardKey.altLeft] != true);
     }
 
     if ((canMoveCam) && keys[LogicalKeyboardKey.altLeft] != true) {
@@ -536,10 +556,41 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
+    if (!running) {
+      if (mouseDown) {
+        if (validPlacePos) {
+          final cx = (mouseX - offX) ~/ cellSize;
+          final cy = (mouseY - offY) ~/ cellSize;
+          if (grid.inside(cx, cy)) {
+            if (mouseButton == kPrimaryMouseButton) {
+              placeCell(currentSeletion, currentRotation, cx, cy);
+            } else if (mouseButton == kSecondaryMouseButton) {
+              placeCell(0, 0, cx, cy);
+            } else if (mouseButton == kMiddleMouseButton) {
+              final id = grid.at(cx, cy).id;
+
+              if (edType == EditorType.making) {
+                currentSeletion = cells.indexOf(id);
+              } else if (edType == EditorType.loaded) {
+                if (cellsToPlace.contains(id)) {
+                  currentSeletion = cells.indexOf(id);
+                }
+              }
+            }
+          }
+        } else {
+          mouseDown = false;
+        }
+      }
+    }
+
     super.update(dt);
   }
 
   void placeCell(int id, int rot, int cx, int cy) {
+    if (!validPlacePos) {
+      return;
+    }
     if (edType == EditorType.making) {
       grid.set(
         cx,
@@ -574,63 +625,60 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (cellsCount[id] == 0) {
             cellsToPlace.removeAt(id);
             cellsCount.removeAt(id);
+            if (cellsToPlace.length == 1) {
+              mouseDown = false;
+            }
           }
           if (cellsToPlace.isNotEmpty) {
             //currentSeletion -= 1;
-            currentSeletion =
-                (currentSeletion + cellsToPlace.length) % cellsToPlace.length;
+            currentSeletion = min(currentSeletion, cellsToPlace.length - 1);
           }
-          overlays.remove("CellBar");
+          //overlays.remove("CellBar");
         }
       }
     }
   }
 
-  @override
-  void onTapDown(TapDownInfo info) {
-    if (running || puzzleWin) {
-      return super.onTapDown(info);
-    }
-    mouseDown = true;
-
-    final cx = (info.eventPosition.widget.x - offX) ~/ cellSize;
-    final cy = (info.eventPosition.widget.y - offY) ~/ cellSize;
-    placeCell(currentSeletion, currentRotation, cx, cy);
-
-    super.onTapDown(info);
+  Future<void> onPointerUp(PointerUpEvent event) async {
+    mouseDown = false;
   }
 
   Future<void> onPointerDown(PointerDownEvent event) async {
-    if (event.down && event.kind == PointerDeviceKind.mouse) {
-      if (event.buttons == kSecondaryMouseButton) {
-        final cx = (event.position.dx - offX) ~/ cellSize;
-        final cy = (event.position.dy - offY) ~/ cellSize;
-        if (grid.inside(cx, cy)) {
-          placeCell(0, 0, cx, cy);
-        }
-      } else if (event.buttons == kMiddleMouseButton) {
-        final cx = (event.position.dx - offX) ~/ cellSize;
-        final cy = (event.position.dy - offY) ~/ cellSize;
-
-        if (grid.inside(cx, cy)) {
-          final id = grid.at(cx, cy).id;
-
-          if (edType == EditorType.making) {
-            currentSeletion = cells.indexOf(id);
-          } else if (edType == EditorType.loaded) {
-            if (cellsToPlace.contains(id)) {
-              currentSeletion = cells.indexOf(id);
-            }
-          }
-        }
-      }
+    if (running || puzzleWin) {
+      return;
     }
-  }
+    if (event.down && event.kind == PointerDeviceKind.mouse) {
+      mouseX = event.position.dx;
+      mouseY = event.position.dy;
+      if (validPlacePos) {
+        mouseButton = event.buttons;
+        mouseDown = true;
+      } else {
+        mouseDown = false;
+      }
+      // if (event.buttons == kSecondaryMouseButton) {
+      //   final cx = (event.position.dx - offX) ~/ cellSize;
+      //   final cy = (event.position.dy - offY) ~/ cellSize;
+      //   if (grid.inside(cx, cy)) {
+      //     placeCell(0, 0, cx, cy);
+      //   }
+      // } else if (event.buttons == kMiddleMouseButton) {
+      //   final cx = (event.position.dx - offX) ~/ cellSize;
+      //   final cy = (event.position.dy - offY) ~/ cellSize;
 
-  @override
-  void onTapUp(TapUpInfo info) {
-    mouseDown = false;
-    super.onTapUp(info);
+      //   if (grid.inside(cx, cy)) {
+      //     final id = grid.at(cx, cy).id;
+
+      //     if (edType == EditorType.making) {
+      //       currentSeletion = cells.indexOf(id);
+      //     } else if (edType == EditorType.loaded) {
+      //       if (cellsToPlace.contains(id)) {
+      //         currentSeletion = cells.indexOf(id);
+      //       }
+      //     }
+      //   }
+      // }
+    }
   }
 
   @override
@@ -645,6 +693,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       storedOffX *= sX;
       storedOffY *= sY;
+      wantedCellSize = (wantedCellSize * sX) ~/ 1;
+      cellSize *= sX;
     }
   }
 

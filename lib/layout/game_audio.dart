@@ -47,6 +47,8 @@ void initSound() {
 // }
 
 void playSound(Player sound) {
-  sound.seek(Duration.zero);
+  if (sound.playback.isSeekable) {
+    sound.seek(Duration.zero);
+  }
   sound.play();
 }

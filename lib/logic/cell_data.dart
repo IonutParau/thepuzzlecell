@@ -20,6 +20,7 @@ final cells = [
   "generator",
   "generator_cw",
   "generator_ccw",
+  "physical_gen",
   "triplegen",
   "constructorgen",
   "crossgen",
@@ -200,5 +201,9 @@ final cellInfo = <String, CellProfile>{
   "tunnel": CellProfile(
     "Tunnel",
     "Moves the cell from the back to the front instantly",
+  ),
+  "physical_gen": CellProfile(
+    "Physical Generator",
+    "Like a generator except, if it cant move whats in front of it, it tries to move backwards to generate the cell",
   ),
 };

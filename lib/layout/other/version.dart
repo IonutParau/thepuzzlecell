@@ -15,6 +15,7 @@ List<String> changes = [
   "Fixed issues with the key system",
   "Added a Quit button",
   "Added Discord Rich Presence text",
+  "Added a new settings, Realistic Rendering, which improves rendering with special interpolation effects at the cost of FPS",
 ];
 
 String getTrailing(String change) {

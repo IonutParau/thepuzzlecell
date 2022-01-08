@@ -104,7 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                       Checkbox(
-                        value: storage.getBool("realistic_render") ?? false,
+                        value: storage.getBool("realistic_render") ?? true,
                         onChanged: (newValue) {
                           storage
                               .setBool(

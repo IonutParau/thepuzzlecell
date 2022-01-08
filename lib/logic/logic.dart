@@ -1,5 +1,7 @@
 library logic;
 
+import 'dart:math';
+
 import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';

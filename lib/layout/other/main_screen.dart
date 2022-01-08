@@ -36,11 +36,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final buttonPadding = EdgeInsets.all(1.2.w);
-
-    final buttonStyle = fontSize(15.sp);
     return ScaleAssist(
       builder: (context, orientation) {
+        final buttonPadding = EdgeInsets.all(1.2.w);
+
+        final buttonStyle = fontSize(15.sp);
+
         return Scaffold(
           appBar: AppBar(
             title: Text('The Puzzle Cell', style: fontSize(10.sp)),

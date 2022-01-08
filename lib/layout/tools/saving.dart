@@ -197,14 +197,21 @@ class P1 {
     }
 
     var i = 0;
+
+    grid.chunkSize = 25;
+
+    grid.reloadChunks();
+
     grid.forEach(
       (cell, x, y) {
-        final cell = Cell(x, y);
-        cell.id = cellList[i].id;
-        cell.rot = cellList[i].rot;
-        cell.lastvars.lastRot = cell.rot;
-        grid.set(x, y, cell);
-        grid.place[x][y] = cellPlace[i];
+        if (i < cellList.length) {
+          final cell = Cell(x, y);
+          cell.id = cellList[i].id;
+          cell.rot = cellList[i].rot;
+          cell.lastvars.lastRot = cell.rot;
+          grid.set(x, y, cell);
+          grid.place[x][y] = cellPlace[i];
+        }
         i++;
       },
     );
