@@ -19,8 +19,6 @@ List<String> changes = [
   "Added Physical Generator",
   "Added ActionBar",
   "Removed many keybinds",
-  "Added Pulser, mover but moves twice as fast every 2 ticks",
-  "Ur mom fat",
 ];
 
 String getTrailing(String change) {
