@@ -658,7 +658,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
-        if (grid.inside(x, y)) renderCell(grid.at(x, y), x, y);
+        if (grid.inside(x, y)) {
+          final cell = grid.at(x, y);
+          renderCell(cell, x, y);
+        }
       }
     }
     //grid.forEach(renderCell);

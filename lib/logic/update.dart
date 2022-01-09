@@ -2,7 +2,7 @@ part of logic;
 
 int floor(num n) => n.toInt();
 
-final rotOrder = [0, 3, 2, 1];
+final rotOrder = [0, 2, 3, 1];
 
 var playerKeys = 0;
 var puzzleWin = false;
@@ -361,13 +361,19 @@ void doMirror(int x, int y, int dir) {
 }
 
 void mirrors() {
-  grid.forEach(
-    (cell, x, y) {
-      doMirror(x, y, cell.rot % 2);
-    },
-    null,
-    "mirror",
-  );
+  for (var i in [0, 1]) {
+    grid.forEach(
+      (cell, x, y) {
+        if ((cell.rot % 2) == i) {
+          doMirror(x, y, i);
+        } else if (i == 0) {
+          cell.updated = false;
+        }
+      },
+      null,
+      "mirror",
+    );
+  }
 }
 
 void doBird(int x, int y, int dir) {
