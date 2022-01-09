@@ -176,6 +176,13 @@ class _GameUIState extends State<GameUI> {
                               children: [
                                 Tooltip(
                                   message: 'Save grid to clipboard',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
                                   child: MaterialButton(
                                     child: Image.asset(
                                       'assets/interface/save.png',
@@ -190,6 +197,13 @@ class _GameUIState extends State<GameUI> {
                                 ),
                                 Tooltip(
                                   message: 'Load grid from clipboard',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
                                   child: MaterialButton(
                                     child: Image.asset(
                                       'assets/interface/load.png',
@@ -231,13 +245,19 @@ class _GameUIState extends State<GameUI> {
                                             },
                                           );
                                         } catch (e) {}
-                                        ;
                                       }
                                     },
                                   ),
                                 ),
                                 Tooltip(
                                   message: 'Zoom in',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
                                   child: MaterialButton(
                                     child: Image.asset(
                                       'assets/interface/zoomin.png',
@@ -250,6 +270,13 @@ class _GameUIState extends State<GameUI> {
                                 ),
                                 Tooltip(
                                   message: 'Zoom out',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
                                   child: MaterialButton(
                                     child: Image.asset(
                                       'assets/interface/zoomout.png',
@@ -263,6 +290,13 @@ class _GameUIState extends State<GameUI> {
                                 Tooltip(
                                   message:
                                       'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
                                   child: MaterialButton(
                                     child: Image.asset(
                                       'assets/interface/wrap.png',
@@ -274,6 +308,82 @@ class _GameUIState extends State<GameUI> {
                                       if (!game.running) {
                                         grid.wrap = !grid.wrap;
                                         game.overlays.remove('Info');
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Tooltip(
+                                  message: 'Play / Retry the game',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: RotatedBox(
+                                      quarterTurns: game.running ? 1 : 0,
+                                      child: Image.asset(
+                                        game.running
+                                            ? 'assets/images/slide.png'
+                                            : 'assets/images/mover.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                    onPressed: game.playPause,
+                                  ),
+                                ),
+                                Tooltip(
+                                  message:
+                                      'Rotate CellBar 90 degrees clockwise',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/images/rotator_cw.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () {
+                                      if (!game.running) {
+                                        game.currentRotation++;
+                                        game.currentRotation %= 4;
+                                        game.overlays.remove('CellBar');
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Tooltip(
+                                  message:
+                                      'Rotate CellBar 90 degrees counter-clockwise',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/images/rotator_ccw.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () {
+                                      if (!game.running) {
+                                        game.currentRotation += 3;
+                                        game.currentRotation %= 4;
+                                        game.overlays.remove('CellBar');
                                       }
                                     },
                                   ),
@@ -526,10 +636,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (realisticRendering) {
       final extra = 5;
-      sx -= extra;
-      sy -= extra;
-      ex += extra;
-      ey += extra;
+      sx = max(sx - extra, 0);
+      sy = max(sy - extra, 0);
+      ex = min(ex + extra, grid.width);
+      ey = min(ey + extra, grid.height);
     }
 
     for (var x = sx; x < ex; x++) {
@@ -639,7 +749,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   void update(double dt) {
     updates++;
-    cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 5);
+    if (realisticRendering) {
+      cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 5);
+    } else {
+      cellSize = wantedCellSize.toDouble();
+    }
     if (overlays.isActive('CellBar')) {
       overlays.remove('CellBar');
     }
@@ -693,7 +807,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (!running) {
       if (mouseDown) {
-        if (validPlacePos) {
+        final cell = (edType == EditorType.making
+            ? cells
+            : cellsToPlace)[currentSeletion];
+        if (validPlacePos && cell != "place") {
           final cx = (mouseX - offX) ~/ cellSize;
           final cy = (mouseY - offY) ~/ cellSize;
           if (grid.inside(cx, cy)) {
@@ -774,6 +891,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void onTapDown(TapDownInfo info) {
+    final cx = (info.eventPosition.global.x - offX) ~/ cellSize;
+    final cy = (info.eventPosition.global.y - offY) ~/ cellSize;
+    final cell =
+        (edType == EditorType.making ? cells : cellsToPlace)[currentSeletion];
+
+    if (grid.inside(cx, cy) && cell == "place") {
+      placeCell(currentSeletion, 0, cx, cy);
+    }
+  }
+
   Future<void> onPointerUp(PointerUpEvent event) async {
     mouseDown = false;
   }
@@ -849,15 +977,32 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void playPause() {
+    running = !running;
+    if (running) {
+      initial = grid.copy;
+      playerKeys = 0;
+      overlays.remove('Info');
+      overlays.remove('ActionBar');
+      overlays.add('ActionBar');
+    } else {
+      grid = initial;
+      overlays.remove('Info');
+      overlays.remove('ActionBar');
+      overlays.add('ActionBar');
+      if (overlays.isActive("Win")) {
+        overlays.remove("Win");
+        puzzleWin = false;
+      }
+    }
+  }
+
   @override
   KeyEventResult onKeyEvent(
       RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is RawKeyDownEvent) {
       if (keysPressed.contains(LogicalKeyboardKey.altLeft)) {
-        if (keysPressed.contains(LogicalKeyboardKey.keyW) &&
-            edType == EditorType.making) {
-          grid.wrap = !grid.wrap;
-        }
+        // Alternative stuffz
       } else {
         if (keysPressed.contains(LogicalKeyboardKey.keyQ)) {
           currentRotation--;
@@ -868,20 +1013,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           currentRotation %= 4;
           overlays.remove('CellBar');
         } else if (keysPressed.contains(LogicalKeyboardKey.space) &&
-            !(keys[LogicalKeyboardKey.space] == true)) {
-          running = !running;
-          if (running) {
-            initial = grid.copy;
-            playerKeys = 0;
-            overlays.remove('Info');
-          } else {
-            grid = initial;
-            overlays.remove('Info');
-            if (overlays.isActive("Win")) {
-              overlays.remove("Win");
-              puzzleWin = false;
-            }
-          }
+            !(keys[PhysicalKeyboardKey.space] == true)) {
+          playPause();
         } else if (keysPressed.contains(LogicalKeyboardKey.arrowLeft) &&
             keys[LogicalKeyboardKey.arrowLeft] != true) {
           currentSeletion = (currentSeletion -

@@ -18,6 +18,9 @@ List<String> changes = [
   "Added a new settings, Realistic Rendering, which improves rendering with special interpolation effects at the cost of FPS",
   "Added Physical Generator",
   "Added ActionBar",
+  "Removed many keybinds",
+  "Added Pulser, mover but moves twice as fast every 2 ticks",
+  "Ur mom fat",
 ];
 
 String getTrailing(String change) {

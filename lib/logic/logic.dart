@@ -10,7 +10,6 @@ import 'package:flame/particles.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:the_puzzle_cell/layout/tools/tools.dart';
 
 part 'grid.dart';
 part 'update.dart';

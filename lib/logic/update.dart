@@ -322,10 +322,7 @@ void gears(cells) {
   if (cells.contains("gear_ccw")) {
     grid.forEach(
       (cell, x, y) {
-        if (!cell.updated && cell.id == "gear_ccw") {
-          cell.updated = true;
-          doGear(x, y, RotationalType.counter_clockwise);
-        }
+        doGear(x, y, RotationalType.counter_clockwise);
       },
       null,
       "gear_ccw",
@@ -337,8 +334,8 @@ void doMirror(int x, int y, int dir) {
   if (dir == 0) {
     if (canMove(x + 1, y, 2, MoveType.mirror) &&
         canMove(x - 1, y, 0, MoveType.mirror)) {
-      if (grid.at(x + 1, y).tags.contains("mirrored")) return;
-      if (grid.at(x - 1, y).tags.contains("mirrored")) return;
+      // if (grid.at(x + 1, y).tags.contains("mirrored")) return;
+      // if (grid.at(x - 1, y).tags.contains("mirrored")) return;
       if ((grid.at(x + 1, y).id == "mirror" &&
               grid.at(x + 1, y).rot % 2 == 0) ||
           (grid.at(x - 1, y).id == "mirror" &&
@@ -350,8 +347,8 @@ void doMirror(int x, int y, int dir) {
   } else {
     if (canMove(x, y + 1, 3, MoveType.mirror) &&
         canMove(x, y - 1, 1, MoveType.mirror)) {
-      if (grid.at(x, y + 1).tags.contains("mirrored")) return;
-      if (grid.at(x, y - 1).tags.contains("mirrored")) return;
+      // if (grid.at(x, y + 1).tags.contains("mirrored")) return;
+      // if (grid.at(x, y - 1).tags.contains("mirrored")) return;
       if ((grid.at(x, y + 1).id == "mirror" &&
               grid.at(x, y + 1).rot % 2 == 1) ||
           (grid.at(x, y - 1).id == "mirror" &&

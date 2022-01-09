@@ -25,6 +25,13 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: ScaleAssist(
         builder: (context, constraints) {
+          final tooltipBox = BoxDecoration(
+            color: Colors.grey[900],
+          );
+          final tooltipText = TextStyle(
+            color: Colors.white,
+            fontSize: 3.sp,
+          );
           return Center(
             child: Container(
               width: 60.w,
@@ -37,6 +44,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       Tooltip(
                         message: "The time in seconds inbetween grid updates",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
                         child: Text(
                           "Update Delay: ",
                           style: fontSize(
@@ -71,6 +80,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       Tooltip(
                         message:
                             "Toggling it will make only the cells visible on screen to update",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
                         child: Text(
                           "Only update visible: ",
                           style: fontSize(
@@ -96,6 +107,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       Tooltip(
                         message:
                             "Toggling it will make the game apply special effects to make the lighting seem more realistic, at the cost of FPS",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
                         child: Text(
                           "Realistic Rendering: ",
                           style: fontSize(
@@ -121,6 +134,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       Tooltip(
                         message:
                             "Toggling it will make cells update on their own ticks, which can improve performance and battery life",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
                         child: Text(
                           "Subticking: ",
                           style: fontSize(
