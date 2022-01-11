@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       builder: (context, orientation) {
         final buttonPadding = EdgeInsets.all(1.2.w);
 
-        final buttonStyle = fontSize(15.sp);
+        final buttonStyle = fontSize(12.sp);
 
         return Scaffold(
           appBar: AppBar(

@@ -86,6 +86,9 @@ void doGen(int x, int y, int dir, int gendir,
     if (remaining.id == "empty") {
       final toGenLastrot = toGenerate.lastvars.lastRot;
       toGenerate.lastvars = grid.at(x, y).lastvars.copy;
+      if (physical) {
+        toGenerate.lastvars.lastPos -= fromDir(dir);
+      }
       toGenerate.lastvars.lastRot = toGenLastrot;
       if (physical) {
         toGenerate.lastvars.lastPos += fromDir(gendir);
@@ -452,7 +455,8 @@ void pullers() {
   }
 }
 
-void doPuzzleSide(int x, int y, int dir, Set<String> cells) {
+void doPuzzleSide(int x, int y, int dir, Set<String> cells,
+    [String type = "normal"]) {
   dir %= 4;
   var ox = x;
   var oy = y;
@@ -477,7 +481,14 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells) {
       puzzleWin = true;
     }
   }
-  push(x, y, dir, 1, MoveType.puzzle);
+
+  if (push(x, y, dir, 1, MoveType.puzzle)) {
+    // DO stuff
+  } else {
+    if (type == "trash") {
+      moveCell(x, y, ox, oy);
+    }
+  }
 }
 
 void puzzles(Set<String> cells) {
@@ -497,6 +508,22 @@ void puzzles(Set<String> cells) {
       },
       rot,
       "puzzle",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        if (keys[PhysicalKeyboardKey.shiftLeft] == true) return;
+        if (keys[PhysicalKeyboardKey.keyW] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells, "trash");
+        } else if (keys[PhysicalKeyboardKey.keyS] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells, "trash");
+        } else if (keys[PhysicalKeyboardKey.keyA] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells, "trash");
+        } else if (keys[PhysicalKeyboardKey.keyD] == true) {
+          doPuzzleSide(x, y, cell.rot, cells, "trash");
+        }
+      },
+      rot,
+      "trash_puzzle",
     );
   }
 }
@@ -839,7 +866,7 @@ void fans() {
   }
 }
 
-void DoTunnel(int x, int y, int dir) {
+void doTunnel(int x, int y, int dir) {
   final fx = frontX(x, dir);
   final fy = frontY(y, dir);
 
@@ -870,10 +897,43 @@ void tunnels() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        DoTunnel(x, y, cell.rot);
+        doTunnel(x, y, cell.rot);
       },
       rot,
       "tunnel",
+    );
+  }
+}
+
+void mergePuzzle(int x, int y, int dir) {
+  final fx = frontX(x, dir);
+  final fy = frontY(y, dir);
+  final bx = x - frontX(0, dir);
+  final by = y - frontY(0, dir);
+
+  if (!grid.inside(fx, fy)) return;
+  if (!grid.inside(bx, by)) return;
+
+  final o = grid.at(bx, by);
+  final f = grid.at(fx, fy);
+
+  if (f.id == "puzzle") {
+    if (o.id == "trash") {
+      f.id = "trash_puzzle";
+      grid.setChunk(x, y, "trash_puzzle");
+      o.id = "empty";
+    }
+  }
+}
+
+void pmerges() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        mergePuzzle(x, y, cell.rot);
+      },
+      rot,
+      "pmerge",
     );
   }
 }

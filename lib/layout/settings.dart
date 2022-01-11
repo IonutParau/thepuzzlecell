@@ -106,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       Tooltip(
                         message:
-                            "Toggling it will make the game apply special effects to make the lighting seem more realistic, at the cost of FPS",
+                            "Toggling it will make the game apply special effects to make the rendering seem more realistic, at the cost of FPS",
                         decoration: tooltipBox,
                         textStyle: tooltipText,
                         child: Text(

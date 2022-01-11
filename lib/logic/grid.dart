@@ -148,6 +148,16 @@ class Grid {
     updateConstraints = GridUpdateConstraints(sx, sy, ex, ey);
   }
 
+  // Only call this for manually changing id, grid.set() already does it for you
+  void setChunk(int x, int y, String id) {
+    if (wrap) {
+      chunks[floor(((x + width) % width) / chunkSize)]
+              [floor(((y + height) % height) / chunkSize)]
+          .add(id);
+    }
+    chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
+  }
+
   void forEach(void Function(Cell cell, int x, int y) callback,
       [int? wantedDirection, String? id]) {
     if (id != null) {
@@ -353,7 +363,8 @@ class Grid {
       //if (cells.contains("digger")) diggers,
       if (cells.contains("karl")) karls,
       if (cells.contains("darty")) dartys,
-      if (cells.contains("puzzle")) puzzles,
+      if (cells.contains("puzzle") || cells.contains("trash_puzzle")) puzzles,
+      if (cells.contains("pmerge")) pmerges,
     ];
 
     final subticking = storage.getBool('subtick') ?? false;

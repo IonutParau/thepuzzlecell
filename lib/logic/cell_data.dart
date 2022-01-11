@@ -20,10 +20,10 @@ final cells = [
   "generator",
   "generator_cw",
   "generator_ccw",
-  "physical_gen",
   "triplegen",
   "constructorgen",
   "crossgen",
+  "physical_gen",
   "replicator",
   "tunnel",
   "karl",
@@ -43,10 +43,13 @@ final cells = [
   "key",
   "flag",
   "antipuzzle",
+  "pmerge",
+  "trash_puzzle",
 ];
 
 final hiddenCells = [
   "unlock",
+  "trash_puzzle",
 ];
 
 final cellbar = cells
@@ -69,7 +72,10 @@ String profileToMessage(CellProfile profile) {
 }
 
 final cellInfo = <String, CellProfile>{
-  "empty": CellProfile("Empty", "Placing it will erase what was before it"),
+  "empty": CellProfile(
+    "Empty",
+    "Placing it will erase what was before it. You can also right click to achieve the same effect",
+  ),
   "wall": CellProfile("Wall", "Can't be moved"),
   "ghost": CellProfile("Ghost Wall", "Can't be moved or generated"),
   "place": CellProfile(
@@ -192,7 +198,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "flag": CellProfile(
     "Flag",
-    "When a puzzle cell interacts with it, if there are no enemy cells o nthe grid, triggers a win",
+    "When a puzzle cell interacts with it, if there are no enemy cells on the grid, triggers a win",
   ),
   "antipuzzle": CellProfile(
     "Anti-Puzzle",
@@ -205,5 +211,9 @@ final cellInfo = <String, CellProfile>{
   "physical_gen": CellProfile(
     "Physical Generator",
     "Like a generator except, if it cant move whats in front of it, it tries to move backwards to generate the cell",
+  ),
+  "pmerge": CellProfile(
+    "PuzzleMerge™",
+    "Using the latest quantum Sci-Fi stuff, we can combine specific cells with your puzzle cell to give it special stuff",
   ),
 };
