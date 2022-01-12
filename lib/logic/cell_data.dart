@@ -16,6 +16,7 @@ final cells = [
   "bird",
   "releaser",
   "fan",
+  "sync",
   "wormhole",
   "generator",
   "generator_cw",
@@ -32,6 +33,7 @@ final cells = [
   "slide",
   "rotator_cw",
   "rotator_ccw",
+  "opposite_rotator",
   "gear_cw",
   "gear_ccw",
   "mirror",
@@ -215,5 +217,13 @@ final cellInfo = <String, CellProfile>{
   "pmerge": CellProfile(
     "PuzzleMerge™",
     "Using the latest quantum Sci-Fi stuff, we can combine specific cells with your puzzle cell to give it special stuff",
+  ),
+  "sync": CellProfile(
+    "Sync Cell",
+    "If you move or rotate it, it also moves or rotates all the other sync cells",
+  ),
+  "opposite_rotator": CellProfile(
+    "Opposite Rotator",
+    "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and inbetween, nothing",
   ),
 };

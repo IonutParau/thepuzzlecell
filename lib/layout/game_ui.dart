@@ -195,60 +195,63 @@ class _GameUIState extends State<GameUI> {
                                     ),
                                   ),
                                 ),
-                                Tooltip(
-                                  message: 'Load grid from clipboard',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/load.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+                                if (game.edType == EditorType.making)
+                                  Tooltip(
+                                    message: 'Load grid from clipboard',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
                                     ),
-                                    onPressed: () {
-                                      if (!game.running) {
-                                        try {
-                                          FlutterClipboard.paste().then(
-                                            (val) {
-                                              try {
-                                                grid =
-                                                    loadGrid(jsonDecode(val));
-                                                game.cellsToPlace = ["empty"];
-                                                game.cellsCount = [1];
-                                              } catch (e) {
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/interface/load.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
+                                      ),
+                                      onPressed: () {
+                                        if (!game.running) {
+                                          try {
+                                            FlutterClipboard.paste().then(
+                                              (val) {
                                                 try {
-                                                  grid = P1.decode(val);
+                                                  grid =
+                                                      loadGrid(jsonDecode(val));
                                                   game.cellsToPlace = ["empty"];
                                                   game.cellsCount = [1];
                                                 } catch (e) {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (ctx) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                          'Invalid save code',
-                                                        ),
-                                                        content: Text(
-                                                          'You are trying to load a corrupted, invalid or unsupported level code.',
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
+                                                  try {
+                                                    grid = P1.decode(val);
+                                                    game.cellsToPlace = [
+                                                      "empty"
+                                                    ];
+                                                    game.cellsCount = [1];
+                                                  } catch (e) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (ctx) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                            'Invalid save code',
+                                                          ),
+                                                          content: Text(
+                                                            'You are trying to load a corrupted, invalid or unsupported level code.',
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  }
                                                 }
-                                              }
-                                            },
-                                          );
-                                        } catch (e) {}
-                                      }
-                                    },
+                                              },
+                                            );
+                                          } catch (e) {}
+                                        }
+                                      },
+                                    ),
                                   ),
-                                ),
                                 Tooltip(
                                   message: 'Zoom in',
                                   decoration: BoxDecoration(
@@ -287,31 +290,32 @@ class _GameUIState extends State<GameUI> {
                                     onPressed: game.zoomout,
                                   ),
                                 ),
-                                Tooltip(
-                                  message:
-                                      'Toggle WRAP mode, if enabled makes cells wrap around the grid',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/wrap.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+                                if (game.edType == EditorType.making)
+                                  Tooltip(
+                                    message:
+                                        'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
                                     ),
-                                    onPressed: () {
-                                      if (!game.running) {
-                                        grid.wrap = !grid.wrap;
-                                        game.overlays.remove('Info');
-                                      }
-                                    },
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/interface/wrap.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
+                                      ),
+                                      onPressed: () {
+                                        if (!game.running) {
+                                          grid.wrap = !grid.wrap;
+                                          game.overlays.remove('Info');
+                                        }
+                                      },
+                                    ),
                                   ),
-                                ),
                                 Tooltip(
                                   message: 'Play / Retry the game',
                                   decoration: BoxDecoration(
