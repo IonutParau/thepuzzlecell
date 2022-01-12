@@ -47,11 +47,13 @@ final cells = [
   "antipuzzle",
   "pmerge",
   "trash_puzzle",
+  "mover_puzzle",
 ];
 
 final hiddenCells = [
   "unlock",
   "trash_puzzle",
+  "mover_puzzle",
 ];
 
 final cellbar = cells

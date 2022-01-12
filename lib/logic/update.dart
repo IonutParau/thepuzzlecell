@@ -456,7 +456,7 @@ void pullers() {
 }
 
 void doPuzzleSide(int x, int y, int dir, Set<String> cells,
-    [String type = "normal"]) {
+    [String type = "normal", int force = 1]) {
   dir %= 4;
   var ox = x;
   var oy = y;
@@ -468,6 +468,20 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
+  if (o.id.endsWith("puzzle")) {
+    if (o.rot == dir) {
+      if (o.id == "trash_puzzle") type = "trash";
+      force++;
+      o.updated = true;
+    } else if (o.rot == (dir + 2) % 4) {
+      force--;
+      o.updated = true;
+    }
+    if (force == 0) return;
+    if (o.rot == dir || o.rot == (dir + 2) % 4) {
+      doPuzzleSide(ox, oy, dir, cells, type, force);
+    }
+  }
   if (o.id == "key") {
     playerKeys++;
     grid.set(ox, oy, Cell(ox, oy));
@@ -524,6 +538,24 @@ void puzzles(Set<String> cells) {
       },
       rot,
       "trash_puzzle",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        if (keys[PhysicalKeyboardKey.shiftLeft] != true) {
+          if (keys[PhysicalKeyboardKey.keyW] == true) {
+            cell.rot = 3;
+          } else if (keys[PhysicalKeyboardKey.keyS] == true) {
+            cell.rot = 1;
+          } else if (keys[PhysicalKeyboardKey.keyA] == true) {
+            cell.rot = 2;
+          } else if (keys[PhysicalKeyboardKey.keyD] == true) {
+            cell.rot = 0;
+          }
+        }
+        doPuzzleSide(x, y, cell.rot, cells);
+      },
+      rot,
+      "mover_puzzle",
     );
   }
 }
@@ -921,6 +953,10 @@ void mergePuzzle(int x, int y, int dir) {
     if (o.id == "trash") {
       f.id = "trash_puzzle";
       grid.setChunk(x, y, "trash_puzzle");
+      o.id = "empty";
+    } else if (o.id == "mover") {
+      f.id = "mover_puzzle";
+      grid.setChunk(x, y, "mover_puzzle");
       o.id = "empty";
     }
   }

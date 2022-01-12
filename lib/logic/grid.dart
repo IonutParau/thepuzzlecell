@@ -365,7 +365,10 @@ class Grid {
       //if (cells.contains("digger")) diggers,
       if (cells.contains("karl")) karls,
       if (cells.contains("darty")) dartys,
-      if (cells.contains("puzzle") || cells.contains("trash_puzzle")) puzzles,
+      if (cells.contains("puzzle") ||
+          cells.contains("trash_puzzle") ||
+          cells.contains("mover_puzzle"))
+        puzzles,
       if (cells.contains("pmerge")) pmerges,
     ];
 
