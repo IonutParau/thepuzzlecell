@@ -49,6 +49,7 @@ final moveInsideOf = [
   "enemy",
   "musical",
   "wormhole",
+  "wall_puzzle",
 ];
 
 bool canMoveAll(int x, int y, int dir, MoveType mt) {

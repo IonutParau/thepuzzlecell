@@ -308,7 +308,9 @@ class Grid {
 
   void rotate(int x, int y, int rot) {
     if (!inside(x, y)) return;
-    if (at(x, y).id == "empty") return;
+    final id = at(x, y).id;
+    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
+      return;
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
   }
