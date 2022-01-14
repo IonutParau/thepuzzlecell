@@ -27,8 +27,7 @@ final cells = [
   "physical_gen",
   "replicator",
   "tunnel",
-  "karl",
-  "darty",
+  "stopper",
   "push",
   "slide",
   "rotator_cw",
@@ -36,6 +35,8 @@ final cells = [
   "opposite_rotator",
   "gear_cw",
   "gear_ccw",
+  "karl",
+  "darty",
   "mirror",
   "enemy",
   "trash",
@@ -46,21 +47,12 @@ final cells = [
   "flag",
   "antipuzzle",
   "pmerge",
+  "mech_gear",
+  "mech_gen",
   "trash_puzzle",
   "mover_puzzle",
+  "mech_mover",
 ];
-
-final hiddenCells = [
-  "unlock",
-  "trash_puzzle",
-  "mover_puzzle",
-];
-
-final cellbar = cells
-    .where(
-      (element) => !hiddenCells.contains(element),
-    )
-    .toList();
 
 class CellProfile {
   String title;
@@ -68,6 +60,119 @@ class CellProfile {
 
   CellProfile(this.title, this.description);
 }
+
+class CellCategory {
+  String title;
+  String description;
+  String look;
+  List<String> items;
+  bool opened = false;
+
+  CellCategory(this.title, this.description, this.items, this.look);
+}
+
+final categories = [
+  CellCategory(
+    "Base",
+    "Base cells",
+    [
+      "empty",
+      "wall",
+      "ghost",
+      "place",
+    ],
+    "wall",
+  ),
+  CellCategory(
+    "Movers",
+    "Cells that move themselves or other cells",
+    [
+      "mover",
+      "puller",
+      "liner",
+      "grabber",
+      "bird",
+      "releaser",
+      "fan",
+      "mirror",
+      "gear_cw",
+      "gear_ccw",
+      "tunnel",
+    ],
+    "mover",
+  ),
+  CellCategory(
+    "Generators",
+    "Copy cells from one place to another",
+    [
+      "generator",
+      "generator_cw",
+      "generator_ccw",
+      "triplegen",
+      "constructorgen",
+      "crossgen",
+      "physical_gen",
+      "replicator",
+    ],
+    "generator",
+  ),
+  CellCategory(
+    "Push Cells",
+    "Cells that are only special in how they get pushed",
+    [
+      "push",
+      "slide",
+    ],
+    "push",
+  ),
+  CellCategory(
+    "Rotators",
+    "Cells that rotate other cells",
+    [
+      "rotator_cw",
+      "rotator_ccw",
+      "opposite_rotator",
+    ],
+    "rotator_cw",
+  ),
+  CellCategory(
+    "Unique Cells",
+    "Special cells",
+    [
+      "stopper",
+      "enemy",
+      "trash",
+      "wormhole",
+      "karl",
+      "darty",
+      "sync",
+    ],
+    "trash",
+  ),
+  CellCategory(
+    "Mechanical Cells",
+    "Cells that use mechanical gears and interactions to process data",
+    [
+      "mech_gear",
+      "mech_gen",
+      "mech_mover",
+    ],
+    "mech_gear",
+  ),
+  CellCategory(
+    "Puzzle Cells",
+    "Cells made to be used when making puzzles",
+    [
+      "puzzle",
+      "antipuzzle",
+      "pmerge",
+      "lock",
+      "key",
+      "flag",
+    ],
+    "puzzle",
+  ),
+];
 
 final defaultProfile = CellProfile("Unnamed", "No description available");
 
@@ -227,5 +332,13 @@ final cellInfo = <String, CellProfile>{
   "opposite_rotator": CellProfile(
     "Opposite Rotator",
     "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and inbetween, nothing",
+  ),
+  "stopper": CellProfile(
+    "Stopper",
+    "Stops the cell in front of it from updating",
+  ),
+  "mech_mover": CellProfile(
+    "Mechanically Powered Mover",
+    "Only moves if it has been powered mechanically",
   ),
 };

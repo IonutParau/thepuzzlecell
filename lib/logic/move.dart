@@ -190,6 +190,18 @@ final noForce = [];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
   final odir = (dir + 2) % 4; // Opposite direction
+  if (cell.id == "mech_mover") {
+    if (MechanicalManager.on(cell, true)) {
+      if (cell.rot == dir) {
+        return 1;
+      } else if (cell.rot == odir) {
+        return -1;
+      }
+
+      return 0;
+    } else
+      return 0;
+  }
   if (withBias.contains(cell.id)) {
     if (cell.rot == dir) {
       cell.updated = true;

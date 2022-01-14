@@ -299,6 +299,14 @@ class Grid {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
         p0.tags = [];
+        if (p0.data['power'] is int) {
+          if (p0.data['power'] > 0) {
+            p0.data['power']--;
+            if (p0.data['power'] == 0) {
+              p0.data.remove('power');
+            }
+          }
+        }
         cells.add(p0.id);
       },
     );
@@ -341,20 +349,15 @@ class Grid {
     }
 
     final subticks = [
+      if (cells.contains("stopper")) stoppers,
+      if (cells.containsAny(CellTypeManager.mechanical)) mechs,
       if (cells.contains("releaser")) releasers,
       if (cells.contains("mirror")) mirrors,
-      if (cells.contains("generator") ||
-          cells.contains("generator_cw") ||
-          cells.contains("generator_ccw") ||
-          cells.contains("crossgen") ||
-          cells.contains("triplegen") ||
-          cells.contains("constructorgen") ||
-          cells.contains("physical_gen"))
-        gens,
+      if (cells.containsAny(CellTypeManager.generators)) gens,
       if (cells.contains("replicator")) reps,
       if (cells.contains("tunnel")) tunnels,
-      if (cells.contains("rotator_cw") || cells.contains("rotator_ccw")) rots,
-      if (cells.contains("gear_cw") || cells.contains("gear_ccw")) gears,
+      if (cells.containsAny(CellTypeManager.rotators)) rots,
+      if (cells.containsAny(CellTypeManager.gears)) gears,
       if (cells.contains("grabber")) grabbers,
       if (cells.contains("mover")) movers,
       if (cells.contains("puller")) pullers,
@@ -365,10 +368,7 @@ class Grid {
       //if (cells.contains("digger")) diggers,
       if (cells.contains("karl")) karls,
       if (cells.contains("darty")) dartys,
-      if (cells.contains("puzzle") ||
-          cells.contains("trash_puzzle") ||
-          cells.contains("mover_puzzle"))
-        puzzles,
+      if (cells.containsAny(CellTypeManager.puzzles)) puzzles,
       if (cells.contains("pmerge")) pmerges,
     ];
 
@@ -388,6 +388,121 @@ class Grid {
           subtick();
         }
       }
+    }
+  }
+}
+
+// Grid Clipboard
+class GridClip {
+  int width = 0;
+  int height = 0;
+
+  List<List<Cell>> cells = [];
+
+  bool active = false;
+
+  void activate(int width, int height, List<List<Cell>> cells) {
+    this.width = width;
+    this.height = height;
+    this.cells = cells;
+    this.active = true;
+  }
+
+  void place(int x, int y) {
+    for (var cx = 0; cx < width; cx++) {
+      for (var cy = 0; cy < height; cy++) {
+        final sx = cx + x;
+        final sy = cy + y;
+        if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
+          cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy);
+          grid.set(sx, sy, cells[cx][cy].copy);
+        }
+      }
+    }
+  }
+
+  void render(Canvas canvas, int x, int y) {
+    for (var cx = 0; cx < width; cx++) {
+      for (var cy = 0; cy < height; cy++) {
+        if (cells[cx][cy].id != "empty") {
+          canvas.save();
+          final rot = cells[cx][cy].rot * halfPi;
+          final sx = cx + x;
+          final sy = cy + y;
+          final off = rotateOff(
+                Offset(
+                    sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
+                -rot,
+              ) -
+              Offset(
+                    cellSize,
+                    cellSize,
+                  ) /
+                  2;
+          canvas.rotate(rot);
+          (Sprite(Flame.images.fromCache('${cells[cx][cy].id}.png'))
+                ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
+              .render(
+            canvas,
+            position: Vector2(off.dx, off.dy),
+            size: Vector2.all(
+              cellSize.toDouble(),
+            ),
+          );
+
+          canvas.restore();
+        }
+      }
+    }
+  }
+
+  void rotate(RotationalType rt) {
+    if (rt == RotationalType.counter_clockwise) {
+      final copy = <List<Cell>>[];
+      for (var i = 0; i < height; i++) {
+        copy.add(<Cell>[]);
+        for (var j = 0; j < width; j++) {
+          copy.last.add(Cell(j, i));
+        }
+      }
+
+      for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+          copy[y][x] = cells[height - x - 1][y];
+          copy[y][x].rot += 3;
+          copy[y][x].rot %= 4;
+        }
+      }
+
+      cells = copy;
+      game.selH = width;
+      game.selW = height;
+      final tmp = width;
+      width = height;
+      height = tmp;
+    } else if (rt == RotationalType.clockwise) {
+      final copy = <List<Cell>>[];
+      for (var i = 0; i < height; i++) {
+        copy.add(<Cell>[]);
+        for (var j = 0; j < width; j++) {
+          copy.last.add(Cell(j, i));
+        }
+      }
+
+      for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+          copy[y][x] = cells[x][width - y - 1];
+          copy[y][x].rot += 3;
+          copy[y][x].rot %= 4;
+        }
+      }
+
+      cells = copy;
+      game.selH = width;
+      game.selW = height;
+      final tmp = width;
+      width = height;
+      height = tmp;
     }
   }
 }

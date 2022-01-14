@@ -37,9 +37,8 @@ class _SettingsPageState extends State<SettingsPage> {
               width: 60.w,
               height: 60.h,
               color: Colors.grey[900],
-              child: Column(
+              child: ListView(
                 children: [
-                  Spacer(),
                   Row(
                     children: [
                       Tooltip(
@@ -156,7 +155,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  Spacer(),
                 ],
               ),
             ),

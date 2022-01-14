@@ -2,23 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '0.1.0';
+String currentVersion = '0.1.1 Codename Mechanical Update';
 
 List<String> changes = [
-  "Fixed Wormhole",
-  "Added Darty, basically a hungry mover",
-  "Added descriptions to the cells",
-  "Added Grabber, it grabs everything on it's sides",
-  "Added Fan, it pushes everything in front of it",
-  "Added Tunnel, it moves the cell behind it in front of it",
-  "Changed the key needed to move in play mode, you need to press Shift and the key to move with now",
-  "Fixed issues with the key system",
-  "Added a Quit button",
-  "Added Discord Rich Presence text",
-  "Added a new settings, Realistic Rendering, which improves rendering with special interpolation effects at the cost of FPS",
-  "Added Physical Generator",
-  "Added ActionBar",
-  "Removed many keybinds",
+  "Added SELECT mode",
+  "Added categories to the editor",
+  "Added Stopper",
+  "Added Opposite Rotator",
+  "Added Sync Cell",
+  "Added Mechanical Gear",
+  "Added Mechanical Generator",
 ];
 
 String getTrailing(String change) {

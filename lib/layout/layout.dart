@@ -2,6 +2,7 @@ library layout;
 
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:dart_vlc/dart_vlc.dart';

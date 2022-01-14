@@ -16,17 +16,6 @@ var cellsPerPage = 9;
 
 num abs(num n) => n < 0 ? -n : n;
 
-bool shouldRenderEmpty(Cell cell, int x, int y) {
-  if (cell.id == "empty" || cell.id == "trash" || cell.id == "key") return true;
-  if (cell.lastvars.lastPos.dx == x.toDouble() &&
-      cell.lastvars.lastPos.dy == y.toDouble() &&
-      cell.lastvars.lastRot == cell.rot) return false;
-
-  //if (cell.lastvars.lastRot == cell.rot) return false;
-
-  return true;
-}
-
 class GameUI extends StatefulWidget {
   final EditorType editorType;
 
@@ -54,9 +43,8 @@ class _GameUIState extends State<GameUI> {
   }
 
   Widget cellToImage(String cell) {
-    final index =
-        (game.edType == EditorType.making ? cellbar : game.cellsToPlace)
-            .indexOf(cell);
+    final index = (game.edType == EditorType.making ? cells : game.cellsToPlace)
+        .indexOf(cell);
     return Container(
       padding: EdgeInsets.all(2.w),
       child: SizedBox(
@@ -84,8 +72,12 @@ class _GameUIState extends State<GameUI> {
                     opacity: game.currentSeletion == index ? 1 : 0.3,
                     child: RotatedBox(
                       quarterTurns: game.currentRotation,
-                      child: Image.asset('assets/images/$cell.png',
-                          scale: 20 / 3.w),
+                      child: Image.asset(
+                        'assets/images/$cell.png',
+                        width: 3.w,
+                        height: 3.w,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                 ),
@@ -102,6 +94,46 @@ class _GameUIState extends State<GameUI> {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget categoryToImage(CellCategory category) {
+    return SizedBox(
+      width: 8.w,
+      height: 8.w,
+      child: Tooltip(
+        message: '${category.title} - ${category.description}',
+        textStyle: TextStyle(
+          fontSize: 5.sp,
+          color: Colors.white,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.grey[800],
+          borderRadius: BorderRadius.circular(0.5.sp),
+        ),
+        preferBelow: false,
+        margin: EdgeInsets.all(2.w),
+        child: Container(
+          color: Colors.grey[850],
+          child: MaterialButton(
+            child: Center(
+              child: Image.asset(
+                'assets/images/${category.look}.png',
+                width: 3.w,
+                height: 3.w,
+                fit: BoxFit.fill,
+              ),
+            ),
+            onPressed: () {
+              setState(
+                () {
+                  category.opened = !category.opened;
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -142,6 +174,78 @@ class _GameUIState extends State<GameUI> {
     }
   }
 
+  List<Widget> cellbarItems() {
+    final list = <Widget>[];
+    list.add(
+      MaterialButton(
+        height: 5.w,
+        child: Text(
+          "Back",
+          style: fontSize(
+            6.sp,
+          ),
+        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text("Confirm exit?"),
+                content: Text(
+                    "You have pressed the Back button, which exits the game. Do you confirm exit?"),
+                actions: [
+                  MaterialButton(
+                    child: Text("Yes"),
+                    onPressed: () {
+                      setDefaultPresence();
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  MaterialButton(
+                    child: Text("No"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+
+    if (game.edType == EditorType.loaded) {
+      for (var cell in game.cellsToPlace) {
+        list.add(cellToImage(cell));
+      }
+    }
+
+    if (game.edType == EditorType.making) {
+      for (var category in categories) {
+        list.add(categoryToImage(category));
+        if (category.opened) {
+          list.add(
+            VerticalDivider(
+              width: 1.w,
+            ),
+          );
+          for (var cell in category.items) {
+            list.add(cellToImage(cell));
+          }
+          list.add(
+            VerticalDivider(
+              width: 1.w,
+            ),
+          );
+        }
+      }
+    }
+
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,55 +253,58 @@ class _GameUIState extends State<GameUI> {
         width: 100.w,
         height: 100.h,
         child: Center(
-          child: Listener(
-            onPointerDown: game.onPointerDown,
-            onPointerMove: game.onPointerMove,
-            onPointerUp: game.onPointerUp,
-            child: GameWidget(
-              game: game,
-              initialActiveOverlays: [
-                "CellBar",
-                "ActionBar",
-              ],
-              overlayBuilderMap: {
-                'ActionBar': (ctx, _) {
-                  return LayoutBuilder(
-                    builder: (ctx, size) {
-                      final s = 8.sp;
-                      return Align(
-                        alignment: Alignment.topLeft,
-                        child: SizedBox(
-                          width: 100.w,
-                          height: 5.h,
-                          child: Container(
-                            color: Colors.grey[900],
-                            child: Row(
-                              textDirection: TextDirection.rtl,
-                              children: [
-                                Tooltip(
-                                  message: 'Save grid to clipboard',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/save.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+          child: MouseRegion(
+            onHover: (e) {
+              game.mouseX = e.localPosition.dx;
+              game.mouseY = e.localPosition.dy;
+            },
+            child: Listener(
+              onPointerDown: game.onPointerDown,
+              onPointerMove: game.onPointerMove,
+              onPointerUp: game.onPointerUp,
+              child: GameWidget(
+                game: game,
+                initialActiveOverlays: [
+                  "CellBar",
+                  "ActionBar",
+                ],
+                overlayBuilderMap: {
+                  'ActionBar': (ctx, _) {
+                    return LayoutBuilder(
+                      builder: (ctx, size) {
+                        final s = 8.sp;
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: SizedBox(
+                            width: 100.w,
+                            height: 5.h,
+                            child: Container(
+                              color: Colors.grey[900],
+                              child: Row(
+                                textDirection: TextDirection.rtl,
+                                children: [
+                                  if (game.running)
+                                    Tooltip(
+                                      message:
+                                          'Change the delay inbetween ticks. Current: ${game.delay}s',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: Slider(
+                                        value: max(min(game.delay, 5), 0.01),
+                                        onChanged: (n) => setState(
+                                          () => game.delay = n,
+                                        ),
+                                        min: 0.01,
+                                        max: 5,
+                                      ),
                                     ),
-                                    onPressed: () => FlutterClipboard.controlC(
-                                      P1.encode(grid),
-                                    ),
-                                  ),
-                                ),
-                                if (game.edType == EditorType.making)
                                   Tooltip(
-                                    message: 'Load grid from clipboard',
+                                    message: 'Save grid to clipboard',
                                     decoration: BoxDecoration(
                                       color: Colors.grey[900],
                                     ),
@@ -207,93 +314,157 @@ class _GameUIState extends State<GameUI> {
                                     ),
                                     child: MaterialButton(
                                       child: Image.asset(
-                                        'assets/interface/load.png',
+                                        'assets/interface/save.png',
                                         width: s,
                                         height: s,
                                         fit: BoxFit.fill,
                                       ),
-                                      onPressed: () {
-                                        if (!game.running) {
-                                          try {
-                                            FlutterClipboard.paste().then(
-                                              (val) {
-                                                try {
-                                                  grid =
-                                                      loadGrid(jsonDecode(val));
-                                                  game.cellsToPlace = ["empty"];
-                                                  game.cellsCount = [1];
-                                                } catch (e) {
+                                      onPressed: () =>
+                                          FlutterClipboard.controlC(
+                                        P1.encode(grid),
+                                      ),
+                                    ),
+                                  ),
+                                  if (game.edType == EditorType.making)
+                                    Tooltip(
+                                      message: 'Load grid from clipboard',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/load.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          if (!game.running) {
+                                            try {
+                                              FlutterClipboard.paste().then(
+                                                (val) {
                                                   try {
-                                                    grid = P1.decode(val);
+                                                    grid = loadGrid(
+                                                        jsonDecode(val));
                                                     game.cellsToPlace = [
                                                       "empty"
                                                     ];
                                                     game.cellsCount = [1];
                                                   } catch (e) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (ctx) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                            'Invalid save code',
-                                                          ),
-                                                          content: Text(
-                                                            'You are trying to load a corrupted, invalid or unsupported level code.',
-                                                          ),
-                                                        );
-                                                      },
-                                                    );
+                                                    try {
+                                                      grid = P1.decode(val);
+                                                      game.cellsToPlace = [
+                                                        "empty"
+                                                      ];
+                                                      game.cellsCount = [1];
+                                                    } catch (e) {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (ctx) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                              'Invalid save code',
+                                                            ),
+                                                            content: Text(
+                                                              'You are trying to load a corrupted, invalid or unsupported level code.',
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    }
                                                   }
-                                                }
-                                              },
-                                            );
-                                          } catch (e) {}
-                                        }
-                                      },
+                                                },
+                                              );
+                                            } catch (e) {}
+                                          }
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                Tooltip(
-                                  message: 'Zoom in',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/zoomin.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+                                  if (game.edType == EditorType.making) ...[
+                                    Tooltip(
+                                      message: 'Toggle SELECT mode',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/select.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          game.selecting = !game.selecting;
+                                          if (!game.selecting) {
+                                            game.setPos = false;
+                                            game.dragPos = false;
+                                          }
+                                          game.pasting = false;
+                                        },
+                                      ),
                                     ),
-                                    onPressed: game.zoomin,
-                                  ),
-                                ),
-                                Tooltip(
-                                  message: 'Zoom out',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/zoomout.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+                                    Tooltip(
+                                      message: 'Copy selected area',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/copy.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          if (game.selecting && game.setPos) {
+                                            game.copy();
+                                          }
+                                        },
+                                      ),
                                     ),
-                                    onPressed: game.zoomout,
-                                  ),
-                                ),
-                                if (game.edType == EditorType.making)
+                                    Tooltip(
+                                      message: 'Paste copied area',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/paste.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          if (game.pasting) {
+                                            game.pasting = false;
+                                          } else {
+                                            game.pasting = true;
+                                            game.selecting = false;
+                                            game.setPos = false;
+                                            game.dragPos = false;
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                   Tooltip(
-                                    message:
-                                        'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                    message: 'Zoom in',
                                     decoration: BoxDecoration(
                                       color: Colors.grey[900],
                                     ),
@@ -303,216 +474,197 @@ class _GameUIState extends State<GameUI> {
                                     ),
                                     child: MaterialButton(
                                       child: Image.asset(
-                                        'assets/interface/wrap.png',
+                                        'assets/interface/zoomin.png',
                                         width: s,
                                         height: s,
                                         fit: BoxFit.fill,
                                       ),
-                                      onPressed: () {
-                                        if (!game.running) {
-                                          grid.wrap = !grid.wrap;
-                                          game.overlays.remove('Info');
-                                        }
-                                      },
+                                      onPressed: game.zoomin,
                                     ),
                                   ),
-                                Tooltip(
-                                  message: 'Play / Retry the game',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: RotatedBox(
-                                      quarterTurns: game.running ? 1 : 0,
+                                  Tooltip(
+                                    message: 'Zoom out',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
                                       child: Image.asset(
-                                        game.running
-                                            ? 'assets/images/slide.png'
-                                            : 'assets/images/mover.png',
+                                        'assets/interface/zoomout.png',
                                         width: s,
                                         height: s,
                                         fit: BoxFit.fill,
                                       ),
+                                      onPressed: game.zoomout,
                                     ),
-                                    onPressed: game.playPause,
+                                  ),
+                                  if (game.edType == EditorType.making)
+                                    Tooltip(
+                                      message:
+                                          'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[900],
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: 7.sp,
+                                        color: Colors.white,
+                                      ),
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/wrap.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          if (!game.running) {
+                                            grid.wrap = !grid.wrap;
+                                            game.overlays.remove('Info');
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  Tooltip(
+                                    message: 'Play / Retry the game',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: RotatedBox(
+                                        quarterTurns: game.running ? 1 : 0,
+                                        child: Image.asset(
+                                          game.running
+                                              ? 'assets/images/slide.png'
+                                              : 'assets/images/mover.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                      onPressed: game.playPause,
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message:
+                                        'Rotate CellBar 90 degrees clockwise',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/images/rotator_cw.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
+                                      ),
+                                      onPressed: game.e,
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message:
+                                        'Rotate CellBar 90 degrees counter-clockwise',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/images/rotator_ccw.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
+                                      ),
+                                      onPressed: game.q,
+                                    ),
+                                  ),
+                                ].reversed.toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  'CellBar': (ctx, _) {
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: GestureDetector(
+                                onTap: () => game.mouseDown = false,
+                                child: Container(
+                                  width: 100.w,
+                                  height: 16.h,
+                                  color: Colors.grey[900],
+                                  child: Scrollbar(
+                                    controller: scrollController,
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      controller: scrollController,
+                                      children: cellbarItems(),
+                                    ),
                                   ),
                                 ),
-                                Tooltip(
-                                  message:
-                                      'Rotate CellBar 90 degrees clockwise',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/images/rotator_cw.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    onPressed: () {
-                                      if (!game.running) {
-                                        game.currentRotation++;
-                                        game.currentRotation %= 4;
-                                        game.overlays.remove('CellBar');
-                                      }
-                                    },
-                                  ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  "Info": (ctx, _) {
+                    var infoText = "";
+                    if (game.running) infoText += "[Playing] ";
+                    if (grid.wrap && game.edType == EditorType.making)
+                      infoText += "[Wrap Mode] ";
+                    return Text(infoText);
+                  },
+                  "Win": (ctx, _) {
+                    return Stack(
+                      children: [
+                        Center(
+                          child: SizedBox(
+                            width: 40.w,
+                            height: 40.h,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "You win!",
+                                  style: fontSize(27.sp),
                                 ),
-                                Tooltip(
-                                  message:
-                                      'Rotate CellBar 90 degrees counter-clockwise',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/images/rotator_ccw.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
+                                if (puzzleIndex != null)
+                                  MaterialButton(
+                                    child: Text(
+                                      "Next puzzle",
+                                      style: fontSize(12.sp),
                                     ),
-                                    onPressed: () {
-                                      if (!game.running) {
-                                        game.currentRotation += 3;
-                                        game.currentRotation %= 4;
-                                        game.overlays.remove('CellBar');
-                                      }
-                                    },
+                                    onPressed: nextPuzzle,
                                   ),
-                                ),
-                              ].reversed.toList(),
+                              ],
                             ),
                           ),
                         ),
-                      );
-                    },
-                  );
+                      ],
+                    );
+                  }
                 },
-                'CellBar': (ctx, _) {
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: GestureDetector(
-                              onTap: () => game.mouseDown = false,
-                              child: Container(
-                                width: 100.w,
-                                height: 16.h,
-                                color: Colors.grey[900],
-                                child: Scrollbar(
-                                  controller: scrollController,
-                                  child: ListView.builder(
-                                    cacheExtent: 1080,
-                                    scrollDirection: Axis.horizontal,
-                                    controller: scrollController,
-                                    itemCount: (game.edType == EditorType.making
-                                                ? cellbar
-                                                : game.cellsToPlace)
-                                            .length +
-                                        1,
-                                    itemBuilder: (ctx, i) {
-                                      if (i == 0) {
-                                        return MaterialButton(
-                                          height: 5.w,
-                                          child: Text(
-                                            "Back",
-                                            style: fontSize(
-                                              6.sp,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (ctx) {
-                                                return AlertDialog(
-                                                  title: Text("Confirm exit?"),
-                                                  content: Text(
-                                                      "You have pressed the Back button, which exits the game. Do you confirm exit?"),
-                                                  actions: [
-                                                    MaterialButton(
-                                                      child: Text("Yes"),
-                                                      onPressed: () {
-                                                        setDefaultPresence();
-                                                        Navigator.pop(context);
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                    MaterialButton(
-                                                      child: Text("No"),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                        );
-                                      }
-                                      return cellToImage(
-                                          (game.edType == EditorType.making
-                                              ? cellbar
-                                              : game.cellsToPlace)[i - 1]);
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                "Info": (ctx, _) {
-                  var infoText = "";
-                  if (game.running) infoText += "[Playing] ";
-                  if (grid.wrap && game.edType == EditorType.making)
-                    infoText += "[Wrap Mode] ";
-                  return Text(infoText);
-                },
-                "Win": (ctx, _) {
-                  return SizedBox(
-                    width: 100.w,
-                    height: 92.w,
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Spacer(),
-                          Text(
-                            "You win!",
-                            style: fontSize(27.sp),
-                          ),
-                          if (puzzleIndex != null)
-                            MaterialButton(
-                              child: Text(
-                                "Next puzzle",
-                                style: fontSize(12.sp),
-                              ),
-                              onPressed: nextPuzzle,
-                            ),
-                          Spacer(),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-              },
+              ),
             ),
           ),
         ),
@@ -591,6 +743,60 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   bool get validPlacePos => ((mouseY > 5.h) && (mouseY < 84.h));
 
+  var selecting = false;
+  var pasting = false;
+  var gridClip = GridClip();
+
+  var selX = 0;
+  var selY = 0;
+  var selW = 0;
+  var selH = 0;
+  var setPos = false;
+  var dragPos = false;
+
+  void paste() {
+    if (gridClip.active) {
+      gridClip.place(cellMouseX, cellMouseY);
+    }
+  }
+
+  void copy() {
+    if (selW < 0) {
+      selW *= -1;
+      selX -= selW;
+    }
+    if (selH < 0) {
+      selH *= -1;
+      selY -= selH;
+    }
+
+    final g = <List<Cell>>[];
+
+    selW--;
+    selH--;
+
+    for (var x = 0; x <= selW; x++) {
+      g.add(<Cell>[]);
+      for (var y = 0; y <= selH; y++) {
+        final cx = selX + x;
+        final cy = selY + y;
+        if (grid.inside(cx, cy)) {
+          g.last.add(grid.at(cx, cy).copy);
+        }
+      }
+    }
+
+    gridClip.activate(selW + 1, selH + 1, g);
+
+    selecting = false;
+    setPos = false;
+    dragPos = false;
+    pasting = true;
+
+    selW++;
+    selH++;
+  }
+
   void properlyChangeZoom(int oldzoom, int newzoom) {
     final scale = newzoom / oldzoom;
 
@@ -616,6 +822,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     return super.onLoad();
   }
+
+  int get cellMouseX => (mouseX - offX) ~/ cellSize;
+  int get cellMouseY => (mouseY - offY) ~/ cellSize;
 
   @override
   void render(Canvas canvas) {
@@ -668,6 +877,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
       }
     }
+
+    if (pasting) {
+      gridClip.render(canvas, cellMouseX, cellMouseY);
+    } else if (selecting && setPos) {
+      final selScreenX = (selX * cellSize);
+      final selScreenY = (selY * cellSize);
+      canvas.drawRect(
+        Offset(selScreenX, selScreenY) & Size(selW * cellSize, selH * cellSize),
+        Paint()..color = (Colors.grey[300]!.withOpacity(0.4)),
+      );
+    }
     //grid.forEach(renderCell);
 
     //canvas.restore();
@@ -678,20 +898,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void renderEmpty(Cell cell, int x, int y) {
     final off = Vector2(x * cellSize.toDouble(), y * cellSize.toDouble());
     if (true) {
-      if (shouldRenderEmpty(cell, x, y)) {
-        Sprite(Flame.images.fromCache('empty.png')).render(
-          canvas,
-          position: off,
-          size: Vector2(
-            cellSize.toDouble(),
-            cellSize.toDouble(),
-          ),
-        );
-      } else {
-        canvas.drawRect(
-            off.toOffset() & Size(cellSize.toDouble(), cellSize.toDouble()),
-            Paint()..color = Colors.black);
-      }
+      Sprite(Flame.images.fromCache('empty.png')).render(
+        canvas,
+        position: off,
+        size: Vector2(
+          cellSize.toDouble(),
+          cellSize.toDouble(),
+        ),
+      );
       if (grid.placeable(x, y)) {
         Sprite(Flame.images.fromCache('place.png')).render(
           canvas,
@@ -812,7 +1026,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    if (!running) {
+    if (selecting && dragPos && setPos) {
+      final ex = min(cellMouseX, grid.width);
+      final ey = min(cellMouseY, grid.height);
+
+      selW = ex - selX + 1;
+      selH = ey - selY + 1;
+    }
+
+    if (!(running || pasting || selecting)) {
       if (mouseDown) {
         final cell = (edType == EditorType.making
             ? cells
@@ -855,7 +1077,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         cx,
         cy,
         Cell(cx, cy)
-          ..id = cellbar[id]
+          ..id = cells[id]
           ..rot = rot
           ..lastvars.lastRot = rot,
       );
@@ -911,6 +1133,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   Future<void> onPointerUp(PointerUpEvent event) async {
     mouseDown = false;
+    if (selecting && setPos) {
+      dragPos = false;
+    }
   }
 
   Future<void> onPointerDown(PointerDownEvent event) async {
@@ -923,6 +1148,19 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if (validPlacePos) {
         mouseButton = event.buttons;
         mouseDown = true;
+        if (selecting) {
+          setPos = true;
+          dragPos = true;
+          selX = max((mouseX - offX) ~/ cellSize, 0);
+          selY = max((mouseY - offY) ~/ cellSize, 0);
+        } else if (pasting) {
+          paste();
+          pasting = false;
+          selecting = false;
+          setPos = false;
+          dragPos = false;
+          mouseDown = false;
+        }
       } else {
         mouseDown = false;
       }
@@ -1004,6 +1242,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void q() {
+    if (!game.running) {
+      if (pasting) {
+        gridClip.rotate(RotationalType.counter_clockwise);
+      } else {
+        game.currentRotation += 3;
+        game.currentRotation %= 4;
+        game.overlays.remove('CellBar');
+      }
+    }
+  }
+
+  void e() {
+    if (!game.running) {
+      if (pasting) {
+        gridClip.rotate(RotationalType.clockwise);
+      } else {
+        game.currentRotation++;
+        game.currentRotation %= 4;
+        game.overlays.remove('CellBar');
+      }
+    }
+  }
+
   @override
   KeyEventResult onKeyEvent(
       RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
@@ -1012,32 +1274,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         // Alternative stuffz
       } else {
         if (keysPressed.contains(LogicalKeyboardKey.keyQ)) {
-          currentRotation--;
-          currentRotation %= 4;
-          overlays.remove('CellBar');
+          q();
         } else if (keysPressed.contains(LogicalKeyboardKey.keyE)) {
-          currentRotation++;
-          currentRotation %= 4;
-          overlays.remove('CellBar');
+          e();
         } else if (keysPressed.contains(LogicalKeyboardKey.space) &&
             !(keys[PhysicalKeyboardKey.space] == true)) {
           playPause();
-        } else if (keysPressed.contains(LogicalKeyboardKey.arrowLeft) &&
-            keys[LogicalKeyboardKey.arrowLeft] != true) {
-          currentSeletion = (currentSeletion -
-                  1 +
-                  (edType == EditorType.making ? cells : cellsToPlace).length) %
-              (edType == EditorType.making ? cells : cellsToPlace).length;
-        } else if (keysPressed.contains(LogicalKeyboardKey.arrowRight) &&
-            keys[LogicalKeyboardKey.arrowRight] != true) {
-          currentSeletion = (currentSeletion + 1) %
-              (edType == EditorType.making ? cells : cellsToPlace).length;
         } else if (keysPressed.contains(LogicalKeyboardKey.equal) &&
             keys[LogicalKeyboardKey.equal] != true) {
           zoomin();
         } else if (keysPressed.contains(LogicalKeyboardKey.minus) &&
             keys[LogicalKeyboardKey.minus] != true) {
           zoomout();
+        } else if (keys[PhysicalKeyboardKey.keyC] == true &&
+            keys[PhysicalKeyboardKey.controlLeft] == true) {
+          if (game.selecting && game.setPos) {
+            game.copy();
+          }
         }
       }
       keys[event.physicalKey] = true;

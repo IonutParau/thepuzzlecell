@@ -239,6 +239,16 @@ void rots(Set<String> cells) {
       "rotator_ccw",
     );
   }
+  if (cells.contains("opposite_rotator")) {
+    grid.forEach(
+      (cell, x, y) {
+        grid.rotate(frontX(x, cell.rot), frontY(y, cell.rot), 1);
+        grid.rotate(frontX(x, cell.rot + 2), frontY(y, cell.rot + 2), -1);
+      },
+      null,
+      "opposite_rotator",
+    );
+  }
 }
 
 void doGear(int x, int y, RotationalType rt) {
@@ -252,6 +262,8 @@ void doGear(int x, int y, RotationalType rt) {
     if (!canMove(x, y + 1, 2, MoveType.gear)) return;
     if (!canMoveAll(x - 1, y - 1, 3, MoveType.gear)) return;
     if (!canMove(x - 1, y, 3, MoveType.gear)) return;
+
+    grid.rotate(x, y, 1); // Cool stuff
 
     // Moves corners
     push(x + 1, y - 1, 0, 1);
@@ -285,6 +297,8 @@ void doGear(int x, int y, RotationalType rt) {
     if (!canMove(x, y + 1, 0, MoveType.gear)) return;
     if (!canMoveAll(x - 1, y - 1, 2, MoveType.gear)) return;
     if (!canMove(x - 1, y, 1, MoveType.gear)) return;
+
+    grid.rotate(x, y, -1); // Cool stuff
 
     // Moves corners
     push(x + 1, y - 1, 3, 1);
@@ -970,6 +984,140 @@ void pmerges() {
       },
       rot,
       "pmerge",
+    );
+  }
+}
+
+class MechanicalManager {
+  static bool connectable(int? dir, Cell cell) {
+    if (dir == null) return true;
+    if (cell.id == "mech_gear") return true;
+
+    return CellTypeManager.mechanical.contains(cell.id);
+  }
+
+  static void spread(int x, int y, [int depth = 0, int? sentDir]) {
+    if (depth == 15) return;
+    if (!grid.inside(x, y)) return;
+    if (!connectable(sentDir, grid.at(x, y))) return;
+    final cell = grid.at(x, y);
+    if (onAt(x, y, true)) return;
+    cell.data['power'] = 2;
+    if (cell.id == "mech_gear" && depth < 14)
+      grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+    depth++;
+    spread(x + 1, y, depth, 0);
+    spread(x - 1, y, depth, 2);
+    spread(x, y + 1, depth, 1);
+    spread(x, y - 1, depth, 3);
+  }
+
+  static bool on(Cell cell, [bool freshly = false]) =>
+      (cell.data['power'] ?? 0) > (freshly ? 1 : 0);
+
+  static bool onAt(int x, int y, [bool freshly = false]) =>
+      grid.inside(x, y) ? on(grid.at(x, y), freshly) : false;
+}
+
+void stoppers() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        final fx = frontX(x, cell.rot);
+        final fy = frontY(y, cell.rot);
+
+        if (grid.inside(fx, fy)) {
+          final cell = grid.at(fx, fy);
+          if (!cell.id.contains("puzzle")) {
+            cell.updated = true;
+          }
+        }
+      },
+      rot,
+      "stopper",
+    );
+  }
+}
+
+extension SetX on Set<String> {
+  bool containsAny(List<String> strings) {
+    for (var s in this) {
+      if (strings.contains(s)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
+class CellTypeManager {
+  static List<String> generators = [
+    "generator",
+    "generator_cw",
+    "generator_ccw",
+    "triple_gen",
+    "crossgen",
+    "constructorgen",
+    "physical_gen",
+  ];
+
+  static List<String> replicators = ["replicator"];
+
+  static List<String> tunnels = ["tunnel"];
+
+  static List<String> rotators = [
+    "rotator_cw",
+    "rotator_ccw",
+    "opposite_rotator"
+  ];
+
+  static List<String> gears = [
+    "gear_cw",
+    "gear_ccw",
+  ];
+
+  static List<String> puzzles = [
+    "puzzle",
+    "trash_puzzle",
+    "mover_puzzle",
+  ];
+
+  static List<String> mechanical = [
+    "mech_gen",
+    "mech_mover",
+  ];
+}
+
+void mechs(Set<String> cells) {
+  // Power
+  grid.forEach(
+    (cell, x, y) {
+      MechanicalManager.spread(
+        frontX(
+          x,
+          cell.rot,
+        ),
+        frontY(
+          y,
+          cell.rot,
+        ),
+      );
+    },
+    null,
+    "mech_gen",
+  );
+
+  // Powered
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, true)) {
+          push(x, y, cell.rot, 0);
+        }
+      },
+      rot,
+      "mech_mover",
     );
   }
 }
