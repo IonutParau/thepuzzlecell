@@ -1121,6 +1121,32 @@ class CellTypeManager {
   ];
 }
 
+void doDisplayer(int x, int y, int dir) {
+  var ox = x;
+  var oy = y;
+  var depth = 1;
+  var depthing = true;
+  while (true) {
+    ox = frontX(ox, dir);
+    oy = frontY(oy, dir);
+    if (!grid.inside(ox, oy)) break;
+
+    final o = grid.at(ox, oy);
+    if (grid.placeable(ox, oy) && depthing) {
+      depth++;
+    } else {
+      depthing = false;
+    }
+    if (o.id == "pixel") {
+      depth--;
+      if (depth == 0) {
+        o.data['power'] = 2;
+        break;
+      }
+    }
+  }
+}
+
 void mechs(Set<String> cells) {
   // Power
   grid.forEach(
@@ -1185,6 +1211,18 @@ void mechs(Set<String> cells) {
       },
       rot,
       "mech_grabber",
+    );
+  }
+
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell)) {
+          doDisplayer(x, y, cell.rot);
+        }
+      },
+      rot,
+      "displayer",
     );
   }
 

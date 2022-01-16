@@ -816,6 +816,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     keys = {};
     puzzleWin = false;
     await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
+    await Flame.images.load('pixel_on.png');
     await Flame.images.load("enemy_particles.png");
     delay = storage.getDouble("delay") ?? 0.15;
     realisticRendering = storage.getBool("realistic_render") ?? true;

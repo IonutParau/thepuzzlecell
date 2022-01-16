@@ -337,12 +337,7 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     }
   }
 
-  if ((!moveInsideOf(
-          inFront(x, y, dir) ?? Cell(x, y)
-            ..id = "wall",
-          x,
-          y,
-          dir)) &&
+  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir)) &&
       !moveInsideOf(grid.at(x, y), x, y, dir)) {
     return false;
   }
