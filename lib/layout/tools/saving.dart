@@ -56,7 +56,7 @@ String encodeNum(int n, String valueString) {
   }
 
   if (cellNum == 0) {
-    return '';
+    return valueString[0];
   } else {
     var cellString = '';
     for (var i = 0; i < cellBase; i++) {
@@ -77,6 +77,12 @@ int decodeNum(String n, String valueString) {
         pow(valueString.length, n.length - 1 - i).toInt();
   }
   return numb;
+}
+
+Grid loadStr(String str) {
+  if (str.startsWith('P1;')) return P1.decode(str);
+
+  throw "Unsupported saving format";
 }
 
 class P1 {
@@ -217,5 +223,83 @@ class P1 {
     );
 
     return grid;
+  }
+}
+
+class SaveCell {
+  String id;
+  int rot;
+  bool place;
+
+  SaveCell(this.id, this.rot, this.place);
+
+  bool sameAs(SaveCell other) =>
+      (id == other.id && rot == other.rot && place == other.place);
+}
+
+class P1Plus {
+  static final sig = "P1+;";
+
+  static final valueString =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/?\\\':[]{}()";
+
+  static String encodeCell(List<String> cellTable, SaveCell cell) {
+    return encodeNum(
+      (cellTable.indexOf(cell.id) * 8 + cell.rot + (cell.place ? 4 : 0)),
+      valueString,
+    );
+  }
+
+  static SaveCell decodeCell(List<String> cellTable, String cell) {
+    final n = decodeNum(cell, valueString);
+
+    final id = cellTable[n ~/ 8];
+    final rot = (n % 8) % 4;
+    final placeable = (n % 8) > 3;
+
+    return SaveCell(id, rot, placeable);
+  }
+
+  static String encodeGrid(Grid grid) {
+    var str = sig;
+    str += ";;"; // Title and description
+    str += "${encodeNum(grid.width, valueString)};";
+    str += "${encodeNum(grid.height, valueString)};";
+
+    final rawCellList = <SaveCell>[];
+    final cellTable = <String>{};
+    grid.forEach(
+      (cell, x, y) {
+        rawCellList.add(SaveCell(cell.id, cell.rot, grid.placeable(x, y)));
+        cellTable.add(cell.id);
+      },
+    );
+
+    str += "${cellTable.join(',')};";
+    final props = [];
+    if (grid.wrap) props.add('WRAP');
+    str += "${props.join(',')};";
+
+    // Cell stuff
+    final cellList = <SaveCell>[];
+    final cellCount = <int>[];
+    for (var cell in rawCellList) {
+      if (cellList.isEmpty) {
+        cellList.add(cell);
+        cellCount.add(1);
+      } else if (cellList.last.sameAs(cell)) {
+        cellCount.last++;
+      } else {
+        cellList.add(cell);
+        cellCount.add(1);
+      }
+    }
+
+    for (var i = 0; i < cellList.length; i++) {
+      str +=
+          "${encodeCell(cellTable.toList(), cellList[i])}-${encodeNum(cellCount[i], valueString)};";
+    }
+
+    return str;
   }
 }

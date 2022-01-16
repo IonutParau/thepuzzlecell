@@ -262,6 +262,15 @@ class _GameUIState extends State<GameUI> {
               onPointerDown: game.onPointerDown,
               onPointerMove: game.onPointerMove,
               onPointerUp: game.onPointerUp,
+              onPointerSignal: (PointerSignalEvent event) {
+                if (event is PointerScrollEvent) {
+                  if (event.scrollDelta.dy < 0) {
+                    game.zoomin();
+                  } else if (event.scrollDelta.dy > 0) {
+                    game.zoomout();
+                  }
+                }
+              },
               child: GameWidget(
                 game: game,
                 initialActiveOverlays: [
@@ -321,7 +330,7 @@ class _GameUIState extends State<GameUI> {
                                       ),
                                       onPressed: () =>
                                           FlutterClipboard.controlC(
-                                        P1.encode(grid),
+                                        P1Plus.encodeGrid(grid),
                                       ),
                                     ),
                                   ),
@@ -348,34 +357,25 @@ class _GameUIState extends State<GameUI> {
                                               FlutterClipboard.paste().then(
                                                 (val) {
                                                   try {
-                                                    grid = loadGrid(
-                                                        jsonDecode(val));
+                                                    grid = loadStr(val);
                                                     game.cellsToPlace = [
                                                       "empty"
                                                     ];
                                                     game.cellsCount = [1];
                                                   } catch (e) {
-                                                    try {
-                                                      grid = P1.decode(val);
-                                                      game.cellsToPlace = [
-                                                        "empty"
-                                                      ];
-                                                      game.cellsCount = [1];
-                                                    } catch (e) {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (ctx) {
-                                                          return AlertDialog(
-                                                            title: Text(
-                                                              'Invalid save code',
-                                                            ),
-                                                            content: Text(
-                                                              'You are trying to load a corrupted, invalid or unsupported level code.',
-                                                            ),
-                                                          );
-                                                        },
-                                                      );
-                                                    }
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (ctx) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                            'Invalid save code',
+                                                          ),
+                                                          content: Text(
+                                                            'You are trying to load a corrupted, invalid or unsupported level code.',
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
                                                   }
                                                 },
                                               );
@@ -955,7 +955,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         center;
 
     canvas.rotate(rot);
-    Sprite(Flame.images.fromCache('${cell.id}.png')).render(
+    var file = cell.id;
+
+    if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
+      file = 'pixel_on';
+    }
+    Sprite(Flame.images.fromCache('$file.png')).render(
       canvas,
       position: Vector2(off.dx * scaleX, off.dy * scaleY),
       size: Vector2(

@@ -282,7 +282,7 @@ class Grid {
   }
 
   bool get movable {
-    for (var passThrough in moveInsideOf) {
+    for (var passThrough in justMoveInsideOf) {
       if (cells.contains(passThrough)) return true;
     }
     return false;
@@ -299,14 +299,6 @@ class Grid {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
         p0.tags = [];
-        if (p0.data['power'] is int) {
-          if (p0.data['power'] > 0) {
-            p0.data['power']--;
-            if (p0.data['power'] == 0) {
-              p0.data.remove('power');
-            }
-          }
-        }
         cells.add(p0.id);
       },
     );
@@ -358,12 +350,12 @@ class Grid {
       if (cells.contains("tunnel")) tunnels,
       if (cells.containsAny(CellTypeManager.rotators)) rots,
       if (cells.containsAny(CellTypeManager.gears)) gears,
-      if (cells.contains("grabber")) grabbers,
-      if (cells.contains("mover")) movers,
-      if (cells.contains("puller")) pullers,
+      if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
+      if (cells.containsAny(CellTypeManager.movers)) movers,
+      if (cells.containsAny(CellTypeManager.puller)) pullers,
       if (cells.contains("liner")) liners,
       if (cells.contains("bird")) birds,
-      if (cells.contains("fan")) fans,
+      if (cells.containsAny(CellTypeManager.fans)) fans,
       //if (cells.contains("magnet")) magnets,
       //if (cells.contains("digger")) diggers,
       if (cells.contains("karl")) karls,

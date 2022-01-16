@@ -52,6 +52,12 @@ final cells = [
   "trash_puzzle",
   "mover_puzzle",
   "mech_mover",
+  "pixel",
+  "displayer",
+  "mech_puller",
+  "mech_grabber",
+  "mech_fan",
+  "mech_trash",
 ];
 
 class CellProfile {
@@ -156,6 +162,12 @@ final categories = [
       "mech_gear",
       "mech_gen",
       "mech_mover",
+      "mech_puller",
+      "mech_grabber",
+      "mech_fan",
+      "pixel",
+      "displayer",
+      "mech_trash",
     ],
     "mech_gear",
   ),
@@ -340,5 +352,37 @@ final cellInfo = <String, CellProfile>{
   "mech_mover": CellProfile(
     "Mechanically Powered Mover",
     "Only moves if it has been powered mechanically",
+  ),
+  "mech_gear": CellProfile(
+    "Mechanical Gear",
+    "Can carry mechanical energy via it's spin",
+  ),
+  "mech_gen": CellProfile(
+    "Constant Mechanical Generator",
+    "This cell breaks the laws of physics and generates a constant stream of mechanical energy",
+  ),
+  "pixel": CellProfile(
+    "WiFi Pixel",
+    "Turns on if powered using WiFi Displayer",
+  ),
+  "displayer": CellProfile(
+    "WiFi Displayer",
+    "When powered sends WiFi signal to the WiFi Pixel in front of it from any distance",
+  ),
+  "mech_puller": CellProfile(
+    "Mechanically Powered Puller",
+    "Only pulls if it has been powered mechanically",
+  ),
+  "mech_grabber": CellProfile(
+    "Mechanically Powered Grabber",
+    "Only grabs if it has been powered mechanically",
+  ),
+  "mech_fan": CellProfile(
+    "Mechanically Powered Fan",
+    "Only pushes if it has been powered mechanically",
+  ),
+  "mech_trash": CellProfile(
+    "Trash-Based Mechanical Generator",
+    "Generates mechanical signals around it whenever it eats a cell",
   ),
 };

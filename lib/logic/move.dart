@@ -43,14 +43,20 @@ bool canMove(int x, int y, int dir, MoveType mt) {
   return false;
 }
 
-final moveInsideOf = [
+final justMoveInsideOf = [
   "empty",
   "trash",
   "enemy",
   "musical",
   "wormhole",
-  "wall_puzzle",
+  "mech_trash",
 ];
+
+bool moveInsideOf(Cell into, int x, int y, int dir) {
+  if (justMoveInsideOf.contains(into.id)) return true;
+
+  return false;
+}
 
 bool canMoveAll(int x, int y, int dir, MoveType mt) {
   var depth = 0;
@@ -59,7 +65,7 @@ bool canMoveAll(int x, int y, int dir, MoveType mt) {
     if (depth > depthLimit) return false;
     depth++;
     if (canMove(x, y, dir, mt)) {
-      if (moveInsideOf.contains(grid.at(x, y).id)) {
+      if (moveInsideOf(grid.at(x, y), x, y, dir)) {
         return true;
       }
 
@@ -110,7 +116,8 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
 
   if (movingTo.id != "trash" &&
       movingTo.id != "musical" &&
-      movingTo.id != "wormhole") {
+      movingTo.id != "wormhole" &&
+      movingTo.id != "mech_trash") {
     if (movingTo.id == "enemy") {
       //grid.addBroken(moving, nx, ny);
       playSound(destroySound);
@@ -141,6 +148,12 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
   } else {
     if (movingTo.id == "trash") {
       grid.addBroken(moving, nx, ny);
+    } else if (movingTo.id == "mech_trash") {
+      grid.addBroken(moving, nx, ny);
+      MechanicalManager.spread(nx + 1, ny, 0);
+      MechanicalManager.spread(nx - 1, ny, 2);
+      MechanicalManager.spread(nx, ny + 1, 1);
+      MechanicalManager.spread(nx, ny - 1, 3);
     } else if (movingTo.id == "wormhole") {
       if (grid.wrap) {
         final dx = grid.width - nx - 1;
@@ -190,11 +203,15 @@ final noForce = [];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
   final odir = (dir + 2) % 4; // Opposite direction
-  if (cell.id == "mech_mover") {
+  if (["mech_mover", "mech_puller"].contains(cell.id)) {
     if (MechanicalManager.on(cell, true)) {
       if (cell.rot == dir) {
+        cell.updated = true;
+        //drawPower(cell);
         return 1;
       } else if (cell.rot == odir) {
+        cell.updated = true;
+        //drawPower(cell);
         return -1;
       }
 
@@ -215,7 +232,10 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     }
   }
 
-  if (cell.id == "fan" && cell.rot == odir && mt == MoveType.push) {
+  if ((cell.id == "fan" ||
+          (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) &&
+      cell.rot == odir &&
+      mt == MoveType.push) {
     return -1;
   }
 
@@ -244,7 +264,7 @@ bool push(int x, int y, int dir, int force,
   }
 
   final c = grid.at(ox, oy);
-  if (moveInsideOf.contains(c.id)) return force > 0;
+  if (moveInsideOf(c, ox, oy, dir)) return force > 0;
   if (!grid.inside(x, y)) return false;
 
   if (canMove(ox, oy, dir, mt)) {
@@ -261,7 +281,7 @@ bool push(int x, int y, int dir, int force,
 bool canMoveFiltered(int x, int y, int dir, List<String> filter, MoveType mt) {
   while (grid.inside(x, y)) {
     if (canMove(x, y, dir, mt)) {
-      if (moveInsideOf.contains(grid.at(x, y).id)) {
+      if (moveInsideOf(grid.at(x, y), x, y, dir)) {
         return true;
       }
 
@@ -301,7 +321,7 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     final c = grid.at(x, y);
 
     if (canMove(x, y, dir, mt)) {
-      if (moveInsideOf.contains(c.id)) {
+      if (moveInsideOf(c, x, y, dir)) {
         break;
       }
       if (withBias.contains(c.id)) {
@@ -317,8 +337,13 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     }
   }
 
-  if ((!moveInsideOf.contains(inFront(x, y, dir)?.id)) &&
-      !moveInsideOf.contains(grid.at(x, y).id)) {
+  if ((!moveInsideOf(
+          inFront(x, y, dir) ?? Cell(x, y)
+            ..id = "wall",
+          x,
+          y,
+          dir)) &&
+      !moveInsideOf(grid.at(x, y), x, y, dir)) {
     return false;
   }
 
@@ -336,7 +361,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
 
   if (!grid.inside(fx, fy)) return false;
 
-  if (!moveInsideOf.contains(grid.at(fx, fy).id)) {
+  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir)) {
     return false;
   }
 
@@ -351,7 +376,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     cy += (dir % 2 == 1 ? (dir - 2) : 0);
     if (!grid.inside(cx, cy)) break;
     final c = grid.at(cx, cy);
-    if (moveInsideOf.contains(c.id)) break;
+    if (moveInsideOf(c, cx, cy, dir)) break;
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     if (!canMove(cx, cy, dir, mt)) {

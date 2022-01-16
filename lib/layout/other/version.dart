@@ -12,6 +12,7 @@ List<String> changes = [
   "Added Sync Cell",
   "Added Mechanical Gear",
   "Added Mechanical Generator",
+  "Added Mechanically Powered Mover, Puller, Grabber and Fan",
 ];
 
 String getTrailing(String change) {

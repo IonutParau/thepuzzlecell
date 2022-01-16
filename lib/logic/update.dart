@@ -70,7 +70,7 @@ void doGen(int x, int y, int dir, int gendir,
     if (!grid.inside(gx, gy)) return;
     if (!grid.inside(x, y)) return;
     final remaining = grid.at(ox, oy);
-    if (moveInsideOf.contains(remaining.id) && remaining.id != "empty") {
+    if (moveInsideOf(remaining, ox, oy, dir) && remaining.id != "empty") {
       if (remaining.id == "wormhole") {
         moveCell(gx, gy, ox, oy, dir);
         grid.set(gx, gy, toGenerate);
@@ -466,6 +466,15 @@ void pullers() {
       rot,
       "puller",
     );
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, true)) {
+          pull(x, y, cell.rot, 1);
+        }
+      },
+      rot,
+      "mech_mover",
+    );
   }
 }
 
@@ -787,7 +796,7 @@ void doDartySide(int x, int y, int dir) {
   final cell = grid.at(x, y);
   final front = inFront(x, y, cell.rot);
   if (front != null) {
-    if (moveInsideOf.contains(front.id)) {
+    if (moveInsideOf(front, frontX(x, dir), frontY(y, dir), dir)) {
       moveFront(x, y, cell.rot);
     } else if (front.id != "darty") {
       grid.set(frontX(x, cell.rot), frontY(y, cell.rot), cell.copy);
@@ -835,11 +844,13 @@ void grabSide(int x, int y, int mdir, int dir, int checkDepth) {
     if (depth > depthLimit) return;
     if (ox != x || oy != y) {
       if (canMove(x, y, dir, MoveType.grab)) {
-        if (moveInsideOf.contains(grid.at(x, y).id)) {
+        if (moveInsideOf(grid.at(x, y), x, y, dir)) {
           break;
         } else {
-          if (grid.at(x, y).id == "grabber" && grid.at(x, y).rot == dir)
-            grid.at(x, y).updated = true;
+          if ((grid.at(x, y).id == "grabber" ||
+                  (grid.at(x, y).id == "mech_grabber" &&
+                      MechanicalManager.onAt(x, y, true))) &&
+              grid.at(x, y).rot == dir) grid.at(x, y).updated = true;
           if (!pushDistance(x, y, dir, 1, checkDepth - 1, MoveType.grab)) {
             break;
           }
@@ -863,14 +874,16 @@ bool doGrabber(int x, int y, int dir, [int rdepth = 0]) {
   var depth = 0;
   if (grid.inside(fx, fy)) {
     final f = grid.at(fx, fy);
-    if ((f.id == "grabber") && (f.rot == dir)) {
+    if ((f.id == "grabber" ||
+            (f.id == "mech_grabber" && MechanicalManager.on(f, true))) &&
+        (f.rot == dir)) {
       if (doGrabber(fx, fy, dir, rdepth + 1)) {
         depth++;
       } else {
         return false;
       }
     } else {
-      if (!moveInsideOf.contains(f.id)) return false;
+      if (!moveInsideOf(f, fx, fy, dir)) return false;
     }
   }
   push(x, y, dir, 1, MoveType.grab);
@@ -990,9 +1003,10 @@ void pmerges() {
 
 class MechanicalManager {
   static bool connectable(int? dir, Cell cell) {
+    if (cell.id == "empty") return false;
     if (dir == null) return true;
-    if (cell.id == "mech_gear") return true;
-
+    if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
+    if (cell.id.startsWith('mech_')) return true;
     return CellTypeManager.mechanical.contains(cell.id);
   }
 
@@ -1005,11 +1019,14 @@ class MechanicalManager {
     cell.data['power'] = 2;
     if (cell.id == "mech_gear" && depth < 14)
       grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+    if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
-    spread(x + 1, y, depth, 0);
-    spread(x - 1, y, depth, 2);
-    spread(x, y + 1, depth, 1);
-    spread(x, y - 1, depth, 3);
+    if (cell.id == "mech_gear") {
+      spread(x + 1, y, depth, 0);
+      spread(x - 1, y, depth, 2);
+      spread(x, y + 1, depth, 1);
+      spread(x, y - 1, depth, 3);
+    }
   }
 
   static bool on(Cell cell, [bool freshly = false]) =>
@@ -1052,6 +1069,14 @@ extension SetX on Set<String> {
 }
 
 class CellTypeManager {
+  static List<String> movers = ["mover"];
+
+  static List<String> puller = ["puller"];
+
+  static List<String> grabbers = ["grabber"];
+
+  static List<String> fans = ["fan"];
+
   static List<String> generators = [
     "generator",
     "generator_cw",
@@ -1086,6 +1111,13 @@ class CellTypeManager {
   static List<String> mechanical = [
     "mech_gen",
     "mech_mover",
+    "pixel",
+    "displayer",
+    "mech_mover",
+    "mech_puller",
+    "mech_grabber",
+    "mech_fan",
+    "mech_generator",
   ];
 }
 
@@ -1102,6 +1134,8 @@ void mechs(Set<String> cells) {
           y,
           cell.rot,
         ),
+        0,
+        cell.rot,
       );
     },
     null,
@@ -1119,5 +1153,56 @@ void mechs(Set<String> cells) {
       rot,
       "mech_mover",
     );
+  }
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, true)) {
+          pull(x, y, cell.rot, 1);
+        }
+      },
+      rot,
+      "mech_puller",
+    );
+  }
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, true)) {
+          DoFan(cell, x, y);
+        }
+      },
+      rot,
+      "mech_fan",
+    );
+  }
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, true)) {
+          doGrabber(x, y, cell.rot);
+        }
+      },
+      rot,
+      "mech_grabber",
+    );
+  }
+
+  // Power draw
+  grid.forEach(
+    (cell, x, y) {
+      drawPower(cell);
+    },
+  );
+}
+
+void drawPower(Cell cell) {
+  if (cell.data['power'] is int) {
+    if (cell.data['power'] > 0) {
+      cell.data['power']--;
+      if (cell.data['power'] == 0) {
+        cell.data.remove('power');
+      }
+    }
   }
 }
