@@ -68,15 +68,19 @@ class _GameUIState extends State<GameUI> {
                 margin: EdgeInsets.all(2.w),
                 child: MaterialButton(
                   onPressed: () => setState(() => game.currentSeletion = index),
+                  minWidth: 3.w,
+                  height: 3.w,
                   child: Opacity(
-                    opacity: game.currentSeletion == index ? 1 : 0.3,
-                    child: RotatedBox(
-                      quarterTurns: game.currentRotation,
-                      child: Image.asset(
-                        'assets/images/$cell.png',
-                        width: 3.w,
-                        height: 3.w,
-                        fit: BoxFit.fill,
+                    opacity: (game.currentSeletion == index) ? 1 : 0.3,
+                    child: MouseRegion(
+                      child: RotatedBox(
+                        quarterTurns: game.currentRotation,
+                        child: Image.asset(
+                          'assets/images/$cell.png',
+                          width: 3.w,
+                          height: 3.w,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
@@ -127,11 +131,8 @@ class _GameUIState extends State<GameUI> {
               ),
             ),
             onPressed: () {
-              setState(
-                () {
-                  category.opened = !category.opened;
-                },
-              );
+              category.opened = !category.opened;
+              game.overlays.remove('CellBar');
             },
           ),
         ),
@@ -226,19 +227,9 @@ class _GameUIState extends State<GameUI> {
       for (var category in categories) {
         list.add(categoryToImage(category));
         if (category.opened) {
-          list.add(
-            VerticalDivider(
-              width: 1.w,
-            ),
-          );
           for (var cell in category.items) {
             list.add(cellToImage(cell));
           }
-          list.add(
-            VerticalDivider(
-              width: 1.w,
-            ),
-          );
         }
       }
     }
@@ -394,21 +385,26 @@ class _GameUIState extends State<GameUI> {
                                         fontSize: 7.sp,
                                         color: Colors.white,
                                       ),
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/select.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
+                                      child: Opacity(
+                                        opacity: game.selecting ? 1 : 0.2,
+                                        child: MaterialButton(
+                                          child: Image.asset(
+                                            'assets/interface/select.png',
+                                            width: s,
+                                            height: s,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              game.selecting = !game.selecting;
+                                              if (!game.selecting) {
+                                                game.setPos = false;
+                                                game.dragPos = false;
+                                              }
+                                              game.pasting = false;
+                                            });
+                                          },
                                         ),
-                                        onPressed: () {
-                                          game.selecting = !game.selecting;
-                                          if (!game.selecting) {
-                                            game.setPos = false;
-                                            game.dragPos = false;
-                                          }
-                                          game.pasting = false;
-                                        },
                                       ),
                                     ),
                                     Tooltip(
@@ -463,44 +459,6 @@ class _GameUIState extends State<GameUI> {
                                       ),
                                     ),
                                   ],
-                                  Tooltip(
-                                    message: 'Zoom in',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/interface/zoomin.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: game.zoomin,
-                                    ),
-                                  ),
-                                  Tooltip(
-                                    message: 'Zoom out',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/interface/zoomout.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: game.zoomout,
-                                    ),
-                                  ),
                                   if (game.edType == EditorType.making)
                                     Tooltip(
                                       message:
@@ -512,19 +470,23 @@ class _GameUIState extends State<GameUI> {
                                         fontSize: 7.sp,
                                         color: Colors.white,
                                       ),
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/wrap.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
+                                      child: Opacity(
+                                        opacity: grid.wrap ? 1 : 0.2,
+                                        child: MaterialButton(
+                                          child: Image.asset(
+                                            'assets/interface/wrap.png',
+                                            width: s,
+                                            height: s,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          onPressed: () {
+                                            if (!game.running) {
+                                              grid.wrap = !grid.wrap;
+                                              game.overlays.remove('Info');
+                                              game.overlays.remove('ActionBar');
+                                            }
+                                          },
                                         ),
-                                        onPressed: () {
-                                          if (!game.running) {
-                                            grid.wrap = !grid.wrap;
-                                            game.overlays.remove('Info');
-                                          }
-                                        },
                                       ),
                                     ),
                                   Tooltip(
@@ -617,6 +579,8 @@ class _GameUIState extends State<GameUI> {
                                     child: ListView(
                                       scrollDirection: Axis.horizontal,
                                       controller: scrollController,
+                                      cacheExtent: 0,
+                                      addAutomaticKeepAlives: false,
                                       children: cellbarItems(),
                                     ),
                                   ),
@@ -788,6 +752,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     gridClip.activate(selW + 1, selH + 1, g);
 
+    overlays.remove('ActionBar');
     selecting = false;
     setPos = false;
     dragPos = false;
@@ -879,6 +844,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
+    if (realisticRendering && !(pasting || selecting || running)) {
+      final mx = cellMouseX; // shorter names
+      final my = cellMouseY; // shorter names
+      if (grid.inside(mx, my)) {
+        renderCell(
+          Cell(mx, my)
+            ..id = (edType == EditorType.making
+                ? cells
+                : cellsToPlace)[currentSeletion]
+            ..rot = currentRotation
+            ..lastvars.lastRot = currentRotation,
+          mx,
+          my,
+          Paint()..color = Colors.white.withOpacity(0.5),
+        );
+      }
+    }
+
     if (pasting) {
       gridClip.render(canvas, cellMouseX, cellMouseY);
     } else if (selecting && setPos) {
@@ -920,7 +903,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  void renderCell(Cell cell, int x, int y) {
+  void renderCell(Cell cell, int x, int y, [Paint? paint]) {
     if (cell.id == "empty") return;
     final rot = (running
             ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay)
@@ -961,14 +944,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
       file = 'pixel_on';
     }
-    Sprite(Flame.images.fromCache('$file.png')).render(
-      canvas,
-      position: Vector2(off.dx * scaleX, off.dy * scaleY),
-      size: Vector2(
-        cellSize.toDouble() * scaleX,
-        cellSize.toDouble() * scaleY,
-      ),
-    );
+    Sprite(Flame.images.fromCache('$file.png'))
+      ..paint = paint ?? Paint()
+      ..render(
+        canvas,
+        position: Vector2(off.dx * scaleX, off.dy * scaleY),
+        size: Vector2(
+          cellSize.toDouble() * scaleX,
+          cellSize.toDouble() * scaleY,
+        ),
+      );
 
     canvas.restore();
   }
@@ -986,6 +971,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
     if (!overlays.isActive('CellBar')) {
       overlays.add('CellBar');
+    }
+    if (!overlays.isActive('ActionBar')) {
+      overlays.add('ActionBar');
     }
     if (!overlays.isActive('Info')) {
       overlays.add('Info');
@@ -1163,6 +1151,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           paste();
           pasting = false;
           selecting = false;
+          overlays.remove('ActionBar');
           setPos = false;
           dragPos = false;
           mouseDown = false;
@@ -1286,16 +1275,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } else if (keysPressed.contains(LogicalKeyboardKey.space) &&
             !(keys[PhysicalKeyboardKey.space] == true)) {
           playPause();
-        } else if (keysPressed.contains(LogicalKeyboardKey.equal) &&
-            keys[LogicalKeyboardKey.equal] != true) {
-          zoomin();
-        } else if (keysPressed.contains(LogicalKeyboardKey.minus) &&
-            keys[LogicalKeyboardKey.minus] != true) {
-          zoomout();
-        } else if (keys[PhysicalKeyboardKey.keyC] == true &&
-            keys[PhysicalKeyboardKey.controlLeft] == true) {
-          if (game.selecting && game.setPos) {
-            game.copy();
+        } else if (keysPressed.contains(LogicalKeyboardKey.escape) ||
+            keysPressed.contains(LogicalKeyboardKey.backspace)) {
+          if (pasting) {
+            pasting = false;
           }
         }
       }

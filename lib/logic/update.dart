@@ -1244,3 +1244,26 @@ void drawPower(Cell cell) {
     }
   }
 }
+
+void doSync(int x, int y, int movedir, int rot) {
+  if (movedir != -1 && grid.at(x, y).tags.contains("sync move")) return;
+  if (movedir != -1) {
+    grid.at(x, y).tags.add("sync move");
+  }
+  if (rot != 0) {
+    grid.at(x, y).tags.add("sync rot");
+  }
+
+  grid.forEach(
+    (cell, x, y) {
+      if ((!cell.tags.contains("sync move")) && movedir != -1) {
+        push(x, y, movedir, 1, MoveType.sync);
+      }
+      if ((!cell.tags.contains("sync rot")) && rot != 0) {
+        grid.rotate(x, y, rot);
+      }
+    },
+    null,
+    "sync",
+  );
+}

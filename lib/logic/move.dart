@@ -8,6 +8,7 @@ enum MoveType {
   puzzle,
   grab,
   tunnel,
+  sync,
 }
 
 bool canMove(int x, int y, int dir, MoveType mt) {
@@ -91,6 +92,16 @@ Vector2 randomVector2() {
 
 void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
   final moving = grid.at(ox, oy).copy;
+
+  if (moving.id == "sync") {
+    var dir = -1;
+    if (ox < nx) dir = 0;
+    if (oy < ny) dir = 1;
+    if (ox > nx) dir = 2;
+    if (oy > ny) dir = 3;
+
+    doSync(ox, oy, dir, 0);
+  }
 
   final movingTo = grid.at(nx, ny).copy;
 
@@ -271,7 +282,15 @@ bool push(int x, int y, int dir, int force,
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     final mightMove = push(x, y, dir, force, mt, depth + 1);
-    if (mightMove) moveCell(ox, oy, x, y, dir);
+    if (mightMove) {
+      final yes = grid.at(ox, oy);
+      if (mt == MoveType.sync && c.id == "sync") {
+        c.tags.add("sync move");
+      }
+      if (grid.at(ox, oy) == yes) {
+        moveCell(ox, oy, x, y, dir);
+      }
+    }
     return mightMove;
   } else {
     return false;

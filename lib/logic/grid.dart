@@ -313,6 +313,9 @@ class Grid {
       return;
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
+    if (id == "sync") {
+      doSync(x, y, -1, rot);
+    }
   }
 
   double get emptyPercantage {
