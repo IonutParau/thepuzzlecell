@@ -172,23 +172,97 @@ class Grid {
         ex = ceil(updateConstraints!.ex / chunkSize);
         ey = ceil(updateConstraints!.ey / chunkSize);
       }
-
-      for (var cx = sx; cx < ex; cx++) {
-        for (var cy = sy; cy < ey; cy++) {
-          if (chunks[cx][cy].contains(id)) {
-            final startx = cx * chunkSize;
-            final starty = cy * chunkSize;
-            final endx = startx + chunkSize;
-            final endy = starty + chunkSize;
-            for (var x = startx; x < endx; x++) {
-              for (var y = starty; y < endy; y++) {
-                if ((x >= 0 && x < width && y >= 0 && y < height)) {
-                  final cell = at(x, y);
-                  if (cell.updated == false) {
-                    if (cell.id == id &&
-                        cell.rot == (wantedDirection ?? cell.rot)) {
-                      cell.updated = true;
-                      callback(cell, x, y);
+      if (wantedDirection == 0) {
+        for (var cx = ex - 1; cx >= sx; cx--) {
+          for (var cy = ey - 1; cy >= sy; cy--) {
+            if (chunks[cx][cy].contains(id)) {
+              final startx = cx * chunkSize;
+              final starty = cy * chunkSize;
+              final endx = startx + chunkSize;
+              final endy = starty + chunkSize;
+              for (var x = endx - 1; x >= startx; x--) {
+                for (var y = endy - 1; y >= starty; y--) {
+                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
+                    final cell = at(x, y);
+                    if (cell.updated == false) {
+                      if (cell.id == id &&
+                          cell.rot == (wantedDirection ?? cell.rot)) {
+                        cell.updated = true;
+                        callback(cell, x, y);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else if (wantedDirection == 2 || wantedDirection == null) {
+        for (var cx = sx; cx < ex; cx++) {
+          for (var cy = sy; cy < ey; cy++) {
+            if (chunks[cx][cy].contains(id)) {
+              final startx = cx * chunkSize;
+              final starty = cy * chunkSize;
+              final endx = startx + chunkSize;
+              final endy = starty + chunkSize;
+              for (var x = startx; x < endx; x++) {
+                for (var y = starty; y < endy; y++) {
+                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
+                    final cell = at(x, y);
+                    if (cell.updated == false) {
+                      if (cell.id == id &&
+                          cell.rot == (wantedDirection ?? cell.rot)) {
+                        cell.updated = true;
+                        callback(cell, x, y);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else if (wantedDirection == 1) {
+        for (var cx = sx; cx < ex; cx++) {
+          for (var cy = ey - 1; cy >= sy; cy--) {
+            if (chunks[cx][cy].contains(id)) {
+              final startx = cx * chunkSize;
+              final starty = cy * chunkSize;
+              final endx = startx + chunkSize;
+              final endy = starty + chunkSize;
+              for (var x = startx; x < endx; x++) {
+                for (var y = endy - 1; y >= starty; y--) {
+                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
+                    final cell = at(x, y);
+                    if (cell.updated == false) {
+                      if (cell.id == id && cell.rot == 1) {
+                        cell.updated = true;
+                        callback(cell, x, y);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else if (wantedDirection == 3) {
+        for (var cx = ex - 1; cx >= sx; cx--) {
+          for (var cy = sy; cy < ey; cy++) {
+            if (chunks[cx][cy].contains(id)) {
+              final startx = cx * chunkSize;
+              final starty = cy * chunkSize;
+              final endx = startx + chunkSize;
+              final endy = starty + chunkSize;
+              for (var x = endx - 1; x >= startx; x--) {
+                for (var y = starty; y < endy; y++) {
+                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
+                    final cell = at(x, y);
+                    if (cell.updated == false) {
+                      if (cell.id == id && cell.rot == 3) {
+                        cell.updated = true;
+                        callback(cell, x, y);
+                      }
                     }
                   }
                 }
@@ -354,6 +428,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.rotators)) rots,
       if (cells.containsAny(CellTypeManager.gears)) gears,
       if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
+      if (cells.contains("speed")) speeds,
       if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.containsAny(CellTypeManager.puller)) pullers,
       if (cells.contains("liner")) liners,
@@ -422,30 +497,38 @@ class GridClip {
         if (cells[cx][cy].id != "empty") {
           canvas.save();
           final rot = cells[cx][cy].rot * halfPi;
-          final sx = cx + x;
-          final sy = cy + y;
-          final off = rotateOff(
+          var sx = cx + x;
+          var sy = cy + y;
+          if (grid.inside(sx, sy)) {
+            if (grid.wrap) {
+              sx += grid.width;
+              sx %= grid.width;
+              sy += grid.height;
+              sy %= grid.height;
+            }
+            final off = rotateOff(
+                  Offset(sx * cellSize + cellSize / 2,
+                      sy * cellSize + cellSize / 2),
+                  -rot,
+                ) -
                 Offset(
-                    sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
-                -rot,
-              ) -
-              Offset(
-                    cellSize,
-                    cellSize,
-                  ) /
-                  2;
-          canvas.rotate(rot);
-          (Sprite(Flame.images.fromCache('${cells[cx][cy].id}.png'))
-                ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
-              .render(
-            canvas,
-            position: Vector2(off.dx, off.dy),
-            size: Vector2.all(
-              cellSize.toDouble(),
-            ),
-          );
+                      cellSize,
+                      cellSize,
+                    ) /
+                    2;
+            canvas.rotate(rot);
+            (Sprite(Flame.images.fromCache('${cells[cx][cy].id}.png'))
+                  ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
+                .render(
+              canvas,
+              position: Vector2(off.dx, off.dy),
+              size: Vector2.all(
+                cellSize.toDouble(),
+              ),
+            );
 
-          canvas.restore();
+            canvas.restore();
+          }
         }
       }
     }

@@ -54,6 +54,7 @@ final justMoveInsideOf = [
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir) {
+  if (into.id == "enemy" && into.updated) return false;
   if (justMoveInsideOf.contains(into.id)) return true;
 
   return false;

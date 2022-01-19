@@ -1005,6 +1005,7 @@ class MechanicalManager {
   static bool connectable(int? dir, Cell cell) {
     if (cell.id == "empty") return false;
     if (dir == null) return true;
+    if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
     if (cell.id.startsWith('mech_')) return true;
     return CellTypeManager.mechanical.contains(cell.id);
@@ -1016,16 +1017,28 @@ class MechanicalManager {
     if (!connectable(sentDir, grid.at(x, y))) return;
     final cell = grid.at(x, y);
     if (onAt(x, y, true)) return;
+    if (cell.id == "cross_mech_gear" && sentDir != null) {
+      grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+      return spread(frontX(x, sentDir), frontY(y, sentDir), depth + 1, sentDir);
+    }
     cell.data['power'] = 2;
     if (cell.id == "mech_gear" && depth < 14)
       grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
     if (cell.id == "mech_gear") {
-      spread(x + 1, y, depth, 0);
-      spread(x - 1, y, depth, 2);
-      spread(x, y + 1, depth, 1);
-      spread(x, y - 1, depth, 3);
+      if (sentDir != 2) {
+        spread(x + 1, y, depth, 0);
+      }
+      if (sentDir != 0) {
+        spread(x - 1, y, depth, 2);
+      }
+      if (sentDir != 3) {
+        spread(x, y + 1, depth, 1);
+      }
+      if (sentDir != 1) {
+        spread(x, y - 1, depth, 3);
+      }
     }
   }
 
@@ -1266,4 +1279,20 @@ void doSync(int x, int y, int movedir, int rot) {
     null,
     "sync",
   );
+}
+
+void speeds() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        final fx = frontX(x, cell.rot);
+        final fy = frontY(y, cell.rot);
+        if (moveInsideOf(grid.at(fx, fy), fx, fy, cell.rot)) {
+          moveCell(x, y, fx, fy);
+        }
+      },
+      rot,
+      "speed",
+    );
+  }
 }

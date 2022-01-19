@@ -57,6 +57,8 @@ final cells = [
   "mech_grabber",
   "mech_fan",
   "mech_trash",
+  "cross_mech_gear",
+  "speed",
 ];
 
 class CellProfile {
@@ -96,6 +98,7 @@ final categories = [
       "puller",
       "liner",
       "grabber",
+      "speed",
       "bird",
       "releaser",
       "fan",
@@ -158,6 +161,7 @@ final categories = [
     "Cells that use mechanical gears and interactions to process data",
     [
       "mech_gear",
+      "cross_mech_gear",
       "mech_gen",
       "mech_mover",
       "mech_puller",
@@ -382,5 +386,9 @@ final cellInfo = <String, CellProfile>{
   "mech_trash": CellProfile(
     "Trash-Based Mechanical Generator",
     "Generates mechanical signals around it whenever it eats a cell",
+  ),
+  "cross_mech_gear": CellProfile(
+    "Cross Mechanical Gear",
+    "It's like two gears stacked on top of eachother",
   ),
 };

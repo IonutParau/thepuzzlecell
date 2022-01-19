@@ -46,11 +46,11 @@ class _GameUIState extends State<GameUI> {
     final index = (game.edType == EditorType.making ? cells : game.cellsToPlace)
         .indexOf(cell);
     return Container(
-      padding: EdgeInsets.all(2.w),
       child: SizedBox(
         width: 8.w,
         height: 8.w,
         child: Stack(
+          fit: StackFit.expand,
           children: [
             Align(
               alignment: Alignment.center,
@@ -65,11 +65,10 @@ class _GameUIState extends State<GameUI> {
                   borderRadius: BorderRadius.circular(0.5.sp),
                 ),
                 preferBelow: false,
-                margin: EdgeInsets.all(2.w),
                 child: MaterialButton(
                   onPressed: () => setState(() => game.currentSeletion = index),
-                  minWidth: 3.w,
-                  height: 3.w,
+                  height: 2.w,
+                  minWidth: 2.w,
                   child: Opacity(
                     opacity: (game.currentSeletion == index) ? 1 : 0.3,
                     child: MouseRegion(
@@ -77,8 +76,8 @@ class _GameUIState extends State<GameUI> {
                         quarterTurns: game.currentRotation,
                         child: Image.asset(
                           'assets/images/$cell.png',
-                          width: 3.w,
-                          height: 3.w,
+                          width: 2.w,
+                          height: 2.w,
                           fit: BoxFit.fill,
                         ),
                       ),
@@ -572,9 +571,10 @@ class _GameUIState extends State<GameUI> {
                                 onTap: () => game.mouseDown = false,
                                 child: Container(
                                   width: 100.w,
-                                  height: 16.h,
+                                  height: 8.h,
                                   color: Colors.grey[900],
                                   child: Scrollbar(
+                                    thickness: 0.5.h,
                                     controller: scrollController,
                                     child: ListView(
                                       scrollDirection: Axis.horizontal,
@@ -638,6 +638,8 @@ class _GameUIState extends State<GameUI> {
 }
 
 Offset rotateOff(Offset o, double r) {
+  if (r == 0) return o;
+  if (r == pi * 2) return -o;
   final or = atan2(o.dy, o.dx) + r;
   final om = sqrt(o.dy * o.dy + o.dx * o.dx);
 
@@ -652,7 +654,7 @@ Offset interpolate(Offset o1, Offset o2, double t) {
 }
 
 double lerp(num a, num b, double t) {
-  return a + (b - a) * t;
+  return a + (b - a) * min(t, 1);
 }
 
 double lerpRotation(int old, int newR, double t) {
@@ -660,6 +662,8 @@ double lerpRotation(int old, int newR, double t) {
 }
 
 int ceil(num n) => floor(n + 0.999);
+
+Map<String, Sprite> spriteCache = {};
 
 class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   late Canvas canvas;
@@ -705,7 +709,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late bool realisticRendering;
 
-  bool get validPlacePos => ((mouseY > 5.h) && (mouseY < 84.h));
+  bool get validPlacePos => ((mouseY > 5.h) && (mouseY < 92.h));
 
   var selecting = false;
   var pasting = false;
@@ -804,9 +808,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.translate(offX, offY);
 
     var sx = floor((-offX - cellSize) / cellSize);
-    var sy = floor((-offY - cellSize) / cellSize);
+    var sy = floor((8.h - offY - cellSize) / cellSize);
     var ex = ceil((canvasSize.x - offX) / cellSize);
-    var ey = ceil((canvasSize.y - offY) / cellSize);
+    var ey = ceil((92.h - offY) / cellSize);
 
     sx = max(sx, 0);
     sy = max(sy, 0);
@@ -821,9 +825,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       ey = min(ey + extra, grid.height);
     }
 
+    final xs = [];
+    final ys = [];
+
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
         if (grid.inside(x, y)) {
+          if (grid.at(x, y).id != "empty") {
+            xs.add(x);
+            ys.add(y);
+          }
           renderEmpty(grid.at(x, y), x, y);
         }
       }
@@ -835,19 +846,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    for (var x = sx; x < ex; x++) {
-      for (var y = sy; y < ey; y++) {
-        if (grid.inside(x, y)) {
-          final cell = grid.at(x, y);
-          renderCell(cell, x, y);
-        }
-      }
+    for (var i = 0; i < xs.length; i++) {
+      final x = xs[i];
+      final y = ys[i];
+
+      final cell = grid.at(x, y);
+      renderCell(cell, x, y);
     }
 
+    // for (var x = sx; x < ex; x++) {
+    //   for (var y = sy; y < ey; y++) {
+    //     if (grid.inside(x, y)) {}
+    //   }
+    // }
+
     if (realisticRendering && !(pasting || selecting || running)) {
-      final mx = cellMouseX; // shorter names
-      final my = cellMouseY; // shorter names
+      var mx = cellMouseX; // shorter names
+      var my = cellMouseY; // shorter names
       if (grid.inside(mx, my)) {
+        if (grid.wrap) {
+          mx += grid.width;
+          mx %= grid.width;
+          my += grid.height;
+          my %= grid.height;
+        }
         renderCell(
           Cell(mx, my)
             ..id = (edType == EditorType.making
@@ -863,7 +885,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     if (pasting) {
-      gridClip.render(canvas, cellMouseX, cellMouseY);
+      final mx =
+          grid.wrap ? (cellMouseX + grid.width) % grid.width : cellMouseX;
+
+      final my =
+          grid.wrap ? (cellMouseY + grid.height) % grid.height : cellMouseY;
+      gridClip.render(canvas, mx, my);
     } else if (selecting && setPos) {
       final selScreenX = (selX * cellSize);
       final selScreenY = (selY * cellSize);
@@ -944,7 +971,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
       file = 'pixel_on';
     }
-    Sprite(Flame.images.fromCache('$file.png'))
+    var sprite = spriteCache['$file.png'];
+    if (sprite == null) {
+      sprite = Sprite(Flame.images.fromCache('$file.png'));
+      spriteCache['$file.png'] = sprite;
+    }
+    sprite
       ..paint = paint ?? Paint()
       ..render(
         canvas,
@@ -962,7 +994,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void update(double dt) {
     updates++;
     if (realisticRendering) {
-      cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 5);
+      cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 10);
     } else {
       cellSize = wantedCellSize.toDouble();
     }
