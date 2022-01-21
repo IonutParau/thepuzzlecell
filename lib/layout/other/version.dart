@@ -9,11 +9,11 @@ List<String> changes = [
   "Added categories to the editor",
   "Added Stopper",
   "Added Opposite Rotator",
-  "Added Sync Cell",
   "Added Mechanical Gear",
   "Added Mechanical Generator",
   "Added Mechanically Powered Mover, Puller, Grabber and Fan",
   "Added Cross Mechanical Gear",
+  "Added Logic Gates",
 ];
 
 String getTrailing(String change) {
