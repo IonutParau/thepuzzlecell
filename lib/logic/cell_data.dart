@@ -59,6 +59,13 @@ final cells = [
   "mech_trash",
   "cross_mech_gear",
   "speed",
+  "and_gate",
+  "or_gate",
+  "xor_gate",
+  "not_gate",
+  "nand_gate",
+  "nor_gate",
+  "xnor_gate",
 ];
 
 class CellProfile {
@@ -170,6 +177,13 @@ final categories = [
       "pixel",
       "displayer",
       "mech_trash",
+      "and_gate",
+      "or_gate",
+      "xor_gate",
+      "not_gate",
+      "nand_gate",
+      "nor_gate",
+      "xnor_gate",
     ],
     "mech_gear",
   ),
@@ -390,5 +404,33 @@ final cellInfo = <String, CellProfile>{
   "cross_mech_gear": CellProfile(
     "Cross Mechanical Gear",
     "It's like two gears stacked on top of eachother",
+  ),
+  "and_gate": CellProfile(
+    "AND Gate",
+    "Takes 2 inputs and outputs the result of their AND operation",
+  ),
+  "or_gate": CellProfile(
+    "OR Gate",
+    "Takes 2 inputs and outputs the result of their OR operation",
+  ),
+  "xor_gate": CellProfile(
+    "AND Gate",
+    "Takes 2 inputs and outputs the result of their XOR operation",
+  ),
+  "not_gate": CellProfile(
+    "AND Gate",
+    "Takes 1 input and outputs the opposite of that input",
+  ),
+  "nand_gate": CellProfile(
+    "NAND Gate",
+    "Takes 2 inputs and outputs the opposite result of their AND operation",
+  ),
+  "nor_gate": CellProfile(
+    "NOR Gate",
+    "Takes 2 inputs and outputs the opposite result of their OR operation",
+  ),
+  "xnor_gate": CellProfile(
+    "XNOR Gate",
+    "Takes 2 inputs and outputs the opposite result of their XOR operation",
   ),
 };

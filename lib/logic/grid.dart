@@ -440,6 +440,7 @@ class Grid {
       if (cells.contains("darty")) dartys,
       if (cells.containsAny(CellTypeManager.puzzles)) puzzles,
       if (cells.contains("pmerge")) pmerges,
+      if (cells.containsAny(CellTypeManager.gates)) gates,
     ];
 
     final subticking = storage.getBool('subtick') ?? false;
