@@ -80,8 +80,11 @@ class _PuzzlesState extends State<Puzzles> {
             future: loadJsonData('assets/puzzles/${puzzles[i]}'),
             builder: (ctx, snap) {
               if (snap.hasData) {
-                final title = snap.data!.split(';')[5];
-                final desc = snap.data!.split(';')[6];
+                final isP1 = snap.data!.startsWith('P1;');
+                final title =
+                    isP1 ? snap.data!.split(';')[5] : snap.data!.split(';')[1];
+                final desc =
+                    isP1 ? snap.data!.split(';')[6] : snap.data!.split(';')[2];
                 return ListTile(
                   title: Text(title),
                   subtitle: Text(desc),

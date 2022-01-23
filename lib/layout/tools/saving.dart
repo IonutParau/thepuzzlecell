@@ -80,9 +80,19 @@ int decodeNum(String n, String valueString) {
 }
 
 Grid loadStr(String str) {
-  if (str.startsWith('P1;')) return P1.decode(str);
+  try {
+    if (str.startsWith('P1;')) return P1.decode(str);
+    if (str.startsWith('P1+;')) return P1Plus.decodeGrid(str);
 
-  throw "Unsupported saving format";
+    throw "Unsupported saving format";
+  } catch (e) {
+    if (e is RangeError) {
+      print(e.toString());
+      print(e.stackTrace?.toString());
+    }
+  }
+
+  return grid;
 }
 
 class P1 {
@@ -235,6 +245,11 @@ class SaveCell {
 
   bool sameAs(SaveCell other) =>
       (id == other.id && rot == other.rot && place == other.place);
+
+  Cell asCell(int x, int y) => Cell(x, y)
+    ..rot = rot
+    ..lastvars.lastRot = rot
+    ..id = id;
 }
 
 class P1Plus {
@@ -301,5 +316,45 @@ class P1Plus {
     }
 
     return str;
+  }
+
+  static Grid decodeGrid(String code) {
+    final segments = code.split(';');
+
+    final width = decodeNum(segments[3], valueString);
+    final height = decodeNum(segments[4], valueString);
+
+    final cellTable = segments[5].split(',');
+
+    final props = segments[6];
+
+    final cellList = <SaveCell>[];
+
+    for (var i = 7; i < segments.length; i++) {
+      var cellSeg = segments[i];
+      if (cellSeg != "") {
+        final splitCellSeg = cellSeg.split('-');
+        final cell = decodeCell(cellTable, splitCellSeg[0]);
+        final count = decodeNum(splitCellSeg[1], valueString);
+        for (var j = 0; j < count; j++) {
+          cellList.add(cell);
+        }
+      }
+    }
+
+    final grid = Grid(width, height);
+    if (props.contains('WRAP')) {
+      grid.wrap = true;
+    }
+    var i = 0;
+    grid.forEach(
+      (cell, x, y) {
+        grid.set(x, y, cellList[i].asCell(x, y));
+        grid.place[x][y] = cellList[i].place;
+        i++;
+      },
+    );
+
+    return grid;
   }
 }
