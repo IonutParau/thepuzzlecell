@@ -32,7 +32,8 @@ class Puzzles extends StatefulWidget {
 }
 
 Future<void> loadPuzzle(int index) async {
-  grid = P1.decode(await loadJsonData('assets/puzzles/${puzzles[index]}'));
+  final data = await loadJsonData('assets/puzzles/${puzzles[index]}');
+  grid = loadStr(data);
   discord.updatePresence(
     DiscordPresence(
       details: 'Playing a ${puzzles[index].split('/').first} puzzle',

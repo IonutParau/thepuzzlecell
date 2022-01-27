@@ -78,7 +78,14 @@ void doGen(int x, int y, int dir, int gendir,
         if (remaining.id == "enemy") {
           moveCell(ox, oy, ox, oy);
         } else {
-          grid.addBroken(toGenerate, ox, oy, x, y);
+          grid.addBroken(
+            toGenerate,
+            ox,
+            oy,
+            remaining.id == "silent_trash" ? "silent" : "normal",
+            x,
+            y,
+          );
         }
       }
       return;
@@ -248,6 +255,34 @@ void rots(Set<String> cells) {
       null,
       "opposite_rotator",
     );
+  }
+  if (cells.contains("rotator_180")) {
+    grid.forEach(
+      (cell, x, y) {
+        grid.rotate(x + 1, y, 2);
+        grid.rotate(x - 1, y, 2);
+        grid.rotate(x, y + 1, 2);
+        grid.rotate(x, y - 1, 2);
+      },
+      null,
+      "rotator_180",
+    );
+  }
+  for (var rot in rotOrder) {
+    if (cells.contains("redirector")) {
+      grid.forEach(
+        (cell, x, y) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+          if (grid.inside(fx, fy)) {
+            final front = grid.at(fx, fy);
+            grid.rotate(fx, fy, (rot - front.rot + 4) % 4);
+          }
+        },
+        rot,
+        "redirector",
+      );
+    }
   }
 }
 
@@ -480,28 +515,25 @@ void pullers() {
 
 void doPuzzleSide(int x, int y, int dir, Set<String> cells,
     [String type = "normal", int force = 1]) {
+  dir += 4;
   dir %= 4;
-  var ox = x;
-  var oy = y;
-  if (dir % 2 == 0) {
-    ox -= dir - 1;
-  } else {
-    oy -= dir - 2;
-  }
+  var puzzle = grid.at(x, y);
+  var ox = frontX(x, dir);
+  var oy = frontY(y, dir);
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
-  if (o.id.endsWith("puzzle")) {
-    if (o.rot == dir) {
+  if (o.id.endsWith("puzzle") && o.id != "antipuzzle") {
+    if (o.rot == puzzle.rot) {
       if (o.id == "trash_puzzle") type = "trash";
       force++;
       o.updated = true;
-    } else if (o.rot == (dir + 2) % 4) {
+    } else if (o.rot == ((puzzle.rot + 2) % 4)) {
       force--;
       o.updated = true;
     }
     if (force == 0) return;
-    if (o.rot == dir || o.rot == (dir + 2) % 4) {
+    if ((o.rot == puzzle.rot) || (o.rot == (puzzle.rot + 2) % 4)) {
       doPuzzleSide(ox, oy, dir, cells, type, force);
     }
   }
@@ -532,14 +564,13 @@ void puzzles(Set<String> cells) {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        if (keys[PhysicalKeyboardKey.shiftLeft] == true) return;
-        if (keys[PhysicalKeyboardKey.keyW] == true) {
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot - 1, cells);
-        } else if (keys[PhysicalKeyboardKey.keyS] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot + 1, cells);
-        } else if (keys[PhysicalKeyboardKey.keyA] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot + 2, cells);
-        } else if (keys[PhysicalKeyboardKey.keyD] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot, cells);
         }
       },
@@ -548,14 +579,13 @@ void puzzles(Set<String> cells) {
     );
     grid.forEach(
       (cell, x, y) {
-        if (keys[PhysicalKeyboardKey.shiftLeft] == true) return;
-        if (keys[PhysicalKeyboardKey.keyW] == true) {
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot - 1, cells, "trash");
-        } else if (keys[PhysicalKeyboardKey.keyS] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot + 1, cells, "trash");
-        } else if (keys[PhysicalKeyboardKey.keyA] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot + 2, cells, "trash");
-        } else if (keys[PhysicalKeyboardKey.keyD] == true) {
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot, cells, "trash");
         }
       },
@@ -564,16 +594,14 @@ void puzzles(Set<String> cells) {
     );
     grid.forEach(
       (cell, x, y) {
-        if (keys[PhysicalKeyboardKey.shiftLeft] != true) {
-          if (keys[PhysicalKeyboardKey.keyW] == true) {
-            cell.rot = 3;
-          } else if (keys[PhysicalKeyboardKey.keyS] == true) {
-            cell.rot = 1;
-          } else if (keys[PhysicalKeyboardKey.keyA] == true) {
-            cell.rot = 2;
-          } else if (keys[PhysicalKeyboardKey.keyD] == true) {
-            cell.rot = 0;
-          }
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          cell.rot = 3;
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          cell.rot = 1;
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          cell.rot = 2;
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          cell.rot = 0;
         }
         doPuzzleSide(x, y, cell.rot, cells);
       },
@@ -904,7 +932,7 @@ void grabbers() {
   }
 }
 
-void DoFan(Cell cell, int x, int y) {
+void doFan(Cell cell, int x, int y) {
   final fx = frontX(x, cell.rot);
   final fy = frontY(y, cell.rot);
 
@@ -913,14 +941,30 @@ void DoFan(Cell cell, int x, int y) {
   }
 }
 
+void doVacuum(Cell cell, int x, int y) {
+  final front = inFront(x, y, cell.rot);
+
+  if (front != null) {
+    if (front.id == "empty") {
+      pull(frontX(frontX(x, cell.rot), cell.rot),
+          frontY(frontY(y, cell.rot), cell.rot), (cell.rot + 2) % 4, 1);
+    }
+  }
+}
+
 void fans() {
   for (var rot in rotOrder) {
     grid.forEach(
-      (cell, x, y) {
-        DoFan(cell, x, y);
-      },
+      doFan,
       rot,
       "fan",
+    );
+  }
+  for (var rot in rotOrder) {
+    grid.forEach(
+      doVacuum,
+      rot,
+      "vacuum",
     );
   }
 }
@@ -1088,13 +1132,15 @@ class CellTypeManager {
 
   static List<String> grabbers = ["grabber"];
 
-  static List<String> fans = ["fan"];
+  static List<String> fans = ["fan", "vacuum"];
+
+  static List<String> ants = ["ant_cw", "ant_ccw"];
 
   static List<String> generators = [
     "generator",
     "generator_cw",
     "generator_ccw",
-    "triple_gen",
+    "triplegen",
     "crossgen",
     "constructorgen",
     "physical_gen",
@@ -1107,7 +1153,9 @@ class CellTypeManager {
   static List<String> rotators = [
     "rotator_cw",
     "rotator_ccw",
-    "opposite_rotator"
+    "rotator_180",
+    "redirector",
+    "opposite_rotator",
   ];
 
   static List<String> gears = [
@@ -1219,7 +1267,7 @@ void mechs(Set<String> cells) {
     grid.forEach(
       (cell, x, y) {
         if (MechanicalManager.on(cell, true)) {
-          DoFan(cell, x, y);
+          doFan(cell, x, y);
         }
       },
       rot,
@@ -1290,15 +1338,23 @@ void doSync(int x, int y, int movedir, int rot) {
   );
 }
 
+bool nudge(int x, int y, int rot) {
+  final fx = frontX(x, rot);
+  final fy = frontY(y, rot);
+  if (grid.inside(fx, fy)) {
+    if (moveInsideOf(grid.at(fx, fy), fx, fy, rot)) {
+      moveCell(x, y, fx, fy);
+      return true;
+    }
+  }
+  return false;
+}
+
 void speeds() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
-        final fx = frontX(x, cell.rot);
-        final fy = frontY(y, cell.rot);
-        if (moveInsideOf(grid.at(fx, fy), fx, fy, cell.rot)) {
-          moveCell(x, y, fx, fy);
-        }
+        nudge(x, y, cell.rot);
       },
       rot,
       "speed",
@@ -1417,5 +1473,70 @@ void gates(Set<String> cells) {
         "xnor_gate",
       );
     }
+  }
+}
+
+Cell? safeAt(int x, int y) {
+  if (!grid.inside(x, y)) return null;
+  return grid.at(x, y);
+}
+
+void doAnt(RotationalType rt, Cell cell, int x, int y) {
+  if (rt == RotationalType.clockwise) {
+    grid.rotate(x, y, 1);
+    if (safeAt(x, y + 1)?.id != "empty" && push(x, y, 0, 1)) {
+    } else if (safeAt(x, y - 1)?.id != "empty" && push(x, y, 2, 1)) {
+    } else if (safeAt(x + 1, y)?.id != "empty" && push(x, y, 3, 1)) {
+    } else if (safeAt(x - 1, y)?.id != "empty" && push(x, y, 1, 1)) {
+    } else {
+      push(x, y, 1, 1);
+    }
+  } else if (rt == RotationalType.counter_clockwise) {
+    grid.rotate(x, y, -1);
+    if (safeAt(x, y + 1)?.id != "empty" && push(x, y, 2, 1)) {
+    } else if (safeAt(x, y - 1)?.id != "empty" && push(x, y, 0, 1)) {
+    } else if (safeAt(x - 1, y)?.id != "empty" && push(x, y, 3, 1)) {
+    } else if (safeAt(x + 1, y)?.id != "empty" && push(x, y, 1, 1)) {
+    } else {
+      push(x, y, 1, 1);
+    }
+  }
+}
+
+void ants() {
+  grid.forEach(
+    (cell, x, y) {
+      doAnt(RotationalType.clockwise, cell, x, y);
+    },
+    null,
+    "ant_cw",
+  );
+  grid.forEach(
+    (cell, x, y) {
+      doAnt(RotationalType.counter_clockwise, cell, x, y);
+    },
+    null,
+    "ant_ccw",
+  );
+}
+
+void drillers() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        if (!nudge(x, y, cell.rot)) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+          final f = safeAt(fx, fy);
+          if (f != null) {
+            if (canMove(fx, fy, (cell.rot + 2) % 4, MoveType.mirror)) {
+              swapCells(x, y, frontX(x, cell.rot), frontY(y, cell.rot));
+            }
+          }
+        }
+      },
+      rot,
+      "driller",
+    );
   }
 }

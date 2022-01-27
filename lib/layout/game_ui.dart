@@ -8,7 +8,7 @@ TextStyle fontSize(double fontSize) {
   );
 }
 
-Map<PhysicalKeyboardKey, bool> keys = {};
+Map<String, bool> keys = {};
 
 const halfPi = pi / 2;
 
@@ -131,7 +131,6 @@ class _GameUIState extends State<GameUI> {
             ),
             onPressed: () {
               category.opened = !category.opened;
-              game.overlays.remove('CellBar');
             },
           ),
         ),
@@ -238,12 +237,15 @@ class _GameUIState extends State<GameUI> {
 
   @override
   Widget build(BuildContext context) {
+    game.context = context;
     return Scaffold(
       body: SizedBox(
         width: 100.w,
         height: 100.h,
         child: Center(
           child: MouseRegion(
+            onExit: (e) => game.onMouseExit(),
+            onEnter: game.onMouseEnter,
             onHover: (e) {
               game.mouseX = e.localPosition.dx;
               game.mouseY = e.localPosition.dy;
@@ -263,10 +265,7 @@ class _GameUIState extends State<GameUI> {
               },
               child: GameWidget(
                 game: game,
-                initialActiveOverlays: [
-                  "CellBar",
-                  "ActionBar",
-                ],
+                initialActiveOverlays: [],
                 overlayBuilderMap: {
                   'ActionBar': (ctx, _) {
                     return LayoutBuilder(
@@ -481,8 +480,6 @@ class _GameUIState extends State<GameUI> {
                                           onPressed: () {
                                             if (!game.running) {
                                               grid.wrap = !grid.wrap;
-                                              game.overlays.remove('Info');
-                                              game.overlays.remove('ActionBar');
                                             }
                                           },
                                         ),
@@ -665,10 +662,239 @@ int ceil(num n) => floor(n + 0.999);
 
 Map<String, Sprite> spriteCache = {};
 
+void loadAllButtonTextures() {
+  Flame.images.loadAll([
+    "back.png",
+    "interface/save.png",
+    "interface/load.png",
+    "interface/select.png",
+    "interface/copy.png",
+    "interface/paste.png",
+    "interface/wrap.png",
+    "interface/zoomin.png",
+    "interface/zoomout.png",
+    "interface/select_on.png",
+    "interface/paste_on.png",
+    "interface/cut.png",
+    "interface/del.png",
+  ]);
+}
+
+enum ButtonAlignment {
+  TOPLEFT,
+  BOTTOMLEFT,
+  TOPRIGHT,
+  BOTTOMRIGHT,
+}
+
+class VirtualButton {
+  Vector2 position;
+  Vector2 size;
+  String texture;
+  int rotation;
+  int lastRot;
+  ButtonAlignment alignment;
+  void Function() callback;
+  bool Function() shouldRender;
+
+  late Vector2 canvasSize;
+
+  double time = 0;
+  double duration = 0.1;
+  Vector2 startPos;
+
+  double timeRot = 0;
+  double rotDuration = 0.1;
+
+  String title;
+  String description;
+
+  VirtualButton(this.position, this.size, this.texture, this.alignment,
+      this.callback, this.shouldRender,
+      {this.title = "Untitled", this.description = "No description"})
+      : rotation = 0,
+        lastRot = 0,
+        startPos = position; // Constructors
+
+  void render(Canvas canvas, Vector2 canvasSize) {
+    this.canvasSize = canvasSize;
+    late Vector2 screenPos;
+
+    var center = size / 2;
+
+    var untranslatedPostion = startPos.clone();
+    untranslatedPostion.lerp(
+      position,
+      min(
+        time / duration,
+        1,
+      ),
+    );
+
+    var rot = lerpRotation(
+      lastRot,
+      rotation,
+      min(timeRot / rotDuration, 1),
+    );
+
+    var seenSize = size * min(time / duration, 1);
+
+    bool hovered = isHovered(game.mouseX.toInt(), game.mouseY.toInt());
+
+    if (!shouldRender()) {
+      if (time / duration > 1) return;
+      untranslatedPostion = position.clone();
+      untranslatedPostion.lerp(
+        startPos,
+        time / duration,
+      );
+      seenSize = size * (1 - (time / duration));
+    }
+    if (alignment == ButtonAlignment.TOPLEFT) {
+      screenPos = untranslatedPostion.clone();
+    } else if (alignment == ButtonAlignment.TOPRIGHT) {
+      screenPos = Vector2(
+          canvasSize.x - untranslatedPostion.x - size.x, untranslatedPostion.y);
+    } else if (alignment == ButtonAlignment.BOTTOMLEFT) {
+      screenPos =
+          Vector2(untranslatedPostion.x, canvasSize.y - untranslatedPostion.y);
+    } else if (alignment == ButtonAlignment.BOTTOMRIGHT) {
+      screenPos = canvasSize - untranslatedPostion - size;
+    }
+    screenPos += center;
+
+    screenPos.rotate(-rot * halfPi);
+
+    canvas.save();
+    canvas.rotate(rot * halfPi);
+
+    (Sprite(Flame.images.fromCache(
+      textureMap[texture] ?? texture,
+    ))
+          ..paint.color = hovered
+              ? Colors.white
+              : Colors.white.withOpacity(
+                  0.8,
+                ))
+        .render(
+      canvas,
+      position: (screenPos - center) + (size - seenSize) / 2,
+      size: seenSize,
+    );
+    canvas.restore();
+  }
+
+  bool isHovered(int mouseX, int mouseY) {
+    late Vector2 screenPos;
+
+    if (alignment == ButtonAlignment.TOPLEFT) {
+      screenPos = position.clone();
+    } else if (alignment == ButtonAlignment.TOPRIGHT) {
+      screenPos = Vector2(canvasSize.x - position.x - size.x, position.y);
+    } else if (alignment == ButtonAlignment.BOTTOMLEFT) {
+      screenPos = Vector2(position.x, canvasSize.y - position.y);
+    } else if (alignment == ButtonAlignment.BOTTOMRIGHT) {
+      screenPos = canvasSize - position - size;
+    }
+
+    if (mouseX >= screenPos.x &&
+        mouseX <= screenPos.x + size.x &&
+        mouseY >= screenPos.y &&
+        mouseY <= screenPos.y + size.y) {
+      return true;
+    }
+    return false;
+  }
+
+  void click(int mouseX, int mouseY) {
+    if (isHovered(mouseX, mouseY)) {
+      callback();
+    }
+  }
+}
+
+class ButtonManager {
+  PuzzleGame game;
+  Map<String, VirtualButton> buttons = {};
+
+  ButtonManager(this.game);
+
+  void setButton(String key, VirtualButton button) {
+    buttons[key] = button;
+  }
+
+  void forEach(void Function(String key, VirtualButton button) callback) {
+    buttons.forEach(callback);
+  }
+
+  void removeButton(String key) {
+    buttons.remove(key);
+  }
+}
+
+void renderInfoBox(Canvas canvas, String title, String description) {
+  final mouseX = max(game.mouseX, 10).toDouble();
+  final mouseY = max(game.mouseY, 10).toDouble();
+
+  final titleTP = TextPainter(
+      textWidthBasis: TextWidthBasis.longestLine,
+      textDirection: TextDirection.ltr);
+  final descriptionTP = TextPainter(textDirection: TextDirection.ltr);
+
+  titleTP.text = TextSpan(
+    text: title,
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 9.sp,
+    ),
+  );
+
+  descriptionTP.text = TextSpan(
+    text: description,
+    style: TextStyle(
+      color: Colors.white,
+      fontSize: 7.sp,
+    ),
+  );
+
+  titleTP.layout();
+  final width = max(titleTP.width, 10.w);
+  descriptionTP.layout(maxWidth: width);
+  final height = titleTP.height + descriptionTP.height;
+
+  var size = Size(width + 20, height + 20);
+  var off = Offset(mouseX, mouseY);
+  if (off.dx + size.width > game.canvasSize.x) {
+    off = Offset(game.canvasSize.x - size.width - 10, off.dy);
+  }
+  if (off.dy + size.height > game.canvasSize.y) {
+    off = Offset(off.dx, game.canvasSize.y - size.height - 10);
+  }
+
+  final rect = off & size;
+
+  canvas.drawRect(
+    rect,
+    Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10,
+  );
+  canvas.drawRect(
+    rect,
+    Paint()..color = Colors.grey[800]!,
+  );
+  titleTP.paint(canvas, Offset(off.dx + 10, off.dy + 10));
+  descriptionTP.paint(
+      canvas, Offset(off.dx + 10, off.dy + titleTP.height + 20));
+}
+
 class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   late Canvas canvas;
 
   bool firstRender = true;
+
+  late BuildContext context;
 
   bool mouseDown = false;
 
@@ -695,6 +921,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   int updates = 0;
 
   bool running = false;
+  bool isinitial = true;
 
   double itime = 0;
   double delay = 0.15;
@@ -721,6 +948,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var selH = 0;
   var setPos = false;
   var dragPos = false;
+
+  void back() {
+    Navigator.of(context).pop();
+    resetAllCategories();
+  }
 
   void paste() {
     if (gridClip.active) {
@@ -756,15 +988,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     gridClip.activate(selW + 1, selH + 1, g);
 
-    overlays.remove('ActionBar');
     selecting = false;
     setPos = false;
     dragPos = false;
     pasting = true;
+    buttonManager.buttons['paste-btn']?.texture = 'interface/paste_on.png';
 
     selW++;
     selH++;
   }
+
+  bool mouseInside = true;
 
   void properlyChangeZoom(int oldzoom, int newzoom) {
     final scale = newzoom / oldzoom;
@@ -778,15 +1012,414 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     mouseY = event.position.dy;
   }
 
+  void onMouseExit() {
+    mouseDown = false;
+    mouseInside = false;
+  }
+
+  late ButtonManager buttonManager;
+
   @override
   Future<void>? onLoad() async {
+    loadAllButtonTextures();
+    if (edType == EditorType.loaded) {
+      storedOffX = canvasSize.x / 2 - (grid.width / 2) * defaultCellSize;
+      storedOffY = canvasSize.y / 2 - (grid.height / 2) * defaultCellSize;
+    }
+    await Flame.images.loadAll(
+      cells.map((name) => textureMap["$name.png"] ?? "$name.png").toList(),
+    );
+    await Flame.images.load('pixel_on.png');
+    await Flame.images.load("enemy_particles.png");
+    buttonManager = ButtonManager(this);
+
+    buttonManager.setButton(
+      "back-btn",
+      VirtualButton(
+        Vector2.zero(),
+        Vector2.all(80),
+        "back.png",
+        ButtonAlignment.TOPLEFT,
+        back,
+        () => true,
+        title: 'Back',
+        description: 'Sends you back',
+      ),
+    );
+
+    buttonManager.setButton(
+      "play-btn",
+      VirtualButton(
+        Vector2(
+          20,
+          30,
+        ),
+        Vector2.all(40),
+        "mover.png",
+        ButtonAlignment.TOPRIGHT,
+        playPause,
+        () => true,
+        title: 'Play / Pause',
+        description: 'Play or Pause the simulation',
+      ),
+    );
+
+    buttonManager.setButton(
+      "save-btn",
+      VirtualButton(
+        Vector2(
+          edType == EditorType.making ? 120 : 70,
+          30,
+        ),
+        Vector2.all(40),
+        "interface/save.png",
+        ButtonAlignment.TOPRIGHT,
+        () {
+          FlutterClipboard.controlC(P1Plus.encodeGrid(grid));
+        },
+        () => true,
+        title: 'Save to clipboard',
+        description:
+            'Save the simulation as a encoded string into your clipboard',
+      ),
+    );
+
+    var catOff = 80.0;
+    var catSize = 60.0;
+
+    var cellSize = 40.0;
+
+    if (edType == EditorType.making) {
+      buttonManager.setButton(
+        "rot-cw-btn",
+        VirtualButton(
+          Vector2(
+            70,
+            30,
+          ),
+          Vector2.all(40),
+          "rotator_cw.png",
+          ButtonAlignment.TOPRIGHT,
+          e,
+          () => true,
+          title: 'Rotate CW',
+          description:
+              'Rotates the cells in the UI or what you are about to paste clockwise',
+        ),
+      );
+
+      buttonManager.setButton(
+        "rot-ccw-btn",
+        VirtualButton(
+          Vector2(
+            70,
+            80,
+          ),
+          Vector2.all(40),
+          "rotator_ccw.png",
+          ButtonAlignment.TOPRIGHT,
+          q,
+          () => true,
+          title: 'Rotate CCW',
+          description:
+              'Rotates the cells in the UI or what you are about to paste counter-clockwise',
+        ),
+      );
+
+      buttonManager.setButton(
+        "select-btn",
+        VirtualButton(
+          Vector2(
+            170,
+            30,
+          ),
+          Vector2.all(40),
+          "interface/select.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            game.selecting = !game.selecting;
+            if (game.selecting) {
+              buttonManager.buttons['select-btn']?.texture =
+                  "interface/select_on.png";
+            }
+            if (!game.selecting) {
+              buttonManager.buttons['select-btn']?.texture =
+                  "interface/select.png";
+              game.setPos = false;
+              game.dragPos = false;
+            }
+            game.pasting = false;
+            buttonManager.buttons['paste-btn']?.texture = 'interface/paste.png';
+          },
+          () => true,
+          title: 'Toggle Select Mode',
+          description:
+              'In Select Mode you drag an area and can copy, cut, or paste it',
+        ),
+      );
+
+      buttonManager.setButton(
+        "copy-btn",
+        VirtualButton(
+          Vector2(
+            170,
+            80,
+          ),
+          Vector2.all(40),
+          "interface/copy.png",
+          ButtonAlignment.TOPRIGHT,
+          copy,
+          () => selecting && !dragPos,
+          title: 'Copy',
+          description: 'Copy selected area',
+        ),
+      );
+
+      buttonManager.setButton(
+        "cut-btn",
+        VirtualButton(
+          Vector2(
+            170,
+            130,
+          ),
+          Vector2.all(40),
+          "interface/cut.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            copy();
+            for (var x = 0; x <= selW; x++) {
+              for (var y = 0; y <= selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  grid.set(cx, cy, Cell(cx, cy));
+                }
+              }
+            }
+          },
+          () => selecting && !dragPos,
+          title: 'Cut',
+          description: 'Copy and delete selected area',
+        ),
+      );
+
+      buttonManager.setButton(
+        "del-btn",
+        VirtualButton(
+          Vector2(
+            170,
+            180,
+          ),
+          Vector2.all(40),
+          "interface/del.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            if (selW < 0) {
+              selW *= -1;
+              selX -= selW;
+            }
+            if (selH < 0) {
+              selH *= -1;
+              selY -= selH;
+            }
+
+            selW--;
+            selH--;
+
+            for (var x = 0; x <= selW; x++) {
+              for (var y = 0; y <= selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  grid.set(cx, cy, Cell(cx, cy));
+                }
+              }
+            }
+          },
+          () => selecting && !dragPos,
+          title: 'Delete',
+          description: 'Delete selected area',
+        ),
+      );
+
+      buttonManager.setButton(
+        "paste-btn",
+        VirtualButton(
+          Vector2(
+            220,
+            30,
+          ),
+          Vector2.all(40),
+          "interface/select.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            game.pasting = !game.pasting;
+
+            buttonManager.buttons['paste-btn']?.texture =
+                game.pasting ? 'interface/paste_on.png' : 'interface/paste.png';
+          },
+          () => gridClip.active,
+          title: 'Paste',
+          description: 'Paste what you have copied',
+        ),
+      );
+
+      buttonManager.setButton(
+        "restore-btn",
+        VirtualButton(
+          Vector2(
+            20,
+            80,
+          ),
+          Vector2.all(40),
+          "rotator_180.png",
+          ButtonAlignment.TOPRIGHT,
+          restoreInitial,
+          () => !isinitial,
+          title: 'Restore to initial state',
+          description: 'Restores the simulation to the initial state',
+        ),
+      );
+      buttonManager.setButton(
+        "setinitial-btn",
+        VirtualButton(
+          Vector2(
+            20,
+            130,
+          ),
+          Vector2.all(40),
+          "generator.png",
+          ButtonAlignment.TOPRIGHT,
+          setInitial,
+          () => !isinitial,
+          title: 'Set Initial',
+          description:
+              'Sets the simulation\'s current state as the initial state',
+        ),
+      );
+      buttonManager.setButton(
+        "load-btn",
+        VirtualButton(
+          Vector2(
+            120,
+            80,
+          ),
+          Vector2.all(40),
+          "interface/load.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            try {
+              FlutterClipboard.paste().then(
+                (str) {
+                  grid = loadStr(str);
+                  initial = grid.copy;
+                  isinitial = true;
+                  running = false;
+                  buttonManager.buttons['play-btn']?.texture = 'mover.png';
+                  buttonManager.buttons['play-btn']?.rotation = 0;
+                  buttonManager.buttons['wrap-btn']?.title =
+                      grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+                },
+              );
+            } catch (e) {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text(
+                      'Invalid save code',
+                    ),
+                    content: Text(
+                      'You are trying to load a corrupted, invalid or unsupported level code.',
+                    ),
+                  );
+                },
+              );
+            }
+          },
+          () => true,
+          title: 'Load from clipboard',
+          description:
+              'Sets the grid to the level stored in the string in your clipboard',
+        ),
+      );
+      buttonManager.setButton(
+        "wrap-btn",
+        VirtualButton(
+          Vector2(
+            120,
+            130,
+          ),
+          Vector2.all(40),
+          "interface/wrap.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            grid.wrap = !grid.wrap;
+            buttonManager.buttons['wrap-btn']?.title =
+                grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+          },
+          () => true,
+          title: 'Wrap Mode (OFF)',
+          description: 'When Wrap mode is on, cells will wrap around the grid',
+        ),
+      );
+      for (var i = 0; i < categories.length; i++) {
+        buttonManager.setButton(
+          'cat$i',
+          VirtualButton(
+            Vector2((catOff - catSize) / 2 + i * catOff, catOff),
+            Vector2(catSize, catSize),
+            categories[i].look + '.png',
+            ButtonAlignment.BOTTOMLEFT,
+            () {
+              final cat = categories[i]; // Kitty
+              resetAllCategories(cat);
+
+              cat.opened = !cat.opened;
+
+              for (var j = 0; j < cat.items.length; j++) {
+                buttonManager.buttons['cat${i}cell$j']?.time = 0;
+                buttonManager.buttons['cat${i}cell$j']?.startPos =
+                    Vector2((catOff - catSize) / 2 + i * catOff, catOff) +
+                        Vector2.all((catSize - cellSize) / 2);
+              }
+            },
+            () => true,
+            title: categories[i].title,
+            description: categories[i].description,
+          ),
+        );
+        for (var j = 0; j < categories[i].items.length; j++) {
+          buttonManager.setButton(
+            'cat${i}cell$j',
+            VirtualButton(
+              Vector2(
+                  (catOff - catSize) / 2 +
+                      i * catOff +
+                      (catSize - cellSize) / 2,
+                  catOff + cellSize * (j + 1)),
+              Vector2(cellSize, cellSize),
+              '${categories[i].items[j]}.png',
+              ButtonAlignment.BOTTOMLEFT,
+              () => game.currentSeletion = cells.indexOf(
+                categories[i].items[j],
+              ),
+              () => categories[i].opened,
+              title: (cellInfo[categories[i].items[j]] ?? defaultProfile).title,
+              description: (cellInfo[categories[i].items[j]] ?? defaultProfile)
+                  .description,
+            )..time = 50,
+          );
+
+          buttonManager.buttons['cat${i}cell$j']?.duration += 0.005 * j;
+        }
+      }
+    }
+
     wantedCellSize = defaultCellSize;
     cellSize = defaultCellSize.toDouble();
     keys = {};
     puzzleWin = false;
-    await Flame.images.loadAll(cells.map((name) => "$name.png").toList());
-    await Flame.images.load('pixel_on.png');
-    await Flame.images.load("enemy_particles.png");
     delay = storage.getDouble("delay") ?? 0.15;
     realisticRendering = storage.getBool("realistic_render") ?? true;
 
@@ -846,21 +1479,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    for (var i = 0; i < xs.length; i++) {
-      final x = xs[i];
-      final y = ys[i];
-
-      final cell = grid.at(x, y);
-      renderCell(cell, x, y);
+    for (var x = sx; x < ex; x++) {
+      for (var y = sy; y < ey; y++) {
+        if (grid.inside(x, y)) {
+          if (grid.at(x, y).id != "empty") {
+            renderCell(grid.at(x, y), x, y);
+          }
+        }
+      }
     }
 
-    // for (var x = sx; x < ex; x++) {
-    //   for (var y = sy; y < ey; y++) {
-    //     if (grid.inside(x, y)) {}
-    //   }
-    // }
-
-    if (realisticRendering && !(pasting || selecting || running)) {
+    if (edType == EditorType.making &&
+        realisticRendering &&
+        mouseInside &&
+        !(pasting || selecting)) {
       var mx = cellMouseX; // shorter names
       var my = cellMouseY; // shorter names
       if (grid.inside(mx, my)) {
@@ -872,9 +1504,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
         renderCell(
           Cell(mx, my)
-            ..id = (edType == EditorType.making
-                ? cells
-                : cellsToPlace)[currentSeletion]
+            ..id = cells[currentSeletion]
             ..rot = currentRotation
             ..lastvars.lastRot = currentRotation,
           mx,
@@ -882,6 +1512,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           Paint()..color = Colors.white.withOpacity(0.5),
         );
       }
+    }
+
+    if (edType == EditorType.loaded &&
+        cells[currentSeletion] != "empty" &&
+        mouseInside) {
+      final c = Cell(0, 0);
+      c.lastvars = LastVars(currentRotation, 0, 0);
+      c.lastvars.lastPos = Offset(
+        (mouseX - offX) / cellSize,
+        (mouseY - offY) / cellSize,
+      );
+      c.id = cells[currentSeletion];
+      c.rot = currentRotation;
+      renderCell(
+        c,
+        (mouseX - offX) / cellSize - 0.5,
+        (mouseY - offY) / cellSize - 0.5,
+      );
     }
 
     if (pasting) {
@@ -901,7 +1549,29 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
     //grid.forEach(renderCell);
 
-    //canvas.restore();
+    canvas.restore();
+
+    buttonManager.forEach(
+      (key, button) {
+        button.canvasSize = canvasSize;
+        button.render(canvas, canvasSize);
+      },
+    );
+
+    if (storage.getBool('show_titles') ?? true) {
+      buttonManager.forEach(
+        (key, button) {
+          if (button.isHovered(mouseX.toInt(), mouseY.toInt()) &&
+              button.shouldRender() &&
+              mouseInside &&
+              !key.startsWith('hidden-')) {
+            renderInfoBox(canvas, button.title, button.description);
+          }
+        },
+      );
+    }
+
+    canvas.translate(offX, offY);
 
     super.render(canvas);
   }
@@ -930,7 +1600,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  void renderCell(Cell cell, int x, int y, [Paint? paint]) {
+  void renderCell(Cell cell, num x, num y, [Paint? paint]) {
     if (cell.id == "empty") return;
     final rot = (running
             ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay)
@@ -973,7 +1643,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
     var sprite = spriteCache['$file.png'];
     if (sprite == null) {
-      sprite = Sprite(Flame.images.fromCache('$file.png'));
+      sprite = Sprite(
+          Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'));
       spriteCache['$file.png'] = sprite;
     }
     sprite
@@ -993,23 +1664,29 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   void update(double dt) {
     updates++;
+    buttonManager.forEach(
+      (key, button) {
+        button.time += dt;
+        button.timeRot += dt;
+      },
+    );
     if (realisticRendering) {
       cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 10);
     } else {
       cellSize = wantedCellSize.toDouble();
     }
-    if (overlays.isActive('CellBar')) {
-      overlays.remove('CellBar');
-    }
-    if (!overlays.isActive('CellBar')) {
-      overlays.add('CellBar');
-    }
-    if (!overlays.isActive('ActionBar')) {
-      overlays.add('ActionBar');
-    }
-    if (!overlays.isActive('Info')) {
-      overlays.add('Info');
-    }
+    // if (overlays.isActive('CellBar')) {
+    //   overlays.remove('CellBar');
+    // }
+    // if (!overlays.isActive('CellBar')) {
+    //   overlays.add('CellBar');
+    // }
+    // if (!overlays.isActive('ActionBar')) {
+    //   overlays.add('ActionBar');
+    // }
+    // if (!overlays.isActive('Info')) {
+    //   overlays.add('Info');
+    // }
     if (puzzleWin && !overlays.isActive("Win")) {
       overlays.add("Win");
     }
@@ -1030,63 +1707,51 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    bool canMoveCam = true;
-    if (running) {
-      canMoveCam = (keys[PhysicalKeyboardKey.shiftLeft] == true) &&
-          (keys[PhysicalKeyboardKey.altLeft] != true);
+    const speed = 600;
+    if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
+      storedOffY += speed * dt;
     }
-
-    if ((canMoveCam) && keys[LogicalKeyboardKey.altLeft] != true) {
-      const speed = 600;
-      if (keys[PhysicalKeyboardKey.keyW] == true) {
-        storedOffY += speed * dt;
-      }
-      if (keys[PhysicalKeyboardKey.keyS] == true) {
-        storedOffY -= speed * dt;
-      }
-      if (keys[PhysicalKeyboardKey.keyA] == true) {
-        storedOffX += speed * dt;
-      }
-      if (keys[PhysicalKeyboardKey.keyD] == true) {
-        storedOffX -= speed * dt;
-      }
+    if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
+      storedOffY -= speed * dt;
+    }
+    if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
+      storedOffX += speed * dt;
+    }
+    if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
+      storedOffX -= speed * dt;
     }
 
     if (selecting && dragPos && setPos) {
-      final ex = min(cellMouseX, grid.width);
-      final ey = min(cellMouseY, grid.height);
+      final ex = max(min(cellMouseX, grid.width - 1), -1);
+      final ey = max(min(cellMouseY, grid.height - 1), -1);
 
       selW = ex - selX + 1;
       selH = ey - selY + 1;
     }
 
-    if (!(running || pasting || selecting)) {
+    if (!(pasting || selecting || edType == EditorType.loaded)) {
       if (mouseDown) {
         final cell = (edType == EditorType.making
             ? cells
             : cellsToPlace)[currentSeletion];
-        if (validPlacePos && cell != "place") {
-          final cx = (mouseX - offX) ~/ cellSize;
-          final cy = (mouseY - offY) ~/ cellSize;
-          if (grid.inside(cx, cy)) {
-            if (mouseButton == kPrimaryMouseButton) {
-              placeCell(currentSeletion, currentRotation, cx, cy);
-            } else if (mouseButton == kSecondaryMouseButton) {
-              placeCell(0, 0, cx, cy);
-            } else if (mouseButton == kMiddleMouseButton) {
-              final id = grid.at(cx, cy).id;
+        final cx = (mouseX - offX) ~/ cellSize;
+        final cy = (mouseY - offY) ~/ cellSize;
+        if (grid.inside(cx, cy)) {
+          if (mouseButton == kPrimaryMouseButton && cell != "place") {
+            placeCell(currentSeletion, currentRotation, cx, cy);
+          } else if (mouseButton == kSecondaryMouseButton) {
+            placeCell(0, 0, cx, cy);
+          } else if (mouseButton == kMiddleMouseButton) {
+            final id = grid.at(cx, cy).id;
 
-              if (edType == EditorType.making) {
+            if (edType == EditorType.making) {
+              currentSeletion = cells.indexOf(id);
+            } else if (edType == EditorType.loaded) {
+              if (cellsToPlace.contains(id)) {
                 currentSeletion = cells.indexOf(id);
-              } else if (edType == EditorType.loaded) {
-                if (cellsToPlace.contains(id)) {
-                  currentSeletion = cells.indexOf(id);
-                }
               }
             }
           }
-        } else {
-          mouseDown = false;
         }
       }
     }
@@ -1094,10 +1759,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     super.update(dt);
   }
 
+  void onMouseEnter(PointerEvent e) {
+    mouseX = e.localPosition.dx;
+    mouseY = e.localPosition.dy;
+    mouseInside = true;
+  }
+
   void placeCell(int id, int rot, int cx, int cy) {
-    if (!validPlacePos) {
-      return;
-    }
     if (edType == EditorType.making) {
       grid.set(
         cx,
@@ -1108,40 +1776,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..lastvars.lastRot = rot,
       );
     } else if (edType == EditorType.loaded) {
-      if (cellsToPlace.isNotEmpty && grid.placeable(cx, cy)) {
-        if (cellsToPlace[id] == "empty" && grid.at(cx, cy).id != "empty") {
-          if (!cellsToPlace.contains(grid.at(cx, cy).id)) {
-            cellsToPlace.add(grid.at(cx, cy).id);
-            cellsCount.add(1);
-          } else {
-            cellsCount[cellsToPlace.indexOf(grid.at(cx, cy).id)]++;
-          }
-        }
-        if (cellsToPlace[id] != "empty" && grid.at(cx, cy).id != "empty")
-          return;
+      if (cells[id] == "empty" && grid.at(cx, cy).id != "empty") {
+        currentSeletion = cells.indexOf(grid.at(cx, cy).id);
+        currentRotation = grid.at(cx, cy).rot;
+        grid.set(cx, cy, Cell(cx, cy));
+      } else if (grid.at(cx, cy).id == "empty") {
         grid.set(
           cx,
           cy,
           Cell(cx, cy)
-            ..id = cellsToPlace[id]
+            ..id = cells[id]
             ..rot = rot
             ..lastvars.lastRot = rot,
         );
-        if (cellsToPlace[id] != "empty") {
-          cellsCount[id]--;
-          if (cellsCount[id] == 0) {
-            cellsToPlace.removeAt(id);
-            cellsCount.removeAt(id);
-            if (cellsToPlace.length == 1) {
-              mouseDown = false;
-            }
-          }
-          if (cellsToPlace.isNotEmpty) {
-            //currentSeletion -= 1;
-            currentSeletion = min(currentSeletion, cellsToPlace.length - 1);
-          }
-          //overlays.remove("CellBar");
-        }
+        currentSeletion = cells.indexOf("empty");
       }
     }
   }
@@ -1149,8 +1797,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void onTapDown(TapDownInfo info) {
     final cx = (info.eventPosition.global.x - offX) ~/ cellSize;
     final cy = (info.eventPosition.global.y - offY) ~/ cellSize;
-    final cell =
-        (edType == EditorType.making ? cells : cellsToPlace)[currentSeletion];
+    final cell = cells[currentSeletion];
 
     if (grid.inside(cx, cy) && cell == "place") {
       placeCell(currentSeletion, 0, cx, cy);
@@ -1164,16 +1811,50 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  Future<void> onPointerDown(PointerDownEvent event) async {
-    if (running || puzzleWin) {
-      return;
+  void resetAllCategories([CellCategory? except]) {
+    for (var category in categories) {
+      var wasOpened = category.opened;
+      if (category != except) {
+        category.opened = false;
+        for (var item in category.items) {
+          if (item is CellCategory) {
+            item.opened = false;
+          }
+          if (wasOpened) {
+            buttonManager
+                .buttons[
+                    'cat${categories.indexOf(category)}cell${category.items.indexOf(item)}']
+                ?.time = 0;
+          }
+        }
+      }
     }
+  }
+
+  Future<void> onPointerDown(PointerDownEvent event) async {
     if (event.down && event.kind == PointerDeviceKind.mouse) {
       mouseX = event.position.dx;
       mouseY = event.position.dy;
-      if (validPlacePos) {
+      if (true) {
         mouseButton = event.buttons;
         mouseDown = true;
+        buttonManager.forEach((key, button) {
+          if (button.shouldRender() &&
+              button.isHovered(mouseX.toInt(), mouseY.toInt())) {
+            button.callback();
+            mouseDown = false;
+          }
+        });
+        if (edType == EditorType.loaded && mouseDown && !running) {
+          mouseDown = false;
+          if (grid.inside(cellMouseX, cellMouseY) &&
+              grid.placeable(cellMouseX, cellMouseY)) {
+            placeCell(currentSeletion, currentRotation, cellMouseX, cellMouseY);
+          }
+          return;
+        }
+        if (puzzleWin) mouseDown = false;
+        if (!mouseDown) return;
         if (selecting) {
           setPos = true;
           dragPos = true;
@@ -1183,13 +1864,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           paste();
           pasting = false;
           selecting = false;
-          overlays.remove('ActionBar');
           setPos = false;
           dragPos = false;
           mouseDown = false;
         }
-      } else {
-        mouseDown = false;
       }
       // if (event.buttons == kSecondaryMouseButton) {
       //   final cx = (event.position.dx - offX) ~/ cellSize;
@@ -1220,9 +1898,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void onGameResize(Vector2 screenSize) {
     super.onGameResize(screenSize);
     if (canvasSize.x != screenSize.x || canvasSize.y != screenSize.y) {
-      if (overlays.isActive('CellBar') && updates > 0) {
-        overlays.remove('CellBar');
-      }
       final sX = screenSize.x / canvasSize.x;
       final sY = screenSize.y / canvasSize.y;
 
@@ -1249,46 +1924,96 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void setInitial() {
+    initial = grid.copy;
+    isinitial = true;
+    running = false;
+    buttonManager.buttons["play-btn"]!.texture = "mover.png";
+    buttonManager.buttons["play-btn"]!.rotation = 0;
+  }
+
+  void restoreInitial() {
+    grid = initial.copy;
+    isinitial = true;
+    running = false;
+    buttonManager.buttons["play-btn"]!.texture = "mover.png";
+    buttonManager.buttons["play-btn"]!.rotation = 0;
+  }
+
   void playPause() {
     running = !running;
+    if (edType == EditorType.loaded) {
+      isinitial = true;
+    }
     if (running) {
-      initial = grid.copy;
-      playerKeys = 0;
-      overlays.remove('Info');
-      overlays.remove('ActionBar');
-      overlays.add('ActionBar');
-    } else {
-      grid = initial;
-      overlays.remove('Info');
-      overlays.remove('ActionBar');
-      overlays.add('ActionBar');
-      if (overlays.isActive("Win")) {
-        overlays.remove("Win");
-        puzzleWin = false;
+      if (isinitial) {
+        initial = grid.copy;
       }
+      isinitial = false;
+      playerKeys = 0;
+      buttonManager.buttons["play-btn"]!.texture = "slide.png";
+      buttonManager.buttons["play-btn"]!.rotation = 1;
+    } else {
+      if (puzzleWin == true || edType == EditorType.loaded) {
+        restoreInitial();
+      }
+      puzzleWin = false;
+      overlays.remove("Win");
+      buttonManager.buttons["play-btn"]!.texture = "mover.png";
+      buttonManager.buttons["play-btn"]!.rotation = 0;
     }
   }
 
   void q() {
-    if (!game.running) {
+    if (!game.running || edType == EditorType.making) {
       if (pasting) {
         gridClip.rotate(RotationalType.counter_clockwise);
       } else {
+        for (var i = 0; i < categories.length; i++) {
+          buttonManager.buttons['cat$i']!.lastRot = game.currentRotation;
+          buttonManager.buttons['cat$i']!.timeRot = 0;
+          for (var j = 0; j < categories[i].items.length; j++) {
+            buttonManager.buttons['cat${i}cell$j']!.lastRot =
+                game.currentRotation;
+            buttonManager.buttons['cat${i}cell$j']!.timeRot = 0;
+          }
+        }
         game.currentRotation += 3;
         game.currentRotation %= 4;
-        game.overlays.remove('CellBar');
+        for (var i = 0; i < categories.length; i++) {
+          buttonManager.buttons['cat$i']!.rotation = game.currentRotation;
+          for (var j = 0; j < categories[i].items.length; j++) {
+            buttonManager.buttons['cat${i}cell$j']!.rotation =
+                game.currentRotation;
+          }
+        }
       }
     }
   }
 
   void e() {
-    if (!game.running) {
+    if (!game.running || edType == EditorType.making) {
       if (pasting) {
         gridClip.rotate(RotationalType.clockwise);
       } else {
+        for (var i = 0; i < categories.length; i++) {
+          buttonManager.buttons['cat$i']!.lastRot = game.currentRotation;
+          buttonManager.buttons['cat$i']!.timeRot = 0;
+          for (var j = 0; j < categories[i].items.length; j++) {
+            buttonManager.buttons['cat${i}cell$j']!.lastRot =
+                game.currentRotation;
+            buttonManager.buttons['cat${i}cell$j']!.timeRot = 0;
+          }
+        }
         game.currentRotation++;
         game.currentRotation %= 4;
-        game.overlays.remove('CellBar');
+        for (var i = 0; i < categories.length; i++) {
+          buttonManager.buttons['cat$i']!.rotation = game.currentRotation;
+          for (var j = 0; j < categories[i].items.length; j++) {
+            buttonManager.buttons['cat${i}cell$j']!.rotation =
+                game.currentRotation;
+          }
+        }
       }
     }
   }
@@ -1305,7 +2030,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } else if (keysPressed.contains(LogicalKeyboardKey.keyE)) {
           e();
         } else if (keysPressed.contains(LogicalKeyboardKey.space) &&
-            !(keys[PhysicalKeyboardKey.space] == true)) {
+            !(keys[LogicalKeyboardKey.space.keyId] == true)) {
           playPause();
         } else if (keysPressed.contains(LogicalKeyboardKey.escape) ||
             keysPressed.contains(LogicalKeyboardKey.backspace)) {
@@ -1314,10 +2039,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           }
         }
       }
-      keys[event.physicalKey] = true;
+      for (var key in keysPressed) {
+        //print(key);
+        keys[key.keyLabel] = true;
+      }
       return KeyEventResult.handled;
     } else if (event is RawKeyUpEvent) {
-      keys[event.physicalKey] = false;
+      for (var key in LogicalKeyboardKey.knownLogicalKeys) {
+        keys[key.keyLabel] = event.isKeyPressed(key);
+      }
       //keysPressed.forEach((e) => keys[e] = true);
       return KeyEventResult.handled;
     }

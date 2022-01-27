@@ -256,7 +256,7 @@ class P1Plus {
   static final sig = "P1+;";
 
   static final valueString =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/?\\\':[]{}()";
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/?*.:[]{}()";
 
   static String encodeCell(List<String> cellTable, SaveCell cell) {
     return encodeNum(

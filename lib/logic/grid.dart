@@ -23,8 +23,9 @@ class BrokenCell {
   int x;
   int y;
   LastVars lv;
+  String type;
 
-  BrokenCell(this.id, this.rot, this.x, this.y, this.lv);
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type);
 
   void render(Canvas canvas, double t) {
     final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
@@ -43,7 +44,7 @@ class BrokenCell {
 
     canvas.rotate(screenRot);
 
-    Sprite(Flame.images.fromCache('$id.png'))
+    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png'))
         .render(canvas, position: screenPos, size: screenSize);
 
     canvas.restore();
@@ -95,8 +96,9 @@ class Grid {
 
   List<BrokenCell> brokenCells = [];
 
-  void addBroken(Cell cell, int dx, int dy, [int? rlvx, int? rlvy]) {
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars);
+  void addBroken(Cell cell, int dx, int dy,
+      [String type = "normal", int? rlvx, int? rlvy]) {
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type);
 
     if (rlvx != null) b.lv.lastPos = Offset(rlvx.toDouble(), b.lv.lastPos.dy);
     if (rlvy != null) b.lv.lastPos = Offset(b.lv.lastPos.dx, rlvy.toDouble());
@@ -363,7 +365,11 @@ class Grid {
   }
 
   Set<String> getCells() {
-    if (brokenCells.length > 0) {
+    final types = <String>{};
+    for (var bcell in brokenCells) {
+      types.add(bcell.type);
+    }
+    if (types.contains("normal")) {
       playSound(destroySound);
     }
     brokenCells = [];
@@ -429,6 +435,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.gears)) gears,
       if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
       if (cells.contains("speed")) speeds,
+      if (cells.contains("driller")) drillers,
       if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.containsAny(CellTypeManager.puller)) pullers,
       if (cells.contains("liner")) liners,
@@ -436,6 +443,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.fans)) fans,
       //if (cells.contains("magnet")) magnets,
       //if (cells.contains("digger")) diggers,
+      if (cells.containsAny(CellTypeManager.ants)) ants,
       if (cells.contains("karl")) karls,
       if (cells.contains("darty")) dartys,
       if (cells.containsAny(CellTypeManager.puzzles)) puzzles,
@@ -480,8 +488,8 @@ class GridClip {
   }
 
   void place(int x, int y) {
-    for (var cx = 0; cx < width; cx++) {
-      for (var cy = 0; cy < height; cy++) {
+    for (var cx = 0; cx < cells.length; cx++) {
+      for (var cy = 0; cy < cells[cx].length; cy++) {
         final sx = cx + x;
         final sy = cy + y;
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
@@ -493,8 +501,8 @@ class GridClip {
   }
 
   void render(Canvas canvas, int x, int y) {
-    for (var cx = 0; cx < width; cx++) {
-      for (var cy = 0; cy < height; cy++) {
+    for (var cx = 0; cx < cells.length; cx++) {
+      for (var cy = 0; cy < cells[cx].length; cy++) {
         if (cells[cx][cy].id != "empty") {
           canvas.save();
           final rot = cells[cx][cy].rot * halfPi;
@@ -518,7 +526,9 @@ class GridClip {
                     ) /
                     2;
             canvas.rotate(rot);
-            (Sprite(Flame.images.fromCache('${cells[cx][cy].id}.png'))
+            final file = textureMap['${cells[cx][cy].id}.png'] ??
+                '${cells[cx][cy].id}.png';
+            (Sprite(Flame.images.fromCache(file))
                   ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
                 .render(
               canvas,
@@ -527,9 +537,8 @@ class GridClip {
                 cellSize.toDouble(),
               ),
             );
-
-            canvas.restore();
           }
+          canvas.restore();
         }
       }
     }

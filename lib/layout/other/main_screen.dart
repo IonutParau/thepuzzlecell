@@ -98,7 +98,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           FlutterClipboard.paste().then(
                             (clipboard) {
                               try {
-                                grid = P1.decode(clipboard);
+                                grid = loadStr(clipboard);
                                 puzzleIndex = null;
                                 discord.updatePresence(
                                   DiscordPresence(

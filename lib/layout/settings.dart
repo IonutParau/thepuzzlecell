@@ -155,6 +155,33 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Tooltip(
+                        message:
+                            "Toggling it will show titles and descriptions to the buttons in the UI of the game",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
+                        child: Text(
+                          "Show titles: ",
+                          style: fontSize(
+                            7.sp,
+                          ),
+                        ),
+                      ),
+                      Checkbox(
+                        value: storage.getBool("show_titles") ?? true,
+                        onChanged: (newValue) {
+                          storage
+                              .setBool(
+                                "show_titles",
+                                newValue ?? true,
+                              )
+                              .then((e) => setState(() {}));
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

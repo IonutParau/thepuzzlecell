@@ -27,9 +27,13 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/movers/
+    - assets/images/rotators/
+    - assets/images/push/
+    - assets/images/destroyers/
+    - assets/images/interface/
     - assets/audio/
     - assets/puzzles/
     - assets/puzzles/easy/
     - assets/puzzles/medium/
     - assets/puzzles/hard/
-    - assets/interface/

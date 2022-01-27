@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '0.1.1 Codename Mechanical Update';
+String currentVersion = '1.0.4 QUICKFIX 4 to Completeness Update';
 
 List<String> changes = [
-  "Added SELECT mode",
-  "Added categories to the editor",
-  "Added Stopper",
-  "Added Opposite Rotator",
-  "Added Mechanical Gear",
-  "Added Mechanical Generator",
-  "Added Mechanically Powered Mover, Puller, Grabber and Fan",
-  "Added Cross Mechanical Gear",
-  "Added Logic Gates",
+  "QuickFix 1: Switched from Physical Key listeners to Logical Key listeners",
+  "QuickFix 1: Reworded the Redirector description",
+  "QuickFix 2: Generators no longer make silent trash cells play sound",
+  "QuickFix 3: Fixed Saving bug by changing value string of P1+",
+  "QuickFix 4: Fixed a puzzle bias issue",
 ];
 
 String getTrailing(String change) {
   change = change.toLowerCase();
-  if (change.startsWith('fixed') || change.startsWith('patched')) {
+  if (change.startsWith('fixed') ||
+      change.startsWith('patched') ||
+      change.startsWith('moved') ||
+      change.startsWith('reworked') ||
+      change.startsWith('changed')) {
     return '>';
   } else if (change.startsWith('added')) {
     return '+';

@@ -66,7 +66,43 @@ final cells = [
   "nand_gate",
   "nor_gate",
   "xnor_gate",
+  "onedir",
+  "twodir",
+  "threedir",
+  "rotator_180",
+  "redirector",
+  "vacuum",
+  "ant_cw",
+  "ant_ccw",
+  "driller",
+  "silent_trash",
 ];
+
+Map<String, String> textureMap = {
+  'mover.png': 'movers/mover.png',
+  'puller.png': 'movers/puller.png',
+  'speed.png': 'movers/speed.png',
+  'grabber.png': 'movers/grabber.png',
+  'bird.png': 'movers/bird.png',
+  'liner.png': 'movers/liner.png',
+  'gear_cw.png': 'movers/gear_cw.png',
+  'gear_ccw.png': 'movers/gear_ccw.png',
+  'push.png': 'push/push.png',
+  'slide.png': 'push/slide.png',
+  'rotator_cw.png': 'rotators/rotator_cw.png',
+  'rotator_ccw.png': 'rotators/rotator_ccw.png',
+  'opposite_rotator.png': 'rotators/opposite_rotator.png',
+  'onedir.png': 'push/onedir.png',
+  'twodir.png': 'push/twodir.png',
+  'threedir.png': 'push/threedir.png',
+  'rotator_180.png': 'rotators/rotator_180.png',
+  'redirector.png': 'rotators/redirector.png',
+  'vacuum.png': 'movers/vacuum.png',
+  'ant_cw.png': 'movers/ant_cw.png',
+  'ant_ccw.png': 'movers/ant_ccw.png',
+  'driller.png': 'movers/driller.png',
+  'silent_trash.png': 'destroyers/silent_trash.png',
+};
 
 class CellProfile {
   String title;
@@ -79,7 +115,7 @@ class CellCategory {
   String title;
   String description;
   String look;
-  List<String> items;
+  List items;
   bool opened = false;
 
   CellCategory(this.title, this.description, this.items, this.look);
@@ -95,7 +131,7 @@ final categories = [
       "ghost",
       "place",
     ],
-    "wall",
+    "ghost",
   ),
   CellCategory(
     "Movers",
@@ -108,11 +144,14 @@ final categories = [
       "speed",
       "bird",
       "releaser",
+      "driller",
       "fan",
+      "vacuum",
       "mirror",
       "gear_cw",
       "gear_ccw",
-      "tunnel",
+      "ant_cw",
+      "ant_ccw",
     ],
     "mover",
   ),
@@ -126,8 +165,9 @@ final categories = [
       "triplegen",
       "constructorgen",
       "crossgen",
-      "physical_gen",
       "replicator",
+      "physical_gen",
+      "tunnel",
     ],
     "generator",
   ),
@@ -137,6 +177,9 @@ final categories = [
     [
       "push",
       "slide",
+      "onedir",
+      "twodir",
+      "threedir",
     ],
     "push",
   ),
@@ -146,6 +189,8 @@ final categories = [
     [
       "rotator_cw",
       "rotator_ccw",
+      "rotator_180",
+      "redirector",
       "opposite_rotator",
     ],
     "rotator_cw",
@@ -157,6 +202,7 @@ final categories = [
       "stopper",
       "enemy",
       "trash",
+      "silent_trash",
       "wormhole",
       "karl",
       "darty",
@@ -323,7 +369,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "puzzle": CellProfile(
     "Puzzle",
-    "It's you! Can be moved with WASD when the game is running, when it moves a cell it is touching it \"interacts\" with it",
+    "It's you! Can be moved with the arrow keys when the game is running, when it moves a cell it is touching it \"interacts\" with it",
   ),
   "key": CellProfile(
     "Key",
@@ -432,5 +478,49 @@ final cellInfo = <String, CellProfile>{
   "xnor_gate": CellProfile(
     "XNOR Gate",
     "Takes 2 inputs and outputs the opposite result of their XOR operation",
+  ),
+  "rotator_180": CellProfile(
+    "180 Degree Rotator",
+    "Rotates the cells around it 180 degrees",
+  ),
+  "redirector": CellProfile(
+    "Redirector",
+    "Makes the cell in front of it have the same rotation as the redirector",
+  ),
+  "vacuum": CellProfile(
+    "Vacuum",
+    "Pulls the cell 2 tiles in front of it forwards",
+  ),
+  "onedir": CellProfile(
+    "One Directional",
+    "Half of a slide cell",
+  ),
+  "twodir": CellProfile(
+    "Two Directional",
+    "Can only be pushed backwards and downwards",
+  ),
+  "threedir": CellProfile(
+    "Three Directional",
+    "You likely get the point by now",
+  ),
+  "ant_cw": CellProfile(
+    "Wheel CW",
+    "It spins, and that moves it",
+  ),
+  "ant_ccw": CellProfile(
+    "Wheel CCW",
+    "It spins, and that moves it",
+  ),
+  "driller": CellProfile(
+    "Driller",
+    "It moves forward, and if a cell is in front of it, it will swap that cell with itself",
+  ),
+  "speed": CellProfile(
+    "Speed",
+    "Moves forward but can't push",
+  ),
+  "silent_trash": CellProfile(
+    "Silent Trash Cell",
+    "Trash Cell except does not make an noise",
   ),
 };

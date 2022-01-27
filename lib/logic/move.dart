@@ -11,13 +11,24 @@ enum MoveType {
   sync,
 }
 
+int toSide(int dir, int rot) {
+  return (dir - rot + 4) % 4;
+}
+
 bool canMove(int x, int y, int dir, MoveType mt) {
   if (grid.inside(x, y)) {
     final cell = grid.at(x, y);
     final id = cell.id;
     final rot = cell.rot;
+    final side = toSide(dir, rot);
 
     switch (id) {
+      case "onedir":
+        return side == 2;
+      case "twodir":
+        return side == 2 || side == 1;
+      case "threedir":
+        return side == 0 || side == 1 || side == 2;
       case "slide":
         return (dir - rot) % 2 == 0;
       case "mirror":
@@ -51,6 +62,7 @@ final justMoveInsideOf = [
   "musical",
   "wormhole",
   "mech_trash",
+  "silent_trash",
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir) {
@@ -129,7 +141,8 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
   if (movingTo.id != "trash" &&
       movingTo.id != "musical" &&
       movingTo.id != "wormhole" &&
-      movingTo.id != "mech_trash") {
+      movingTo.id != "mech_trash" &&
+      movingTo.id != "silent_trash") {
     if (movingTo.id == "enemy") {
       //grid.addBroken(moving, nx, ny);
       playSound(destroySound);
@@ -160,6 +173,8 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
   } else {
     if (movingTo.id == "trash") {
       grid.addBroken(moving, nx, ny);
+    } else if (movingTo.id == "silent_trash") {
+      grid.addBroken(moving, nx, ny, "silent");
     } else if (movingTo.id == "mech_trash") {
       grid.addBroken(moving, nx, ny);
       MechanicalManager.spread(nx + 1, ny, 0);
