@@ -15,7 +15,20 @@ int toSide(int dir, int rot) {
   return (dir - rot + 4) % 4;
 }
 
-bool canMove(int x, int y, int dir, MoveType mt) {
+enum DestinationType { DIRECTIONAL, FIXED }
+
+class DestinationInfo {
+  DestinationType dt;
+  int dir = 0;
+  int x = 0;
+  int y = 0;
+
+  DestinationInfo.directional(this.dir) : dt = DestinationType.DIRECTIONAL;
+
+  DestinationInfo.fixed(this.x, this.y) : dt = DestinationType.FIXED;
+}
+
+bool canMove(int x, int y, int dir, int force, MoveType mt) {
   if (grid.inside(x, y)) {
     final cell = grid.at(x, y);
     final id = cell.id;
@@ -23,6 +36,37 @@ bool canMove(int x, int y, int dir, MoveType mt) {
     final side = toSide(dir, rot);
 
     switch (id) {
+      case "sticky":
+        // Oh god
+        if (mt == MoveType.push && (!cell.tags.contains("sticked"))) {
+          cell.tags.add("sticked");
+          final ix1 = frontX(x, cell.rot - 1);
+          final iy1 = frontY(y, cell.rot - 1);
+          final ix2 = frontX(x, cell.rot + 1);
+          final iy2 = frontY(y, cell.rot + 1);
+          bool successful = true;
+          if (!canMoveAll(ix1, iy1, dir, force, mt)) {
+            successful = false;
+          }
+          if (!canMoveAll(ix2, iy2, dir, force, mt)) {
+            successful = false;
+          }
+          if (successful) {
+            if (grid.inside(ix1, iy1) &&
+                !grid.at(ix1, iy1).tags.contains("sticked")) {
+              push(ix1, iy1, dir, force, mt);
+            }
+            if (grid.inside(ix2, iy2) &&
+                !grid.at(ix2, iy2).tags.contains("sticked")) {
+              push(ix2, iy2, dir, force, mt);
+            }
+            cell.tags.remove("sticked");
+            return true;
+          }
+          cell.tags.remove("sticked");
+          return false;
+        }
+        return true;
       case "onedir":
         return side == 2;
       case "twodir":
@@ -30,11 +74,9 @@ bool canMove(int x, int y, int dir, MoveType mt) {
       case "threedir":
         return side == 0 || side == 1 || side == 2;
       case "slide":
-        return (dir - rot) % 2 == 0;
+        return side == 0 || side == 2;
       case "mirror":
         return ((dir - rot) % 2 == 1 || mt != MoveType.puzzle);
-      case "tunnel":
-        return mt == MoveType.mirror ? (dir != rot) : true;
       case "wall":
         return false;
       case "lock":
@@ -72,16 +114,19 @@ bool moveInsideOf(Cell into, int x, int y, int dir) {
   return false;
 }
 
-bool canMoveAll(int x, int y, int dir, MoveType mt) {
+bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
   var depth = 0;
   final depthLimit = dir % 2 == 0 ? grid.width : grid.height;
   while (grid.inside(x, y)) {
     if (depth > depthLimit) return false;
     depth++;
-    if (canMove(x, y, dir, mt)) {
+    if (canMove(x, y, dir, force, mt)) {
       if (moveInsideOf(grid.at(x, y), x, y, dir)) {
         return true;
       }
+
+      force += addedForce(grid.at(x, y), dir, mt);
+      if (force <= 0) return false;
 
       if (dir == 0) {
         x++;
@@ -103,8 +148,8 @@ Vector2 randomVector2() {
   return (Vector2.random() - Vector2.all(0.5)) * 2;
 }
 
-void moveCell(int ox, int oy, int nx, int ny, [int? dir]) {
-  final moving = grid.at(ox, oy).copy;
+void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
+  final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (moving.id == "sync") {
     var dir = -1;
@@ -259,6 +304,28 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     }
   }
 
+  if (cell.id == "fast_mover" || cell.id == "fast_puller") {
+    if (cell.rot == dir) {
+      cell.updated = true;
+      return 2;
+    } else if (cell.rot == odir) {
+      cell.updated = true;
+      return -2;
+    }
+  }
+
+  if (cell.id == "slow_mover" || cell.id == "slow_puller") {
+    if (cell.lifespan % 2 == 0) {
+      if (cell.rot == dir) {
+        cell.updated = true;
+        return 1;
+      } else if (cell.rot == odir) {
+        cell.updated = true;
+        return -1;
+      }
+    }
+  }
+
   if ((cell.id == "fan" ||
           (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) &&
       cell.rot == odir &&
@@ -277,8 +344,8 @@ bool push(int x, int y, int dir, int force,
   }
   dir %= 4;
   if (!grid.inside(x, y)) return false;
-  final ox = x;
-  final oy = y;
+  var ox = x;
+  var oy = y;
 
   if (dir == 0) {
     x++;
@@ -290,54 +357,26 @@ bool push(int x, int y, int dir, int force,
     y--;
   }
 
-  final c = grid.at(ox, oy);
+  var c = grid.at(ox, oy);
+  var addedRot = 0;
   if (moveInsideOf(c, ox, oy, dir)) return force > 0;
   if (!grid.inside(x, y)) return false;
 
-  if (canMove(ox, oy, dir, mt)) {
+  if (canMove(ox, oy, dir, force, mt)) {
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     final mightMove = push(x, y, dir, force, mt, depth + 1);
     if (mightMove) {
-      final yes = grid.at(ox, oy);
       if (mt == MoveType.sync && c.id == "sync") {
         c.tags.add("sync move");
       }
-      if (grid.at(ox, oy) == yes) {
-        moveCell(ox, oy, x, y, dir);
-      }
+      grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
+      moveCell(ox, oy, x, y, dir);
     }
     return mightMove;
   } else {
     return false;
   }
-}
-
-bool canMoveFiltered(int x, int y, int dir, List<String> filter, MoveType mt) {
-  while (grid.inside(x, y)) {
-    if (canMove(x, y, dir, mt)) {
-      if (moveInsideOf(grid.at(x, y), x, y, dir)) {
-        return true;
-      }
-
-      if (!filter.contains(grid.at(x, y).id)) {
-        return false;
-      }
-
-      if (dir == 0) {
-        x++;
-      } else if (dir == 2) {
-        x--;
-      } else if (dir == 1) {
-        y++;
-      } else if (dir == 3) {
-        y--;
-      }
-    } else {
-      return false;
-    }
-  }
-  return false;
 }
 
 bool pushDistance(int x, int y, int dir, int force, int distance,
@@ -353,21 +392,21 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
       return false;
     }
 
+    if (mt != MoveType.grab) {
+      final nc = walkBentPath(x, y, dir);
+      if (nc.broken) return false;
+      dir = nc.dir;
+      x = nc.x;
+      y = nc.y;
+    }
+
     final c = grid.at(x, y);
 
-    if (canMove(x, y, dir, mt)) {
+    if (canMove(x, y, force, dir, mt)) {
       if (moveInsideOf(c, x, y, dir)) {
         break;
       }
-      if (withBias.contains(c.id)) {
-        if (c.rot == dir) {
-          c.updated = true;
-          force++;
-        } else if (c.rot == (dir + 2) % 4) {
-          c.updated = true;
-          force--;
-        }
-      }
+      force += addedForce(c, dir, mt);
       if (force <= 0) return false;
     }
   }
@@ -409,7 +448,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     if (moveInsideOf(c, cx, cy, dir)) break;
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
-    if (!canMove(cx, cy, dir, mt)) {
+    if (!canMove(cx, cy, force, dir, mt)) {
       break;
     }
     depth++;
@@ -434,4 +473,64 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
   }
 
   return false;
+}
+
+void doSpeedMover(int x, int y, int dir, int force, int speed) {
+  final o = grid.at(x, y).copy;
+  for (var i = 0; i < speed; i++) {
+    if (!grid.inside(x, y)) return;
+    if (grid.at(x, y).id != o.id) {
+      return;
+    }
+    if (!push(x, y, dir, force)) {
+      return;
+    }
+    x = frontX(x, dir);
+    y = frontY(y, dir);
+  }
+}
+
+void doSpeedPuller(int x, int y, int dir, int force, int speed) {
+  for (var i = 0; i < speed; i++) {
+    if (!pull(x, y, dir, force)) {
+      return;
+    }
+    x = frontX(x, dir);
+    y = frontY(y, dir);
+  }
+}
+
+class BentPath {
+  int x;
+  int y;
+  int dir;
+  int addedRot;
+  bool broken; // Broken means the path is useless
+
+  BentPath(this.x, this.y, this.dir, this.addedRot, this.broken);
+}
+
+BentPath walkBentPath(int x, int y, int dir,
+    [int addedRot = 0, int depth = 0]) {
+  if (depth == 9999 || !grid.inside(x, y))
+    return BentPath(x, y, dir, addedRot, true);
+
+  final c = grid.at(x, y);
+  final side = toSide(dir, c.rot);
+  depth++;
+
+  if (c.id == "curve") {
+    if (side == 0) {
+      addedRot += 3;
+      dir = (dir + 1) % 4;
+    } else if (side == 3) {
+      addedRot++;
+      dir = (dir + 3) % 4;
+    }
+    x = frontX(x, dir);
+    y = frontY(y, dir);
+    return walkBentPath(x, y, dir, addedRot, depth);
+  } else {
+    return BentPath(x, y, dir, addedRot, false);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
@@ -22,6 +23,7 @@ void main() async {
   );
 
   initSound();
+  playOnLoop(floatMusic, 0.5);
 
   storage = await SharedPreferences.getInstance();
   DiscordRPC.initialize();
@@ -86,6 +88,7 @@ class _MyAppState extends State<MyApp> {
             '/puzzles': (ctx) => Puzzles(),
             '/settings': (ctx) => SettingsPage(),
             '/version': (ctx) => VersionPage(),
+            '/credits': (ctx) => CreditsPage(),
           },
         );
       },

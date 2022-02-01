@@ -58,6 +58,7 @@ class Cell {
   bool updated = false;
   Map<String, dynamic> data = {};
   List<String> tags = [];
+  int lifespan = 0;
 
   Cell(int x, int y) : lastvars = LastVars(0, x, y);
 
@@ -68,6 +69,7 @@ class Cell {
     c.rot = rot;
     c.updated = updated;
     c.lastvars.lastRot = lastvars.lastRot;
+    c.lifespan = lifespan;
 
     data.forEach((key, value) => c.data[key] = value);
     for (var tag in tags) {
@@ -379,6 +381,7 @@ class Grid {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
         p0.tags = [];
+        p0.lifespan++;
         cells.add(p0.id);
       },
     );
@@ -427,14 +430,15 @@ class Grid {
       if (cells.contains("stopper")) stoppers,
       if (cells.containsAny(CellTypeManager.mechanical)) mechs,
       if (cells.contains("releaser")) releasers,
-      if (cells.contains("mirror")) mirrors,
+      if (cells.containsAny(CellTypeManager.mirrors)) mirrors,
       if (cells.containsAny(CellTypeManager.generators)) gens,
+      if (cells.containsAny(CellTypeManager.superGens)) supgens,
       if (cells.contains("replicator")) reps,
-      if (cells.contains("tunnel")) tunnels,
+      if (cells.containsAny(CellTypeManager.tunnels)) tunnels,
       if (cells.containsAny(CellTypeManager.rotators)) rots,
       if (cells.containsAny(CellTypeManager.gears)) gears,
       if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
-      if (cells.contains("speed")) speeds,
+      if (cells.containsAny(CellTypeManager.speeds)) speeds,
       if (cells.contains("driller")) drillers,
       if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.containsAny(CellTypeManager.puller)) pullers,

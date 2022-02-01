@@ -358,3 +358,67 @@ class P1Plus {
     return grid;
   }
 }
+
+String placeChar(bool place) {
+  if (place) return "+";
+  return "";
+}
+
+bool decodePlaceChar(String char) {
+  if (char == "+") return true;
+
+  return false;
+}
+
+class P2 {
+  static String valueString =
+      "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[]{}()-_+=<>./?:'";
+
+  static String encodeCell(Cell cell, Set<String> cellTable) {
+    return encodeNum(
+        cellTable.toList().indexOf(cell.id) * 4 + cell.rot, valueString);
+  }
+
+  static Cell decodeCell(String cell, List<String> cellTable) {
+    final n = decodeNum(cell, valueString);
+    final c = Cell(0, 0);
+    c.rot = n % 4;
+    c.id = cellTable[n ~/ 4];
+
+    return c;
+  }
+
+  static String sig = "P2;";
+
+  static String encodeGrid(Grid grid) {
+    var str = sig;
+    str += ";;"; // title and description
+    str += (encodeNum(grid.width, valueString) + ';');
+    str += (encodeNum(grid.height, valueString) + ';');
+
+    final cellTable = <String>{};
+
+    grid.forEach(
+      (cell, x, y) {
+        cellTable.add(cell.id);
+      },
+    );
+
+    str += "${cellTable.join(',')}";
+
+    final cells = [];
+
+    grid.forEach(
+      (cell, x, y) {
+        cells.add(
+            "${encodeCell(cell, cellTable)}|${placeChar(grid.placeable(x, y))}");
+      },
+    );
+
+    final cellStr = cells.join(',');
+
+    str += (cellStr + ';');
+
+    return str;
+  }
+}

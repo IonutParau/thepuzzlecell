@@ -1,6 +1,7 @@
 part of layout;
 
 final destroySound = Player(id: 1);
+final floatMusic = Player(id: 2);
 // late ReceivePort _audioComPort;
 // late SendPort _audioSendPort;
 // late Isolate _audioIso;
@@ -13,6 +14,13 @@ void initSound() {
     autoStart: false,
   );
   destroySound.setVolume(0.5);
+
+  floatMusic.open(
+    Media.asset(
+      'assets/audio/Float.ogg',
+    ),
+    autoStart: false,
+  );
   // _audioComPort = ReceivePort();
   // Isolate.spawn(
   //   _playSound,
@@ -51,5 +59,14 @@ void playSound(Player sound) {
   if (sound.playback.isSeekable) {
     sound.seek(Duration.zero);
   }
+  sound.play();
+}
+
+void playOnLoop(Player sound, double volume) {
+  if (sound.playback.isSeekable) {
+    sound.seek(Duration.zero);
+  }
+  sound.setPlaylistMode(PlaylistMode.loop);
+  sound.setVolume(volume);
   sound.play();
 }

@@ -17,6 +17,22 @@ void movers() {
       rot,
       "mover",
     );
+    grid.forEach(
+      (cell, x, y) {
+        if (cell.lifespan % 2 == 0) {
+          push(x, y, cell.rot, 0);
+        }
+      },
+      rot,
+      "slow_mover",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doSpeedMover(x, y, cell.rot, 0, 2);
+      },
+      rot,
+      "fast_mover",
+    );
   }
 }
 
@@ -38,6 +54,62 @@ Offset fromDir(int dir) {
 }
 
 final ungennable = ["empty", "ghost"];
+
+void doSupGen(int x, int y, int dir, int gendir,
+    [int offX = 0, int offY = 0, int preaddedRot = 0]) {
+  dir %= 4;
+  gendir %= 4;
+  final toGen = <Cell>[];
+
+  var addedRot = (dir - gendir + preaddedRot) % 4;
+  while (addedRot < 0) addedRot += 4;
+
+  gendir += 2;
+  gendir %= 4;
+
+  var sx = x;
+  var sy = y;
+
+  while (true) {
+    sx = frontX(sx, gendir);
+    sy = frontY(sy, gendir);
+
+    if (!grid.inside(sx, sy)) break;
+    if (sx == x && sy == y) break;
+
+    final s = grid.at(sx, sy);
+
+    if (ungennable.contains(s.id)) break;
+    if (s.tags.contains("gend $gendir")) break;
+    final c = s.copy;
+    c.tags.add("gend $gendir");
+    c.lastvars = grid.at(x, y).lastvars.copy;
+    c.lastvars.lastRot = s.lastvars.lastRot;
+    toGen.add(c);
+  }
+
+  final fx = frontX(x, dir) + offX;
+  final fy = frontY(y, dir) + offY;
+
+  if (toGen.isNotEmpty) {
+    for (var cell in toGen) {
+      if (cell.id.contains('gen') || cell.id.contains('rep')) {
+        cell.updated = true;
+      }
+      if (push(fx, fy, dir, 1)) {
+        final remaining = grid.at(fx, fy);
+        if (remaining.id == "empty") {
+          grid.set(fx, fy, cell);
+          grid.rotate(fx, fy, addedRot);
+        } else {
+          moveCell(fx, fy, fx, fy, dir, cell);
+        }
+      } else {
+        return;
+      }
+    }
+  }
+}
 
 void doGen(int x, int y, int dir, int gendir,
     [int? offX, int? offY, int preaddedRot = 0, bool physical = false]) {
@@ -289,14 +361,14 @@ void rots(Set<String> cells) {
 void doGear(int x, int y, RotationalType rt) {
   if (rt == RotationalType.clockwise) {
     // If we are jammed, stop ourselves
-    if (!canMoveAll(x + 1, y - 1, 0, MoveType.gear)) return;
-    if (!canMove(x, y - 1, 0, MoveType.gear)) return;
-    if (!canMoveAll(x + 1, y + 1, 1, MoveType.gear)) return;
-    if (!canMove(x + 1, y, 1, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y + 1, 2, MoveType.gear)) return;
-    if (!canMove(x, y + 1, 2, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y - 1, 3, MoveType.gear)) return;
-    if (!canMove(x - 1, y, 3, MoveType.gear)) return;
+    if (!canMoveAll(x + 1, y - 1, 0, 1, MoveType.gear)) return;
+    if (!canMove(x, y - 1, 0, 1, MoveType.gear)) return;
+    if (!canMoveAll(x + 1, y + 1, 1, 1, MoveType.gear)) return;
+    if (!canMove(x + 1, y, 1, 1, MoveType.gear)) return;
+    if (!canMoveAll(x - 1, y + 1, 2, 1, MoveType.gear)) return;
+    if (!canMove(x, y + 1, 2, 1, MoveType.gear)) return;
+    if (!canMoveAll(x - 1, y - 1, 3, 1, MoveType.gear)) return;
+    if (!canMove(x - 1, y, 3, 1, MoveType.gear)) return;
 
     grid.rotate(x, y, 1); // Cool stuff
 
@@ -324,14 +396,14 @@ void doGear(int x, int y, RotationalType rt) {
     grid.rotate(x, y - 1, 1);
   } else if (rt == RotationalType.counter_clockwise) {
     // If we are jammed, stop ourselves
-    if (!canMoveAll(x + 1, y - 1, 3, MoveType.gear)) return;
-    if (!canMove(x, y - 1, 2, MoveType.gear)) return;
-    if (!canMoveAll(x + 1, y + 1, 0, MoveType.gear)) return;
-    if (!canMove(x + 1, y, 3, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y + 1, 1, MoveType.gear)) return;
-    if (!canMove(x, y + 1, 0, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y - 1, 2, MoveType.gear)) return;
-    if (!canMove(x - 1, y, 1, MoveType.gear)) return;
+    if (!canMoveAll(x + 1, y - 1, 3, 1, MoveType.gear)) return;
+    if (!canMove(x, y - 1, 2, 1, MoveType.gear)) return;
+    if (!canMoveAll(x + 1, y + 1, 0, 1, MoveType.gear)) return;
+    if (!canMove(x + 1, y, 3, 1, MoveType.gear)) return;
+    if (!canMoveAll(x - 1, y + 1, 1, 1, MoveType.gear)) return;
+    if (!canMove(x, y + 1, 0, 1, MoveType.gear)) return;
+    if (!canMoveAll(x - 1, y - 1, 2, 1, MoveType.gear)) return;
+    if (!canMove(x - 1, y, 1, 1, MoveType.gear)) return;
 
     grid.rotate(x, y, -1); // Cool stuff
 
@@ -384,30 +456,58 @@ void gears(cells) {
 
 void doMirror(int x, int y, int dir) {
   if (dir == 0) {
-    if (canMove(x + 1, y, 2, MoveType.mirror) &&
-        canMove(x - 1, y, 0, MoveType.mirror)) {
+    if (canMove(x + 1, y, 2, 1, MoveType.mirror) &&
+        canMove(x - 1, y, 0, 1, MoveType.mirror)) {
       // if (grid.at(x + 1, y).tags.contains("mirrored")) return;
       // if (grid.at(x - 1, y).tags.contains("mirrored")) return;
-      if ((grid.at(x + 1, y).id == "mirror" &&
-              grid.at(x + 1, y).rot % 2 == 0) ||
-          (grid.at(x - 1, y).id == "mirror" &&
-              grid.at(x - 1, y).rot % 2 == 0)) {
-        return;
-      }
+      // if ((grid.at(x + 1, y).id.contains("mirror") &&
+      //         grid.at(x + 1, y).rot % 2 == 0) ||
+      //     (grid.at(x - 1, y).id.contains("mirror") &&
+      //         grid.at(x - 1, y).rot % 2 == 0)) {
+      //   return;
+      // }
       swapCells(x + 1, y, x - 1, y);
     }
   } else {
-    if (canMove(x, y + 1, 3, MoveType.mirror) &&
-        canMove(x, y - 1, 1, MoveType.mirror)) {
+    if (canMove(x, y + 1, 3, 1, MoveType.mirror) &&
+        canMove(x, y - 1, 1, 1, MoveType.mirror)) {
       // if (grid.at(x, y + 1).tags.contains("mirrored")) return;
       // if (grid.at(x, y - 1).tags.contains("mirrored")) return;
-      if ((grid.at(x, y + 1).id == "mirror" &&
+      if ((grid.at(x, y + 1).id.contains("mirror") &&
               grid.at(x, y + 1).rot % 2 == 1) ||
-          (grid.at(x, y - 1).id == "mirror" &&
+          (grid.at(x, y - 1).id.contains("mirror") &&
               grid.at(x, y - 1).rot % 2 == 1)) {
         return;
       }
       swapCells(x, y - 1, x, y + 1);
+    }
+  }
+}
+
+void doSuperMirror(int x, int y, int dir) {
+  final odir = dir + 2;
+
+  var depth = 0;
+  while (true) {
+    depth++;
+
+    final x1 = x + frontX(0, dir) * depth;
+    final y1 = y + frontY(0, dir) * depth;
+    final x2 = x + frontX(0, odir) * depth;
+    final y2 = y + frontY(0, odir) * depth;
+
+    if (!grid.inside(x1, y1) || !grid.inside(x2, y2)) return;
+
+    final c1 = grid.at(x1, y1);
+    final c2 = grid.at(x2, y2);
+
+    if (c1.id == "empty" && c2.id == "empty") return;
+
+    if (canMove(x1, y1, odir, 1, MoveType.mirror) &&
+        canMove(x2, y2, dir, 1, MoveType.mirror)) {
+      swapCells(x1, y1, x2, y2);
+    } else {
+      return;
     }
   }
 }
@@ -424,6 +524,17 @@ void mirrors() {
       },
       null,
       "mirror",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        if ((cell.rot % 2) == i) {
+          doSuperMirror(x, y, i);
+        } else if (i == 0) {
+          cell.updated = false;
+        }
+      },
+      null,
+      "super_mirror",
     );
   }
 }
@@ -543,7 +654,12 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
   } else if (o.id == "lock") {
     if (playerKeys > 0) {
       playerKeys--;
-      grid.set(ox, oy, Cell(ox, oy)..id = "unlock");
+      grid.set(
+          ox,
+          oy,
+          Cell(ox, oy)
+            ..id = "unlock"
+            ..rot = o.rot);
     }
   } else if (o.id == "flag") {
     if (!cells.contains("enemy")) {
@@ -786,9 +902,9 @@ bool canMoveInDir(int x, int y, int dir, MoveType mt, [bool single = false]) {
   if (!grid.inside(fx, fy)) return false;
 
   if (single) {
-    return canMove(fx, fy, dir, mt);
+    return canMove(fx, fy, dir, 1, mt);
   } else {
-    return canMoveAll(fx, fy, dir, mt);
+    return canMoveAll(fx, fy, dir, 1, mt);
   }
 }
 
@@ -871,7 +987,7 @@ void grabSide(int x, int y, int mdir, int dir, int checkDepth) {
   while (grid.inside(x, y)) {
     if (depth > depthLimit) return;
     if (ox != x || oy != y) {
-      if (canMove(x, y, dir, MoveType.grab)) {
+      if (canMove(x, y, dir, 1, MoveType.grab)) {
         if (moveInsideOf(grid.at(x, y), x, y, dir)) {
           break;
         } else {
@@ -969,34 +1085,120 @@ void fans() {
   }
 }
 
-void doTunnel(int x, int y, int dir) {
-  final fx = frontX(x, dir);
-  final fy = frontY(y, dir);
+void doMultiTunnel(int x, int y, int dir, List<int> dirs) {
+  bool successful = false;
+
+  final bx = frontX(x, dir + 2);
+  final by = frontY(y, dir + 2);
+
+  if (!grid.inside(bx, by)) return;
+
+  final c = grid.at(bx, by).copy;
+
+  for (var odir in dirs) {
+    if (doTunnel(x, y, dir, odir)) {
+      grid.set(bx, by, c.copy);
+      successful = true;
+    }
+  }
+
+  if (successful) {
+    grid.set(bx, by, Cell(bx, by));
+  }
+}
+
+bool doTunnel(int x, int y, int dir, [int? odir]) {
+  odir ??= dir;
+
+  var addedRot = (odir - dir + 4) % 4;
+
+  odir %= 4;
+
+  final fx = frontX(x, odir);
+  final fy = frontY(y, odir);
 
   final bx = frontX(x, dir + 2);
   final by = frontY(y, dir + 2);
 
   if (grid.inside(fx, fy) && grid.inside(bx, by)) {
-    if (!canMove(bx, by, dir, MoveType.tunnel)) {
-      return;
+    if (!canMove(bx, by, dir, 1, MoveType.tunnel)) {
+      return false;
     }
 
     final moving = grid.at(bx, by).copy;
-    if (moving.id == "tunnel" && moving.rot == dir) {
-      return;
-    }
-    if (ungennable.contains(moving.id)) return;
-    if (moving.id == "empty") return;
-    if (moving.tags.contains('tunneled')) return;
+    if (ungennable.contains(moving.id)) return false;
+    if (moving.id == "empty") return false;
+    if (moving.tags.contains('tunneled')) return false;
 
-    if (push(fx, fy, dir, 1, MoveType.tunnel)) {
+    if (push(fx, fy, odir, 1, MoveType.tunnel)) {
+      if (CellTypeManager.tunnels.contains(moving.id) && moving.rot == dir) {
+        grid.at(bx, by).updated = true;
+      }
+      grid.at(bx, by).rot += addedRot;
+      grid.at(bx, by).rot %= 4;
+      grid
+          .at(
+            bx,
+            by,
+          )
+          .tags
+          .add("tunneled");
       moveCell(bx, by, fx, fy);
-      grid.at(fx, fy).tags.add("tunneled");
+      return true;
+    } else {
+      return false;
     }
+  }
+
+  return false;
+}
+
+void doWarper(int x, int y, int dir, int odir) {
+  final bx = frontX(x, (dir + 2) % 4);
+  final by = frontY(y, (dir + 2) % 4);
+
+  if (!grid.inside(bx, by)) return;
+  if (ungennable.contains(grid.at(bx, by).id)) return;
+  if (grid.at(bx, by).id.startsWith("warper")) return;
+
+  var fx = x;
+  var fy = y;
+
+  var depth = 0;
+
+  var addedRot = odir - dir + 4;
+
+  while (true) {
+    depth++;
+    if (depth == 10000) return;
+    fx = frontX(fx, odir);
+    fy = frontY(fy, odir);
+
+    if (!grid.inside(fx, fy)) return;
+
+    final f = grid.at(fx, fy);
+
+    if (f.id == "warper") {
+    } else if (f.id == "warper_cw") {
+      odir = (odir + 1) % 4;
+      addedRot++;
+    } else if (f.id == "warper_ccw") {
+      odir = (odir + 3) % 4;
+      addedRot = addedRot + 3;
+    } else {
+      break;
+    }
+  }
+
+  addedRot %= 4;
+  if (push(fx, fy, odir, 1, MoveType.tunnel)) {
+    grid.at(bx, by).rot = (grid.at(bx, by).rot + addedRot) % 4;
+    moveCell(bx, by, fx, fy);
   }
 }
 
 void tunnels() {
+  // Tunnels
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
@@ -1004,6 +1206,66 @@ void tunnels() {
       },
       rot,
       "tunnel",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doTunnel(x, y, cell.rot, (cell.rot + 1) % 4);
+      },
+      rot,
+      "tunnel_cw",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doTunnel(x, y, cell.rot, (cell.rot + 3) % 4);
+      },
+      rot,
+      "tunnel_ccw",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doMultiTunnel(x, y, cell.rot, [
+          cell.rot + 1,
+          cell.rot + 3,
+        ]);
+      },
+      rot,
+      "dual_tunnel",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doMultiTunnel(x, y, cell.rot, [
+          cell.rot,
+          (cell.rot + 1) % 4,
+          (cell.rot + 3) % 4,
+        ]);
+      },
+      rot,
+      "triple_tunnel",
+    );
+  }
+
+  // Warpers
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        doWarper(x, y, cell.rot, cell.rot);
+      },
+      rot,
+      "warper",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doWarper(x, y, cell.rot, (cell.rot + 1) % 4);
+      },
+      rot,
+      "warper_cw",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doWarper(x, y, cell.rot, (cell.rot + 3) % 4);
+      },
+      rot,
+      "warper_ccw",
     );
   }
 }
@@ -1126,7 +1388,7 @@ extension SetX on Set<String> {
 }
 
 class CellTypeManager {
-  static List<String> movers = ["mover"];
+  static List<String> movers = ["mover", "slow_mover", "fast_mover"];
 
   static List<String> puller = ["puller"];
 
@@ -1146,9 +1408,27 @@ class CellTypeManager {
     "physical_gen",
   ];
 
+  static List<String> superGens = [
+    "supgen",
+    "supgen_cw",
+    "supgen_ccw",
+    "triple_supgen",
+    "cross_supgen",
+    "constructor_supgen",
+  ];
+
   static List<String> replicators = ["replicator"];
 
-  static List<String> tunnels = ["tunnel"];
+  static List<String> tunnels = [
+    "tunnel",
+    "tunnel_cw",
+    "tunnel_ccw",
+    "triple_tunnel",
+    "dual_tunnel",
+    "warper",
+    "warper_cw",
+    "warper_ccw",
+  ];
 
   static List<String> rotators = [
     "rotator_cw",
@@ -1190,6 +1470,17 @@ class CellTypeManager {
     "nand_gate",
     "nor_gate",
     "xnor_gate",
+  ];
+
+  static List<String> mirrors = [
+    "mirror",
+    "super_mirror",
+  ];
+
+  static List<String> speeds = [
+    "speed",
+    "slow",
+    "fast",
   ];
 }
 
@@ -1358,6 +1649,27 @@ void speeds() {
       },
       rot,
       "speed",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        cell.data['slow-toggled'] = !(cell.data['slow-toggled'] ?? false);
+        if (cell.data['slow-toggled'] == true) {
+          nudge(x, y, cell.rot);
+        }
+      },
+      rot,
+      "slow",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        if (nudge(x, y, cell.rot)) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+          nudge(fx, fy, cell.rot);
+        }
+      },
+      rot,
+      "fast",
     );
   }
 }
@@ -1529,7 +1841,7 @@ void drillers() {
           final fy = frontY(y, cell.rot);
           final f = safeAt(fx, fy);
           if (f != null) {
-            if (canMove(fx, fy, (cell.rot + 2) % 4, MoveType.mirror)) {
+            if (canMove(fx, fy, (cell.rot + 2) % 4, 1, MoveType.mirror)) {
               swapCells(x, y, frontX(x, cell.rot), frontY(y, cell.rot));
             }
           }
@@ -1537,6 +1849,65 @@ void drillers() {
       },
       rot,
       "driller",
+    );
+  }
+}
+
+void supgens() {
+  for (var rot in rotOrder) {
+    grid.forEach(
+      (cell, x, y) {
+        doSupGen(x, y, cell.rot, cell.rot);
+      },
+      rot,
+      "supgen",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doSupGen(x, y, (cell.rot + 1) % 4, cell.rot);
+      },
+      rot,
+      "supgen_cw",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doSupGen(x, y, (cell.rot + 3) % 4, cell.rot);
+      },
+      rot,
+      "supgen_ccw",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doSupGen(x, y, cell.rot, cell.rot);
+        doSupGen(x, y, (cell.rot + 3) % 4, (cell.rot + 3) % 4);
+      },
+      rot,
+      "cross_supgen",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doSupGen(x, y, cell.rot + 3, cell.rot);
+        doSupGen(x, y, cell.rot, cell.rot);
+        doSupGen(x, y, cell.rot + 1, cell.rot);
+      },
+      rot,
+      "triple_supgen",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        final lx = frontX(0, cell.rot + 1);
+        final ly = frontY(0, cell.rot + 1);
+
+        final rx = frontX(0, cell.rot + 3);
+        final ry = frontY(0, cell.rot + 3);
+        doSupGen(x, y, cell.rot + 3, cell.rot);
+        doSupGen(x, y, cell.rot, cell.rot, lx, ly);
+        doSupGen(x, y, cell.rot, cell.rot);
+        doSupGen(x, y, cell.rot, cell.rot, rx, ry);
+        doSupGen(x, y, cell.rot + 1, cell.rot);
+      },
+      rot,
+      "constructor_supgen",
     );
   }
 }

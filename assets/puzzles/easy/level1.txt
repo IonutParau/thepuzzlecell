@@ -1,1 +1,1 @@
-P1;65;o;i;empty,wall,puzzle,push,flag;Where it all begins;Use WASD to move to the flag;0|0|w|;1|0|u|;0|0|w|;1|0|w|;0|0|r|;2|0|w|;1|0|w|;0|0|w|;1|0|w|;0|0|t|;1|0|w|;0|0|w|;1|0|w|;0|0|t|;1|0|t|;3|0|w|;1|0|t|;0|0|t|;1|0|w|;0|0|w|;1|0|w|;4|0|w|;0|0|r|;1|0|w|;0|0|w|;1|0|u|;0|0|w|;
+P1;65;o;i;empty,wall,puzzle,push,flag;Where it all begins;Use the arrow keys to move to the flag;0|0|w|;1|0|u|;0|0|w|;1|0|w|;0|0|r|;2|0|w|;1|0|w|;0|0|w|;1|0|w|;0|0|t|;1|0|w|;0|0|w|;1|0|w|;0|0|t|;1|0|t|;3|0|w|;1|0|t|;0|0|t|;1|0|w|;0|0|w|;1|0|w|;4|0|w|;0|0|r|;1|0|w|;0|0|w|;1|0|u|;0|0|w|;

@@ -709,6 +709,8 @@ class VirtualButton {
   String title;
   String description;
 
+  bool hasRendered = true;
+
   VirtualButton(this.position, this.size, this.texture, this.alignment,
       this.callback, this.shouldRender,
       {this.title = "Untitled", this.description = "No description"})
@@ -741,7 +743,9 @@ class VirtualButton {
 
     bool hovered = isHovered(game.mouseX.toInt(), game.mouseY.toInt());
 
-    if (!shouldRender()) {
+    if (shouldRender()) {
+      hasRendered = true;
+    } else if (hasRendered) {
       if (time / duration > 1) return;
       untranslatedPostion = position.clone();
       untranslatedPostion.lerp(
@@ -1390,6 +1394,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ),
         );
         for (var j = 0; j < categories[i].items.length; j++) {
+          final isCategory = (categories[i].items[j] is CellCategory);
           buttonManager.setButton(
             'cat${i}cell$j',
             VirtualButton(
@@ -1399,19 +1404,83 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                       (catSize - cellSize) / 2,
                   catOff + cellSize * (j + 1)),
               Vector2(cellSize, cellSize),
-              '${categories[i].items[j]}.png',
+              isCategory
+                  ? '${categories[i].items[j].look}.png'
+                  : '${categories[i].items[j]}.png',
               ButtonAlignment.BOTTOMLEFT,
-              () => game.currentSeletion = cells.indexOf(
-                categories[i].items[j],
-              ),
-              () => categories[i].opened,
-              title: (cellInfo[categories[i].items[j]] ?? defaultProfile).title,
-              description: (cellInfo[categories[i].items[j]] ?? defaultProfile)
-                  .description,
+              () {
+                if (isCategory) {
+                  categories[i].items[j].opened =
+                      !(categories[i].items[j].opened);
+
+                  final isOpen = categories[i].items[j].opened;
+
+                  resetAllCategories(categories[i]);
+
+                  categories[i].items[j].opened = isOpen;
+
+                  for (var k = 0;
+                      k < categories[i].items[j].items.length;
+                      k++) {
+                    buttonManager.buttons['cat${i}cell${j}sub$k']?.time = 0;
+                    buttonManager.buttons['cat${i}cell${j}sub$k']?.startPos =
+                        Vector2(
+                            (catOff - catSize) / 2 +
+                                i * catOff +
+                                (catSize - cellSize) / 2,
+                            catOff + cellSize * (j + 1));
+                  }
+                } else {
+                  game.currentSeletion = cells.indexOf(
+                    categories[i].items[j],
+                  );
+                }
+              },
+              () {
+                return categories[i].opened;
+              },
+              title: isCategory
+                  ? categories[i].items[j].title
+                  : (cellInfo[categories[i].items[j]] ?? defaultProfile).title,
+              description: isCategory
+                  ? categories[i].items[j].description
+                  : (cellInfo[categories[i].items[j]] ?? defaultProfile)
+                      .description,
             )..time = 50,
           );
 
           buttonManager.buttons['cat${i}cell$j']?.duration += 0.005 * j;
+
+          if (isCategory) {
+            final cat = categories[i].items[j] as CellCategory;
+            final catPos = Vector2(
+                (catOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2,
+                catOff + cellSize * (j + 1));
+            for (var k = 0; k < cat.items.length; k++) {
+              final cell = cat.items[k] as String;
+
+              final xOff = cellSize + (k % cat.max) * cellSize;
+              final yOff = (k ~/ cat.max) * cellSize;
+
+              final off = Vector2(xOff, yOff);
+
+              buttonManager.setButton(
+                'cat${i}cell${j}sub$k',
+                VirtualButton(
+                  catPos + off,
+                  Vector2.all(cellSize),
+                  "$cell.png",
+                  ButtonAlignment.BOTTOMLEFT,
+                  () => game.currentSeletion = cells.indexOf(cell),
+                  () => cat.opened,
+                  title: (cellInfo[cell] ?? defaultProfile).title,
+                  description: (cellInfo[cell] ?? defaultProfile).description,
+                )
+                  ..time = 50
+                  ..duration += k * 0.005,
+              );
+            }
+          }
         }
       }
     }
@@ -1817,14 +1886,28 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if (category != except) {
         category.opened = false;
         for (var item in category.items) {
-          if (item is CellCategory) {
-            item.opened = false;
-          }
           if (wasOpened) {
             buttonManager
                 .buttons[
                     'cat${categories.indexOf(category)}cell${category.items.indexOf(item)}']
                 ?.time = 0;
+          }
+        }
+      }
+      for (var item in category.items) {
+        if (item is CellCategory) {
+          final wasopen = item.opened;
+          item.opened = false;
+          if (wasopen) {
+            for (var subitem in item.items) {
+              final btn = buttonManager.buttons[
+                  'cat${categories.indexOf(category)}cell${category.items.indexOf(item)}sub${item.items.indexOf(subitem)}'];
+              if (btn != null) {
+                if (btn.hasRendered) {
+                  btn.time = 0;
+                }
+              }
+            }
           }
         }
       }
@@ -1976,6 +2059,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             buttonManager.buttons['cat${i}cell$j']!.lastRot =
                 game.currentRotation;
             buttonManager.buttons['cat${i}cell$j']!.timeRot = 0;
+
+            if (categories[i].items[j] is CellCategory) {
+              for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.lastRot =
+                    game.currentRotation;
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.timeRot = 0;
+              }
+            }
           }
         }
         game.currentRotation += 3;
@@ -1985,6 +2076,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           for (var j = 0; j < categories[i].items.length; j++) {
             buttonManager.buttons['cat${i}cell$j']!.rotation =
                 game.currentRotation;
+
+            if (categories[i].items[j] is CellCategory) {
+              for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.rotation =
+                    game.currentRotation;
+              }
+            }
           }
         }
       }
@@ -2003,15 +2101,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             buttonManager.buttons['cat${i}cell$j']!.lastRot =
                 game.currentRotation;
             buttonManager.buttons['cat${i}cell$j']!.timeRot = 0;
+
+            if (categories[i].items[j] is CellCategory) {
+              for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.lastRot =
+                    game.currentRotation;
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.timeRot = 0;
+              }
+            }
           }
         }
-        game.currentRotation++;
+        game.currentRotation += 1;
         game.currentRotation %= 4;
         for (var i = 0; i < categories.length; i++) {
           buttonManager.buttons['cat$i']!.rotation = game.currentRotation;
           for (var j = 0; j < categories[i].items.length; j++) {
             buttonManager.buttons['cat${i}cell$j']!.rotation =
                 game.currentRotation;
+
+            if (categories[i].items[j] is CellCategory) {
+              for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                buttonManager.buttons['cat${i}cell${j}sub$k']!.rotation =
+                    game.currentRotation;
+              }
+            }
           }
         }
       }

@@ -141,6 +141,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     Padding(
                       padding: buttonPadding,
                       child: MaterialButton(
+                        child: Text('Credits', style: buttonStyle),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/credits'),
+                        hoverColor: Colors.blue,
+                      ),
+                    ),
+                    Padding(
+                      padding: buttonPadding,
+                      child: MaterialButton(
                         child: Text('Version', style: buttonStyle),
                         onPressed: () =>
                             Navigator.of(context).pushNamed('/version'),

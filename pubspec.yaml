@@ -28,9 +28,19 @@ flutter:
   assets:
     - assets/images/
     - assets/images/movers/
+    - assets/images/movers/movers/
+    - assets/images/movers/mirrors/
     - assets/images/rotators/
     - assets/images/push/
     - assets/images/destroyers/
+    - assets/images/recreators/
+    - assets/images/recreators/supgens/
+    - assets/images/recreators/generators/
+    - assets/images/recreators/replicators/
+    - assets/images/recreators/tunnels/
+    - assets/images/recreators/tunnels/warpers/
+    - assets/images/curves/
+    - assets/images/puzzle/
     - assets/images/interface/
     - assets/audio/
     - assets/puzzles/
