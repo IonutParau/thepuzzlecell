@@ -34,14 +34,6 @@ class Puzzles extends StatefulWidget {
 Future<void> loadPuzzle(int index) async {
   final data = await loadJsonData('assets/puzzles/${puzzles[index]}');
   grid = loadStr(data);
-  discord.updatePresence(
-    DiscordPresence(
-      details: 'Playing a ${puzzles[index].split('/').first} puzzle',
-      largeImageKey: 'tpc_logo',
-      smallImageKey: 'tpc_logo',
-      startTimeStamp: DateTime.now().millisecondsSinceEpoch,
-    ),
-  );
   puzzleIndex = index;
 }
 

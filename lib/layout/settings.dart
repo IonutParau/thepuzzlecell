@@ -182,6 +182,40 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Tooltip(
+                        message: "The scale of the UI buttons",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
+                        child: Text(
+                          "UI scale: ",
+                          style: fontSize(
+                            7.sp,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30.w,
+                        child: Slider(
+                          value: storage.getDouble("ui_scale")!,
+                          min: 0.1,
+                          max: 5,
+                          onChanged: (v) {
+                            storage
+                                .setDouble("ui_scale", floor(v * 50) / 50)
+                                .then((b) => setState(() {}));
+                          },
+                        ),
+                      ),
+                      Text(
+                        "${storage.getDouble("ui_scale")! * 100}%",
+                        style: fontSize(
+                          7.sp,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

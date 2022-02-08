@@ -1,11 +1,8 @@
 library layout;
 
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';

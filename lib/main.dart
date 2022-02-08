@@ -1,4 +1,3 @@
-import 'package:dart_discord_rpc/dart_discord_rpc.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,11 +25,10 @@ void main() async {
   playOnLoop(floatMusic, 0.5);
 
   storage = await SharedPreferences.getInstance();
-  DiscordRPC.initialize();
-  discord = DiscordRPC(applicationId: '926080518905290812');
-  discord.start(autoRegister: true);
 
-  setDefaultPresence();
+  if (storage.getDouble('ui_scale') == null) {
+    await storage.setDouble('ui_scale', 1);
+  }
 
   runApp(const MyApp());
 }
@@ -50,7 +48,6 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        discord.clearPresence();
         break;
       case AppLifecycleState.resumed:
         break;

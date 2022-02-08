@@ -8,7 +8,7 @@ String saveGrid(Grid grid) {
   code['cells'] = {};
   grid.forEach(
     (Cell cell, int x, int y) {
-      if (cell.id == "empty" && !grid.placeable(x, y)) return;
+      if (cell.id == "empty" && grid.placeable(x, y) == "empty") return;
       if (code['cells'][cell.id] == null) code['cells'][cell.id] = [];
 
       code['cells'][cell.id].add("$x $y ${cell.rot} ${grid.placeable(x, y)}");
@@ -31,7 +31,7 @@ Grid loadGrid(Map<String, dynamic> code) {
         final x = int.parse(parts[0]);
         final y = int.parse(parts[1]);
         final rot = int.parse(parts[2]);
-        final isPlaceable = parts[3] == 'true';
+        final isPlaceable = parts[3] == 'true' ? "place" : "empty";
 
         final cell = Cell(x, y);
         cell.id = id;
@@ -83,6 +83,7 @@ Grid loadStr(String str) {
   try {
     if (str.startsWith('P1;')) return P1.decode(str);
     if (str.startsWith('P1+;')) return P1Plus.decodeGrid(str);
+    if (str.startsWith('P2;')) return P2.decodeGrid(str);
 
     throw "Unsupported saving format";
   } catch (e) {
@@ -100,7 +101,7 @@ class P1 {
       "qwertyuiopasdfghjklzxcvbnm,<.>/?:'[{]}\\=+-_1234567890!@#\$%^&*()`~";
   static String encode(Grid grid) {
     final rawCellList = <Cell>[];
-    final rawCellPlace = <bool>[];
+    final rawCellPlace = <String>[];
     final ids = <String>{};
 
     grid.forEach(
@@ -127,7 +128,7 @@ class P1 {
 
     final cellList = <Cell>[];
     final cellCount = <int>[];
-    final compiledCellPlace = <bool>[];
+    final compiledCellPlace = <String>[];
 
     for (var i = 0; i < rawCellList.length; i++) {
       final cell = rawCellList[i];
@@ -157,7 +158,7 @@ class P1 {
       final cell = cellList[i];
       if (cell != "") {
         str +=
-            "${ids.toList().indexOf(cell.id)}|${cell.rot}|${encodeNum(cellCount[i], valueString)}|${compiledCellPlace[i] ? '+' : ''};";
+            "${ids.toList().indexOf(cell.id)}|${cell.rot}|${encodeNum(cellCount[i], valueString)}|${compiledCellPlace[i] == "place" ? '+' : ''};";
       }
     }
 
@@ -194,7 +195,7 @@ class P1 {
     }
 
     final cellList = <Cell>[];
-    final cellPlace = <bool>[];
+    final cellPlace = <String>[];
 
     for (var i = 0; i < segments.length; i++) {
       if (segments[i] != "") {
@@ -207,7 +208,7 @@ class P1 {
         final atts = cellSegs[3];
         for (var i = 0; i < count; i++) {
           cellList.add(cell);
-          cellPlace.add(atts.contains('+'));
+          cellPlace.add(atts.contains('+') ? "place" : "empty");
         }
       }
     }
@@ -239,7 +240,7 @@ class P1 {
 class SaveCell {
   String id;
   int rot;
-  bool place;
+  String place;
 
   SaveCell(this.id, this.rot, this.place);
 
@@ -260,7 +261,9 @@ class P1Plus {
 
   static String encodeCell(List<String> cellTable, SaveCell cell) {
     return encodeNum(
-      (cellTable.indexOf(cell.id) * 8 + cell.rot + (cell.place ? 4 : 0)),
+      (cellTable.indexOf(cell.id) * 8 +
+          cell.rot +
+          (cell.place != "empty" ? 4 : 0)),
       valueString,
     );
   }
@@ -272,7 +275,7 @@ class P1Plus {
     final rot = (n % 8) % 4;
     final placeable = (n % 8) > 3;
 
-    return SaveCell(id, rot, placeable);
+    return SaveCell(id, rot, placeable ? "place" : "empty");
   }
 
   static String encodeGrid(Grid grid) {
@@ -359,15 +362,23 @@ class P1Plus {
   }
 }
 
-String placeChar(bool place) {
-  if (place) return "+";
+String placeChar(String place) {
+  if (place == "place") return "+";
+  if (place == "red_place") return "R+";
+  if (place == "blue_place") return "B+";
+  if (place == "yellow_place") return "Y+";
+  if (place == "rotatable") return "RT";
   return "";
 }
 
-bool decodePlaceChar(String char) {
-  if (char == "+") return true;
+String decodePlaceChar(String char) {
+  if (char == "+") return "place";
+  if (char == "R+") return "red_place";
+  if (char == "B+") return "blue_place";
+  if (char == "Y+") return "yellow_place";
+  if (char == "RT") return "rotatable";
 
-  return false;
+  return "empty";
 }
 
 class P2 {
@@ -404,7 +415,7 @@ class P2 {
       },
     );
 
-    str += "${cellTable.join(',')}";
+    str += "${cellTable.join(',')};";
 
     final cells = [];
 
@@ -415,10 +426,37 @@ class P2 {
       },
     );
 
-    final cellStr = cells.join(',');
+    final cellStr = base64.encode(zlib.encode(utf8.encode(cells.join(','))));
 
     str += (cellStr + ';');
 
     return str;
+  }
+
+  static Grid decodeGrid(String str) {
+    final segs = str.split(';');
+    final grid = Grid(
+      decodeNum(segs[3], valueString),
+      decodeNum(segs[4], valueString),
+    );
+
+    final cellTable = segs[5].split(',');
+
+    final cellData = utf8.decode(zlib.decode(base64.decode(segs[6])));
+
+    final cells = cellData.split(',');
+
+    var i = 0;
+    grid.forEach(
+      (cell, x, y) {
+        final cell = cells[i];
+        grid.set(x, y, decodeCell(cell.split('|').first, cellTable));
+        final placeChar = cell.split('|').length == 1 ? '' : cell.split('|')[1];
+        grid.setPlace(x, y, decodePlaceChar(placeChar));
+        i++;
+      },
+    );
+
+    return grid;
   }
 }

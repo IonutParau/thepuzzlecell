@@ -70,7 +70,11 @@ void doSupGen(int x, int y, int dir, int gendir,
   var sx = x;
   var sy = y;
 
+  var d = 0;
+
   while (true) {
+    d++;
+    if (d == 10000) return;
     sx = frontX(sx, gendir);
     sy = frontY(sy, gendir);
 
@@ -112,7 +116,12 @@ void doSupGen(int x, int y, int dir, int gendir,
 }
 
 void doGen(int x, int y, int dir, int gendir,
-    [int? offX, int? offY, int preaddedRot = 0, bool physical = false]) {
+    [int? offX,
+    int? offY,
+    int preaddedRot = 0,
+    bool physical = false,
+    int lvxo = 0,
+    int lvyo = 0]) {
   offX ??= 0;
   offY ??= 0;
   dir %= 4;
@@ -143,23 +152,8 @@ void doGen(int x, int y, int dir, int gendir,
     if (!grid.inside(x, y)) return;
     final remaining = grid.at(ox, oy);
     if (moveInsideOf(remaining, ox, oy, dir) && remaining.id != "empty") {
-      if (remaining.id == "wormhole") {
-        moveCell(gx, gy, ox, oy, dir);
-        grid.set(gx, gy, toGenerate);
-      } else {
-        if (remaining.id == "enemy") {
-          moveCell(ox, oy, ox, oy);
-        } else {
-          grid.addBroken(
-            toGenerate,
-            ox,
-            oy,
-            remaining.id == "silent_trash" ? "silent" : "normal",
-            x,
-            y,
-          );
-        }
-      }
+      moveCell(gx, gy, ox, oy, dir);
+      grid.set(gx, gy, toGenerate);
       return;
     }
     if (remaining.id == "empty") {
@@ -172,11 +166,25 @@ void doGen(int x, int y, int dir, int gendir,
       if (physical) {
         toGenerate.lastvars.lastPos += fromDir(gendir);
       }
-      if (toGenerate.id.startsWith("generator") ||
-          toGenerate.id.contains('gen') ||
-          toGenerate.id.startsWith("replicator") ||
-          toGenerate.id.contains("rep")) {
-        if ((toGenerate.rot + addedRot) % 4 == dir) {
+      toGenerate.lastvars.lastPos = Offset(
+        toGenerate.lastvars.lastPos.dx + lvxo,
+        toGenerate.lastvars.lastPos.dy + lvyo,
+      );
+      if (CellTypeManager.generators.contains(toGenerate.id) ||
+          CellTypeManager.superGens.contains(toGenerate.id) ||
+          CellTypeManager.replicators.contains(toGenerate.id)) {
+        bool shouldUpdate = false;
+        var rot = toGenerate.rot;
+        if ((toGenerate.id == "cross_gen" ||
+                toGenerate.id == "cross_replicator" ||
+                toGenerate.id == "cross_supgen") &&
+            (rot == dir || (rot + 3) % 4 == dir)) {
+          shouldUpdate = true;
+        } else if (rot == dir) {
+          shouldUpdate = true;
+        }
+
+        if (shouldUpdate) {
           toGenerate.updated = true;
         }
       }
@@ -490,6 +498,7 @@ void doSuperMirror(int x, int y, int dir) {
   var depth = 0;
   while (true) {
     depth++;
+    if (depth == 9999) return;
 
     final x1 = x + frontX(0, dir) * depth;
     final y1 = y + frontY(0, dir) * depth;
@@ -585,8 +594,11 @@ void birds() {
   }
 }
 
-void doRep(int x, int y, int dir, int gendir, [int offX = 0, int offY = 0]) {
-  doGen(x, y, dir, gendir + 2, offX, offY, 2);
+void doRep(int x, int y, int dir, int gendir,
+    [int offX = 0, int offY = 0, bool physical = false]) {
+  var lvxo = physical ? frontX(0, dir) * 2 : 0;
+  var lvyo = physical ? frontY(0, dir) * 2 : 0;
+  doGen(x, y, dir, gendir + 2, offX, offY, 2, physical, lvxo, lvyo);
 }
 
 void reps() {
@@ -598,6 +610,48 @@ void reps() {
       },
       rot,
       "replicator",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doRep(x, y, cell.rot, cell.rot, 0, 0, true);
+      },
+      rot,
+      "physical_replicator",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doRep(x, y, cell.rot, cell.rot);
+        doRep(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4);
+      },
+      rot,
+      "opposite_replicator",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doRep(x, y, cell.rot, cell.rot);
+        doRep(x, y, (cell.rot + 3) % 4, (cell.rot + 3) % 4);
+      },
+      rot,
+      "cross_replicator",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doRep(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4);
+        doRep(x, y, cell.rot, cell.rot);
+        doRep(x, y, (cell.rot + 3) % 4, (cell.rot + 3) % 4);
+      },
+      rot,
+      "triple_rep",
+    );
+    grid.forEach(
+      (cell, x, y) {
+        doRep(x, y, 0, 0);
+        doRep(x, y, 1, 1);
+        doRep(x, y, 2, 2);
+        doRep(x, y, 3, 3);
+      },
+      rot,
+      "quad_rep",
     );
   }
 }
@@ -1198,6 +1252,7 @@ void doWarper(int x, int y, int dir, int odir) {
 }
 
 void tunnels() {
+  if (!grid.movable) return;
   // Tunnels
   for (var rot in rotOrder) {
     grid.forEach(
@@ -1417,7 +1472,14 @@ class CellTypeManager {
     "constructor_supgen",
   ];
 
-  static List<String> replicators = ["replicator"];
+  static List<String> replicators = [
+    "replicator",
+    "cross_replicator",
+    "opposite_replicator",
+    "triple_rep",
+    "quad_rep",
+    "physical_replicator",
+  ];
 
   static List<String> tunnels = [
     "tunnel",
@@ -1495,7 +1557,7 @@ void doDisplayer(int x, int y, int dir) {
     if (!grid.inside(ox, oy)) break;
 
     final o = grid.at(ox, oy);
-    if (grid.placeable(ox, oy) && depthing) {
+    if (grid.placeable(ox, oy) != "empty" && depthing) {
       depth++;
     } else {
       depthing = false;
@@ -1854,6 +1916,7 @@ void drillers() {
 }
 
 void supgens() {
+  if (!grid.movable) return;
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {

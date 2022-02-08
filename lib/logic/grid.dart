@@ -91,9 +91,17 @@ class GridUpdateConstraints {
   GridUpdateConstraints(this.sx, this.sy, this.ex, this.ey);
 }
 
+List<String> backgrounds = [
+  "place",
+  "red_place",
+  "blue_place",
+  "yellow_place",
+  "rotatable",
+];
+
 class Grid {
   late List<List<Cell>> grid;
-  late List<List<bool>> place;
+  late List<List<String>> place;
   late List<List<Set<String>>> chunks;
 
   List<BrokenCell> brokenCells = [];
@@ -143,7 +151,7 @@ class Grid {
       place.add([]);
       for (var y = 0; y < height; y++) {
         grid.last.add(Cell(x, y));
-        place.last.add(false);
+        place.last.add("empty");
       }
     }
   }
@@ -317,13 +325,20 @@ class Grid {
     return grid[x][y];
   }
 
-  void set(int x, int y, Cell cell) {
+  void setPlace(int x, int y, String id) {
     if (wrap) {
-      if (cell.id == "place") {
-        place[(x + width) % width][(y + height) % height] =
-            !place[(x + width) % width][(y + height) % height];
-        return;
-      }
+      place[(x + width) % width][(y + height) % height] = id;
+      return;
+    }
+    place[x][y] = id;
+  }
+
+  void set(int x, int y, Cell cell) {
+    if (backgrounds.contains(cell.id)) {
+      setPlace(x, y, cell.id);
+      return;
+    }
+    if (wrap) {
       grid[(x + width) % width][(y + height) % height] = cell;
       chunks[floor(((x + width) % width) / chunkSize)]
               [floor(((y + height) % height) / chunkSize)]
@@ -331,19 +346,15 @@ class Grid {
       return;
     }
     if (!inside(x, y)) return;
-    if (cell.id == "place") {
-      place[x][y] = !place[x][y];
-      return;
-    }
     grid[x][y] = cell;
     chunks[floor(x / chunkSize)][floor(y / chunkSize)].add(cell.id);
   }
 
-  bool placeable(int x, int y) {
+  String placeable(int x, int y) {
     if (wrap) {
       return place[(x + width) % width][(y + height) % height];
     }
-    if (!inside(x, y)) return false;
+    if (!inside(x, y)) return "empty";
     return place[x][y];
   }
 
@@ -352,7 +363,7 @@ class Grid {
     grid.wrap = wrap;
     forEach(
       (p0, p1, p2) {
-        if (placeable(p1, p2)) grid.place[p1][p2] = true;
+        grid.place[p1][p2] = placeable(p1, p2);
         grid.set(p1, p2, p0.copy);
       },
     );
@@ -433,7 +444,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.mirrors)) mirrors,
       if (cells.containsAny(CellTypeManager.generators)) gens,
       if (cells.containsAny(CellTypeManager.superGens)) supgens,
-      if (cells.contains("replicator")) reps,
+      if (cells.containsAny(CellTypeManager.replicators)) reps,
       if (cells.containsAny(CellTypeManager.tunnels)) tunnels,
       if (cells.containsAny(CellTypeManager.rotators)) rots,
       if (cells.containsAny(CellTypeManager.gears)) gears,

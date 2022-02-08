@@ -9,6 +9,8 @@ enum MoveType {
   grab,
   tunnel,
   sync,
+  sticky_push,
+  sticky_pull,
 }
 
 int toSide(int dir, int rot) {
@@ -111,6 +113,16 @@ bool moveInsideOf(Cell into, int x, int y, int dir) {
   if (into.id == "enemy" && into.updated) return false;
   if (justMoveInsideOf.contains(into.id)) return true;
 
+  final side = toSide(dir, into.rot);
+
+  if (into.id == "semi_enemy" && !into.updated) {
+    return side % 2 == 1;
+  }
+
+  if (into.id == "semi_trash" && !into.updated) {
+    return side % 2 == 1;
+  }
+
   return false;
 }
 
@@ -151,16 +163,12 @@ Vector2 randomVector2() {
 void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
-  if (moving.id == "sync") {
-    var dir = -1;
+  if (dir == null) {
     if (ox < nx) dir = 0;
     if (oy < ny) dir = 1;
     if (ox > nx) dir = 2;
     if (oy > ny) dir = 3;
-
-    doSync(ox, oy, dir, 0);
   }
-
   final movingTo = grid.at(nx, ny).copy;
 
   final cx = (nx + grid.width) % grid.width;
@@ -183,12 +191,16 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
 
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
+  var side = toSide(dir ?? 0, movingTo.rot);
+
   if (movingTo.id != "trash" &&
       movingTo.id != "musical" &&
       movingTo.id != "wormhole" &&
       movingTo.id != "mech_trash" &&
-      movingTo.id != "silent_trash") {
-    if (movingTo.id == "enemy") {
+      movingTo.id != "silent_trash" &&
+      movingTo.id != "semi_trash") {
+    if (movingTo.id == "enemy" ||
+        (movingTo.id == "semi_enemy" && side % 2 == 1)) {
       //grid.addBroken(moving, nx, ny);
       playSound(destroySound);
       grid.set(nx, ny, Cell(nx, ny));
@@ -218,6 +230,12 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
   } else {
     if (movingTo.id == "trash") {
       grid.addBroken(moving, nx, ny);
+    } else if (movingTo.id == "semi_trash") {
+      if (side % 2 == 0) {
+        grid.set(nx, ny, moving);
+      } else {
+        grid.addBroken(moving, nx, ny);
+      }
     } else if (movingTo.id == "silent_trash") {
       grid.addBroken(moving, nx, ny, "silent");
     } else if (movingTo.id == "mech_trash") {
@@ -274,6 +292,9 @@ final withBias = [
 final noForce = [];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
+  if (cell.id == "weight") {
+    return -1;
+  }
   final odir = (dir + 2) % 4; // Opposite direction
   if (["mech_mover", "mech_puller"].contains(cell.id)) {
     if (MechanicalManager.on(cell, true)) {
@@ -336,8 +357,28 @@ int addedForce(Cell cell, int dir, MoveType mt) {
   return 0;
 }
 
+// bool stickyNudge(int x, int y, int dir, MoveType mt) {
+//   if (grid.inside(x, y)) {
+//     final c = grid.at(x, y);
+
+//     if (c.id != "sticky") {
+//       return nudge(x, y, dir);
+//     } else if (c.id == "sticky") {
+//       final fx = frontX(x, dir);
+//       final fy = frontY(y, dir);
+
+//       if (stickyNudge(fx, fy, dir, mt)) {
+//         return nudge(x, y, dir);
+//       }
+//     }
+//   }
+
+//   return false;
+// }
+
 bool push(int x, int y, int dir, int force,
-    [MoveType mt = MoveType.push, int depth = 0]) {
+    [MoveType mt = MoveType.push, int depth = 0, Cell? lastCell]) {
+  lastCell ??= Cell(x, y);
   if ((dir % 2 == 0 && depth > grid.width) ||
       (dir % 2 == 1 && depth > grid.height)) {
     return false;
@@ -359,13 +400,18 @@ bool push(int x, int y, int dir, int force,
 
   var c = grid.at(ox, oy);
   var addedRot = 0;
+  if (lastCell.id == "mobile_trash") {
+    if (c.id != "empty") {
+      grid.addBroken(c, ox, oy);
+    }
+    return true;
+  }
   if (moveInsideOf(c, ox, oy, dir)) return force > 0;
   if (!grid.inside(x, y)) return false;
-
   if (canMove(ox, oy, dir, force, mt)) {
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
-    final mightMove = push(x, y, dir, force, mt, depth + 1);
+    final mightMove = push(x, y, dir, force, mt, depth + 1, c);
     if (mightMove) {
       if (mt == MoveType.sync && c.id == "sync") {
         c.tags.add("sync move");

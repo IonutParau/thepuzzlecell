@@ -2,6 +2,8 @@ part of layout;
 
 late PuzzleGame game;
 
+double get uiScale => storage.getDouble('ui_scale')!;
+
 TextStyle fontSize(double fontSize) {
   return TextStyle(
     fontSize: fontSize,
@@ -160,7 +162,6 @@ class _GameUIState extends State<GameUI> {
     if (puzzleIndex != null) {
       puzzleIndex = puzzleIndex! + 1;
       if (puzzleIndex! >= puzzles.length) {
-        setDefaultPresence();
         Navigator.pop(context);
         puzzleIndex = null;
         return;
@@ -196,7 +197,6 @@ class _GameUIState extends State<GameUI> {
                   MaterialButton(
                     child: Text("Yes"),
                     onPressed: () {
-                      setDefaultPresence();
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
@@ -319,7 +319,7 @@ class _GameUIState extends State<GameUI> {
                                       ),
                                       onPressed: () =>
                                           FlutterClipboard.controlC(
-                                        P1Plus.encodeGrid(grid),
+                                        P2.encodeGrid(grid),
                                       ),
                                     ),
                                   ),
@@ -711,12 +711,15 @@ class VirtualButton {
 
   bool hasRendered = true;
 
-  VirtualButton(this.position, this.size, this.texture, this.alignment,
+  VirtualButton(this.position, Vector2 size, this.texture, this.alignment,
       this.callback, this.shouldRender,
       {this.title = "Untitled", this.description = "No description"})
       : rotation = 0,
         lastRot = 0,
-        startPos = position; // Constructors
+        startPos = position * storage.getDouble('ui_scale')!,
+        this.size = size * storage.getDouble('ui_scale')! {
+    position *= storage.getDouble('ui_scale')!;
+  } // Constructors
 
   void render(Canvas canvas, Vector2 canvasSize) {
     this.canvasSize = canvasSize;
@@ -1079,7 +1082,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          FlutterClipboard.controlC(P1Plus.encodeGrid(grid));
+          FlutterClipboard.controlC(P2.encodeGrid(grid));
         },
         () => true,
         title: 'Save to clipboard',
@@ -1269,11 +1272,28 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
 
       buttonManager.setButton(
-        "restore-btn",
+        "onetick-btn",
         VirtualButton(
           Vector2(
             20,
             80,
+          ),
+          Vector2.all(40),
+          "redirector.png",
+          ButtonAlignment.TOPRIGHT,
+          oneTick,
+          () => true,
+          title: 'Advance one tick',
+          description: 'Steps the simulation forward by 1 tick',
+        ),
+      );
+
+      buttonManager.setButton(
+        "restore-btn",
+        VirtualButton(
+          Vector2(
+            20,
+            130,
           ),
           Vector2.all(40),
           "rotator_180.png",
@@ -1289,7 +1309,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         VirtualButton(
           Vector2(
             20,
-            130,
+            180,
           ),
           Vector2.all(40),
           "generator.png",
@@ -1384,8 +1404,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               for (var j = 0; j < cat.items.length; j++) {
                 buttonManager.buttons['cat${i}cell$j']?.time = 0;
                 buttonManager.buttons['cat${i}cell$j']?.startPos =
-                    Vector2((catOff - catSize) / 2 + i * catOff, catOff) +
-                        Vector2.all((catSize - cellSize) / 2);
+                    (Vector2((catOff - catSize) / 2 + i * catOff, catOff) +
+                            Vector2.all((catSize - cellSize) / 2)) *
+                        uiScale;
               }
             },
             () => true,
@@ -1425,10 +1446,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     buttonManager.buttons['cat${i}cell${j}sub$k']?.time = 0;
                     buttonManager.buttons['cat${i}cell${j}sub$k']?.startPos =
                         Vector2(
-                            (catOff - catSize) / 2 +
-                                i * catOff +
-                                (catSize - cellSize) / 2,
-                            catOff + cellSize * (j + 1));
+                                (catOff - catSize) / 2 +
+                                    i * catOff +
+                                    (catSize - cellSize) / 2,
+                                catOff + cellSize * (j + 1)) *
+                            uiScale;
                   }
                 } else {
                   game.currentSeletion = cells.indexOf(
@@ -1656,8 +1678,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           cellSize.toDouble(),
         ),
       );
-      if (grid.placeable(x, y)) {
-        Sprite(Flame.images.fromCache('place.png')).render(
+      if (grid.placeable(x, y) != "empty") {
+        Sprite(Flame.images
+                .fromCache('backgrounds/${grid.placeable(x, y)}.png'))
+            .render(
           canvas,
           position: off,
           size: Vector2(
@@ -1671,7 +1695,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void renderCell(Cell cell, num x, num y, [Paint? paint]) {
     if (cell.id == "empty") return;
-    final rot = (running
+    final rot = (running || onetick
             ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay)
             : cell.rot) *
         halfPi;
@@ -1698,7 +1722,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         Offset(x.toDouble(), y.toDouble()) * cellSize.toDouble() + center;
 
     final off = rotateOff(
-            (running && cell.id != "empty")
+            ((running || onetick) && cell.id != "empty")
                 ? interpolate(past, current, itime / delay)
                 : current,
             -rot) -
@@ -1760,19 +1784,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       overlays.add("Win");
     }
     if (puzzleWin) return;
-    if (running) {
+    if (running || onetick) {
       itime += dt;
 
       while (itime > delay) {
         itime -= delay;
-        if (storage.getBool("update_visible") == true) {
-          final sx = max(floor(-offX / cellSize), 0);
-          final sy = max(floor(-offY / cellSize), 0);
-          final ex = min(ceil((canvasSize.x - offX) / cellSize), grid.width);
-          final ey = min(ceil((canvasSize.y - offY) / cellSize), grid.height);
-          grid.setConstraints(sx, sy, ex, ey);
+        if (onetick) {
+          onetick = false;
+        } else {
+          if (storage.getBool("update_visible") == true) {
+            final sx = max(floor(-offX / cellSize), 0);
+            final sy = max(floor(-offY / cellSize), 0);
+            final ex = min(ceil((canvasSize.x - offX) / cellSize), grid.width);
+            final ey = min(ceil((canvasSize.y - offY) / cellSize), grid.height);
+            grid.setConstraints(sx, sy, ex, ey);
+          }
+          grid.update(); // Update the cells boizz
         }
-        grid.update(); // Update the cells boizz
       }
     }
 
@@ -1800,13 +1828,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (!(pasting || selecting || edType == EditorType.loaded)) {
       if (mouseDown) {
-        final cell = (edType == EditorType.making
-            ? cells
-            : cellsToPlace)[currentSeletion];
         final cx = (mouseX - offX) ~/ cellSize;
         final cy = (mouseY - offY) ~/ cellSize;
         if (grid.inside(cx, cy)) {
-          if (mouseButton == kPrimaryMouseButton && cell != "place") {
+          if (mouseButton == kPrimaryMouseButton) {
             placeCell(currentSeletion, currentRotation, cx, cy);
           } else if (mouseButton == kSecondaryMouseButton) {
             placeCell(0, 0, cx, cy);
@@ -1834,7 +1859,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     mouseInside = true;
   }
 
+  String originalPlace = "empty";
+
   void placeCell(int id, int rot, int cx, int cy) {
+    if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
       grid.set(
         cx,
@@ -1844,12 +1872,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..rot = rot
           ..lastvars.lastRot = rot,
       );
+      if (cells[id] == "empty" &&
+          backgrounds.contains(cells[currentSeletion])) {
+        grid.setPlace(cx, cy, "empty");
+      }
     } else if (edType == EditorType.loaded) {
+      if (grid.placeable(cx, cy) == "rotatable") {
+        grid.at(cx, cy).rot++;
+        grid.at(cx, cy).rot %= 4;
+        return;
+      }
       if (cells[id] == "empty" && grid.at(cx, cy).id != "empty") {
         currentSeletion = cells.indexOf(grid.at(cx, cy).id);
         currentRotation = grid.at(cx, cy).rot;
+        originalPlace = grid.placeable(cx, cy);
         grid.set(cx, cy, Cell(cx, cy));
-      } else if (grid.at(cx, cy).id == "empty") {
+      } else if (grid.at(cx, cy).id == "empty" &&
+          grid.placeable(cx, cy) == originalPlace) {
         grid.set(
           cx,
           cy,
@@ -1863,15 +1902,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  void onTapDown(TapDownInfo info) {
-    final cx = (info.eventPosition.global.x - offX) ~/ cellSize;
-    final cy = (info.eventPosition.global.y - offY) ~/ cellSize;
-    final cell = cells[currentSeletion];
+  // void onTapDown(TapDownInfo info) {
+  //   final cx = (info.eventPosition.global.x - offX) ~/ cellSize;
+  //   final cy = (info.eventPosition.global.y - offY) ~/ cellSize;
+  //   final cell = cells[currentSeletion];
 
-    if (grid.inside(cx, cy) && cell == "place") {
-      placeCell(currentSeletion, 0, cx, cy);
-    }
-  }
+  //   if (grid.inside(cx, cy) && cell == "place") {
+  //     placeCell(currentSeletion, 0, cx, cy);
+  //   }
+  // }
 
   Future<void> onPointerUp(PointerUpEvent event) async {
     mouseDown = false;
@@ -1931,7 +1970,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (edType == EditorType.loaded && mouseDown && !running) {
           mouseDown = false;
           if (grid.inside(cellMouseX, cellMouseY) &&
-              grid.placeable(cellMouseX, cellMouseY)) {
+              grid.placeable(cellMouseX, cellMouseY) != "empty") {
             placeCell(currentSeletion, currentRotation, cellMouseX, cellMouseY);
           }
           return;
@@ -2023,6 +2062,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.rotation = 0;
   }
 
+  bool onetick = false;
+
+  void oneTick() {
+    if (!running) {
+      grid.update();
+      itime = 0;
+      if (isinitial) {
+        initial = grid.copy;
+      }
+      isinitial = false;
+      onetick = true;
+    }
+  }
+
   void playPause() {
     running = !running;
     if (edType == EditorType.loaded) {
@@ -2036,6 +2089,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       playerKeys = 0;
       buttonManager.buttons["play-btn"]!.texture = "slide.png";
       buttonManager.buttons["play-btn"]!.rotation = 1;
+      itime = delay;
     } else {
       if (puzzleWin == true || edType == EditorType.loaded) {
         restoreInitial();
@@ -2150,6 +2204,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (pasting) {
             pasting = false;
           }
+        } else if (keysPressed.contains(LogicalKeyboardKey.keyF)) {
+          oneTick();
         }
       }
       for (var key in keysPressed) {

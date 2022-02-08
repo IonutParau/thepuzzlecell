@@ -94,6 +94,19 @@ final cells = [
   "slow",
   "fast_mover",
   "slow_mover",
+  "rotatable",
+  "blue_place",
+  "red_place",
+  "yellow_place",
+  "mobile_trash",
+  "weight",
+  "opposite_replicator",
+  "cross_replicator",
+  "physical_replicator",
+  "triple_rep",
+  "quad_rep",
+  "semi_trash",
+  "semi_enemy",
 ];
 
 Map<String, String> textureMap = {
@@ -164,6 +177,20 @@ Map<String, String> textureMap = {
   'fast_mover.png': 'movers/movers/fast_mover.png',
   'fan.png': 'movers/movers/fan.png',
   'releaser.png': 'movers/movers/releaser.png',
+  'place.png': 'backgrounds/place.png',
+  'red_place.png': 'backgrounds/red_place.png',
+  'blue_place.png': 'backgrounds/blue_place.png',
+  'yellow_place.png': 'backgrounds/yellow_place.png',
+  'rotatable.png': 'backgrounds/rotatable.png',
+  'mobile_trash.png': 'destroyers/mobile_trash.png',
+  'weight.png': 'push/weight.png',
+  'opposite_replicator.png': 'recreators/replicators/opposite_replicator.png',
+  'cross_replicator.png': 'recreators/replicators/cross_rep.png',
+  'physical_replicator.png': 'recreators/replicators/physical_rep.png',
+  'triple_rep.png': 'recreators/replicators/triple_rep.png',
+  'quad_rep.png': 'recreators/replicators/quad_rep.png',
+  'semi_trash.png': 'destroyers/semi_trash.png',
+  'semi_enemy.png': 'destroyers/semi_enemy.png',
 };
 
 class CellProfile {
@@ -182,7 +209,7 @@ class CellCategory {
   int max;
 
   CellCategory(this.title, this.description, this.items, this.look,
-      {this.max = 9});
+      {this.max = 3});
 }
 
 final categories = [
@@ -200,12 +227,21 @@ final categories = [
           "onedir",
           "twodir",
           "threedir",
+          "mobile_trash",
+          "weight",
         ],
         "push",
+        max: 3,
       ),
       "wall",
       "ghost",
-      "place",
+      CellCategory(
+        "Placeables",
+        "Also called backgrounds, they are behind cells and determine the behavior when in puzzle mode",
+        ["place", "yellow_place", "blue_place", "red_place", "rotatable"],
+        "place",
+        max: 3,
+      ),
     ],
     "ghost",
   ),
@@ -299,7 +335,19 @@ final categories = [
         ],
         "supgen",
       ),
-      "replicator",
+      CellCategory(
+        "Replicators",
+        "They recreate the cell in front of them, in front of them",
+        [
+          "replicator",
+          "cross_replicator",
+          "opposite_replicator",
+          "triple_rep",
+          "quad_rep",
+          "physical_replicator",
+        ],
+        "replicator",
+      ),
       CellCategory(
         "Tunnels",
         "Move cells from the back to the front",
@@ -336,9 +384,19 @@ final categories = [
     "Special cells",
     [
       "stopper",
-      "enemy",
-      "trash",
-      "silent_trash",
+      CellCategory(
+        "Destroyers",
+        "They destroy other cells",
+        [
+          "enemy",
+          "semi_enemy",
+          "trash",
+          "silent_trash",
+          "semi_trash",
+          "mobile_trash",
+        ],
+        "trash",
+      ),
       "wormhole",
       "karl",
       "darty",
@@ -407,7 +465,7 @@ final cellInfo = <String, CellProfile>{
   "ghost": CellProfile("Ghost Wall", "Can't be moved or generated"),
   "place": CellProfile(
     "Placeable",
-    "Toggles if a cell is placeable. Placeable cells can be erased or placed on by people when solving the puzzle at the start",
+    "Allows the player to pick up the cell on top of this and place it on other placeable tiles",
   ),
   "mover": CellProfile("Mover", "Moves forward, and it can also push forward"),
   "puller": CellProfile(
@@ -730,5 +788,37 @@ final cellInfo = <String, CellProfile>{
   "slow": CellProfile(
     "Slow",
     "Speed but moves once every 2 ticks",
+  ),
+  "blue_place": CellProfile(
+    "Blue Placeable",
+    "Allows the player to pick up the cell on top of this and place it on other blue placeable tiles",
+  ),
+  "red_place": CellProfile(
+    "Red Placeable",
+    "Allows the player to pick up the cell on top of this and place it on other red placeable tiles",
+  ),
+  "yellow_place": CellProfile(
+    "Yellow Placeable",
+    "Allows the player to pick up the cell on top of this and place it on other yellow placeable tiles",
+  ),
+  "rotatable": CellProfile(
+    "Rotatable",
+    "When a player clicks on a rotatable tile, it rotates the cell",
+  ),
+  "slow_mover": CellProfile(
+    "Slow Mover",
+    "Mover that moves every 2 ticks",
+  ),
+  "fast_mover": CellProfile(
+    "Fast Mover",
+    "Mover that moves twice every tick",
+  ),
+  "mobile_trash": CellProfile(
+    "Mobile Trash",
+    "It can be moved, but when moved, the cell in front of it will die",
+  ),
+  "weight": CellProfile(
+    "Weight",
+    "A push cell but with a mass of 1. This means it can stop 1 mover, but 2 would still push it",
   ),
 };
