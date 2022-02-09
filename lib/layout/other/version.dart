@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '1.1.0 Codename MoreCells Update Testing Beta 2';
+String currentVersion = '1.1.0 Codename MoreCells Update';
 
 List<String> changes = [
   "Added Subcategories",
   "Added Super Generators",
   "Added more Tunnels",
   "Added Warpers",
-  "Added more variations of the mover and Speed",
+  "Added more variations of Mover, Speed and Puller",
+  "Added more combinations",
+  "Added more Replicators",
+  "Added Transformers",
+  "Added Super Mirror",
+  "Added Mobile Trash Cell",
+  "Added SemiEnemy and SemiTrash",
+  "Added credits page",
+  "Added a lot",
 ];
 
 String getTrailing(String change) {

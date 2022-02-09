@@ -107,15 +107,26 @@ final cells = [
   "quad_rep",
   "semi_trash",
   "semi_enemy",
+  "transformer",
+  "transformer_cw",
+  "transformer_ccw",
+  "triple_transformer",
+  "physical_gen_cw",
+  "physical_gen_ccw",
+  "axis",
+  "bringer",
+  "slow_puller",
+  "fast_puller",
+  "auto_flag",
 ];
 
 Map<String, String> textureMap = {
   'mover.png': 'movers/movers/mover.png',
-  'puller.png': 'movers/puller.png',
+  'puller.png': 'movers/pullers/puller.png',
   'speed.png': 'movers/movers/speed.png',
   'grabber.png': 'movers/grabber.png',
   'bird.png': 'movers/movers/bird.png',
-  'liner.png': 'movers/liner.png',
+  'liner.png': 'movers/combos/liner.png',
   'gear_cw.png': 'movers/gear_cw.png',
   'gear_ccw.png': 'movers/gear_ccw.png',
   'push.png': 'push/push.png',
@@ -128,7 +139,7 @@ Map<String, String> textureMap = {
   'threedir.png': 'push/threedir.png',
   'rotator_180.png': 'rotators/rotator_180.png',
   'redirector.png': 'rotators/redirector.png',
-  'vacuum.png': 'movers/vacuum.png',
+  'vacuum.png': 'movers/pullers/vacuum.png',
   'ant_cw.png': 'movers/ant_cw.png',
   'ant_ccw.png': 'movers/ant_ccw.png',
   'driller.png': 'movers/driller.png',
@@ -191,6 +202,17 @@ Map<String, String> textureMap = {
   'quad_rep.png': 'recreators/replicators/quad_rep.png',
   'semi_trash.png': 'destroyers/semi_trash.png',
   'semi_enemy.png': 'destroyers/semi_enemy.png',
+  'transformer.png': 'recreators/transformers/transformer.png',
+  'transformer_cw.png': 'recreators/transformers/transformer_cw.png',
+  'transformer_ccw.png': 'recreators/transformers/transformer_ccw.png',
+  'triple_transformer.png': 'recreators/transformers/triple_transformer.png',
+  'physical_gen_cw.png': 'recreators/generators/physical_gen_cw.png',
+  'physical_gen_ccw.png': 'recreators/generators/physical_gen_ccw.png',
+  'axis.png': 'movers/combos/axis.png',
+  'bringer.png': 'movers/combos/bringer.png',
+  'fast_puller.png': 'movers/pullers/fast_puller.png',
+  'slow_puller.png': 'movers/pullers/slow_puller.png',
+  'auto_flag.png': 'puzzle/auto_flag.png',
 };
 
 class CellProfile {
@@ -269,25 +291,15 @@ final categories = [
       CellCategory(
         "Pullers",
         "Variants of the puller",
-        ["puller", "vacuum"],
+        ["puller", "slow_puller", "fast_puller", "vacuum"],
         "puller",
       ),
-      CellCategory(
-        "Grabbers",
-        "Variants of the grabber",
-        ["grabber"],
-        "grabber",
-      ),
-      CellCategory(
-        "Drillers",
-        "They move forwards, swapping whats in front with themselves",
-        ["driller"],
-        "driller",
-      ),
+      "grabber",
+      "driller",
       CellCategory(
         "Combinations",
         "Combinations of the base movers",
-        ["liner"],
+        ["liner", "axis", "bringer"],
         "liner",
       ),
       CellCategory(
@@ -318,6 +330,8 @@ final categories = [
           "constructorgen",
           "crossgen",
           "physical_gen",
+          "physical_gen_cw",
+          "physical_gen_ccw",
         ],
         "generator",
         max: 6,
@@ -364,6 +378,17 @@ final categories = [
         "tunnel",
         max: 5,
       ),
+      CellCategory(
+        "Transformers",
+        "They transform the cell in front of them into a copy of the cell behind them",
+        [
+          "transformer",
+          "transformer_cw",
+          "transformer_ccw",
+          "triple_transformer",
+        ],
+        "transformer",
+      )
     ],
     "generator",
   ),
@@ -445,6 +470,7 @@ final categories = [
       "lock",
       "key",
       "flag",
+      "auto_flag",
     ],
     "puzzle",
   ),
@@ -820,5 +846,69 @@ final cellInfo = <String, CellProfile>{
   "weight": CellProfile(
     "Weight",
     "A push cell but with a mass of 1. This means it can stop 1 mover, but 2 would still push it",
+  ),
+  "cross_replicator": CellProfile(
+    "Cross Replicator",
+    "Like the cross generator but replicators",
+  ),
+  "opposite_replicator": CellProfile(
+    "Opposite Replicator",
+    "2 replicators opposite of eachother stacked as one",
+  ),
+  "triple_rep": CellProfile(
+    "Triple Replicator",
+    "3 replicators for the price of one",
+  ),
+  "quad_rep": CellProfile(
+    "Quad replicator",
+    "4-way replicator",
+  ),
+  "physical_replicator": CellProfile(
+    "Physical Replicator",
+    "Like the physical generator, but caused way more bugs",
+  ),
+  "transformer": CellProfile(
+    "Transformer",
+    "This cell is quite over-powered. It will turn the cell in front of it into the cell behind it.",
+  ),
+  "transformer_cw": CellProfile(
+    "Transformer CW",
+    "Transformer bent clockwise",
+  ),
+  "transformer_ccw": CellProfile(
+    "Transformer CCW",
+    "Transformer bent counter-clockwise",
+  ),
+  "triple_transformer": CellProfile(
+    "Triple Transformer",
+    "Transformer + Transformer CW + Transformer CCW",
+  ),
+  "semi_enemy": CellProfile(
+    "Semi Enemy",
+    "Half Enemy, Half Push",
+  ),
+  "semi_trash": CellProfile(
+    "Semi Trash",
+    "Half Trash, Half Push",
+  ),
+  "auto_flag": CellProfile(
+    "AutoFlag",
+    "Automatically triggers a win if there are no enemies, no locks and no keys left",
+  ),
+  "axis": CellProfile(
+    "Axis",
+    "Grabber + Puller + Mover",
+  ),
+  "bringer": CellProfile(
+    "Bringer",
+    "Grabber + Driller",
+  ),
+  "physical_gen_cw": CellProfile(
+    "Physical Generator CW",
+    "Physical Generator bent clockwise",
+  ),
+  "physical_gen_ccw": CellProfile(
+    "Physical GeneratorC CW",
+    "Physical Generator bent counter-clockwise",
   ),
 };

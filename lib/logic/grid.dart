@@ -173,6 +173,7 @@ class Grid {
   void forEach(void Function(Cell cell, int x, int y) callback,
       [int? wantedDirection, String? id]) {
     if (id != null) {
+      if (!cells.contains(id)) return;
       var sx = 0;
       var sy = 0;
       var ex = ceil(width / chunkSize);
@@ -446,6 +447,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.superGens)) supgens,
       if (cells.containsAny(CellTypeManager.replicators)) reps,
       if (cells.containsAny(CellTypeManager.tunnels)) tunnels,
+      if (cells.containsAny(CellTypeManager.transformers)) transformers,
       if (cells.containsAny(CellTypeManager.rotators)) rots,
       if (cells.containsAny(CellTypeManager.gears)) gears,
       if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
@@ -454,6 +456,8 @@ class Grid {
       if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.containsAny(CellTypeManager.puller)) pullers,
       if (cells.contains("liner")) liners,
+      if (cells.contains("bringer")) bringers,
+      if (cells.contains("axis")) axis,
       if (cells.contains("bird")) birds,
       if (cells.containsAny(CellTypeManager.fans)) fans,
       //if (cells.contains("magnet")) magnets,
@@ -464,6 +468,7 @@ class Grid {
       if (cells.containsAny(CellTypeManager.puzzles)) puzzles,
       if (cells.contains("pmerge")) pmerges,
       if (cells.containsAny(CellTypeManager.gates)) gates,
+      if (cells.contains("auto_flag")) autoflag,
     ];
 
     final subticking = storage.getBool('subtick') ?? false;

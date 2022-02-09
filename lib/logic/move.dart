@@ -287,6 +287,8 @@ final withBias = [
   "releaser",
   "bird",
   "darty",
+  "axis",
+  "bringer",
 ];
 
 final noForce = [];
@@ -518,7 +520,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     }
   }
 
-  return false;
+  return true;
 }
 
 void doSpeedMover(int x, int y, int dir, int force, int speed) {
@@ -537,12 +539,14 @@ void doSpeedMover(int x, int y, int dir, int force, int speed) {
 }
 
 void doSpeedPuller(int x, int y, int dir, int force, int speed) {
+  var cx = x;
+  var cy = y;
   for (var i = 0; i < speed; i++) {
-    if (!pull(x, y, dir, force)) {
+    if (!pull(cx, cy, dir, force)) {
       return;
     }
-    x = frontX(x, dir);
-    y = frontY(y, dir);
+    cx = frontX(cx, dir);
+    cy = frontY(cy, dir);
   }
 }
 

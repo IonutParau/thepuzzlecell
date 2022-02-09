@@ -1607,7 +1607,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (edType == EditorType.loaded &&
         cells[currentSeletion] != "empty" &&
-        mouseInside) {
+        mouseInside &&
+        !running) {
       final c = Cell(0, 0);
       c.lastvars = LastVars(currentRotation, 0, 0);
       c.lastvars.lastPos = Offset(
@@ -2066,11 +2067,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void oneTick() {
     if (!running) {
-      grid.update();
-      itime = 0;
       if (isinitial) {
         initial = grid.copy;
       }
+      grid.update();
+      itime = 0;
       isinitial = false;
       onetick = true;
     }
@@ -2204,7 +2205,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (pasting) {
             pasting = false;
           }
-        } else if (keysPressed.contains(LogicalKeyboardKey.keyF)) {
+        } else if (keysPressed.contains(LogicalKeyboardKey.keyF) &&
+            edType == EditorType.making) {
           oneTick();
         }
       }
