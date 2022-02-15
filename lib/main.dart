@@ -22,13 +22,18 @@ void main() async {
   );
 
   initSound();
-  playOnLoop(floatMusic, 0.5);
 
   storage = await SharedPreferences.getInstance();
 
   if (storage.getDouble('ui_scale') == null) {
     await storage.setDouble('ui_scale', 1);
   }
+
+  if (storage.getDouble('music_volume') == null) {
+    await storage.setDouble('music_volume', 0.5);
+  }
+
+  playOnLoop(floatMusic, storage.getDouble('music_volume')!);
 
   runApp(const MyApp());
 }

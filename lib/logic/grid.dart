@@ -375,6 +375,7 @@ class Grid {
     for (var passThrough in justMoveInsideOf) {
       if (cells.contains(passThrough)) return true;
     }
+    if (cells.contains("semienemy") || cells.contains("semitrash")) return true;
     return false;
   }
 

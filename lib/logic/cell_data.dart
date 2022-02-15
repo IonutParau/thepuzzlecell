@@ -860,8 +860,8 @@ final cellInfo = <String, CellProfile>{
     "3 replicators for the price of one",
   ),
   "quad_rep": CellProfile(
-    "Quad replicator",
-    "4-way replicator",
+    "Quad Replicator",
+    "4-way Replicator",
   ),
   "physical_replicator": CellProfile(
     "Physical Replicator",
@@ -910,5 +910,13 @@ final cellInfo = <String, CellProfile>{
   "physical_gen_ccw": CellProfile(
     "Physical GeneratorC CW",
     "Physical Generator bent counter-clockwise",
+  ),
+  "fast_puller": CellProfile(
+    "Fast Puller",
+    "Puller but moves 2x as fast",
+  ),
+  "slow_puller": CellProfile(
+    "Slow Puller",
+    "Puller but moves once every 2 ticks",
   ),
 };

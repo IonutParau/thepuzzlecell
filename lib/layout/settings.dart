@@ -216,6 +216,46 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Tooltip(
+                        message: "The volume of the background music",
+                        decoration: tooltipBox,
+                        textStyle: tooltipText,
+                        child: Text(
+                          "Music Volume: ",
+                          style: fontSize(
+                            7.sp,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30.w,
+                        child: Slider(
+                          value: storage.getDouble("music_volume")!,
+                          min: 0,
+                          max: 1,
+                          onChanged: (v) {
+                            storage
+                                .setDouble("music_volume", floor(v * 10) / 10)
+                                .then(
+                                  (b) => setState(
+                                    () {
+                                      floatMusic.setVolume(v);
+                                    },
+                                  ),
+                                );
+                          },
+                        ),
+                      ),
+                      Text(
+                        "${storage.getDouble("music_volume")! * 100}%",
+                        style: fontSize(
+                          7.sp,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -182,6 +182,11 @@ void doGen(int x, int y, int dir, int gendir,
           shouldUpdate = true;
         } else if (toGenerate.id == "quad_rep") {
           shouldUpdate = true;
+        } else if (toGenerate.id == "triple_rep") {
+          shouldUpdate =
+              (rot == dir || (rot + 1) % 4 == dir || (rot + 3) % 4 == dir);
+        } else if (toGenerate.id == "opposite_replicator") {
+          shouldUpdate = (rot % 2 == dir % 2);
         } else if (rot == dir) {
           shouldUpdate = true;
         }
@@ -772,6 +777,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
   } else if (o.id == "flag") {
     if (!cells.contains("enemy")) {
       puzzleWin = true;
+      game.itime = game.delay;
     }
   }
 
@@ -2153,6 +2159,7 @@ void autoflag() {
         !grid.cells.contains("key") &&
         !grid.cells.contains("lock")) {
       puzzleWin = true;
+      game.itime = game.delay;
     }
   }
 }

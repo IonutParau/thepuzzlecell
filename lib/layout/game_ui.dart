@@ -239,70 +239,89 @@ class _GameUIState extends State<GameUI> {
   Widget build(BuildContext context) {
     game.context = context;
     return Scaffold(
-      body: SizedBox(
-        width: 100.w,
-        height: 100.h,
-        child: Center(
-          child: MouseRegion(
-            onExit: (e) => game.onMouseExit(),
-            onEnter: game.onMouseEnter,
-            onHover: (e) {
-              game.mouseX = e.localPosition.dx;
-              game.mouseY = e.localPosition.dy;
-            },
-            child: Listener(
-              onPointerDown: game.onPointerDown,
-              onPointerMove: game.onPointerMove,
-              onPointerUp: game.onPointerUp,
-              onPointerSignal: (PointerSignalEvent event) {
-                if (event is PointerScrollEvent) {
-                  if (event.scrollDelta.dy < 0) {
-                    game.zoomin();
-                  } else if (event.scrollDelta.dy > 0) {
-                    game.zoomout();
-                  }
+      body: Center(
+        child: MouseRegion(
+          onExit: (e) => game.onMouseExit(),
+          onEnter: game.onMouseEnter,
+          onHover: (e) {
+            game.mouseX = e.localPosition.dx;
+            game.mouseY = e.localPosition.dy;
+          },
+          child: Listener(
+            onPointerDown: game.onPointerDown,
+            onPointerMove: game.onPointerMove,
+            onPointerUp: game.onPointerUp,
+            onPointerSignal: (PointerSignalEvent event) {
+              if (event is PointerScrollEvent) {
+                if (event.scrollDelta.dy < 0) {
+                  game.zoomin();
+                } else if (event.scrollDelta.dy > 0) {
+                  game.zoomout();
                 }
-              },
-              child: GameWidget(
-                game: game,
-                initialActiveOverlays: [],
-                overlayBuilderMap: {
-                  'ActionBar': (ctx, _) {
-                    return LayoutBuilder(
-                      builder: (ctx, size) {
-                        final s = 8.sp;
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: SizedBox(
-                            width: 100.w,
-                            height: 5.h,
-                            child: Container(
-                              color: Colors.grey[900],
-                              child: Row(
-                                textDirection: TextDirection.rtl,
-                                children: [
-                                  if (game.running)
-                                    Tooltip(
-                                      message:
-                                          'Change the delay inbetween ticks. Current: ${game.delay}s',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                      ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
-                                      ),
-                                      child: Slider(
-                                        value: max(min(game.delay, 5), 0.01),
-                                        onChanged: (n) => setState(
-                                          () => game.delay = n,
-                                        ),
-                                        min: 0.01,
-                                        max: 5,
-                                      ),
-                                    ),
+              }
+            },
+            child: GameWidget(
+              game: game,
+              initialActiveOverlays: [],
+              overlayBuilderMap: {
+                'ActionBar': (ctx, _) {
+                  return LayoutBuilder(
+                    builder: (ctx, size) {
+                      final s = 8.sp;
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: SizedBox(
+                          width: 100.w,
+                          height: 5.h,
+                          child: Container(
+                            color: Colors.grey[900],
+                            child: Row(
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                if (game.running)
                                   Tooltip(
-                                    message: 'Save grid to clipboard',
+                                    message:
+                                        'Change the delay inbetween ticks. Current: ${game.delay}s',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: Slider(
+                                      value: max(min(game.delay, 5), 0.01),
+                                      onChanged: (n) => setState(
+                                        () => game.delay = n,
+                                      ),
+                                      min: 0.01,
+                                      max: 5,
+                                    ),
+                                  ),
+                                Tooltip(
+                                  message: 'Save grid to clipboard',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/interface/save.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: () => FlutterClipboard.controlC(
+                                      P2.encodeGrid(grid),
+                                    ),
+                                  ),
+                                ),
+                                if (game.edType == EditorType.making)
+                                  Tooltip(
+                                    message: 'Load grid from clipboard',
                                     decoration: BoxDecoration(
                                       color: Colors.grey[900],
                                     ),
@@ -312,320 +331,290 @@ class _GameUIState extends State<GameUI> {
                                     ),
                                     child: MaterialButton(
                                       child: Image.asset(
-                                        'assets/interface/save.png',
+                                        'assets/interface/load.png',
                                         width: s,
                                         height: s,
                                         fit: BoxFit.fill,
                                       ),
-                                      onPressed: () =>
-                                          FlutterClipboard.controlC(
-                                        P2.encodeGrid(grid),
+                                      onPressed: () {
+                                        if (!game.running) {
+                                          try {
+                                            FlutterClipboard.paste().then(
+                                              (val) {
+                                                try {
+                                                  grid = loadStr(val);
+                                                  game.cellsToPlace = ["empty"];
+                                                  game.cellsCount = [1];
+                                                } catch (e) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (ctx) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                          'Invalid save code',
+                                                        ),
+                                                        content: Text(
+                                                          'You are trying to load a corrupted, invalid or unsupported level code.',
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            );
+                                          } catch (e) {}
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                if (game.edType == EditorType.making) ...[
+                                  Tooltip(
+                                    message: 'Toggle SELECT mode',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: Opacity(
+                                      opacity: game.selecting ? 1 : 0.2,
+                                      child: MaterialButton(
+                                        child: Image.asset(
+                                          'assets/interface/select.png',
+                                          width: s,
+                                          height: s,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            game.selecting = !game.selecting;
+                                            if (!game.selecting) {
+                                              game.setPos = false;
+                                              game.dragPos = false;
+                                            }
+                                            game.pasting = false;
+                                          });
+                                        },
                                       ),
                                     ),
                                   ),
-                                  if (game.edType == EditorType.making)
-                                    Tooltip(
-                                      message: 'Load grid from clipboard',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
+                                  Tooltip(
+                                    message: 'Copy selected area',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/interface/copy.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
                                       ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
+                                      onPressed: () {
+                                        if (game.selecting && game.setPos) {
+                                          game.copy();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'Paste copied area',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: MaterialButton(
+                                      child: Image.asset(
+                                        'assets/interface/paste.png',
+                                        width: s,
+                                        height: s,
+                                        fit: BoxFit.fill,
                                       ),
+                                      onPressed: () {
+                                        if (game.pasting) {
+                                          game.pasting = false;
+                                        } else {
+                                          game.pasting = true;
+                                          game.selecting = false;
+                                          game.setPos = false;
+                                          game.dragPos = false;
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                                if (game.edType == EditorType.making)
+                                  Tooltip(
+                                    message:
+                                        'Toggle WRAP mode, if enabled makes cells wrap around the grid',
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[900],
+                                    ),
+                                    textStyle: TextStyle(
+                                      fontSize: 7.sp,
+                                      color: Colors.white,
+                                    ),
+                                    child: Opacity(
+                                      opacity: grid.wrap ? 1 : 0.2,
                                       child: MaterialButton(
                                         child: Image.asset(
-                                          'assets/interface/load.png',
+                                          'assets/interface/wrap.png',
                                           width: s,
                                           height: s,
                                           fit: BoxFit.fill,
                                         ),
                                         onPressed: () {
                                           if (!game.running) {
-                                            try {
-                                              FlutterClipboard.paste().then(
-                                                (val) {
-                                                  try {
-                                                    grid = loadStr(val);
-                                                    game.cellsToPlace = [
-                                                      "empty"
-                                                    ];
-                                                    game.cellsCount = [1];
-                                                  } catch (e) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (ctx) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                            'Invalid save code',
-                                                          ),
-                                                          content: Text(
-                                                            'You are trying to load a corrupted, invalid or unsupported level code.',
-                                                          ),
-                                                        );
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            } catch (e) {}
+                                            grid.wrap = !grid.wrap;
                                           }
                                         },
                                       ),
-                                    ),
-                                  if (game.edType == EditorType.making) ...[
-                                    Tooltip(
-                                      message: 'Toggle SELECT mode',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                      ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
-                                      ),
-                                      child: Opacity(
-                                        opacity: game.selecting ? 1 : 0.2,
-                                        child: MaterialButton(
-                                          child: Image.asset(
-                                            'assets/interface/select.png',
-                                            width: s,
-                                            height: s,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              game.selecting = !game.selecting;
-                                              if (!game.selecting) {
-                                                game.setPos = false;
-                                                game.dragPos = false;
-                                              }
-                                              game.pasting = false;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Tooltip(
-                                      message: 'Copy selected area',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                      ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
-                                      ),
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/copy.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        onPressed: () {
-                                          if (game.selecting && game.setPos) {
-                                            game.copy();
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                    Tooltip(
-                                      message: 'Paste copied area',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                      ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
-                                      ),
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/paste.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        onPressed: () {
-                                          if (game.pasting) {
-                                            game.pasting = false;
-                                          } else {
-                                            game.pasting = true;
-                                            game.selecting = false;
-                                            game.setPos = false;
-                                            game.dragPos = false;
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                  if (game.edType == EditorType.making)
-                                    Tooltip(
-                                      message:
-                                          'Toggle WRAP mode, if enabled makes cells wrap around the grid',
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[900],
-                                      ),
-                                      textStyle: TextStyle(
-                                        fontSize: 7.sp,
-                                        color: Colors.white,
-                                      ),
-                                      child: Opacity(
-                                        opacity: grid.wrap ? 1 : 0.2,
-                                        child: MaterialButton(
-                                          child: Image.asset(
-                                            'assets/interface/wrap.png',
-                                            width: s,
-                                            height: s,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          onPressed: () {
-                                            if (!game.running) {
-                                              grid.wrap = !grid.wrap;
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  Tooltip(
-                                    message: 'Play / Retry the game',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: RotatedBox(
-                                        quarterTurns: game.running ? 1 : 0,
-                                        child: Image.asset(
-                                          game.running
-                                              ? 'assets/images/slide.png'
-                                              : 'assets/images/mover.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      ),
-                                      onPressed: game.playPause,
                                     ),
                                   ),
-                                  Tooltip(
-                                    message:
-                                        'Rotate CellBar 90 degrees clockwise',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
+                                Tooltip(
+                                  message: 'Play / Retry the game',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: RotatedBox(
+                                      quarterTurns: game.running ? 1 : 0,
                                       child: Image.asset(
-                                        'assets/images/rotator_cw.png',
+                                        game.running
+                                            ? 'assets/images/slide.png'
+                                            : 'assets/images/mover.png',
                                         width: s,
                                         height: s,
                                         fit: BoxFit.fill,
                                       ),
-                                      onPressed: game.e,
                                     ),
-                                  ),
-                                  Tooltip(
-                                    message:
-                                        'Rotate CellBar 90 degrees counter-clockwise',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/images/rotator_ccw.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: game.q,
-                                    ),
-                                  ),
-                                ].reversed.toList(),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  'CellBar': (ctx, _) {
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: GestureDetector(
-                                onTap: () => game.mouseDown = false,
-                                child: Container(
-                                  width: 100.w,
-                                  height: 8.h,
-                                  color: Colors.grey[900],
-                                  child: Scrollbar(
-                                    thickness: 0.5.h,
-                                    controller: scrollController,
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      controller: scrollController,
-                                      cacheExtent: 0,
-                                      addAutomaticKeepAlives: false,
-                                      children: cellbarItems(),
-                                    ),
+                                    onPressed: game.playPause,
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  "Info": (ctx, _) {
-                    var infoText = "";
-                    if (game.running) infoText += "[Playing] ";
-                    if (grid.wrap && game.edType == EditorType.making)
-                      infoText += "[Wrap Mode] ";
-                    return Text(infoText);
-                  },
-                  "Win": (ctx, _) {
-                    return Stack(
-                      children: [
-                        Center(
-                          child: SizedBox(
-                            width: 40.w,
-                            height: 40.h,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "You win!",
-                                  style: fontSize(27.sp),
-                                ),
-                                if (puzzleIndex != null)
-                                  MaterialButton(
-                                    child: Text(
-                                      "Next puzzle",
-                                      style: fontSize(12.sp),
-                                    ),
-                                    onPressed: nextPuzzle,
+                                Tooltip(
+                                  message:
+                                      'Rotate CellBar 90 degrees clockwise',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
                                   ),
-                              ],
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/images/rotator_cw.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: game.e,
+                                  ),
+                                ),
+                                Tooltip(
+                                  message:
+                                      'Rotate CellBar 90 degrees counter-clockwise',
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                  ),
+                                  textStyle: TextStyle(
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                  ),
+                                  child: MaterialButton(
+                                    child: Image.asset(
+                                      'assets/images/rotator_ccw.png',
+                                      width: s,
+                                      height: s,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    onPressed: game.q,
+                                  ),
+                                ),
+                              ].reversed.toList(),
                             ),
                           ),
                         ),
-                      ],
-                    );
-                  }
+                      );
+                    },
+                  );
                 },
-              ),
+                'CellBar': (ctx, _) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: GestureDetector(
+                              onTap: () => game.mouseDown = false,
+                              child: Container(
+                                width: 100.w,
+                                height: 8.h,
+                                color: Colors.grey[900],
+                                child: Scrollbar(
+                                  thickness: 0.5.h,
+                                  controller: scrollController,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: scrollController,
+                                    cacheExtent: 0,
+                                    addAutomaticKeepAlives: false,
+                                    children: cellbarItems(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                "Info": (ctx, _) {
+                  var infoText = "";
+                  if (game.running) infoText += "[Playing] ";
+                  if (grid.wrap && game.edType == EditorType.making)
+                    infoText += "[Wrap Mode] ";
+                  return Text(infoText);
+                },
+                "Win": (ctx, _) {
+                  return Center(
+                    child: SizedBox(
+                      width: 40.w,
+                      height: 40.h,
+                      child: Column(
+                        children: [
+                          Text(
+                            "You win!",
+                            style: fontSize(27.sp),
+                          ),
+                          if (puzzleIndex != null)
+                            MaterialButton(
+                              child: Text(
+                                "Next puzzle",
+                                style: fontSize(12.sp),
+                              ),
+                              onPressed: nextPuzzle,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
         ),
@@ -1570,12 +1559,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    for (var x = sx; x < ex; x++) {
-      for (var y = sy; y < ey; y++) {
-        if (grid.inside(x, y)) {
-          if (grid.at(x, y).id != "empty") {
-            renderCell(grid.at(x, y), x, y);
-          }
+    for (var i = 0; i < xs.length; i++) {
+      final x = xs[i];
+      final y = ys[i];
+      if (grid.inside(x, y)) {
+        if (grid.at(x, y).id != "empty") {
+          renderCell(grid.at(x, y), x, y);
         }
       }
     }
@@ -2058,6 +2047,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void restoreInitial() {
     grid = initial.copy;
     isinitial = true;
+    puzzleWin = false;
+    overlays.remove('Win');
     running = false;
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;

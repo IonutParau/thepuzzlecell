@@ -2,22 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '1.1.0 Codename MoreCells Update';
+String currentVersion = '1.1.2 Codename MoreCells Update QuickFix 2';
 
 List<String> changes = [
-  "Added Subcategories",
-  "Added Super Generators",
-  "Added more Tunnels",
-  "Added Warpers",
-  "Added more variations of Mover, Speed and Puller",
-  "Added more combinations",
-  "Added more Replicators",
-  "Added Transformers",
-  "Added Super Mirror",
-  "Added Mobile Trash Cell",
-  "Added SemiEnemy and SemiTrash",
-  "Added credits page",
-  "Added a lot",
+  "QuickFix 1: Made reset to initial also reset the puzzle win state",
+  "QuickFix 1: Added music volume slider",
+  "QuickFix 2: Patched Slow Puller and Fast Puller not showing their names and description",
+  "QuickFix 2: Patched an optimization breaking generators",
+  "QuickFix 2: Fixed replicators instantly lasering in soem cases",
 ];
 
 String getTrailing(String change) {
