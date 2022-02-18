@@ -430,6 +430,12 @@ class P2 {
 
     str += (cellStr + ';');
 
+    final props = [];
+
+    if (grid.wrap) props.add("WRAP");
+
+    str += "${props.join(',')};";
+
     return str;
   }
 
@@ -456,6 +462,12 @@ class P2 {
         i++;
       },
     );
+
+    if (segs.length >= 7) {
+      // Special border mode
+      final props = segs[7].split(',');
+      grid.wrap = props.contains('WRAP');
+    }
 
     return grid;
   }

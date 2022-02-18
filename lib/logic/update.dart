@@ -1982,6 +1982,7 @@ void drillers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
+        cell.updated = true;
         doDriller(x, y, cell.rot);
       },
       rot,

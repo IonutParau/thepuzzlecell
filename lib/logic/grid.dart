@@ -340,10 +340,19 @@ class Grid {
       return;
     }
     if (wrap) {
-      grid[(x + width) % width][(y + height) % height] = cell;
-      chunks[floor(((x + width) % width) / chunkSize)]
-              [floor(((y + height) % height) / chunkSize)]
-          .add(cell.id);
+      final nx = (x + width) % width;
+      final ny = (y + height) % height;
+      grid[nx][ny] = cell;
+      if ((nx != x) || (ny != y)) {
+        var lvx = cell.lastvars.lastPos.dx;
+        var lvy = cell.lastvars.lastPos.dy;
+        if (x >= width) lvx = (width - x - 1);
+        if (y >= height) lvy = (height - y - 1);
+        if (x < 0) lvx = (width - x - 1);
+        if (y < 0) lvy = (height - y - 1);
+        cell.lastvars.lastPos = Offset(lvx, lvy);
+      }
+      chunks[floor((nx) / chunkSize)][floor((ny) / chunkSize)].add(cell.id);
       return;
     }
     if (!inside(x, y)) return;

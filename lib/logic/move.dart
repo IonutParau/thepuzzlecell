@@ -273,11 +273,39 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
   //grid.grid[nx][ny].lastvars = grid.grid[ox][oy].lastvars.toVector2().toOffset();
 }
 
+bool wouldWrap(int x, int y) {
+  return (((x + grid.width) % grid.width) != x ||
+      ((y + grid.height) % grid.height) != y);
+}
+
+int wrapX(int x) => (x + grid.width) % grid.width;
+int wrapY(int y) => (y + grid.height) % grid.height;
+
 void swapCells(int ox, int oy, int nx, int ny) {
   if (!grid.inside(ox, oy) || !grid.inside(nx, ny)) return;
   final cell1 = grid.at(ox, oy).copy;
+  final dx = nx - ox;
+  final dy = ny - oy;
+  if (grid.wrap) {
+    final oox = ox;
+    final ooy = oy;
+    ox = wrapX(nx) - dx;
+    oy = wrapY(ny) - dy;
+    nx = wrapX(oox) + dx;
+    ny = wrapY(ooy) + dy;
+  }
   grid.set(ox, oy, grid.at(nx, ny));
   grid.set(nx, ny, cell1);
+  if (grid.wrap) {
+    if (wouldWrap(ox, oy)) {
+      var od = Offset(dx.toDouble(), -dy.toDouble()) / 2;
+      grid.at(ox, oy).lastvars.lastPos += od;
+    }
+    if (wouldWrap(nx, ny)) {
+      var nd = Offset(-dx.toDouble(), dy.toDouble()) / 2;
+      grid.at(nx, ny).lastvars.lastPos -= nd;
+    }
+  }
 }
 
 final withBias = [
@@ -469,6 +497,8 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
 
 bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
   if (!grid.inside(x, y)) return false;
+  if (moveInsideOf(grid.at(x, y), x, y, dir)) return true;
+  if (!canMove(x, y, dir, force, mt)) return false;
 
   final ox = x;
   final oy = y;

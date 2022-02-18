@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '1.1.2 Codename MoreCells Update QuickFix 2';
+String currentVersion = '1.1.4 Codename MoreCells Update QuickFix 4';
 
 List<String> changes = [
   "QuickFix 1: Made reset to initial also reset the puzzle win state",
@@ -10,6 +10,9 @@ List<String> changes = [
   "QuickFix 2: Patched Slow Puller and Fast Puller not showing their names and description",
   "QuickFix 2: Patched an optimization breaking generators",
   "QuickFix 2: Fixed replicators instantly lasering in soem cases",
+  "QuickFix 3: Combinations can no longer pull walls",
+  "QuickFix 4: Cells that use swapping no longer have weird interpolation effects",
+  "QuickFix 4: P2 now supports wrap mode and works will all previous levels",
 ];
 
 String getTrailing(String change) {
