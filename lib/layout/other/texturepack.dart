@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 final texturePackDir = Directory('texture_packs');
 
 void fixDefault() {
@@ -44,4 +46,21 @@ void fixDefault() {
   packJSON.writeAsStringSync(jsonEncode(compiledMap));
 }
 
-void loadTexturePack(String folder) {}
+void loadTexturePack(String folder) {
+  if (folder != 'Default') {
+    loadTexturePack('Default');
+  }
+  final pack = jsonDecode(
+    File('texture_packs/$folder/pack.json').readAsStringSync(),
+  ) as Map<String, dynamic>;
+
+  pack.forEach(
+    (k, v) {
+      if (v != "title" && v != "description") {
+        File('texture_packs/$folder/$k').copySync(
+          'data/flutter_assets/assets/images/$v',
+        );
+      }
+    },
+  );
+}

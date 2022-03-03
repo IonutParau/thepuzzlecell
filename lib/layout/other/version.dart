@@ -11,7 +11,7 @@ List<String> changes = [
   "Added Editor Menu",
   "Added Clearing",
   "Added Changing tick delay",
-  "Added changing grid size",
+  "Added texture pack support",
 ];
 
 String getTrailing(String change) {
