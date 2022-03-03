@@ -20,8 +20,10 @@ num abs(num n) => n < 0 ? -n : n;
 
 class GameUI extends StatefulWidget {
   final EditorType editorType;
+  String? ip;
 
-  GameUI({Key? key, this.editorType = EditorType.making}) : super(key: key);
+  GameUI({Key? key, this.editorType = EditorType.making, this.ip})
+      : super(key: key);
 
   @override
   _GameUIState createState() => _GameUIState();
@@ -32,6 +34,23 @@ class _GameUIState extends State<GameUI> {
 
   int page = 0;
 
+  final editorMenuWidthController = TextEditingController();
+  final editorMenuHeightController = TextEditingController();
+
+  void dispose() {
+    game.dispose();
+
+    scrollController.dispose();
+    editorMenuWidthController.dispose();
+    editorMenuHeightController.dispose();
+
+    if (game.isMultiplayer) {
+      game.channel.sink.close();
+    }
+
+    super.dispose();
+  }
+
   void clampPage() {
     page = min(max(page, 0), cells.length ~/ cellsPerPage);
   }
@@ -40,122 +59,25 @@ class _GameUIState extends State<GameUI> {
   void initState() {
     game = PuzzleGame();
     game.edType = widget.editorType;
+    game.ip = widget.ip;
+    editorMenuWidthController.text = "${grid.width}";
+    editorMenuHeightController.text = "${grid.height}";
+
+    editorMenuWidthController.addListener(
+      () {
+        print(editorMenuWidthController.text);
+        // game.overlays.remove('EditorMenu');
+        // game.overlays.add('EditorMenu');
+      },
+    );
+    editorMenuHeightController.addListener(
+      () {
+        // game.overlays.remove('EditorMenu');
+        // game.overlays.add('EditorMenu');
+      },
+    );
 
     super.initState();
-  }
-
-  Widget cellToImage(String cell) {
-    final index = (game.edType == EditorType.making ? cells : game.cellsToPlace)
-        .indexOf(cell);
-    return Container(
-      child: SizedBox(
-        width: 8.w,
-        height: 8.w,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Tooltip(
-                message: profileToMessage(cellInfo[cell] ?? defaultProfile),
-                textStyle: TextStyle(
-                  fontSize: 5.sp,
-                  color: Colors.white,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(0.5.sp),
-                ),
-                preferBelow: false,
-                child: MaterialButton(
-                  onPressed: () => setState(() => game.currentSeletion = index),
-                  height: 2.w,
-                  minWidth: 2.w,
-                  child: Opacity(
-                    opacity: (game.currentSeletion == index) ? 1 : 0.3,
-                    child: MouseRegion(
-                      child: RotatedBox(
-                        quarterTurns: game.currentRotation,
-                        child: Image.asset(
-                          'assets/images/$cell.png',
-                          width: 2.w,
-                          height: 2.w,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (cell != "empty" && game.edType == EditorType.loaded)
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  game.cellsCount[index].toString(),
-                  style: fontSize(
-                    7.sp,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget categoryToImage(CellCategory category) {
-    return SizedBox(
-      width: 8.w,
-      height: 8.w,
-      child: Tooltip(
-        message: '${category.title} - ${category.description}',
-        textStyle: TextStyle(
-          fontSize: 5.sp,
-          color: Colors.white,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(0.5.sp),
-        ),
-        preferBelow: false,
-        margin: EdgeInsets.all(2.w),
-        child: Container(
-          color: Colors.grey[850],
-          child: MaterialButton(
-            child: Center(
-              child: Image.asset(
-                'assets/images/${category.look}.png',
-                width: 3.w,
-                height: 3.w,
-                fit: BoxFit.fill,
-              ),
-            ),
-            onPressed: () {
-              category.opened = !category.opened;
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  void goLeft() {
-    setState(
-      () {
-        page--;
-        clampPage();
-      },
-    );
-  }
-
-  void goRight() {
-    setState(
-      () {
-        page++;
-        clampPage();
-      },
-    );
   }
 
   void nextPuzzle() {
@@ -172,67 +94,6 @@ class _GameUIState extends State<GameUI> {
       Navigator.of(context).pop();
       Navigator.of(context).pushNamed('/game-loaded');
     }
-  }
-
-  List<Widget> cellbarItems() {
-    final list = <Widget>[];
-    list.add(
-      MaterialButton(
-        height: 5.w,
-        child: Text(
-          "Back",
-          style: fontSize(
-            6.sp,
-          ),
-        ),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (ctx) {
-              return AlertDialog(
-                title: Text("Confirm exit?"),
-                content: Text(
-                    "You have pressed the Back button, which exits the game. Do you confirm exit?"),
-                actions: [
-                  MaterialButton(
-                    child: Text("Yes"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  MaterialButton(
-                    child: Text("No"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
-    );
-
-    if (game.edType == EditorType.loaded) {
-      for (var cell in game.cellsToPlace) {
-        list.add(cellToImage(cell));
-      }
-    }
-
-    if (game.edType == EditorType.making) {
-      for (var category in categories) {
-        list.add(categoryToImage(category));
-        if (category.opened) {
-          for (var cell in category.items) {
-            list.add(cellToImage(cell));
-          }
-        }
-      }
-    }
-
-    return list;
   }
 
   @override
@@ -264,323 +125,184 @@ class _GameUIState extends State<GameUI> {
               game: game,
               initialActiveOverlays: [],
               overlayBuilderMap: {
-                'ActionBar': (ctx, _) {
-                  return LayoutBuilder(
-                    builder: (ctx, size) {
-                      final s = 8.sp;
-                      return Align(
-                        alignment: Alignment.topLeft,
-                        child: SizedBox(
-                          width: 100.w,
-                          height: 5.h,
-                          child: Container(
-                            color: Colors.grey[900],
-                            child: Row(
-                              textDirection: TextDirection.rtl,
-                              children: [
-                                if (game.running)
-                                  Tooltip(
-                                    message:
-                                        'Change the delay inbetween ticks. Current: ${game.delay}s',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: Slider(
-                                      value: max(min(game.delay, 5), 0.01),
-                                      onChanged: (n) => setState(
-                                        () => game.delay = n,
-                                      ),
-                                      min: 0.01,
-                                      max: 5,
-                                    ),
-                                  ),
-                                Tooltip(
-                                  message: 'Save grid to clipboard',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/interface/save.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    onPressed: () => FlutterClipboard.controlC(
-                                      P2.encodeGrid(grid),
-                                    ),
-                                  ),
+                'EditorMenu': (ctx, _) {
+                  void refreshMenu() {
+                    game.overlays.remove('EditorMenu');
+                    game.overlays.add('EditorMenu');
+                  }
+
+                  return Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(2.w),
+                      ),
+                      width: 60.w,
+                      height: 60.h,
+                      child: Column(
+                        children: [
+                          Spacer(),
+                          Row(
+                            children: [
+                              Text(
+                                "Update Delay: ${game.delay}",
+                                style: TextStyle(
+                                  fontSize: 12.sp,
                                 ),
-                                if (game.edType == EditorType.making)
-                                  Tooltip(
-                                    message: 'Load grid from clipboard',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/interface/load.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: () {
-                                        if (!game.running) {
-                                          try {
-                                            FlutterClipboard.paste().then(
-                                              (val) {
-                                                try {
-                                                  grid = loadStr(val);
-                                                  game.cellsToPlace = ["empty"];
-                                                  game.cellsCount = [1];
-                                                } catch (e) {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (ctx) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                          'Invalid save code',
-                                                        ),
-                                                        content: Text(
-                                                          'You are trying to load a corrupted, invalid or unsupported level code.',
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                            );
-                                          } catch (e) {}
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                if (game.edType == EditorType.making) ...[
-                                  Tooltip(
-                                    message: 'Toggle SELECT mode',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: Opacity(
-                                      opacity: game.selecting ? 1 : 0.2,
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/select.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            game.selecting = !game.selecting;
-                                            if (!game.selecting) {
-                                              game.setPos = false;
-                                              game.dragPos = false;
-                                            }
-                                            game.pasting = false;
-                                          });
+                              ),
+                              Spacer(),
+                              SizedBox(
+                                width: 40.w,
+                                child: Slider(
+                                  thumbColor: Colors.grey[900],
+                                  activeColor: Colors.black,
+                                  inactiveColor: Colors.black,
+                                  value: game.delay,
+                                  min: 0.01,
+                                  max: 5,
+                                  onChanged: (newVal) {
+                                    game.delay = (newVal * 100 ~/ 1) / 100;
+                                    refreshMenu();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          Spacer(),
+                          // Row(
+                          //   children: [
+                          //     Spacer(),
+                          //     SizedBox(
+                          //       width: 20.w,
+                          //       height: 10.h,
+                          //       child: TextFormField(
+                          //         controller: editorMenuWidthController,
+                          //         enabled: true,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       "x",
+                          //       style: TextStyle(
+                          //         fontSize: 5.sp,
+                          //       ),
+                          //     ),
+                          //     SizedBox(
+                          //       width: 20.w,
+                          //       height: 10.h,
+                          //       child: TextFormField(
+                          //         controller: editorMenuHeightController,
+                          //         enabled: true,
+                          //       ),
+                          //     ),
+                          //     Spacer(),
+                          //   ],
+                          // ),
+                          Row(
+                            children: [
+                              Spacer(flex: 2),
+                              Column(
+                                children: [
+                                  MaterialButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) {
+                                          return AlertDialog(
+                                            title: Text("Confirm exit?"),
+                                            content: Text(
+                                              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
+                                            ),
+                                            actions: [
+                                              MaterialButton(
+                                                child: Text("Yes"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              MaterialButton(
+                                                child: Text("No"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          );
                                         },
-                                      ),
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      'assets/images/' + 'back.png',
+                                      fit: BoxFit.fill,
+                                      colorBlendMode: BlendMode.clear,
+                                      filterQuality: FilterQuality.none,
+                                      isAntiAlias: true,
+                                      cacheWidth: 10.w.toInt(),
+                                      cacheHeight: 10.w.toInt(),
+                                      scale: 20 / 5.w,
                                     ),
                                   ),
-                                  Tooltip(
-                                    message: 'Copy selected area',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
+                                  Text(
+                                    'Exit Editor',
+                                    style: TextStyle(
                                       fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/interface/copy.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: () {
-                                        if (game.selecting && game.setPos) {
-                                          game.copy();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  Tooltip(
-                                    message: 'Paste copied area',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: MaterialButton(
-                                      child: Image.asset(
-                                        'assets/interface/paste.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      onPressed: () {
-                                        if (game.pasting) {
-                                          game.pasting = false;
-                                        } else {
-                                          game.pasting = true;
-                                          game.selecting = false;
-                                          game.setPos = false;
-                                          game.dragPos = false;
-                                        }
-                                      },
                                     ),
                                   ),
                                 ],
-                                if (game.edType == EditorType.making)
-                                  Tooltip(
-                                    message:
-                                        'Toggle WRAP mode, if enabled makes cells wrap around the grid',
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[900],
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontSize: 7.sp,
-                                      color: Colors.white,
-                                    ),
-                                    child: Opacity(
-                                      opacity: grid.wrap ? 1 : 0.2,
-                                      child: MaterialButton(
-                                        child: Image.asset(
-                                          'assets/interface/wrap.png',
-                                          width: s,
-                                          height: s,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        onPressed: () {
-                                          if (!game.running) {
-                                            grid.wrap = !grid.wrap;
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                Tooltip(
-                                  message: 'Play / Retry the game',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: RotatedBox(
-                                      quarterTurns: game.running ? 1 : 0,
-                                      child: Image.asset(
-                                        game.running
-                                            ? 'assets/images/slide.png'
-                                            : 'assets/images/mover.png',
-                                        width: s,
-                                        height: s,
-                                        fit: BoxFit.fill,
-                                      ),
-                                    ),
-                                    onPressed: game.playPause,
-                                  ),
-                                ),
-                                Tooltip(
-                                  message:
-                                      'Rotate CellBar 90 degrees clockwise',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/images/rotator_cw.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    onPressed: game.e,
-                                  ),
-                                ),
-                                Tooltip(
-                                  message:
-                                      'Rotate CellBar 90 degrees counter-clockwise',
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[900],
-                                  ),
-                                  textStyle: TextStyle(
-                                    fontSize: 7.sp,
-                                    color: Colors.white,
-                                  ),
-                                  child: MaterialButton(
-                                    child: Image.asset(
-                                      'assets/images/rotator_ccw.png',
-                                      width: s,
-                                      height: s,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    onPressed: game.q,
-                                  ),
-                                ),
-                              ].reversed.toList(),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                'CellBar': (ctx, _) {
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: GestureDetector(
-                              onTap: () => game.mouseDown = false,
-                              child: Container(
-                                width: 100.w,
-                                height: 8.h,
-                                color: Colors.grey[900],
-                                child: Scrollbar(
-                                  thickness: 0.5.h,
-                                  controller: scrollController,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    controller: scrollController,
-                                    cacheExtent: 0,
-                                    addAutomaticKeepAlives: false,
-                                    children: cellbarItems(),
-                                  ),
-                                ),
                               ),
-                            ),
+                              Spacer(),
+                              Column(
+                                children: [
+                                  MaterialButton(
+                                    onPressed: () {
+                                      grid = Grid(grid.width, grid.height);
+                                      if (game.running) {
+                                        game.playPause();
+                                        game.running = false;
+                                        game.buttonManager.buttons['play-btn']!
+                                            .texture = "mover.png";
+                                        game.buttonManager.buttons['play-btn']!
+                                            .rotation = 0;
+                                      }
+                                      if (game.onetick) {
+                                        game.onetick = false;
+                                      }
+                                      game.isinitial = true;
+                                      game.initial = grid.copy;
+                                      game.itime = 0;
+                                      if (game.isMultiplayer) {
+                                        game.sendToServer(
+                                          'setinit ${P2.encodeGrid(grid)}',
+                                        );
+                                      }
+                                    },
+                                    child: Image.asset(
+                                      'assets/images/' +
+                                          textureMap['trash.png']!,
+                                      fit: BoxFit.fill,
+                                      colorBlendMode: BlendMode.clear,
+                                      filterQuality: FilterQuality.none,
+                                      isAntiAlias: true,
+                                      cacheWidth: 10.w.toInt(),
+                                      cacheHeight: 10.w.toInt(),
+                                      scale: 20 / 5.w,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Clear',
+                                    style: TextStyle(
+                                      fontSize: 7.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Spacer(flex: 2),
+                            ],
                           ),
+                          Spacer(),
                         ],
-                      );
-                    },
+                      ),
+                    ),
                   );
                 },
                 "Info": (ctx, _) {
@@ -666,6 +388,7 @@ void loadAllButtonTextures() {
     "interface/paste_on.png",
     "interface/cut.png",
     "interface/del.png",
+    "interface/menu.png",
   ]);
 }
 
@@ -896,6 +619,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   EditorType edType = EditorType.making;
 
+  String? ip;
+
+  bool get isMultiplayer => ip != null;
+
+  late WebSocketChannel channel;
+
+  late StreamSubscription multiplayerListener;
+
   int currentSeletion = 0;
 
   int currentRotation = 0;
@@ -945,14 +676,55 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var setPos = false;
   var dragPos = false;
 
+  void dispose() {
+    if (isMultiplayer) {
+      multiplayerListener.cancel(); // Memory management
+    }
+  }
+
   void back() {
-    Navigator.of(context).pop();
-    resetAllCategories();
+    if (edType == EditorType.making) {
+      if (overlays.isActive('EditorMenu')) {
+        overlays.remove('EditorMenu');
+      } else {
+        overlays.add('EditorMenu');
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text("Confirm exit?"),
+            content: Text(
+              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
+            ),
+            actions: [
+              MaterialButton(
+                child: Text("Yes"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+              MaterialButton(
+                child: Text("No"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  resetAllCategories();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void paste() {
     if (gridClip.active) {
       gridClip.place(cellMouseX, cellMouseY);
+      buttonManager.buttons['select-btn']!.texture = "interface/select.png";
+      buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
     }
   }
 
@@ -1015,8 +787,83 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late ButtonManager buttonManager;
 
+  void multiplayerCallback(data) {
+    if (data is String) {
+      final cmd = data.split(' ').first;
+      final args = data.split(' ').sublist(1);
+
+      if (cmd == "place") {
+        if (isinitial) {
+          grid.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
+          grid.grid[int.parse(args[0])][int.parse(args[1])].rot =
+              int.parse(args[3]);
+        } else {
+          initial.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
+          initial.grid[int.parse(args[0])][int.parse(args[1])].rot =
+              int.parse(args[3]);
+        }
+      } else if (cmd == "bg") {
+        if (isinitial) {
+          grid.place[int.parse(args[0])][int.parse(args[1])] = args[2];
+        } else {
+          initial.place[int.parse(args[0])][int.parse(args[1])] = args[2];
+        }
+      } else if (cmd == "wrap") {
+        if (isinitial) {
+          grid.wrap = !grid.wrap;
+          buttonManager.buttons['wrap-btn']?.title =
+              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+        } else {
+          initial.wrap = !initial.wrap;
+        }
+      } else if (cmd == "setinit") {
+        if (isinitial) {
+          grid = loadStr(args.first);
+          initial = grid.copy;
+          isinitial = true;
+          running = false;
+          buttonManager.buttons['play-btn']?.texture = 'mover.png';
+          buttonManager.buttons['play-btn']?.rotation = 0;
+          buttonManager.buttons['wrap-btn']?.title =
+              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+        } else {
+          initial = loadStr(args.first);
+        }
+      } else if (cmd == "grid") {
+        if (isinitial) {
+          grid = loadStr(args.first);
+          initial = grid.copy;
+          isinitial = true;
+          running = false;
+          buttonManager.buttons['play-btn']?.texture = 'mover.png';
+          buttonManager.buttons['play-btn']?.rotation = 0;
+          buttonManager.buttons['wrap-btn']?.title =
+              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+        } else {
+          initial = loadStr(args.first);
+        }
+      }
+    }
+  }
+
+  void sendToServer(String packet) {
+    if (isMultiplayer && isinitial) {
+      channel.sink.add(packet);
+    }
+  }
+
   @override
   Future<void>? onLoad() async {
+    // Handle multiplayer
+    if (isMultiplayer) {
+      channel = WebSocketChannel.connect(Uri.parse(ip!));
+
+      multiplayerListener = channel.stream.listen(
+        multiplayerCallback,
+        onDone: () => Navigator.of(context).pop(),
+      );
+    }
+
     loadAllButtonTextures();
     if (edType == EditorType.loaded) {
       storedOffX = canvasSize.x / 2 - (grid.width / 2) * defaultCellSize;
@@ -1034,12 +881,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       VirtualButton(
         Vector2.zero(),
         Vector2.all(80),
-        "back.png",
+        edType == EditorType.making ? "interface/menu.png" : "back.png",
         ButtonAlignment.TOPLEFT,
         back,
         () => true,
-        title: 'Back',
-        description: 'Sends you back',
+        title: edType == EditorType.making ? 'Editor Menu' : 'Exit Editor',
+        description: edType == EditorType.making
+            ? 'Opens the Editor Menu'
+            : 'Exits the editor',
       ),
     );
 
@@ -1183,12 +1032,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ButtonAlignment.TOPRIGHT,
           () {
             copy();
-            for (var x = 0; x <= selW; x++) {
-              for (var y = 0; y <= selH; y++) {
+            for (var x = 0; x < selW; x++) {
+              for (var y = 0; y < selH; y++) {
                 final cx = selX + x;
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   grid.set(cx, cy, Cell(cx, cy));
+                  sendToServer('place $cx $cy empty 0');
                 }
               }
             }
@@ -1228,9 +1078,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   grid.set(cx, cy, Cell(cx, cy));
+                  sendToServer('place $cx $cy empty 0');
                 }
               }
             }
+
+            selecting = false;
+            buttonManager.buttons['select-btn']!.texture =
+                "interface/select.png";
           },
           () => selecting && !dragPos,
           title: 'Delete',
@@ -1322,19 +1177,26 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ButtonAlignment.TOPRIGHT,
           () {
             try {
-              FlutterClipboard.paste().then(
+              FlutterClipboard.controlV().then(
                 (str) {
-                  grid = loadStr(str);
-                  initial = grid.copy;
-                  isinitial = true;
-                  running = false;
-                  buttonManager.buttons['play-btn']?.texture = 'mover.png';
-                  buttonManager.buttons['play-btn']?.rotation = 0;
-                  buttonManager.buttons['wrap-btn']?.title =
-                      grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+                  if (str is ClipboardData) {
+                    grid = loadStr(str.text ?? "");
+                    initial = grid.copy;
+                    isinitial = true;
+                    running = false;
+                    buttonManager.buttons['play-btn']?.texture = 'mover.png';
+                    buttonManager.buttons['play-btn']?.rotation = 0;
+                    buttonManager.buttons['wrap-btn']?.title =
+                        grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+
+                    if (isMultiplayer) {
+                      sendToServer('setinit ${P2.encodeGrid(grid)}');
+                    }
+                  }
                 },
               );
             } catch (e) {
+              print(e);
               showDialog(
                 context: context,
                 builder: (ctx) {
@@ -1370,6 +1232,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             grid.wrap = !grid.wrap;
             buttonManager.buttons['wrap-btn']?.title =
                 grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+
+            sendToServer('wrap');
           },
           () => true,
           title: 'Wrap Mode (OFF)',
@@ -1523,7 +1387,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     var sx = floor((-offX - cellSize) / cellSize);
     var sy = floor((8.h - offY - cellSize) / cellSize);
     var ex = ceil((canvasSize.x - offX) / cellSize);
-    var ey = ceil((92.h - offY) / cellSize);
+    var ey = ceil((canvasSize.y - offY) / cellSize);
 
     sx = max(sx, 0);
     sy = max(sy, 0);
@@ -1553,7 +1417,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    if (realisticRendering && running) {
+    if (realisticRendering && (running || onetick)) {
       for (var b in grid.brokenCells) {
         b.render(canvas, (itime % delay) / delay);
       }
@@ -1774,65 +1638,69 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       overlays.add("Win");
     }
     if (puzzleWin) return;
-    if (running || onetick) {
-      itime += dt;
+    if (!overlays.isActive("EditorMenu")) {
+      if ((running || onetick)) {
+        itime += dt;
 
-      while (itime > delay) {
-        itime -= delay;
-        if (onetick) {
-          onetick = false;
-        } else {
-          if (storage.getBool("update_visible") == true) {
-            final sx = max(floor(-offX / cellSize), 0);
-            final sy = max(floor(-offY / cellSize), 0);
-            final ex = min(ceil((canvasSize.x - offX) / cellSize), grid.width);
-            final ey = min(ceil((canvasSize.y - offY) / cellSize), grid.height);
-            grid.setConstraints(sx, sy, ex, ey);
+        while (itime > delay) {
+          itime -= delay;
+          if (onetick) {
+            onetick = false;
+          } else {
+            if (storage.getBool("update_visible") == true) {
+              final sx = max(floor(-offX / cellSize), 0);
+              final sy = max(floor(-offY / cellSize), 0);
+              final ex =
+                  min(ceil((canvasSize.x - offX) / cellSize), grid.width);
+              final ey =
+                  min(ceil((canvasSize.y - offY) / cellSize), grid.height);
+              grid.setConstraints(sx, sy, ex, ey);
+            }
+            grid.update(); // Update the cells boizz
           }
-          grid.update(); // Update the cells boizz
         }
       }
-    }
 
-    const speed = 600;
-    if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
-      storedOffY += speed * dt;
-    }
-    if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
-      storedOffY -= speed * dt;
-    }
-    if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
-      storedOffX += speed * dt;
-    }
-    if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
-      storedOffX -= speed * dt;
-    }
+      const speed = 600;
+      if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
+        storedOffY += speed * dt;
+      }
+      if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
+        storedOffY -= speed * dt;
+      }
+      if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
+        storedOffX += speed * dt;
+      }
+      if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
+        storedOffX -= speed * dt;
+      }
 
-    if (selecting && dragPos && setPos) {
-      final ex = max(min(cellMouseX, grid.width - 1), -1);
-      final ey = max(min(cellMouseY, grid.height - 1), -1);
+      if (selecting && dragPos && setPos) {
+        final ex = max(min(cellMouseX, grid.width - 1), -1);
+        final ey = max(min(cellMouseY, grid.height - 1), -1);
 
-      selW = ex - selX + 1;
-      selH = ey - selY + 1;
-    }
+        selW = ex - selX + 1;
+        selH = ey - selY + 1;
+      }
 
-    if (!(pasting || selecting || edType == EditorType.loaded)) {
-      if (mouseDown) {
-        final cx = (mouseX - offX) ~/ cellSize;
-        final cy = (mouseY - offY) ~/ cellSize;
-        if (grid.inside(cx, cy)) {
-          if (mouseButton == kPrimaryMouseButton) {
-            placeCell(currentSeletion, currentRotation, cx, cy);
-          } else if (mouseButton == kSecondaryMouseButton) {
-            placeCell(0, 0, cx, cy);
-          } else if (mouseButton == kMiddleMouseButton) {
-            final id = grid.at(cx, cy).id;
+      if (!(pasting || selecting || edType == EditorType.loaded)) {
+        if (mouseDown) {
+          final cx = (mouseX - offX) ~/ cellSize;
+          final cy = (mouseY - offY) ~/ cellSize;
+          if (grid.inside(cx, cy)) {
+            if (mouseButton == kPrimaryMouseButton) {
+              placeCell(currentSeletion, currentRotation, cx, cy);
+            } else if (mouseButton == kSecondaryMouseButton) {
+              placeCell(0, 0, cx, cy);
+            } else if (mouseButton == kMiddleMouseButton) {
+              final id = grid.at(cx, cy).id;
 
-            if (edType == EditorType.making) {
-              currentSeletion = cells.indexOf(id);
-            } else if (edType == EditorType.loaded) {
-              if (cellsToPlace.contains(id)) {
+              if (edType == EditorType.making) {
                 currentSeletion = cells.indexOf(id);
+              } else if (edType == EditorType.loaded) {
+                if (cellsToPlace.contains(id)) {
+                  currentSeletion = cells.indexOf(id);
+                }
               }
             }
           }
@@ -1842,6 +1710,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     super.update(dt);
   }
+
+  bool get inMenu => overlays.isActive('EditorMenu');
 
   void onMouseEnter(PointerEvent e) {
     mouseX = e.localPosition.dx;
@@ -1862,9 +1732,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..rot = rot
           ..lastvars.lastRot = rot,
       );
+      sendToServer("place $cx $cy ${cells[id]} $rot");
       if (cells[id] == "empty" &&
           backgrounds.contains(cells[currentSeletion])) {
         grid.setPlace(cx, cy, "empty");
+        sendToServer("bg $cx $cy empty");
       }
     } else if (edType == EditorType.loaded) {
       if (grid.placeable(cx, cy) == "rotatable") {
@@ -2021,6 +1893,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void zoomout() {
+    if (inMenu) return;
     if (wantedCellSize > (defaultCellSize) / 16) {
       final lastZoom = wantedCellSize;
       wantedCellSize ~/= 2;
@@ -2029,6 +1902,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void zoomin() {
+    if (inMenu) return;
     if (wantedCellSize < (defaultCellSize) * 256) {
       final lastZoom = wantedCellSize;
       wantedCellSize *= 2;
@@ -2037,14 +1911,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void setInitial() {
+    if (inMenu) return;
     initial = grid.copy;
     isinitial = true;
     running = false;
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
+    if (isMultiplayer) sendToServer('setinit ${P2.encodeGrid(grid)}');
   }
 
   void restoreInitial() {
+    if (inMenu) return;
     grid = initial.copy;
     isinitial = true;
     puzzleWin = false;
@@ -2057,6 +1934,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   bool onetick = false;
 
   void oneTick() {
+    if (inMenu) return;
     if (!running) {
       if (isinitial) {
         initial = grid.copy;
@@ -2069,6 +1947,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void playPause() {
+    if (inMenu) return;
     running = !running;
     if (edType == EditorType.loaded) {
       isinitial = true;
@@ -2094,6 +1973,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void q() {
+    if (inMenu) return;
     if (!game.running || edType == EditorType.making) {
       if (pasting) {
         gridClip.rotate(RotationalType.counter_clockwise);
@@ -2136,6 +2016,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void e() {
+    if (inMenu) return;
     if (!game.running || edType == EditorType.making) {
       if (pasting) {
         gridClip.rotate(RotationalType.clockwise);

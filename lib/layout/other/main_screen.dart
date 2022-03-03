@@ -44,6 +44,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         return Scaffold(
           appBar: AppBar(
             title: Text('The Puzzle Cell', style: fontSize(10.sp)),
+            actions: [],
+            automaticallyImplyLeading: false,
           ),
           body: Stack(
             children: [
@@ -67,97 +69,119 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               ),
               Padding(
                 padding: EdgeInsets.all(3.w),
-                child: Column(
+                child: Row(
                   children: [
-                    Spacer(),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Puzzles', style: buttonStyle),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/puzzles'),
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Editor', style: buttonStyle),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/editor');
-                        },
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Load Level', style: buttonStyle),
-                        onPressed: () {
-                          FlutterClipboard.paste().then(
-                            (clipboard) {
-                              try {
-                                grid = loadStr(clipboard);
-                                puzzleIndex = null;
-                                Navigator.of(context).pushNamed('/game-loaded');
-                              } catch (e) {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) {
-                                    return AlertDialog(
-                                      title: Text('Invalid code'),
-                                      content: Text(
-                                        "The code you have in your clipboard is not valid code or can not pe properly loaded. Please try again after getting a proper level code",
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
+                    Column(
+                      children: [
+                        Spacer(),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Puzzles', style: buttonStyle),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed('/puzzles'),
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Editor', style: buttonStyle),
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/editor');
                             },
-                          );
-                        },
-                        hoverColor: Colors.blue,
-                      ),
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Multiplayer', style: buttonStyle),
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/multiplayer');
+                            },
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Load Level', style: buttonStyle),
+                            onPressed: () {
+                              FlutterClipboard.paste().then(
+                                (clipboard) {
+                                  try {
+                                    grid = loadStr(clipboard);
+                                    puzzleIndex = null;
+                                    Navigator.of(context)
+                                        .pushNamed('/game-loaded');
+                                  } catch (e) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return AlertDialog(
+                                          title: Text('Invalid code'),
+                                          content: Text(
+                                            "The code you have in your clipboard is not valid code or can not pe properly loaded. Please try again after getting a proper level code",
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Quit', style: buttonStyle),
+                            onPressed: () {
+                              exit(0);
+                            },
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Spacer(
+                          flex: 1,
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Settings', style: buttonStyle),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/settings'),
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Credits', style: buttonStyle),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/credits'),
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Version', style: buttonStyle),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/version'),
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Padding(
-                      padding: buttonPadding,
-                      child: MaterialButton(
-                        child: Text('Quit', style: buttonStyle),
-                        onPressed: () {
-                          exit(0);
-                        },
-                        hoverColor: Colors.blue,
-                      ),
-                    ),
-                    Spacer(
-                      flex: 1,
+                    Spacer(),
+                    Column(
+                      children: [
+                        Spacer(),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Settings', style: buttonStyle),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed('/settings'),
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Credits', style: buttonStyle),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed('/credits'),
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Padding(
+                          padding: buttonPadding,
+                          child: MaterialButton(
+                            child: Text('Version', style: buttonStyle),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed('/version'),
+                            hoverColor: Colors.blue,
+                          ),
+                        ),
+                        Spacer(),
+                      ],
                     ),
                   ],
                 ),

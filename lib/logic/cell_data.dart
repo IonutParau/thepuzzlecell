@@ -118,6 +118,7 @@ final cells = [
   "slow_puller",
   "fast_puller",
   "auto_flag",
+  "anchor",
 ];
 
 Map<String, String> textureMap = {
@@ -213,6 +214,7 @@ Map<String, String> textureMap = {
   'fast_puller.png': 'movers/pullers/fast_puller.png',
   'slow_puller.png': 'movers/pullers/slow_puller.png',
   'auto_flag.png': 'puzzle/auto_flag.png',
+  'anchor.png': 'unique/anchor.png',
 };
 
 class CellProfile {
@@ -312,6 +314,7 @@ final categories = [
       "gear_ccw",
       "ant_cw",
       "ant_ccw",
+      "anchor",
     ],
     "mover",
   ),
@@ -425,6 +428,7 @@ final categories = [
       "wormhole",
       "karl",
       "darty",
+      "anchor",
     ],
     "trash",
   ),
@@ -918,5 +922,9 @@ final cellInfo = <String, CellProfile>{
   "slow_puller": CellProfile(
     "Slow Puller",
     "Puller but moves once every 2 ticks",
+  ),
+  "anchor": CellProfile(
+    "Anchor",
+    "When rotated, will rotate the structure touching it. Anchored rotators also stop rotating mid-execution to avoid bugs",
   ),
 };

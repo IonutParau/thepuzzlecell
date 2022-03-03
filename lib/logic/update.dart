@@ -12,6 +12,13 @@ void movers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
+        doSpeedMover(x, y, cell.rot, 0, 2);
+      },
+      rot,
+      "fast_mover",
+    );
+    grid.forEach(
+      (cell, x, y) {
         push(x, y, cell.rot, 0);
       },
       rot,
@@ -25,13 +32,6 @@ void movers() {
       },
       rot,
       "slow_mover",
-    );
-    grid.forEach(
-      (cell, x, y) {
-        doSpeedMover(x, y, cell.rot, 0, 2);
-      },
-      rot,
-      "fast_mover",
     );
   }
 }
@@ -100,15 +100,9 @@ void doSupGen(int x, int y, int dir, int gendir,
       if (cell.id.contains('gen') || cell.id.contains('rep')) {
         cell.updated = true;
       }
-      if (push(fx, fy, dir, 1)) {
-        final remaining = grid.at(fx, fy);
-        if (remaining.id == "empty") {
-          grid.set(fx, fy, cell);
-          grid.rotate(fx, fy, addedRot);
-        } else {
-          moveCell(fx, fy, fx, fy, dir, cell);
-        }
-      } else {
+      cell.rot += addedRot;
+      cell.rot %= 4;
+      if (!push(fx, fy, dir, 1, replaceCell: cell)) {
         return;
       }
     }
@@ -146,79 +140,62 @@ void doGen(int x, int y, int dir, int gendir,
   var ox = x + outputOff.dx ~/ 1 + offX;
   var oy = y + outputOff.dy ~/ 1 + offY;
 
-  void gen() {
-    if (!grid.inside(ox, oy)) return;
-    if (!grid.inside(gx, gy)) return;
-    if (!grid.inside(x, y)) return;
-    final remaining = grid.at(ox, oy);
-    if (moveInsideOf(remaining, ox, oy, dir) && remaining.id != "empty") {
-      moveCell(gx, gy, ox, oy, dir);
-      grid.set(gx, gy, toGenerate);
-      return;
+  final toGenLastrot = toGenerate.lastvars.lastRot;
+  toGenerate.lastvars = grid.at(x, y).lastvars.copy;
+  if (physical) {
+    toGenerate.lastvars.lastPos -= fromDir(dir);
+  }
+  toGenerate.lastvars.lastRot = toGenLastrot;
+  if (physical) {
+    toGenerate.lastvars.lastPos += fromDir(gendir);
+  }
+  toGenerate.lastvars.lastPos = Offset(
+    toGenerate.lastvars.lastPos.dx + lvxo,
+    toGenerate.lastvars.lastPos.dy + lvyo,
+  );
+  toGenerate.rot += addedRot;
+  toGenerate.rot %= 4;
+  if (CellTypeManager.generators.contains(toGenerate.id) ||
+      CellTypeManager.superGens.contains(toGenerate.id) ||
+      CellTypeManager.replicators.contains(toGenerate.id)) {
+    bool shouldUpdate = false;
+    var rot = toGenerate.rot;
+    if ((toGenerate.id == "cross_gen" ||
+            toGenerate.id == "cross_replicator" ||
+            toGenerate.id == "cross_supgen") &&
+        (rot == dir || (rot + 3) % 4 == dir)) {
+      shouldUpdate = true;
+    } else if (toGenerate.id == "quad_rep") {
+      shouldUpdate = true;
+    } else if (toGenerate.id == "triple_rep") {
+      shouldUpdate =
+          (rot == dir || (rot + 1) % 4 == dir || (rot + 3) % 4 == dir);
+    } else if (toGenerate.id == "opposite_replicator") {
+      shouldUpdate = (rot % 2 == dir % 2);
+    } else if (rot == dir) {
+      shouldUpdate = true;
     }
-    if (remaining.id == "empty") {
-      final toGenLastrot = toGenerate.lastvars.lastRot;
-      toGenerate.lastvars = grid.at(x, y).lastvars.copy;
-      if (physical) {
-        toGenerate.lastvars.lastPos -= fromDir(dir);
-      }
-      toGenerate.lastvars.lastRot = toGenLastrot;
-      if (physical) {
-        toGenerate.lastvars.lastPos += fromDir(gendir);
-      }
-      toGenerate.lastvars.lastPos = Offset(
-        toGenerate.lastvars.lastPos.dx + lvxo,
-        toGenerate.lastvars.lastPos.dy + lvyo,
-      );
-      if (CellTypeManager.generators.contains(toGenerate.id) ||
-          CellTypeManager.superGens.contains(toGenerate.id) ||
-          CellTypeManager.replicators.contains(toGenerate.id)) {
-        bool shouldUpdate = false;
-        var rot = toGenerate.rot;
-        if ((toGenerate.id == "cross_gen" ||
-                toGenerate.id == "cross_replicator" ||
-                toGenerate.id == "cross_supgen") &&
-            (rot == dir || (rot + 3) % 4 == dir)) {
-          shouldUpdate = true;
-        } else if (toGenerate.id == "quad_rep") {
-          shouldUpdate = true;
-        } else if (toGenerate.id == "triple_rep") {
-          shouldUpdate =
-              (rot == dir || (rot + 1) % 4 == dir || (rot + 3) % 4 == dir);
-        } else if (toGenerate.id == "opposite_replicator") {
-          shouldUpdate = (rot % 2 == dir % 2);
-        } else if (rot == dir) {
-          shouldUpdate = true;
-        }
 
-        if (shouldUpdate) {
-          toGenerate.updated = true;
-        }
-      }
-      grid.set(ox, oy, toGenerate);
-      grid.rotate(ox, oy, addedRot);
+    if (shouldUpdate) {
+      toGenerate.updated = true;
     }
   }
 
-  if (push(ox, oy, dir, 1)) {
-    gen();
+  if (push(ox, oy, dir, 1, replaceCell: toGenerate)) {
   } else {
     if (physical) {
-      if (push(x, y, (dir + 2) % 4, 1)) {
-        final dx = frontX(0, dir);
-        final dy = frontY(0, dir);
+      final dx = frontX(0, dir);
+      final dy = frontY(0, dir);
 
-        ox -= dx;
-        oy -= dy;
+      ox -= dx;
+      oy -= dy;
 
-        // x += dx;
-        // y += dy;
+      // x += dx;
+      // y += dy;
 
-        gx -= dx;
-        gy -= dy;
-
-        gen();
-      }
+      gx -= dx;
+      gy -= dy;
+      if (push(x, y, (dir + 2) % 4, 1, replaceCell: toGenerate)) {}
     }
   }
 }
@@ -348,10 +325,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_cw")) {
     grid.forEach(
       (cell, x, y) {
-        grid.rotate(x + 1, y, 1);
-        grid.rotate(x - 1, y, 1);
-        grid.rotate(x, y + 1, 1);
-        grid.rotate(x, y - 1, 1);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), 1);
       },
       null,
       "rotator_cw",
@@ -360,10 +341,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_ccw")) {
     grid.forEach(
       (cell, x, y) {
-        grid.rotate(x + 1, y, -1);
-        grid.rotate(x - 1, y, -1);
-        grid.rotate(x, y + 1, -1);
-        grid.rotate(x, y - 1, -1);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), -1);
       },
       null,
       "rotator_ccw",
@@ -372,8 +357,12 @@ void rots(Set<String> cells) {
   if (cells.contains("opposite_rotator")) {
     grid.forEach(
       (cell, x, y) {
-        grid.rotate(frontX(x, cell.rot), frontY(y, cell.rot), 1);
-        grid.rotate(frontX(x, cell.rot + 2), frontY(y, cell.rot + 2), -1);
+        if (!cell.tags.contains("anchored"))
+          grid.rotate(frontX(cell.cx ?? x, cell.rot),
+              frontY(cell.cy ?? y, cell.rot), 1);
+        if (!cell.tags.contains("anchored"))
+          grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+              frontY(cell.cy ?? y, cell.rot + 2), -1);
       },
       null,
       "opposite_rotator",
@@ -382,10 +371,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_180")) {
     grid.forEach(
       (cell, x, y) {
-        grid.rotate(x + 1, y, 2);
-        grid.rotate(x - 1, y, 2);
-        grid.rotate(x, y + 1, 2);
-        grid.rotate(x, y - 1, 2);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), 2);
       },
       null,
       "rotator_180",
@@ -704,6 +697,13 @@ void pullers() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
+        doSpeedPuller(x, y, rot, 2, 2);
+      },
+      rot,
+      "fast_puller",
+    );
+    grid.forEach(
+      (cell, x, y) {
         pull(x, y, rot, 1);
       },
       rot,
@@ -717,13 +717,6 @@ void pullers() {
       },
       rot,
       "slow_puller",
-    );
-    grid.forEach(
-      (cell, x, y) {
-        doSpeedPuller(x, y, rot, 2, 2);
-      },
-      rot,
-      "fast_puller",
     );
     grid.forEach(
       (cell, x, y) {
@@ -781,7 +774,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
     }
   }
 
-  if (push(x, y, dir, 1, MoveType.puzzle)) {
+  if (push(x, y, dir, 1, mt: MoveType.puzzle)) {
     // DO stuff
   } else {
     if (type == "trash") {
@@ -1146,7 +1139,7 @@ bool doGrabber(int x, int y, int dir, [int rdepth = 0]) {
       if (!moveInsideOf(f, fx, fy, dir)) return false;
     }
   }
-  push(x, y, dir, 1, MoveType.grab);
+  push(x, y, dir, 1, mt: MoveType.grab);
   grabSide(x, y, dir - 1, dir, depth);
   grabSide(x, y, dir + 1, dir, depth);
   return true;
@@ -1246,20 +1239,10 @@ bool doTunnel(int x, int y, int dir, [int? odir]) {
     if (moving.id == "empty") return false;
     if (moving.tags.contains('tunneled')) return false;
 
-    if (push(fx, fy, odir, 1, MoveType.tunnel)) {
-      if (CellTypeManager.tunnels.contains(moving.id) && moving.rot == dir) {
-        grid.at(bx, by).updated = true;
-      }
-      grid.at(bx, by).rot += addedRot;
-      grid.at(bx, by).rot %= 4;
-      grid
-          .at(
-            bx,
-            by,
-          )
-          .tags
-          .add("tunneled");
-      moveCell(bx, by, fx, fy);
+    moving.rot = (moving.rot + addedRot) % 4;
+    moving.tags.add("tunneled");
+    if (push(fx, fy, odir, 1, mt: MoveType.tunnel, replaceCell: moving)) {
+      grid.set(bx, by, Cell(bx, by));
       return true;
     } else {
       return false;
@@ -1307,9 +1290,10 @@ void doWarper(int x, int y, int dir, int odir) {
   }
 
   addedRot %= 4;
-  if (push(fx, fy, odir, 1, MoveType.tunnel)) {
-    grid.at(bx, by).rot = (grid.at(bx, by).rot + addedRot) % 4;
-    moveCell(bx, by, fx, fy);
+  final moving = grid.at(bx, by).copy;
+  moving.rot = (moving.rot + addedRot) % 4;
+  if (push(fx, fy, odir, 1, mt: MoveType.tunnel, replaceCell: moving)) {
+    grid.set(bx, by, Cell(bx, by));
   }
 }
 
@@ -1751,7 +1735,7 @@ void doSync(int x, int y, int movedir, int rot) {
   grid.forEach(
     (cell, x, y) {
       if ((!cell.tags.contains("sync move")) && movedir != -1) {
-        push(x, y, movedir, 1, MoveType.sync);
+        push(x, y, movedir, 1, mt: MoveType.sync);
       }
       if ((!cell.tags.contains("sync rot")) && rot != 0) {
         grid.rotate(x, y, rot);
@@ -1778,6 +1762,21 @@ void speeds() {
   for (var rot in rotOrder) {
     grid.forEach(
       (cell, x, y) {
+        if (nudge(x, y, cell.rot)) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+          if (grid.inside(fx, fy)) {
+            if (grid.at(fx, fy).id == "fast") {
+              nudge(fx, fy, cell.rot);
+            }
+          }
+        }
+      },
+      rot,
+      "fast",
+    );
+    grid.forEach(
+      (cell, x, y) {
         nudge(x, y, cell.rot);
       },
       rot,
@@ -1792,17 +1791,6 @@ void speeds() {
       },
       rot,
       "slow",
-    );
-    grid.forEach(
-      (cell, x, y) {
-        if (nudge(x, y, cell.rot)) {
-          final fx = frontX(x, cell.rot);
-          final fy = frontY(y, cell.rot);
-          nudge(fx, fy, cell.rot);
-        }
-      },
-      rot,
-      "fast",
     );
   }
 }
@@ -2156,7 +2144,7 @@ void bringers() {
 
 void autoflag() {
   if (grid.cells.contains("auto_flag")) {
-    if ((!grid.cells.contains("enemy")) &&
+    if ((!grid.cells.contains("enemy") && !grid.cells.contains("semi_enemy")) &&
         !grid.cells.contains("key") &&
         !grid.cells.contains("lock")) {
       puzzleWin = true;
@@ -2164,3 +2152,97 @@ void autoflag() {
     }
   }
 }
+
+class CellStructure {
+  List<Vector2> coords = [];
+  List<Cell> cells = [];
+
+  bool inStructure(int x, int y) {
+    for (var coord in coords) {
+      if (coord.x == x && coord.y == y) return true;
+    }
+    return false;
+  }
+
+  void build(int x, int y) {
+    if (!grid.inside(x, y)) return;
+    if (grid.at(x, y).id == "empty") return;
+    if (!inStructure(x, y)) {
+      coords.add(Vector2(x.toDouble(), y.toDouble()));
+      cells.add(grid.at(x, y));
+      this.build(x + 1, y);
+      this.build(x - 1, y);
+      this.build(x, y + 1);
+      this.build(x, y - 1);
+    }
+  }
+}
+
+void doAnchor(int x, int y, int amount) {
+  amount %= 4;
+  final structure = CellStructure()..build(x, y);
+
+  //print(rot);
+
+  final center = Vector2(x.toDouble(), y.toDouble());
+
+  for (var i = 0; i < structure.coords.length; i++) {
+    final v = structure.coords[i];
+    final nv = Vector2.all(0);
+    final dx = v.x.toInt() - x;
+    final dy = v.y.toInt() - y;
+    if (amount == 1) {
+      nv.x = x - dy.toDouble();
+      nv.y = y + dx.toDouble();
+    } else if (amount == 3 || amount == -1) {
+      nv.x = x + dy.toDouble();
+      nv.y = y - dx.toDouble();
+    } else if (amount == 2) {
+      nv.x = x - dx.toDouble();
+      nv.y = y - dy.toDouble();
+    }
+    if (!grid.inside(nv.x.toInt(), nv.y.toInt())) return;
+  }
+
+  for (var i = 0; i < structure.coords.length; i++) {
+    final v = structure.coords[i];
+    if (v != center)
+      grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
+  }
+
+  for (var i = 0; i < structure.coords.length; i++) {
+    final v = structure.coords[i];
+    if (v != center) {
+      final dx = v.x.toInt() - x;
+      final dy = v.y.toInt() - y;
+      if (amount == 1) {
+        v.x = x - dy.toDouble();
+        v.y = y + dx.toDouble();
+      } else if (amount == 3 || amount == -1) {
+        v.x = x + dy.toDouble();
+        v.y = y - dx.toDouble();
+      } else if (amount == 2) {
+        v.x = x - dx.toDouble();
+        v.y = y - dy.toDouble();
+      }
+    }
+  }
+
+  for (var i = 0; i < structure.coords.length; i++) {
+    final v = structure.coords[i];
+    if (v != center) {
+      grid.set(v.x.toInt(), v.y.toInt(), structure.cells[i]);
+      grid.at(v.x.toInt(), v.y.toInt()).cx = v.x.toInt();
+      grid.at(v.x.toInt(), v.y.toInt()).cy = v.y.toInt();
+      if (grid.at(v.x.toInt(), v.y.toInt()).id != "anchor") {
+        if (!structure.cells[i].tags.contains("anchored $amount")) {
+          structure.cells[i].tags.add("anchored $amount");
+          structure.cells[i].tags.add("anchored");
+          grid.rotate(v.x.toInt(), v.y.toInt(), amount);
+        }
+      }
+    }
+  }
+}
+
+int round(num n) => (n + 0.5).toInt();

@@ -59,6 +59,8 @@ class Cell {
   Map<String, dynamic> data = {};
   List<String> tags = [];
   int lifespan = 0;
+  int? cx;
+  int? cy;
 
   Cell(int x, int y) : lastvars = LastVars(0, x, y);
 
@@ -327,6 +329,7 @@ class Grid {
   }
 
   void setPlace(int x, int y, String id) {
+    game.sendToServer("bg $x $y $id");
     if (wrap) {
       place[(x + width) % width][(y + height) % height] = id;
       return;
@@ -384,7 +387,8 @@ class Grid {
     for (var passThrough in justMoveInsideOf) {
       if (cells.contains(passThrough)) return true;
     }
-    if (cells.contains("semienemy") || cells.contains("semitrash")) return true;
+    if (cells.contains("semi_enemy") || cells.contains("semi_trash"))
+      return true;
     return false;
   }
 
@@ -414,6 +418,10 @@ class Grid {
   void rotate(int x, int y, int rot) {
     if (!inside(x, y)) return;
     final id = at(x, y).id;
+    if (id == "anchor") {
+      doAnchor(x, y, rot);
+      return;
+    }
     if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
       return;
     at(x, y).rot += rot;
@@ -463,8 +471,8 @@ class Grid {
       if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
       if (cells.containsAny(CellTypeManager.speeds)) speeds,
       if (cells.contains("driller")) drillers,
-      if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.containsAny(CellTypeManager.puller)) pullers,
+      if (cells.containsAny(CellTypeManager.movers)) movers,
       if (cells.contains("liner")) liners,
       if (cells.contains("bringer")) bringers,
       if (cells.contains("axis")) axis,
@@ -525,6 +533,9 @@ class GridClip {
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
           cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy);
           grid.set(sx, sy, cells[cx][cy].copy);
+          game.sendToServer(
+            "place $sx $sy ${cells[cx][cy].id} ${cells[cx][cy].rot}",
+          );
         }
       }
     }

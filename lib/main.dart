@@ -1,4 +1,5 @@
 import 'package:flame/flame.dart';
+import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +34,9 @@ void main() async {
     await storage.setDouble('music_volume', 0.5);
   }
 
-  playOnLoop(floatMusic, storage.getDouble('music_volume')!);
+  if (storage.getStringList('servers') == null) {
+    await storage.setStringList('servers', []);
+  }
 
   runApp(const MyApp());
 }
@@ -68,11 +71,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final _splashController = FlameSplashController(
+    fadeInDuration: Duration(milliseconds: 500),
+    fadeOutDuration: Duration(milliseconds: 500),
+  );
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(LifecycleEventHandler());
   }
+
+  @override
+  void dispose() {
+    _splashController.dispose();
+    super.dispose();
+  }
+
+  var splashScreenOver = false;
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +98,71 @@ class _MyAppState extends State<MyApp> {
           title: 'The Puzzle Cell',
           theme: ThemeData.dark(),
           debugShowCheckedModeBanner: false,
-          home: const MainScreen(),
+          home: FlameSplashScreen(
+            controller: _splashController,
+            onFinish: (ctx) {
+              if (!splashScreenOver) {
+                splashScreenOver = true;
+                playOnLoop(floatMusic, storage.getDouble('music_volume')!);
+                Navigator.of(ctx).pushNamed('/main');
+              }
+            },
+            theme: FlameSplashTheme.dark,
+            showBefore: (ctx) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Column(
+                    children: [
+                      Spacer(),
+                      SizedBox(
+                        width: 20.w,
+                        height: 20.w,
+                        child: Image.asset('assets/images/logo.png'),
+                      ),
+                      Text(
+                        'The Puzzle Cell',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      Text(
+                        'by A Monitor#1595',
+                        style: TextStyle(
+                          fontSize: 5.sp,
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                ),
+              );
+            },
+            showAfter: (ctx) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Column(
+                    children: [
+                      Spacer(),
+                      FlutterLogo(
+                        size: 20.w,
+                      ),
+                      Text(
+                        'Made with Flutter',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
           routes: {
+            '/main': (ctx) => MainScreen(),
             '/editor': (ctx) => Editor(),
             '/game': (ctx) => GameUI(),
             '/game-loaded': (ctx) => GameUI(editorType: EditorType.loaded),
@@ -91,6 +170,7 @@ class _MyAppState extends State<MyApp> {
             '/settings': (ctx) => SettingsPage(),
             '/version': (ctx) => VersionPage(),
             '/credits': (ctx) => CreditsPage(),
+            '/multiplayer': (ctx) => MultiplayerPage(),
           },
         );
       },

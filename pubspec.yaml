@@ -13,10 +13,12 @@ dependencies:
   cupertino_icons: ^1.0.2
   dart_vlc: any
   flame: any
+  flame_splash_screen: ^0.1.0
   flutter:
     sdk: flutter
   shared_preferences: any
   sizer: any
+  web_socket_channel: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +29,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/unique/
     - assets/images/movers/
     - assets/images/movers/combos/
     - assets/images/movers/movers/
@@ -53,7 +56,6 @@ flutter:
     - assets/puzzles/hard/
 
 # MSIX build shit
-
 msix_config:
   display_name: The Puzzle Cell
   publisher_display_name: A Monitor#1595

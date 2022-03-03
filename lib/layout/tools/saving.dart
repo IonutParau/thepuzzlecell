@@ -80,20 +80,13 @@ int decodeNum(String n, String valueString) {
 }
 
 Grid loadStr(String str) {
-  try {
-    if (str.startsWith('P1;')) return P1.decode(str);
-    if (str.startsWith('P1+;')) return P1Plus.decodeGrid(str);
-    if (str.startsWith('P2;')) return P2.decodeGrid(str);
+  if (str.startsWith('P1;')) return P1.decode(str);
+  if (str.startsWith('P1+;')) return P1Plus.decodeGrid(str);
+  if (str.startsWith('P2;')) return P2.decodeGrid(str);
+  if (str.startsWith('V1;')) return MysticCodes.decodeV1(str);
+  if (str.startsWith('V3;')) return MysticCodes.decodeV3(str);
 
-    throw "Unsupported saving format";
-  } catch (e) {
-    if (e is RangeError) {
-      print(e.toString());
-      print(e.stackTrace?.toString());
-    }
-  }
-
-  return grid;
+  throw "Unsupported saving format";
 }
 
 class P1 {
@@ -467,6 +460,196 @@ class P2 {
       // Special border mode
       final props = segs[7].split(',');
       grid.wrap = props.contains('WRAP');
+    }
+
+    return grid;
+  }
+}
+
+class MysticCodes {
+  static List<int> directions = [0, 1, 2, 3];
+  static List<String> types = [
+    "generator",
+    "rotator_cw",
+    "rotator_ccw",
+    "mover",
+    "slide",
+    "push",
+    "wall",
+    "enemy",
+    "trash"
+  ];
+
+  static String cellKey =
+      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
+
+  static Map<String, int> dictionary = {};
+
+  static bool loaded = false;
+
+  static void init() {
+    if (loaded) return;
+    loaded = true;
+    for (var i = 0; i < 74; i++) {
+      dictionary[cellKey[i]] = i;
+    }
+  }
+
+  static int decodeString(String str) {
+    int output = 0;
+
+    for (var char in str.split('')) {
+      output *= 74;
+      output += dictionary[char]!;
+    }
+
+    return output;
+  }
+
+  static void SetCell(int c, int i, Grid grid) {
+    if (c % 2 == 1) {
+      grid.setPlace(i % grid.width, i ~/ grid.width, "place");
+    }
+
+    if (c >= 72) return;
+
+    final y = grid.width - (i ~/ grid.width) - 1;
+
+    grid.set(
+      i % grid.width,
+      y,
+      Cell(i % grid.width, y)
+        ..id = types[(c ~/ 2) % 9]
+        ..rot = (c ~/ 18)
+        ..lastvars.lastRot = (c ~/ 18),
+    ); // Cascade operator scares me
+  }
+
+  static Grid decodeV1(String str) {
+    MysticCodes.init();
+
+    List<String> args = str.split(';');
+
+    if (args[0] != "V1") throw "Why are you not giving me a V1 code";
+
+    final grid = Grid(int.parse(args[1]), int.parse(args[2]));
+
+    var placeables = args[3].split(',');
+
+    var cells = args[4].split(',');
+
+    if (placeables.isNotEmpty && placeables.first != "") {
+      for (var p in placeables) {
+        grid.setPlace(
+          int.parse(
+            p.split('.').first,
+          ),
+          grid.height -
+              int.parse(
+                p.split('.')[1],
+              ) -
+              1,
+          "place",
+        );
+      }
+    }
+
+    if (cells.isNotEmpty && cells.first != "") {
+      for (var p in cells) {
+        final ps = p.split('.');
+
+        grid.set(
+          int.parse(
+            ps[2],
+          ),
+          grid.height -
+              int.parse(
+                ps[3],
+              ) -
+              1,
+          Cell(
+            int.parse(
+              ps[2],
+            ),
+            grid.height -
+                int.parse(
+                  ps[3],
+                ) -
+                1,
+          )
+            ..id = types[int.parse(
+              ps.first,
+            )]
+            ..rot = int.parse(
+              ps[1],
+            )
+            ..lastvars.lastRot = int.parse(
+              ps[1],
+            ),
+        );
+      }
+    }
+
+    return grid;
+  }
+
+  static Grid decodeV3(String str) {
+    MysticCodes.init();
+    final arguments = str.split(';');
+    var length = 0;
+    var dataIndex = 0;
+    var gridIndex = 0;
+    var temp = "";
+    final cellDataHistory = <int>[];
+
+    final grid = Grid(decodeString(arguments[1]), decodeString(arguments[2]));
+
+    for (var i = 0; i < grid.width * grid.height; i++) {
+      cellDataHistory.add(0);
+    }
+
+    var offset = 0;
+
+    while (dataIndex < arguments[3].length) {
+      if (arguments[3][dataIndex] == ')' || arguments[3][dataIndex] == '(') {
+        if (arguments[3][dataIndex] == ')') {
+          dataIndex += 2;
+          offset = dictionary[arguments[3][dataIndex - 1]]!;
+          length = dictionary[arguments[3][dataIndex]]!;
+        } else {
+          dataIndex++;
+          temp = "";
+          while (arguments[3][dataIndex] != ')' &&
+              arguments[3][dataIndex] != '(') {
+            temp += arguments[3][dataIndex];
+            dataIndex++;
+          }
+          offset = decodeString(temp);
+          if (arguments[3][dataIndex] == ')') {
+            dataIndex++;
+            length = dictionary[arguments[3][dataIndex]]!;
+          } else {
+            dataIndex++;
+            temp = "";
+            while (arguments[3][dataIndex] != ')') {
+              temp += arguments[3][dataIndex];
+              dataIndex++;
+            }
+            length = decodeString(temp);
+          }
+        }
+        for (int i = 0; i < length; i++) {
+          SetCell(cellDataHistory[gridIndex - offset - 1], gridIndex, grid);
+          cellDataHistory[gridIndex] = cellDataHistory[gridIndex - offset - 1];
+          gridIndex++;
+        }
+      } else {
+        SetCell(dictionary[arguments[3][dataIndex]]!, gridIndex, grid);
+        cellDataHistory[gridIndex] = dictionary[arguments[3][dataIndex]]!;
+        gridIndex++;
+      }
+
+      dataIndex++;
     }
 
     return grid;

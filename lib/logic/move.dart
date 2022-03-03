@@ -56,11 +56,11 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
           if (successful) {
             if (grid.inside(ix1, iy1) &&
                 !grid.at(ix1, iy1).tags.contains("sticked")) {
-              push(ix1, iy1, dir, force, mt);
+              push(ix1, iy1, dir, force, mt: mt);
             }
             if (grid.inside(ix2, iy2) &&
                 !grid.at(ix2, iy2).tags.contains("sticked")) {
-              push(ix2, iy2, dir, force, mt);
+              push(ix2, iy2, dir, force, mt: mt);
             }
             cell.tags.remove("sticked");
             return true;
@@ -110,6 +110,7 @@ final justMoveInsideOf = [
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir) {
+  dir %= 4;
   if (into.id == "enemy" && into.updated) return false;
   if (justMoveInsideOf.contains(into.id)) return true;
 
@@ -160,6 +161,75 @@ Vector2 randomVector2() {
   return (Vector2.random() - Vector2.all(0.5)) * 2;
 }
 
+final trashes = ["trash", "semi_trash", "trashcan", "silent_trash"];
+
+final enemies = ["enemy", "semi_enemy", "silent_enemy"];
+
+void handleInside(int x, int y, int dir, Cell moving) {
+  void selfDestruct() {
+    grid.set(x, y, Cell(x, y));
+  }
+
+  final destroyer = grid.at(x, y);
+
+  if (!moveInsideOf(destroyer, x, y, dir)) return;
+
+  if (destroyer.id == "wormhole") {
+    if (grid.wrap) {
+      final dx = grid.width - x - 1;
+      final dy = grid.height - y - 1;
+
+      if (dx == x && dy == y) return;
+
+      final digging = grid.at(dx, dy);
+      if (digging.id == "wormhole") return;
+      push(dx, dy, dir, 9999999999999, replaceCell: moving);
+      // If not empty attempt destruction
+    } else {
+      grid.addBroken(moving, x, y);
+    }
+  }
+
+  if (trashes.contains(destroyer.id)) {
+    // Trashes
+    if (destroyer.id == "trash" || destroyer.id == "semi_trash") {
+      grid.addBroken(moving, x, y);
+    } else if (destroyer.id == "silent_trash") {
+      grid.addBroken(moving, x, y, "silent");
+    } else if (destroyer.id == "mech_trash") {
+      grid.addBroken(moving, x, y);
+      MechanicalManager.spread(x + 1, y, 0);
+      MechanicalManager.spread(x - 1, y, 2);
+      MechanicalManager.spread(x, y + 1, 1);
+      MechanicalManager.spread(x, y - 1, 3);
+    }
+  } else if (enemies.contains(destroyer.id)) {
+    // Enenmies
+    selfDestruct();
+    playSound(destroySound);
+    game.add(
+      ParticleComponent(
+        Particle.generate(
+          count: 50,
+          generator: (i) => AcceleratedParticle(
+            position: Vector2(
+              x.toDouble() * cellSize.toDouble() + cellSize / 2,
+              y.toDouble() * cellSize.toDouble() + cellSize / 2,
+            ),
+            acceleration: randomVector2() * cellSize.toDouble() / 1.2,
+            speed: randomVector2() * cellSize.toDouble() * 5,
+            child: SpriteParticle(
+              sprite: Sprite(Flame.images.fromCache("enemy_particles.png")),
+              size: Vector2.all(cellSize / 10),
+              lifespan: game.delay * 2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
@@ -191,82 +261,12 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
 
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
-  var side = toSide(dir ?? 0, movingTo.rot);
-
-  if (movingTo.id != "trash" &&
-      movingTo.id != "musical" &&
-      movingTo.id != "wormhole" &&
-      movingTo.id != "mech_trash" &&
-      movingTo.id != "silent_trash" &&
-      movingTo.id != "semi_trash") {
-    if (movingTo.id == "enemy" ||
-        (movingTo.id == "semi_enemy" && side % 2 == 1)) {
-      //grid.addBroken(moving, nx, ny);
-      playSound(destroySound);
-      grid.set(nx, ny, Cell(nx, ny));
-      game.add(
-        ParticleComponent(
-          Particle.generate(
-            count: 50,
-            generator: (i) => AcceleratedParticle(
-              position: Vector2(
-                nx.toDouble() * cellSize.toDouble(),
-                ny.toDouble() * cellSize.toDouble(),
-              ),
-              acceleration: randomVector2() * cellSize.toDouble() / 1.2,
-              speed: randomVector2() * cellSize.toDouble() * 5,
-              child: SpriteParticle(
-                sprite: Sprite(Flame.images.fromCache("enemy_particles.png")),
-                size: Vector2.all(cellSize / 10),
-                lifespan: game.delay * 2,
-              ),
-            ),
-          ),
-        ),
-      );
-    } else {
-      grid.set(nx, ny, moving);
-    }
+  if (moveInsideOf(movingTo, nx, ny, dir!) && movingTo.id != "empty") {
+    handleInside(nx, ny, dir, moving);
   } else {
-    if (movingTo.id == "trash") {
-      grid.addBroken(moving, nx, ny);
-    } else if (movingTo.id == "semi_trash") {
-      if (side % 2 == 0) {
-        grid.set(nx, ny, moving);
-      } else {
-        grid.addBroken(moving, nx, ny);
-      }
-    } else if (movingTo.id == "silent_trash") {
-      grid.addBroken(moving, nx, ny, "silent");
-    } else if (movingTo.id == "mech_trash") {
-      grid.addBroken(moving, nx, ny);
-      MechanicalManager.spread(nx + 1, ny, 0);
-      MechanicalManager.spread(nx - 1, ny, 2);
-      MechanicalManager.spread(nx, ny + 1, 1);
-      MechanicalManager.spread(nx, ny - 1, 3);
-    } else if (movingTo.id == "wormhole") {
-      if (grid.wrap) {
-        final dx = grid.width - nx - 1;
-        final dy = grid.height - ny - 1;
-
-        if ((dx == nx && dy == ny) || (ox == nx && oy == ny)) return;
-
-        final digging = grid.at(dx, dy);
-        if (digging.id == "wormhole") return;
-        if (dir != null) push(dx, dy, dir, 9999999999999);
-        // If not empty attempt destruction
-        if (grid.at(dx, dy).id != "empty") {
-          moveCell(dx, dy, dx, dy);
-          grid.addBroken(moving, nx, ny);
-        }
-        if (grid.at(dx, dy).id == "empty") {
-          grid.set(dx, dy, moving);
-        }
-      } else if (!grid.wrap) {
-        grid.addBroken(moving, nx, ny);
-      }
-    }
+    grid.set(nx, ny, moving);
   }
+
   if (ox != nx || oy != ny) {
     grid.set(ox, oy, Cell(ox, oy));
   }
@@ -322,6 +322,7 @@ final withBias = [
 final noForce = [];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
+  dir %= 4;
   if (cell.id == "weight") {
     return -1;
   }
@@ -333,7 +334,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
         //drawPower(cell);
         return 1;
       } else if (cell.rot == odir) {
-        cell.updated = true;
+        //cell.updated = true;
         //drawPower(cell);
         return -1;
       }
@@ -347,7 +348,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
       cell.updated = true;
       return 1;
     } else if (cell.rot == odir) {
-      cell.updated = true;
+      //cell.updated = true;
       return -1;
     }
     if (cell.id == "bird") {
@@ -360,7 +361,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
       cell.updated = true;
       return 2;
     } else if (cell.rot == odir) {
-      cell.updated = true;
+      //cell.updated = true;
       return -2;
     }
   }
@@ -371,7 +372,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
         cell.updated = true;
         return 1;
       } else if (cell.rot == odir) {
-        cell.updated = true;
+        //cell.updated = true;
         return -1;
       }
     }
@@ -407,8 +408,8 @@ int addedForce(Cell cell, int dir, MoveType mt) {
 // }
 
 bool push(int x, int y, int dir, int force,
-    [MoveType mt = MoveType.push, int depth = 0, Cell? lastCell]) {
-  lastCell ??= Cell(x, y);
+    {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell}) {
+  replaceCell ??= Cell(x, y);
   if ((dir % 2 == 0 && depth > grid.width) ||
       (dir % 2 == 1 && depth > grid.height)) {
     return false;
@@ -430,24 +431,33 @@ bool push(int x, int y, int dir, int force,
 
   var c = grid.at(ox, oy);
   var addedRot = 0;
-  if (lastCell.id == "mobile_trash") {
+  if (replaceCell.id == "mobile_trash") {
     if (c.id != "empty") {
       grid.addBroken(c, ox, oy);
     }
+    grid.set(ox, oy, replaceCell);
     return true;
   }
-  if (moveInsideOf(c, ox, oy, dir)) return force > 0;
+
+  if (c.id == "empty") {
+    grid.set(ox, oy, replaceCell);
+  }
+  if (moveInsideOf(c, ox, oy, dir)) {
+    handleInside(ox, oy, dir, replaceCell);
+    return force > 0;
+  }
   if (!grid.inside(x, y)) return false;
   if (canMove(ox, oy, dir, force, mt)) {
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
-    final mightMove = push(x, y, dir, force, mt, depth + 1, c);
+    final mightMove =
+        push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
     if (mightMove) {
       if (mt == MoveType.sync && c.id == "sync") {
         c.tags.add("sync move");
       }
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
-      moveCell(ox, oy, x, y, dir);
+      grid.set(ox, oy, replaceCell);
     }
     return mightMove;
   } else {
@@ -492,7 +502,7 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     return false;
   }
 
-  return push(ox, oy, dir, oforce + 1, mt);
+  return push(ox, oy, dir, oforce + 1, mt: mt);
 }
 
 bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
@@ -512,39 +522,41 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     return false;
   }
 
-  // Check if movable
-  var depth = 1;
-  final depthLimit = 9999;
-  var cx = x;
-  var cy = y;
+  var cx = ox + frontX(0, dir);
+  var cy = oy + frontY(0, dir);
+  var depth = 0;
+
   while (true) {
-    if (depth >= depthLimit) return false;
-    cx += (dir % 2 == 0 ? (dir - 1) : 0);
-    cy += (dir % 2 == 1 ? (dir - 2) : 0);
+    depth++;
+    if (depth == 9999) return false;
+    cx -= frontX(0, dir);
+    cy -= frontY(0, dir);
     if (!grid.inside(cx, cy)) break;
-    final c = grid.at(cx, cy);
-    if (moveInsideOf(c, cx, cy, dir)) break;
-    force += addedForce(c, dir, mt);
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir)) break;
+    force += addedForce(grid.at(cx, cy), dir, mt);
     if (force <= 0) return false;
-    if (!canMove(cx, cy, force, dir, mt)) {
+    if (canMove(cx, cy, dir, force, mt)) {
+      //moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
+    } else {
       break;
     }
-    depth++;
   }
 
-  // Movement time
-  cx = ox - (dir % 2 == 0 ? (dir - 1) : 0);
-  cy = oy - (dir % 2 == 1 ? (dir - 2) : 0);
-  var lastCX = cx;
-  var lastCY = cy;
-  while (depth > 0) {
-    depth--; // I T E R A T I O N
-    lastCX = cx;
-    lastCY = cy;
-    cx += (dir % 2 == 0 ? (dir - 1) : 0);
-    cy += (dir % 2 == 1 ? (dir - 2) : 0);
-    if (grid.inside(cx, cy)) {
-      moveCell(cx, cy, lastCX, lastCY, dir);
+  cx = ox + frontX(0, dir);
+  cy = oy + frontY(0, dir);
+  depth = 0;
+
+  while (true) {
+    depth++;
+    if (depth == 9999) break;
+    cx -= frontX(0, dir);
+    cy -= frontY(0, dir);
+    if (!grid.inside(cx, cy)) break;
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir)) break;
+    force += addedForce(grid.at(cx, cy), dir, mt);
+    if (force <= 0) return false;
+    if (canMove(cx, cy, dir, force, mt)) {
+      moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
     } else {
       break;
     }

@@ -1,5 +1,6 @@
 library layout;
 
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -17,6 +18,7 @@ import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'tools/tools.dart';
 export 'other/other.dart';
 import '../logic/logic.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'game_ui.dart';
 part 'game_audio.dart';
