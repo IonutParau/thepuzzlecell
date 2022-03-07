@@ -102,6 +102,40 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           home: FlameSplashScreen(
             controller: _splashController,
+            theme: FlameSplashTheme(
+                backgroundDecoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+                logoBuilder: (ctx) {
+                  return Scaffold(
+                    backgroundColor: Colors.black,
+                    body: Center(
+                      child: Column(
+                        children: [
+                          Spacer(),
+                          SizedBox(
+                            width: 20.w,
+                            height: 20.w,
+                            child: Image.asset('assets/images/logo.png'),
+                          ),
+                          Text(
+                            'The Puzzle Cell',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                          Text(
+                            'by A Monitor#1595',
+                            style: TextStyle(
+                              fontSize: 5.sp,
+                            ),
+                          ),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
             onFinish: (ctx) {
               if (!splashScreenOver) {
                 splashScreenOver = true;
@@ -112,59 +146,6 @@ class _MyAppState extends State<MyApp> {
                 //playOnLoop(floatMusic, storage.getDouble('music_volume')!);
                 Navigator.of(ctx).pushNamed('/main');
               }
-            },
-            theme: FlameSplashTheme.dark,
-            showBefore: (ctx) {
-              return Scaffold(
-                backgroundColor: Colors.black,
-                body: Center(
-                  child: Column(
-                    children: [
-                      Spacer(),
-                      SizedBox(
-                        width: 20.w,
-                        height: 20.w,
-                        child: Image.asset('assets/images/logo.png'),
-                      ),
-                      Text(
-                        'The Puzzle Cell',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                      Text(
-                        'by A Monitor#1595',
-                        style: TextStyle(
-                          fontSize: 5.sp,
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                ),
-              );
-            },
-            showAfter: (ctx) {
-              return Scaffold(
-                backgroundColor: Colors.black,
-                body: Center(
-                  child: Column(
-                    children: [
-                      Spacer(),
-                      FlutterLogo(
-                        size: 20.w,
-                      ),
-                      Text(
-                        'Made with Flutter',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                ),
-              );
             },
           ),
           routes: {
