@@ -70,3 +70,15 @@ void playOnLoop(Player sound, double volume) {
   sound.setVolume(volume);
   sound.play();
 }
+
+void setLoopSoundVolume(Player sound, double volume) {
+  if (volume == 0) {
+    sound.stop();
+  } else {
+    if (sound.playback.isPlaying) {
+      sound.setVolume(volume);
+    } else {
+      playOnLoop(sound, volume);
+    }
+  }
+}

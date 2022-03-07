@@ -162,6 +162,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                             hoverColor: Colors.blue,
                           ),
                         ),
+                        // Padding(
+                        //   padding: buttonPadding,
+                        //   child: MaterialButton(
+                        //     child: Text('Texture Packs', style: buttonStyle),
+                        //     onPressed: () =>
+                        //         Navigator.of(context).pushNamed('/texturepack'),
+                        //     hoverColor: Colors.blue,
+                        //   ),
+                        // ),
                         Padding(
                           padding: buttonPadding,
                           child: MaterialButton(

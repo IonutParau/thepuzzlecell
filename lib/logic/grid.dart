@@ -459,6 +459,7 @@ class Grid {
     final subticks = [
       if (cells.contains("stopper")) stoppers,
       if (cells.containsAny(CellTypeManager.mechanical)) mechs,
+      if (cells.contains("hungry_trash")) hungryTrashes,
       if (cells.contains("releaser")) releasers,
       if (cells.containsAny(CellTypeManager.mirrors)) mirrors,
       if (cells.containsAny(CellTypeManager.generators)) gens,

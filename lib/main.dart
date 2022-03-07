@@ -24,6 +24,8 @@ void main() async {
 
   initSound();
 
+  //fixDefault();
+
   storage = await SharedPreferences.getInstance();
 
   if (storage.getDouble('ui_scale') == null) {
@@ -103,7 +105,11 @@ class _MyAppState extends State<MyApp> {
             onFinish: (ctx) {
               if (!splashScreenOver) {
                 splashScreenOver = true;
-                playOnLoop(floatMusic, storage.getDouble('music_volume')!);
+                setLoopSoundVolume(
+                  floatMusic,
+                  storage.getDouble('music_volume')!,
+                );
+                //playOnLoop(floatMusic, storage.getDouble('music_volume')!);
                 Navigator.of(ctx).pushNamed('/main');
               }
             },
@@ -171,6 +177,7 @@ class _MyAppState extends State<MyApp> {
             '/version': (ctx) => VersionPage(),
             '/credits': (ctx) => CreditsPage(),
             '/multiplayer': (ctx) => MultiplayerPage(),
+            '/texturepack': (ctx) => TexturePack(),
           },
         );
       },

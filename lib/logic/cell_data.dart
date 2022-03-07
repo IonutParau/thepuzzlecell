@@ -119,6 +119,9 @@ final cells = [
   "fast_puller",
   "auto_flag",
   "anchor",
+  "physical_trash",
+  "physical_enemy",
+  "hungry_trash",
 ];
 
 Map<String, String> textureMap = {
@@ -215,6 +218,9 @@ Map<String, String> textureMap = {
   'slow_puller.png': 'movers/pullers/slow_puller.png',
   'auto_flag.png': 'puzzle/auto_flag.png',
   'anchor.png': 'unique/anchor.png',
+  'physical_trash.png': 'destroyers/physical_trash.png',
+  'physical_enemy.png': 'destroyers/physical_enemy.png',
+  'hungry_trash.png': 'destroyers/hungry_trash.png',
 };
 
 class CellProfile {
@@ -422,6 +428,9 @@ final categories = [
           "silent_trash",
           "semi_trash",
           "mobile_trash",
+          "hungry_trash",
+          "physical_trash",
+          "physical_enemy",
         ],
         "trash",
       ),
@@ -556,7 +565,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "karl": CellProfile(
     "Karl",
-    "Hello, I am Karl, I avoid stuff and eat walls. SEND HELP PLEASE I AM TRAPPED HERE",
+    "It will try to avoid any cells it sees unless if it is a wall, as it is chemosynthetic and thus eats rocks. It can also self-replicate",
   ),
   "darty": CellProfile(
     "Darty",
@@ -926,5 +935,17 @@ final cellInfo = <String, CellProfile>{
   "anchor": CellProfile(
     "Anchor",
     "When rotated, will rotate the structure touching it. Anchored rotators also stop rotating mid-execution to avoid bugs",
+  ),
+  "hungry_trash": CellProfile(
+    "Hungry Trash",
+    "Will go for cells around it to eat. Can eat anything. It splits for each axis it has to move. If there is food on opposite sides it cancels itself out",
+  ),
+  "physical_trash": CellProfile(
+    "Physical Trash",
+    "If something moves into it by pushing, it will push on the opposite side.",
+  ),
+  "physical_enemy": CellProfile(
+    "Physical Enemy",
+    "Enemy variant of physical trash",
   ),
 };

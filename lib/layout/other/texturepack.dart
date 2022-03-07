@@ -2,13 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 final texturePackDir = Directory('texture_packs');
+
+String winp(String p) {
+  if (Platform.isWindows) {
+    return p.replaceAll("/", r"\");
+  }
+  return p;
+}
 
 void fixDefault() {
   if (texturePackDir.existsSync() == false) texturePackDir.createSync();
 
-  final defaultPackDir = Directory('texture_packs/Default');
+  final defaultPackDir = Directory(winp('texture_packs/Default'));
 
   if (defaultPackDir.existsSync() == false) {
     defaultPackDir.createSync();
@@ -19,7 +27,7 @@ void fixDefault() {
     "description": "The default textures",
   };
 
-  final assetDir = Directory('data/flutter_assets/assets/images');
+  final assetDir = Directory(winp('/data/flutter_assets/assets/images'));
 
   final textures = assetDir.listSync(recursive: true);
 
@@ -30,7 +38,7 @@ void fixDefault() {
         'texture_packs/Default',
       );
       texture.copySync(
-        f,
+        winp(f),
       );
       final sf = f.replaceAll('textures_packs/Default/', '');
       compiledMap[sf] = sf;
@@ -57,10 +65,57 @@ void loadTexturePack(String folder) {
   pack.forEach(
     (k, v) {
       if (v != "title" && v != "description") {
-        File('texture_packs/$folder/$k').copySync(
-          'data/flutter_assets/assets/images/$v',
+        File(winp('texture_packs/$folder/$k')).copySync(
+          winp('data/flutter_assets/assets/images/$v'),
         );
       }
     },
   );
+}
+
+class TexturePack extends StatelessWidget {
+  const TexturePack({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final items = Directory('texture_packs').listSync();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Texture packs'),
+      ),
+      body: ListView(
+        children: [
+          for (var i in items)
+            if (i is Directory)
+              ListTile(
+                title: Text(
+                  jsonDecode(
+                    File(winp(i.path + '/pack.json')).readAsStringSync(),
+                  )["title"],
+                ),
+                subtitle: Text(
+                  jsonDecode(
+                    File(winp(i.path + '/pack.json')).readAsStringSync(),
+                  )["description"],
+                ),
+                leading: SizedBox(
+                  width: 10.w,
+                  height: 10.w,
+                  child: Image.file(
+                    File(
+                      winp('${i.path}/icon.png'),
+                    ),
+                    fit: BoxFit.fill,
+                    width: 10.w,
+                    height: 10.w,
+                  ),
+                ),
+                onTap: () {
+                  loadTexturePack(i.path.split('/').last);
+                },
+              ),
+        ],
+      ),
+    );
+  }
 }

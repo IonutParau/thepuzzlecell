@@ -241,7 +241,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 .then(
                                   (b) => setState(
                                     () {
-                                      floatMusic.setVolume(v);
+                                      setLoopSoundVolume(
+                                        floatMusic,
+                                        storage.getDouble('music_volume')!,
+                                      );
                                     },
                                   ),
                                 );

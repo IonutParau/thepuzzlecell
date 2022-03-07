@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
+import 'package:uuid/uuid.dart';
 import 'tools/tools.dart';
 export 'other/other.dart';
 import '../logic/logic.dart';

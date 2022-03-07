@@ -39,12 +39,20 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
             children: [
               IconButton(
                 tooltip: "Connect",
-                icon: Icon(Icons.connect_without_contact, color: Colors.blue),
+                icon: Icon(
+                  Icons.connect_without_contact,
+                  color: Colors.blue,
+                  size: 1.w,
+                ),
                 onPressed: () => connectMultiplayer(context, ip),
               ),
               IconButton(
                 tooltip: "Delete",
-                icon: Icon(Icons.delete, color: Colors.red),
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 1.w,
+                ),
                 onPressed: () => storage
                     .setStringList(
                       "servers",
@@ -121,52 +129,78 @@ class _AddServerState extends State<AddServer> {
             child: Column(
               children: [
                 Spacer(flex: 2),
-                Row(
-                  children: [
-                    Text(
-                      "Title: ",
-                      style: TextStyle(
-                        fontSize: 5.sp,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(5.w),
+                  ),
+                  child: SizedBox(
+                    width: 60.w,
+                    height: 30.h,
+                    child: Padding(
+                      padding: EdgeInsets.all(5.w),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Title: ",
+                                style: TextStyle(
+                                  fontSize: 5.sp,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30.w,
+                                child: TextField(
+                                  controller: titleController,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Spacer(),
+                          Row(
+                            children: [
+                              Text(
+                                "IP / Address: ",
+                                style: TextStyle(
+                                  fontSize: 5.sp,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30.w,
+                                child: TextField(
+                                  controller: ipController,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      width: 30.w,
-                      child: TextField(
-                        controller: titleController,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                Spacer(),
-                Row(
-                  children: [
-                    Text(
-                      "IP / Address: ",
-                      style: TextStyle(
-                        fontSize: 5.sp,
+                Padding(
+                  padding: EdgeInsets.all(8.h),
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      MaterialButton(
+                        color: Colors.blue,
+                        child: Text("Add"),
+                        onPressed: () async {
+                          await storage.setStringList(
+                            "servers",
+                            storage.getStringList("servers")!
+                              ..add(
+                                "${titleController.text};${ipController.text}",
+                              ),
+                          );
+                          Navigator.pop(context);
+                        },
                       ),
-                    ),
-                    SizedBox(
-                      width: 30.w,
-                      child: TextField(
-                        controller: ipController,
-                      ),
-                    ),
-                  ],
-                ),
-                MaterialButton(
-                  color: Colors.blue,
-                  child: Text("Add"),
-                  onPressed: () async {
-                    await storage.setStringList(
-                      "servers",
-                      storage.getStringList("servers")!
-                        ..add(
-                          "${titleController.text};${ipController.text}",
-                        ),
-                    );
-                    Navigator.pop(context);
-                  },
+                      Spacer(),
+                    ],
+                  ),
                 ),
                 Spacer(flex: 2),
               ],

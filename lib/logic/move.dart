@@ -11,6 +11,7 @@ enum MoveType {
   sync,
   sticky_push,
   sticky_pull,
+  unkown_move,
 }
 
 int toSide(int dir, int rot) {
@@ -107,6 +108,9 @@ final justMoveInsideOf = [
   "wormhole",
   "mech_trash",
   "silent_trash",
+  "physical_enemy",
+  "physical_trash",
+  "hungry_trash",
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir) {
@@ -161,11 +165,34 @@ Vector2 randomVector2() {
   return (Vector2.random() - Vector2.all(0.5)) * 2;
 }
 
-final trashes = ["trash", "semi_trash", "trashcan", "silent_trash"];
+final trashes = [
+  "trash",
+  "semi_trash",
+  "trashcan",
+  "silent_trash",
+  "physical_trash",
+  "hungry_trash",
+];
 
-final enemies = ["enemy", "semi_enemy", "silent_enemy"];
+final enemies = [
+  "enemy",
+  "semi_enemy",
+  "silent_enemy",
+  "physical_enemy",
+];
 
-void handleInside(int x, int y, int dir, Cell moving) {
+String enemyColor(Cell destroyer) {
+  if (destroyer.id == "physical_enemy") return "physical_enemy_particles";
+
+  return "enemy_particles";
+}
+
+T debug<T>(T value) {
+  print(value);
+  return value;
+}
+
+void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
   void selfDestruct() {
     grid.set(x, y, Cell(x, y));
   }
@@ -192,7 +219,9 @@ void handleInside(int x, int y, int dir, Cell moving) {
 
   if (trashes.contains(destroyer.id)) {
     // Trashes
-    if (destroyer.id == "trash" || destroyer.id == "semi_trash") {
+    if (destroyer.id == "trash" ||
+        destroyer.id == "semi_trash" ||
+        destroyer.id == "hungry_trash") {
       grid.addBroken(moving, x, y);
     } else if (destroyer.id == "silent_trash") {
       grid.addBroken(moving, x, y, "silent");
@@ -202,6 +231,11 @@ void handleInside(int x, int y, int dir, Cell moving) {
       MechanicalManager.spread(x - 1, y, 2);
       MechanicalManager.spread(x, y + 1, 1);
       MechanicalManager.spread(x, y - 1, 3);
+    } else if (destroyer.id == "physical_trash") {
+      grid.addBroken(moving, x, y);
+      if (mt == MoveType.push) {
+        push(frontX(x, dir), frontY(y, dir), dir, 1);
+      }
     }
   } else if (enemies.contains(destroyer.id)) {
     // Enenmies
@@ -219,7 +253,11 @@ void handleInside(int x, int y, int dir, Cell moving) {
             acceleration: randomVector2() * cellSize.toDouble() / 1.2,
             speed: randomVector2() * cellSize.toDouble() * 5,
             child: SpriteParticle(
-              sprite: Sprite(Flame.images.fromCache("enemy_particles.png")),
+              sprite: Sprite(
+                Flame.images.fromCache(
+                  "${enemyColor(destroyer)}.png",
+                ),
+              ),
               size: Vector2.all(cellSize / 10),
               lifespan: game.delay * 2,
             ),
@@ -227,10 +265,14 @@ void handleInside(int x, int y, int dir, Cell moving) {
         ),
       ),
     );
+    if (destroyer.id == "physical_enemy" && mt == MoveType.push) {
+      push(frontX(x, dir), frontY(y, dir), dir, 1);
+    }
   }
 }
 
-void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
+void moveCell(int ox, int oy, int nx, int ny,
+    [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (dir == null) {
@@ -262,7 +304,7 @@ void moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving]) {
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
   if (moveInsideOf(movingTo, nx, ny, dir!) && movingTo.id != "empty") {
-    handleInside(nx, ny, dir, moving);
+    handleInside(nx, ny, dir, moving, mt);
   } else {
     grid.set(nx, ny, moving);
   }
@@ -443,7 +485,7 @@ bool push(int x, int y, int dir, int force,
     grid.set(ox, oy, replaceCell);
   }
   if (moveInsideOf(c, ox, oy, dir)) {
-    handleInside(ox, oy, dir, replaceCell);
+    handleInside(ox, oy, dir, replaceCell, mt);
     return force > 0;
   }
   if (!grid.inside(x, y)) return false;
@@ -556,7 +598,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     force += addedForce(grid.at(cx, cy), dir, mt);
     if (force <= 0) return false;
     if (canMove(cx, cy, dir, force, mt)) {
-      moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
+      moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir, null, mt);
     } else {
       break;
     }
