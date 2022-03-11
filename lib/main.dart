@@ -151,8 +151,14 @@ class _MyAppState extends State<MyApp> {
           routes: {
             '/main': (ctx) => MainScreen(),
             '/editor': (ctx) => Editor(),
-            '/game': (ctx) => GameUI(),
-            '/game-loaded': (ctx) => GameUI(editorType: EditorType.loaded),
+            '/game': (ctx) {
+              game = PuzzleGame();
+              return Container(child: GameUI());
+            },
+            '/game-loaded': (ctx) {
+              game = PuzzleGame();
+              return Container(child: GameUI(editorType: EditorType.loaded));
+            },
             '/puzzles': (ctx) => Puzzles(),
             '/settings': (ctx) => SettingsPage(),
             '/version': (ctx) => VersionPage(),

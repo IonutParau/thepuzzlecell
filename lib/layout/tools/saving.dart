@@ -507,13 +507,13 @@ class MysticCodes {
   }
 
   static void SetCell(int c, int i, Grid grid) {
+    final y = grid.width - (i ~/ grid.width) - 1;
+
     if (c % 2 == 1) {
-      grid.setPlace(i % grid.width, i ~/ grid.width, "place");
+      grid.setPlace(i % grid.width, y, "place");
     }
 
     if (c >= 72) return;
-
-    final y = grid.width - (i ~/ grid.width) - 1;
 
     grid.set(
       i % grid.width,

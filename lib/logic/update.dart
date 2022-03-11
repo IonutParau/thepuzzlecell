@@ -768,7 +768,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
             ..rot = o.rot);
     }
   } else if (o.id == "flag") {
-    if (!cells.contains("enemy")) {
+    if (!cells.containsAny(enemies)) {
       puzzleWin = true;
       game.itime = game.delay;
     }
@@ -2147,7 +2147,7 @@ void bringers() {
 
 void autoflag() {
   if (grid.cells.contains("auto_flag")) {
-    if ((!grid.cells.contains("enemy") && !grid.cells.contains("semi_enemy")) &&
+    if ((!grid.cells.containsAny(enemies)) &&
         !grid.cells.contains("key") &&
         !grid.cells.contains("lock")) {
       puzzleWin = true;
@@ -2181,6 +2181,15 @@ class CellStructure {
   }
 }
 
+int dirFromOff(int ox, int oy) {
+  if (ox > 0) return 0;
+  if (ox < 0) return 2;
+  if (oy > 0) return 1;
+  if (oy < 0) return 3;
+
+  return -1;
+}
+
 void doAnchor(int x, int y, int amount) {
   amount %= 4;
   final structure = CellStructure()..build(x, y);
@@ -2194,6 +2203,10 @@ void doAnchor(int x, int y, int amount) {
     final nv = Vector2.all(0);
     final dx = v.x.toInt() - x;
     final dy = v.y.toInt() - y;
+    // if (!canMove(nv.x.toInt(), nv.y.toInt(), (dirFromOff(dx, dy) + amount) % 4,
+    //     1, MoveType.unkown_move)) {
+    //   return;
+    // }
     if (amount == 1) {
       nv.x = x - dy.toDouble();
       nv.y = y + dx.toDouble();

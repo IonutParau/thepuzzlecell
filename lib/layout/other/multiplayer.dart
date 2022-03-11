@@ -18,7 +18,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     final ip = server.split(";")[1];
 
     return Container(
-      padding: EdgeInsets.all(5.w),
+      padding: EdgeInsets.all(1.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.w),
       ),
@@ -124,7 +124,7 @@ class _AddServerState extends State<AddServer> {
       body: Center(
         child: Container(
           width: 80.w,
-          height: 60.w,
+          height: 80.h,
           child: Center(
             child: Column(
               children: [
@@ -132,13 +132,13 @@ class _AddServerState extends State<AddServer> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(5.w),
+                    borderRadius: BorderRadius.circular(2.w),
                   ),
                   child: SizedBox(
                     width: 60.w,
                     height: 30.h,
                     child: Padding(
-                      padding: EdgeInsets.all(5.w),
+                      padding: EdgeInsets.all(1.w),
                       child: Column(
                         children: [
                           Row(

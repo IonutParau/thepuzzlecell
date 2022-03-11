@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion =
-    '1.2 Codename Multiplayer Update (hopefully you have frenz)';
+String currentVersion = '1.2.3 Codename Multiplayer Update QuickFix 3';
 
 List<String> changes = [
-  "Added Multiplayer",
-  "Added Anchor",
-  "Added Editor Menu",
-  "Added Clearing",
+  "QuickFix 1: Fixed physical enemies not being stopped by stoppers",
+  "QuickFix 1: Fixed all the types of flags",
+  "QuickFix 1: Added a Load New Puzzle button in puzzle mode multiplayer",
+  "QuickFix 1: Fixed a duplication bug in multiplayer",
+  "QuickFix 1: Nerfed mobile trash cell",
+  "QuickFix 1: Nerfed anchor cell",
+  "QuickFix 2: Added version checking support",
+  "QuickFix 2: Removed anchor cell nerfed, it made them not work",
+  "QuickFix 2: Patched a lot of other stuff",
+  "QuickFix 3: Fixed some broken cells",
+  "QuickFix 3: Switched to a new particle system that is less buggy",
+  "QuickFix 3: Made anchors ungearable",
 ];
 
 String getTrailing(String change) {
@@ -22,6 +29,8 @@ String getTrailing(String change) {
     return '>';
   } else if (change.startsWith('added')) {
     return '+';
+  } else if (change.startsWith('quickfix')) {
+    return 'QF';
   }
 
   return '-';

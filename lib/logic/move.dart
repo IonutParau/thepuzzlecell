@@ -39,37 +39,8 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
     final side = toSide(dir, rot);
 
     switch (id) {
-      case "sticky":
-        // Oh god
-        if (mt == MoveType.push && (!cell.tags.contains("sticked"))) {
-          cell.tags.add("sticked");
-          final ix1 = frontX(x, cell.rot - 1);
-          final iy1 = frontY(y, cell.rot - 1);
-          final ix2 = frontX(x, cell.rot + 1);
-          final iy2 = frontY(y, cell.rot + 1);
-          bool successful = true;
-          if (!canMoveAll(ix1, iy1, dir, force, mt)) {
-            successful = false;
-          }
-          if (!canMoveAll(ix2, iy2, dir, force, mt)) {
-            successful = false;
-          }
-          if (successful) {
-            if (grid.inside(ix1, iy1) &&
-                !grid.at(ix1, iy1).tags.contains("sticked")) {
-              push(ix1, iy1, dir, force, mt: mt);
-            }
-            if (grid.inside(ix2, iy2) &&
-                !grid.at(ix2, iy2).tags.contains("sticked")) {
-              push(ix2, iy2, dir, force, mt: mt);
-            }
-            cell.tags.remove("sticked");
-            return true;
-          }
-          cell.tags.remove("sticked");
-          return false;
-        }
-        return true;
+      case "anchor":
+        return mt != MoveType.gear;
       case "onedir":
         return side == 2;
       case "twodir":
@@ -115,7 +86,7 @@ final justMoveInsideOf = [
 
 bool moveInsideOf(Cell into, int x, int y, int dir) {
   dir %= 4;
-  if (into.id == "enemy" && into.updated) return false;
+  if (enemies.contains(into.id) && into.updated) return false;
   if (justMoveInsideOf.contains(into.id)) return true;
 
   final side = toSide(dir, into.rot);
@@ -172,6 +143,7 @@ final trashes = [
   "silent_trash",
   "physical_trash",
   "hungry_trash",
+  "mech_trash",
 ];
 
 final enemies = [
@@ -191,6 +163,8 @@ T debug<T>(T value) {
   print(value);
   return value;
 }
+
+final int enemyParticleCounts = 50;
 
 void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
   void selfDestruct() {
@@ -241,32 +215,11 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     // Enenmies
     selfDestruct();
     playSound(destroySound);
-    game.add(
-      ParticleComponent(
-        Particle.generate(
-          count: 50,
-          generator: (i) => AcceleratedParticle(
-            position: Vector2(
-              x.toDouble() * cellSize.toDouble() + cellSize / 2,
-              y.toDouble() * cellSize.toDouble() + cellSize / 2,
-            ),
-            acceleration: randomVector2() * cellSize.toDouble() / 1.2,
-            speed: randomVector2() * cellSize.toDouble() * 5,
-            child: SpriteParticle(
-              sprite: Sprite(
-                Flame.images.fromCache(
-                  "${enemyColor(destroyer)}.png",
-                ),
-              ),
-              size: Vector2.all(cellSize / 10),
-              lifespan: game.delay * 2,
-            ),
-          ),
-        ),
-      ),
-    );
-    if (destroyer.id == "physical_enemy" && mt == MoveType.push) {
-      push(frontX(x, dir), frontY(y, dir), dir, 1);
+    if (destroyer.id == "physical_enemy") {
+      if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
+      game.blueparticles.emit(enemyParticleCounts, x, y);
+    } else {
+      game.redparticles.emit(enemyParticleCounts, x, y);
     }
   }
 }
@@ -473,13 +426,6 @@ bool push(int x, int y, int dir, int force,
 
   var c = grid.at(ox, oy);
   var addedRot = 0;
-  if (replaceCell.id == "mobile_trash") {
-    if (c.id != "empty") {
-      grid.addBroken(c, ox, oy);
-    }
-    grid.set(ox, oy, replaceCell);
-    return true;
-  }
 
   if (c.id == "empty") {
     grid.set(ox, oy, replaceCell);
@@ -490,6 +436,13 @@ bool push(int x, int y, int dir, int force,
   }
   if (!grid.inside(x, y)) return false;
   if (canMove(ox, oy, dir, force, mt)) {
+    if (replaceCell.id == "mobile_trash") {
+      if (c.id != "empty") {
+        grid.addBroken(c, ox, oy);
+      }
+      grid.set(ox, oy, replaceCell);
+      return true;
+    }
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
     final mightMove =

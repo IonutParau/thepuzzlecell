@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/services.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
@@ -108,13 +109,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           child: MaterialButton(
                             child: Text('Load Level', style: buttonStyle),
                             onPressed: () {
-                              FlutterClipboard.paste().then(
+                              FlutterClipboard.controlV().then(
                                 (clipboard) {
                                   try {
-                                    grid = loadStr(clipboard);
-                                    puzzleIndex = null;
-                                    Navigator.of(context)
-                                        .pushNamed('/game-loaded');
+                                    if (clipboard is ClipboardData) {
+                                      game = PuzzleGame();
+                                      grid = loadStr(clipboard.text!);
+                                      puzzleIndex = null;
+                                      Navigator.of(context)
+                                          .pushNamed('/game-loaded');
+                                    } else {
+                                      throw "wtf";
+                                    }
                                   } catch (e) {
                                     showDialog(
                                       context: context,
@@ -122,7 +128,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                         return AlertDialog(
                                           title: Text('Invalid code'),
                                           content: Text(
-                                            "The code you have in your clipboard is not valid code or can not pe properly loaded. Please try again after getting a proper level code",
+                                            "The code you have in your clipboard is not valid code or can not pe properly loaded. Please try again after getting a proper level code\n$e",
                                           ),
                                         );
                                       },

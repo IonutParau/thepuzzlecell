@@ -20,7 +20,7 @@ num abs(num n) => n < 0 ? -n : n;
 
 class GameUI extends StatefulWidget {
   final EditorType editorType;
-  String? ip;
+  final String? ip;
 
   GameUI({Key? key, this.editorType = EditorType.making, this.ip})
       : super(key: key);
@@ -171,7 +171,7 @@ class _GameUIState extends State<GameUI> {
                           Row(
                             children: [
                               Text(
-                                "Music Volume: ${floatMusic.general.volume * 100 ~/ 1}% ",
+                                "Music Volume: ${floatMusic.playback.isPlaying ? (floatMusic.general.volume * 100 ~/ 1) : 0}% ",
                                 style: TextStyle(
                                   fontSize: 12.sp,
                                 ),
@@ -183,7 +183,9 @@ class _GameUIState extends State<GameUI> {
                                   thumbColor: Colors.grey[900],
                                   activeColor: Colors.black,
                                   inactiveColor: Colors.black,
-                                  value: floatMusic.general.volume,
+                                  value: floatMusic.playback.isPlaying
+                                      ? floatMusic.general.volume.toDouble()
+                                      : 0.0,
                                   min: 0,
                                   max: 1,
                                   onChanged: (newVal) {
@@ -705,6 +707,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var setPos = false;
   var dragPos = false;
 
+  // Particles
+  final redparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.red[800]);
+  final blueparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.blue[800]);
+  final greenparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.green);
+  final yellowparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.yellow);
+
   void dispose() {
     if (isMultiplayer) {
       multiplayerListener.cancel(); // Memory management
@@ -802,6 +810,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     storedOffX = (storedOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
     storedOffY = (storedOffY - canvasSize.y / 2) * scale + canvasSize.y / 2;
+
+    // for (var child in this.children) {
+    //   if (child is ParticleComponent) {
+    //     child.particle = child.particle.scaled(scale);
+    //     // child.particle = child.particle.translated(
+    //     //   Vector2(
+    //     //     10,
+    //     //     0,
+    //     //   ),
+    //     // );
+    //   }
+    // }
   }
 
   void onPointerMove(PointerMoveEvent event) {
@@ -826,10 +846,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           grid.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
           grid.grid[int.parse(args[0])][int.parse(args[1])].rot =
               int.parse(args[3]);
+          grid.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
         } else {
           initial.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
           initial.grid[int.parse(args[0])][int.parse(args[1])].rot =
               int.parse(args[3]);
+          initial.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
         }
       } else if (cmd == "bg") {
         if (isinitial) {
@@ -889,6 +911,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         hovers[args.first]!.y = double.parse(args[2]);
       } else if (cmd == "drop-hover") {
         hovers.remove(args.first);
+        if (args.first == clientID) {
+          currentSelection = 0;
+          currentRotation = 0;
+        }
       } else if (cmd == "set-cursor") {
         if (cursors[args.first] == null) {
           cursors[args.first] = Vector2(
@@ -951,6 +977,66 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       ),
     );
 
+    if (isMultiplayer && edType == EditorType.loaded) {
+      buttonManager.setButton(
+        "m-load-btn",
+        VirtualButton(
+          Vector2(
+            20,
+            80,
+          ),
+          Vector2.all(40),
+          "interface/load.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            try {
+              FlutterClipboard.controlV().then(
+                (str) {
+                  if (str is ClipboardData) {
+                    grid = loadStr(str.text ?? "");
+                    initial = grid.copy;
+                    isinitial = true;
+                    running = false;
+                    buttonManager.buttons['play-btn']?.texture = 'mover.png';
+                    buttonManager.buttons['play-btn']?.rotation = 0;
+                    buttonManager.buttons['wrap-btn']?.title =
+                        grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+
+                    sendToServer('setinit ${P2.encodeGrid(grid)}');
+
+                    hovers.forEach(
+                      (key, value) {
+                        sendToServer('drop-hover $key');
+                      },
+                    );
+                  }
+                },
+              );
+            } catch (e) {
+              print(e);
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text(
+                      'Invalid save code',
+                    ),
+                    content: Text(
+                      'You are trying to load a corrupted, invalid or unsupported level code.',
+                    ),
+                  );
+                },
+              );
+            }
+          },
+          () => isinitial,
+          title: 'Load New Puzzle',
+          description:
+              'Load a new puzzle to play, please do not abuse this mechanic!',
+        ),
+      );
+    }
+
     buttonManager.setButton(
       "save-btn",
       VirtualButton(
@@ -962,7 +1048,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          FlutterClipboard.controlC(P2.encodeGrid(grid));
+          FlutterClipboard.copy(P2.encodeGrid(grid));
         },
         () => true,
         title: 'Save to clipboard',
@@ -1405,6 +1491,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   @override
   Future<void>? onLoad() async {
+    Flame.images.load('base.png');
+
     // Handle multiplayer
     if (isMultiplayer) {
       channel = WebSocketChannel.connect(Uri.parse(ip!));
@@ -1413,8 +1501,37 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       multiplayerListener = channel.stream.listen(
         multiplayerCallback,
-        onDone: () => Navigator.of(context).pop(),
+        onDone: () {
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text('You have been kicked'),
+                content: Text(
+                  'You have been kicked from the game. This means your connection timed out or the server closed.',
+                ),
+              );
+            },
+          );
+        },
+        onError: (e) {
+          Navigator.of(context).pop();
+          showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text('An error has occured'),
+                content: Text(
+                  'An error has occured in the game. Error: $e',
+                ),
+              );
+            },
+          );
+        },
       );
+
+      sendToServer('version ${currentVersion.split(' ').first}');
 
       Flame.images.load('cursor.png');
 
@@ -1462,7 +1579,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.translate(offX, offY);
 
     var sx = floor((-offX - cellSize) / cellSize);
-    var sy = floor((8.h - offY - cellSize) / cellSize);
+    var sy = floor((-offY - cellSize) / cellSize);
     var ex = ceil((canvasSize.x - offX) / cellSize);
     var ey = ceil((canvasSize.y - offY) / cellSize);
 
@@ -1584,6 +1701,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         Paint()..color = (Colors.grey[300]!.withOpacity(0.4)),
       );
     }
+
+    redparticles.render(canvas);
+    blueparticles.render(canvas);
+    greenparticles.render(canvas);
+    yellowparticles.render(canvas);
+
     //grid.forEach(renderCell);
 
     canvas.restore();
@@ -1636,7 +1759,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           cellSize.toDouble(),
         ),
       );
-      if (grid.placeable(x, y) != "empty") {
+      if (grid.placeable(x, y) != "empty" &&
+          backgrounds.contains(grid.placeable(x, y))) {
         Sprite(Flame.images
                 .fromCache('backgrounds/${grid.placeable(x, y)}.png'))
             .render(
@@ -1653,6 +1777,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void renderCell(Cell cell, num x, num y, [Paint? paint]) {
     if (cell.id == "empty") return;
+    var file = cell.id;
+
+    var ignoreSafety = false;
+
+    if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
+      file = 'pixel_on';
+      ignoreSafety = true;
+    }
+    if (!ignoreSafety && !cells.contains(file)) {
+      file = "base";
+    }
+
+    var sprite = spriteCache['$file.png'];
+    if (sprite == null) {
+      sprite = Sprite(
+        Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'),
+      );
+      spriteCache['$file.png'] = sprite;
+    }
     final rot = (running || onetick
             ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay)
             : cell.rot) *
@@ -1687,17 +1830,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         center;
 
     canvas.rotate(rot);
-    var file = cell.id;
-
-    if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
-      file = 'pixel_on';
-    }
-    var sprite = spriteCache['$file.png'];
-    if (sprite == null) {
-      sprite = Sprite(
-          Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'));
-      spriteCache['$file.png'] = sprite;
-    }
     sprite
       ..paint = paint ?? Paint()
       ..render(
@@ -1715,6 +1847,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   void update(double dt) {
     updates++;
+    redparticles.update(dt);
+    blueparticles.update(dt);
+    greenparticles.update(dt);
+    yellowparticles.update(dt);
     buttonManager.forEach(
       (key, button) {
         button.time += dt;
@@ -1859,11 +1995,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..rot = rot
           ..lastvars.lastRot = rot,
       );
-      sendToServer("place $cx $cy ${cells[id]} $rot");
       if (cells[id] == "empty" &&
           backgrounds.contains(cells[currentSelection])) {
         grid.setPlace(cx, cy, "empty");
         sendToServer("bg $cx $cy empty");
+      } else {
+        sendToServer("place $cx $cy ${cells[id]} $rot");
       }
     } else if (edType == EditorType.loaded) {
       if (grid.placeable(cx, cy) == "rotatable") {
@@ -2266,5 +2403,85 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
+  }
+}
+
+class EnemyParticle {
+  Offset off;
+  late final Offset dir;
+  double lifetime = 0;
+  double speed;
+  double size;
+
+  EnemyParticle(this.off, this.speed, this.size) {
+    dir = Offset.fromDirection(Random().nextDouble() * 2 * pi);
+  }
+
+  void update(double dt) {
+    off += dir * speed * dt;
+    lifetime += dt;
+  }
+}
+
+class ParticleSystem {
+  final particles = <EnemyParticle>[];
+
+  final double size;
+  final double minsize;
+  final double minspeed;
+  final double speed;
+  final double lifespan;
+  final Color? color;
+
+  ParticleSystem(
+    this.speed,
+    this.minspeed,
+    this.size,
+    this.minsize,
+    this.lifespan,
+    this.color,
+  );
+
+  void update(double dt) {
+    particles.forEach(
+      (particle) {
+        particle.update(dt);
+      },
+    );
+
+    particles.removeWhere((p) => p.lifetime >= lifespan);
+  }
+
+  void render(Canvas canvas) {
+    particles.forEach(
+      (particle) {
+        final s = Size.square(particle.size);
+        canvas.drawRect(
+            (particle.off * cellSize - (s * cellSize / 2).toOffset()) &
+                (s * cellSize),
+            Paint()
+              ..color = (color!.withOpacity(
+                (lifespan - particle.lifetime) / lifespan,
+              )));
+      },
+    );
+  }
+
+  void emit(int amount, int x, int y) {
+    for (var i = 0; i < amount; i++) {
+      particles.add(
+        EnemyParticle(
+          Offset(x.toDouble() + 0.5, y.toDouble() + 0.5),
+          Random().nextDouble() * (speed - minspeed) + minspeed,
+          Random().nextDouble() * (size - minsize) + minsize,
+        ),
+      );
+    }
+  }
+}
+
+extension on Size {
+  Offset toOffset() {
+    return Offset(width, height);
   }
 }
