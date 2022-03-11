@@ -24,7 +24,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  msix: ^2.8.13
 
 flutter:
   uses-material-design: true
@@ -55,12 +54,3 @@ flutter:
     - assets/puzzles/easy/
     - assets/puzzles/medium/
     - assets/puzzles/hard/
-
-# MSIX build shit
-msix_config:
-  display_name: The Puzzle Cell
-  publisher_display_name: A Monitor#1595
-  identity_name: Me.ParauIonut.ThePuzzleCell
-  msix_version: 1.0.0.0
-  logo_path: D:\Workplace\Dart\Flutter\the_puzzle_cell\assets\images\logo.png
-  capabilities: "internetClient"
