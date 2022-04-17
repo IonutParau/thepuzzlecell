@@ -12,6 +12,7 @@ enum MoveType {
   sticky_push,
   sticky_pull,
   unkown_move,
+  transform,
 }
 
 int toSide(int dir, int rot) {
@@ -39,6 +40,30 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
     final side = toSide(dir, rot);
 
     switch (id) {
+      case "pushable":
+        return mt == MoveType.push;
+      case "pullable":
+        return mt == MoveType.pull;
+      case "grabbable":
+        return mt == MoveType.grab;
+      case "swappable":
+        return mt == MoveType.mirror;
+      case "transformable":
+        return mt == MoveType.transform;
+      case "generatable":
+        return false;
+      case "propuzzle":
+        return mt == MoveType.puzzle;
+      case "untransformable":
+        return mt != MoveType.transform;
+      case "unpushable":
+        return mt != MoveType.push;
+      case "unpullable":
+        return mt != MoveType.pull;
+      case "ungrabbable":
+        return mt != MoveType.grab;
+      case "unswappable":
+        return mt != MoveType.mirror;
       case "anchor":
         return mt != MoveType.gear;
       case "onedir":
@@ -82,22 +107,42 @@ final justMoveInsideOf = [
   "physical_enemy",
   "physical_trash",
   "hungry_trash",
+  "time_trash",
+  "time_reset",
 ];
 
-bool moveInsideOf(Cell into, int x, int y, int dir) {
+bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
   dir %= 4;
-  if (enemies.contains(into.id) && into.updated) return false;
+  if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
   if (justMoveInsideOf.contains(into.id)) return true;
 
   final side = toSide(dir, into.rot);
 
-  if (into.id == "semi_enemy" && !into.updated) {
+  if (into.id == "semi_enemy" && !into.tags.contains("stopped")) {
     return side % 2 == 1;
   }
 
-  if (into.id == "semi_trash" && !into.updated) {
+  if (into.id == "semi_trash") {
     return side % 2 == 1;
   }
+
+  if (into.id == "push_trash") {
+    return mt == MoveType.push;
+  }
+  if (into.id == "pull_trash") {
+    return mt == MoveType.pull;
+  }
+  if (into.id == "grab_trash") {
+    return mt == MoveType.grab;
+  }
+  if (into.id == "swap_trash") {
+    return mt == MoveType.mirror;
+  }
+  if (into.id == "puzzle_trash") {
+    return mt == MoveType.puzzle;
+  }
+
+  if (trashes.contains(into.id) && !into.tags.contains("stopped")) return true;
 
   return false;
 }
@@ -109,7 +154,7 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
     if (depth > depthLimit) return false;
     depth++;
     if (canMove(x, y, dir, force, mt)) {
-      if (moveInsideOf(grid.at(x, y), x, y, dir)) {
+      if (moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
         return true;
       }
 
@@ -132,6 +177,42 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
   return false;
 }
 
+// bool stickyNudge(int x, int y, int dir) {
+//   final fx = frontX(x, dir);
+//   final fy = frontY(y, dir);
+
+//   final c = grid.at(x, y);
+
+//   final bx = frontX(x, dir + 2);
+//   final by = frontY(y, dir + 2);
+
+//   if (!grid.inside(fx, fy)) return false; // Cant move in nonexistant location
+
+//   final f = grid.at(fx, fy);
+
+//   if (f.id == "sticky" || moveInsideOf(f, fx, fy, dir)) {
+//     if (f.id == "empty") {
+//       grid.set(fx, fy, c);
+//     } else if (f.id == "sticky") {
+//       if (stickyNudge(fx, fy, dir)) {
+//         grid.set(fx, fy, c);
+//         return true;
+//       }
+//       return false;
+//     } else {
+//       handleInside(fx, fy, dir, c, MoveType.unkown_move);
+//     }
+//     grid.set(x, y, Cell(x, y));
+//     return true;
+//   }
+
+//   return false;
+// }
+
+void whenMoved(Cell c, int x, int y, int dir, MoveType mt) {
+  if (c.id == "sticky") {}
+}
+
 Vector2 randomVector2() {
   return (Vector2.random() - Vector2.all(0.5)) * 2;
 }
@@ -144,6 +225,15 @@ final trashes = [
   "physical_trash",
   "hungry_trash",
   "mech_trash",
+  "time_trash",
+  "time_reset",
+  "push_trash",
+  "pull_trash",
+  "grab_trash",
+  "swap_trash",
+  "gen_trash",
+  "transform_trash",
+  "puzzle_trash",
 ];
 
 final enemies = [
@@ -173,7 +263,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
 
   final destroyer = grid.at(x, y);
 
-  if (!moveInsideOf(destroyer, x, y, dir)) return;
+  if (!moveInsideOf(destroyer, x, y, dir, mt)) return;
 
   if (destroyer.id == "wormhole") {
     if (grid.wrap) {
@@ -193,12 +283,14 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
 
   if (trashes.contains(destroyer.id)) {
     // Trashes
-    if (destroyer.id == "trash" ||
-        destroyer.id == "semi_trash" ||
-        destroyer.id == "hungry_trash") {
-      grid.addBroken(moving, x, y);
-    } else if (destroyer.id == "silent_trash") {
+    if (destroyer.id == "silent_trash") {
       grid.addBroken(moving, x, y, "silent");
+    } else if (destroyer.id == "time_trash") {
+      mustTimeTravel = true;
+      destroyer.data = cellToData(moving);
+      destroyer.data['time_travelled'] = true;
+    } else if (destroyer.id == "time_reset") {
+      mustTimeTravel = true;
     } else if (destroyer.id == "mech_trash") {
       grid.addBroken(moving, x, y);
       MechanicalManager.spread(x + 1, y, 0);
@@ -210,6 +302,8 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       if (mt == MoveType.push) {
         push(frontX(x, dir), frontY(y, dir), dir, 1);
       }
+    } else {
+      grid.addBroken(moving, x, y);
     }
   } else if (enemies.contains(destroyer.id)) {
     // Enenmies
@@ -224,7 +318,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
   }
 }
 
-void moveCell(int ox, int oy, int nx, int ny,
+bool moveCell(int ox, int oy, int nx, int ny,
     [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
@@ -256,7 +350,7 @@ void moveCell(int ox, int oy, int nx, int ny,
 
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
-  if (moveInsideOf(movingTo, nx, ny, dir!) && movingTo.id != "empty") {
+  if (moveInsideOf(movingTo, nx, ny, dir!, mt) && movingTo.id != "empty") {
     handleInside(nx, ny, dir, moving, mt);
   } else {
     grid.set(nx, ny, moving);
@@ -266,6 +360,7 @@ void moveCell(int ox, int oy, int nx, int ny,
     grid.set(ox, oy, Cell(ox, oy));
   }
   //grid.grid[nx][ny].lastvars = grid.grid[ox][oy].lastvars.toVector2().toOffset();
+  return true;
 }
 
 bool wouldWrap(int x, int y) {
@@ -312,6 +407,11 @@ final withBias = [
   "darty",
   "axis",
   "bringer",
+  "collector",
+  "thief",
+  "rocket",
+  "rocket_cw",
+  "rocket_ccw",
 ];
 
 final noForce = [];
@@ -403,34 +503,54 @@ int addedForce(Cell cell, int dir, MoveType mt) {
 // }
 
 bool push(int x, int y, int dir, int force,
-    {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell}) {
+    {MoveType mt = MoveType.push,
+    int depth = 0,
+    Cell? replaceCell,
+    bool shifted = false}) {
   replaceCell ??= Cell(x, y);
+  if (!grid.inside(x, y)) return false;
+  if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
+    final nc = nextCell(x, y, dir);
+    if (nc.broken) {
+      return false;
+    } else {
+      replaceCell.rot = (replaceCell.rot + nc.addedrot) % 4;
+      return push(
+        nc.x,
+        nc.y,
+        nc.dir,
+        force,
+        mt: mt,
+        depth: depth,
+        replaceCell: replaceCell,
+        shifted: true,
+      );
+    }
+  }
   if ((dir % 2 == 0 && depth > grid.width) ||
       (dir % 2 == 1 && depth > grid.height)) {
     return false;
   }
   dir %= 4;
-  if (!grid.inside(x, y)) return false;
   var ox = x;
   var oy = y;
 
-  if (dir == 0) {
-    x++;
-  } else if (dir == 2) {
-    x--;
-  } else if (dir == 1) {
-    y++;
-  } else if (dir == 3) {
-    y--;
-  }
+  // final nc = nextCell(x, y, dir, true);
+  // if (nc.broken) return false;
+  // x = nc.x;
+  // y = nc.y;
+  // dir = nc.dir;
+  var addedRot = 0; //nc.addedrot;
+  x = frontX(x, dir);
+  y = frontY(y, dir);
 
   var c = grid.at(ox, oy);
-  var addedRot = 0;
 
   if (c.id == "empty") {
     grid.set(ox, oy, replaceCell);
+    return true;
   }
-  if (moveInsideOf(c, ox, oy, dir)) {
+  if (moveInsideOf(c, ox, oy, dir, mt)) {
     handleInside(ox, oy, dir, replaceCell, mt);
     return force > 0;
   }
@@ -445,6 +565,8 @@ bool push(int x, int y, int dir, int force,
     }
     force += addedForce(c, dir, mt);
     if (force <= 0) return false;
+    // final cb = grid.at(ox, oy).copy;
+    // grid.set(ox, oy, Cell(ox, oy));
     final mightMove =
         push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
     if (mightMove) {
@@ -453,6 +575,7 @@ bool push(int x, int y, int dir, int force,
       }
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
       grid.set(ox, oy, replaceCell);
+      postmove(c, ox, oy, dir, force, mt);
     }
     return mightMove;
   } else {
@@ -473,18 +596,10 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
       return false;
     }
 
-    if (mt != MoveType.grab) {
-      final nc = walkBentPath(x, y, dir);
-      if (nc.broken) return false;
-      dir = nc.dir;
-      x = nc.x;
-      y = nc.y;
-    }
-
     final c = grid.at(x, y);
 
     if (canMove(x, y, force, dir, mt)) {
-      if (moveInsideOf(c, x, y, dir)) {
+      if (moveInsideOf(c, x, y, dir, mt)) {
         break;
       }
       force += addedForce(c, dir, mt);
@@ -492,18 +607,28 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     }
   }
 
-  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir)) &&
-      !moveInsideOf(grid.at(x, y), x, y, dir)) {
+  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir, mt)) &&
+      !moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
     return false;
   }
 
   return push(ox, oy, dir, oforce + 1, mt: mt);
 }
 
-bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
+bool pull(int x, int y, int dir, int force,
+    [MoveType mt = MoveType.pull, bool shifted = false]) {
   if (!grid.inside(x, y)) return false;
-  if (moveInsideOf(grid.at(x, y), x, y, dir)) return true;
+  if (moveInsideOf(grid.at(x, y), x, y, dir, mt)) return true;
   if (!canMove(x, y, dir, force, mt)) return false;
+
+  if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
+    final nc = nextCell(x, y, (dir + 2) % 4);
+    if (nc.broken) {
+      return false;
+    } else {
+      return pull(nc.x, nc.y, (nc.dir + 2) % 4, force, mt, true);
+    }
+  }
 
   final ox = x;
   final oy = y;
@@ -513,12 +638,13 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
 
   if (!grid.inside(fx, fy)) return false;
 
-  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir)) {
+  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir, mt)) {
     return false;
   }
 
   var cx = ox + frontX(0, dir);
   var cy = oy + frontY(0, dir);
+  var odir = dir;
   var depth = 0;
 
   while (true) {
@@ -527,12 +653,21 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
     cx -= frontX(0, dir);
     cy -= frontY(0, dir);
     if (!grid.inside(cx, cy)) break;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir)) break;
+    final nc = nextCell(cx, cy, (dir + 2) % 4);
+    if (nc.broken) break;
+    cx = nc.x;
+    cy = nc.y;
+    dir = (nc.dir + 2) % 4;
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
     force += addedForce(grid.at(cx, cy), dir, mt);
     if (force <= 0) return false;
+    final lastrot = grid.at(cx, cy).rot;
+    grid.at(cx, cy).rot -= nc.addedrot;
+    grid.at(cx, cy).rot %= 4;
     if (canMove(cx, cy, dir, force, mt)) {
       //moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
     } else {
+      grid.at(cx, cy).rot = lastrot;
       break;
     }
   }
@@ -540,17 +675,25 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull]) {
   cx = ox + frontX(0, dir);
   cy = oy + frontY(0, dir);
   depth = 0;
+  dir = odir;
 
   while (true) {
     depth++;
     if (depth == 9999) break;
     cx -= frontX(0, dir);
     cy -= frontY(0, dir);
+    final nc = nextCell(cx, cy, (dir + 2) % 4);
+    if (nc.broken) break;
+    cx = nc.x;
+    cy = nc.y;
+    dir = (nc.dir + 2) % 4;
+    final addedrot = nc.addedrot;
     if (!grid.inside(cx, cy)) break;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir)) break;
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
     force += addedForce(grid.at(cx, cy), dir, mt);
     if (force <= 0) return false;
     if (canMove(cx, cy, dir, force, mt)) {
+      grid.at(cx, cy).rot = (grid.at(cx, cy).rot - addedrot) % 4;
       moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir, null, mt);
     } else {
       break;
@@ -587,37 +730,67 @@ void doSpeedPuller(int x, int y, int dir, int force, int speed) {
   }
 }
 
-class BentPath {
+class NextCell {
   int x;
   int y;
+  bool broken;
   int dir;
-  int addedRot;
-  bool broken; // Broken means the path is useless
+  int addedrot;
 
-  BentPath(this.x, this.y, this.dir, this.addedRot, this.broken);
+  NextCell(this.x, this.y, this.dir, this.addedrot, this.broken);
 }
 
-BentPath walkBentPath(int x, int y, int dir,
-    [int addedRot = 0, int depth = 0]) {
-  if (depth == 9999 || !grid.inside(x, y))
-    return BentPath(x, y, dir, addedRot, true);
+NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
+  var addedrot = 0;
+  var depth = 0;
 
-  final c = grid.at(x, y);
-  final side = toSide(dir, c.rot);
-  depth++;
-
-  if (c.id == "curve") {
-    if (side == 0) {
-      addedRot += 3;
-      dir = (dir + 1) % 4;
-    } else if (side == 3) {
-      addedRot++;
-      dir = (dir + 3) % 4;
-    }
+  if (skipFirst) {
     x = frontX(x, dir);
     y = frontY(y, dir);
-    return walkBentPath(x, y, dir, addedRot, depth);
-  } else {
-    return BentPath(x, y, dir, addedRot, false);
+  }
+
+  while (true) {
+    depth++;
+    bool completed = true;
+    if (depth > 9000 || !grid.inside(x, y)) {
+      return NextCell(0, 0, 0, 0, true);
+    }
+    final c = grid.at(x, y);
+
+    final side = toSide(dir, c.rot);
+    if (CellTypeManager.curves.contains(c.id)) {
+      if (c.id == "curve") {
+        if (side == 0) {
+          dir = (dir + 1) % 4;
+          addedrot++;
+          completed = false;
+        } else if (side == 3) {
+          dir = (dir + 3) % 4;
+          addedrot += 3;
+          completed = false;
+        }
+      }
+    }
+    if (completed) return NextCell(x, y, dir, addedrot, false);
+    x = frontX(x, dir);
+    y = frontY(y, dir);
+  }
+}
+
+void premove(Cell cell, int x, int y, int dir, MoveType mt) {}
+
+void postmove(Cell cell, int x, int y, int dir, int force, MoveType mt) {
+  if (cell.id == "push_glue") {
+    final lx = frontX(x, dir - 1);
+    final ly = frontY(y, dir - 1);
+    final rx = frontX(x, dir + 1);
+    final ry = frontY(y, dir + 1);
+
+    cell.tags.add("push_glued");
+
+    if (safeAt(lx, ly)?.tags.contains("push_glued") == false)
+      push(lx, ly, dir, force);
+    if (safeAt(rx, ry)?.tags.contains("push_glued") == false)
+      push(rx, ry, dir, force);
   }
 }

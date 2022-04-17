@@ -11,15 +11,18 @@ environment:
 dependencies:
   clipboard: any
   cupertino_icons: ^1.0.2
-  dart_vlc: any
+  kplayer: any
   flame: any
-  flame_splash_screen: ^0.1.0
+  flame_splash_screen: any
+  fluent_ui: any
   flutter:
     sdk: flutter
+  font_awesome_flutter: any
+  path: any
   shared_preferences: any
   sizer: any
-  uuid: ^3.0.6
-  web_socket_channel: ^2.1.0
+  uuid: any
+  web_socket_channel: any
 
 dev_dependencies:
   flutter_test:
@@ -28,17 +31,27 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/
     - assets/images/
+    - assets/images/mechanical/
+    - assets/images/skins/
     - assets/images/unique/
     - assets/images/movers/
     - assets/images/movers/combos/
     - assets/images/movers/movers/
     - assets/images/movers/pullers/
+    - assets/images/movers/drillers/
+    - assets/images/movers/grabbers/
+    - assets/images/movers/speeds/
     - assets/images/backgrounds/
     - assets/images/movers/mirrors/
     - assets/images/rotators/
     - assets/images/push/
+    - assets/images/push/restricted/
+    - assets/images/push/restricted/Only/
     - assets/images/destroyers/
+    - assets/images/destroyers/trash/
+    - assets/images/destroyers/enemy/
     - assets/images/recreators/
     - assets/images/recreators/supgens/
     - assets/images/recreators/generators/
@@ -49,8 +62,9 @@ flutter:
     - assets/images/curves/
     - assets/images/puzzle/
     - assets/images/interface/
+    - assets/images/quantum/
+    - assets/images/effects/
+    - assets/images/heat/
+    - assets/images/unique/time_travel/
     - assets/audio/
-    - assets/puzzles/
-    - assets/puzzles/easy/
-    - assets/puzzles/medium/
-    - assets/puzzles/hard/
+    - languages/

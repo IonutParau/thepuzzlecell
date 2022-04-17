@@ -1,8 +1,9 @@
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart';
-import '../../logic/logic.dart' show storage;
+import 'package:flutter/material.dart' hide Colors;
+import 'package:fluent_ui/fluent_ui.dart' show Colors, TextBox;
+import '../../logic/logic.dart' show Grid, grid, lang, storage;
 
 class MultiplayerPage extends StatefulWidget {
   const MultiplayerPage({Key? key}) : super(key: key);
@@ -18,54 +19,53 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     final ip = server.split(";")[1];
 
     return Container(
-      padding: EdgeInsets.all(1.w),
+      padding: EdgeInsets.all(0.5.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.w),
       ),
       width: 10.w,
       child: ListTile(
         minLeadingWidth: 10.w,
-        tileColor: Colors.grey[700],
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 7.sp,
-          ),
-        ),
-        leading: SizedBox(
-          width: 10.w,
-          height: 15.h,
-          child: Row(
-            children: [
-              IconButton(
-                tooltip: "Connect",
-                icon: Icon(
-                  Icons.connect_without_contact,
-                  color: Colors.blue,
-                  size: 1.w,
-                ),
-                onPressed: () => connectMultiplayer(context, ip),
+        tileColor: Colors.grey[130],
+        title: Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 7.sp,
               ),
-              IconButton(
-                tooltip: "Delete",
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                  size: 1.w,
+            ),
+            Spacer(),
+            MaterialButton(
+              child: Text(
+                lang("connect", "Connect"),
+                style: TextStyle(
+                  fontSize: 7.sp,
                 ),
-                onPressed: () => storage
-                    .setStringList(
-                      "servers",
-                      storage.getStringList("servers")!..remove(server),
-                    )
-                    .then(
-                      (v) => setState(
-                        () {},
-                      ),
+              ),
+              onPressed: () => connectMultiplayer(context, ip),
+              color: Colors.blue,
+            ),
+            MaterialButton(
+              child: Text(
+                lang("remove", "Remove"),
+                style: TextStyle(
+                  fontSize: 7.sp,
+                ),
+              ),
+              onPressed: () => storage
+                  .setStringList(
+                    "servers",
+                    storage.getStringList("servers")!..remove(server),
+                  )
+                  .then(
+                    (v) => setState(
+                      () {},
                     ),
-              ),
-            ],
-          ),
+                  ),
+              color: Colors.red,
+            ),
+          ],
         ),
       ),
     );
@@ -75,7 +75,20 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Multiplayer Servers'),
+        title: Row(
+          children: [
+            Spacer(),
+            Text(
+              lang('multiplayer_servers', 'Multiplayer Servers'),
+              style: TextStyle(
+                fontSize: 12.sp,
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
+        backgroundColor: Colors.grey[100],
+        automaticallyImplyLeading: false,
       ),
       body: ListView.builder(
         itemCount: storage.getStringList("servers")!.length,
@@ -84,7 +97,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add, color: Colors.white),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 12.sp,
+        ),
         backgroundColor: Colors.blue,
         onPressed: () {
           Navigator.of(context)
@@ -119,7 +136,7 @@ class _AddServerState extends State<AddServer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add a server"),
+        title: Text(lang("add_server", "Add a server")),
       ),
       body: Center(
         child: Container(
@@ -131,52 +148,54 @@ class _AddServerState extends State<AddServer> {
                 Spacer(flex: 2),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[900],
+                    color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(2.w),
                   ),
-                  child: SizedBox(
-                    width: 60.w,
-                    height: 30.h,
-                    child: Padding(
-                      padding: EdgeInsets.all(1.w),
-                      child: Column(
+                  width: 60.w,
+                  height: 30.h,
+                  padding: EdgeInsets.all(1.w),
+                  child: Column(
+                    children: [
+                      Spacer(flex: 5),
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Title: ",
-                                style: TextStyle(
-                                  fontSize: 5.sp,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 30.w,
-                                child: TextField(
-                                  controller: titleController,
-                                ),
-                              ),
-                            ],
+                          Spacer(),
+                          Text(
+                            "${lang('title_box', 'Title')}: ",
+                            style: TextStyle(
+                              fontSize: 5.sp,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 30.w,
+                            child: TextBox(
+                              controller: titleController,
+                            ),
                           ),
                           Spacer(),
-                          Row(
-                            children: [
-                              Text(
-                                "IP / Address: ",
-                                style: TextStyle(
-                                  fontSize: 5.sp,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 30.w,
-                                child: TextField(
-                                  controller: ipController,
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
-                    ),
+                      Spacer(),
+                      Row(
+                        children: [
+                          Spacer(),
+                          Text(
+                            "${lang('ip_address', 'IP / Address')}: ",
+                            style: TextStyle(
+                              fontSize: 5.sp,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 30.w,
+                            child: TextBox(
+                              controller: ipController,
+                            ),
+                          ),
+                          Spacer(),
+                        ],
+                      ),
+                      Spacer(flex: 5),
+                    ],
                   ),
                 ),
                 Padding(
@@ -186,7 +205,7 @@ class _AddServerState extends State<AddServer> {
                       Spacer(),
                       MaterialButton(
                         color: Colors.blue,
-                        child: Text("Add"),
+                        child: Text(lang("add", "Add")),
                         onPressed: () async {
                           await storage.setStringList(
                             "servers",
@@ -214,6 +233,8 @@ class _AddServerState extends State<AddServer> {
 
 void connectMultiplayer(BuildContext context, String ip) {
   if (!ip.contains(r"://")) ip = "ws://$ip";
+
+  grid = Grid(100, 100);
 
   Navigator.of(context).push(
     MaterialPageRoute(

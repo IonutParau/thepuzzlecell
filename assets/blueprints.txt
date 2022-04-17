@@ -1,0 +1,1 @@
+P2;Magnet;A magnet;y;y;empty,anchor,push,rotator_cw;eJwrrNEpqdHJB5OFYDIFzEiBiRfCUD6GbCGKXgD5MRsi;;

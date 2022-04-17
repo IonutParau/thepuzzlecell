@@ -29,7 +29,7 @@ class GameUI extends StatefulWidget {
   _GameUIState createState() => _GameUIState();
 }
 
-class _GameUIState extends State<GameUI> {
+class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
   final scrollController = ScrollController();
 
   int page = 0;
@@ -37,15 +37,23 @@ class _GameUIState extends State<GameUI> {
   final editorMenuWidthController = TextEditingController();
   final editorMenuHeightController = TextEditingController();
 
-  void dispose() {
-    game.dispose();
+  // late final AnimationController _rotcontroller = AnimationController(
+  //   duration: const Duration(seconds: 5),
+  //   vsync: this,
+  // )..repeat();
 
+  void dispose() {
+    //game.dispose();
+    timeGrid = null;
+    // _rotcontroller.stop();
+    // _rotcontroller.dispose();
     scrollController.dispose();
     editorMenuWidthController.dispose();
     editorMenuHeightController.dispose();
 
     if (game.isMultiplayer) {
       game.channel.sink.close();
+      game.multiplayerListener.cancel(); // Memory management
     }
 
     super.dispose();
@@ -63,24 +71,24 @@ class _GameUIState extends State<GameUI> {
     editorMenuWidthController.text = "${grid.width}";
     editorMenuHeightController.text = "${grid.height}";
 
-    editorMenuWidthController.addListener(
-      () {
-        print(editorMenuWidthController.text);
-        // game.overlays.remove('EditorMenu');
-        // game.overlays.add('EditorMenu');
-      },
-    );
-    editorMenuHeightController.addListener(
-      () {
-        // game.overlays.remove('EditorMenu');
-        // game.overlays.add('EditorMenu');
-      },
-    );
+    // editorMenuWidthController.addListener(
+    //   () {
+    //     print(editorMenuWidthController.text);
+    //     // game.overlays.remove('EditorMenu');
+    //     // game.overlays.add('EditorMenu');
+    //   },
+    // );
+    // editorMenuHeightController.addListener(
+    //   () {
+    //     // game.overlays.remove('EditorMenu');
+    //     // game.overlays.add('EditorMenu');
+    //   },
+    // );
 
     super.initState();
   }
 
-  void nextPuzzle() {
+  void nextPuzzle() async {
     if (puzzleIndex != null) {
       puzzleIndex = puzzleIndex! + 1;
       if (puzzleIndex! >= puzzles.length) {
@@ -89,12 +97,25 @@ class _GameUIState extends State<GameUI> {
         return;
       }
       game.running = false;
-      game = PuzzleGame();
+      // game = PuzzleGame();
+      // game.edType = EditorType.loaded;
+      // game.context = context;
       loadPuzzle(puzzleIndex!);
-      Navigator.of(context).pop();
-      Navigator.of(context).pushNamed('/game-loaded');
+      puzzleWin = false;
+      final mouseX = game.mouseX;
+      final mouseY = game.mouseY;
+      setState(() {
+        game.edType = EditorType.loaded;
+        game.mouseX = mouseX;
+        game.mouseY = mouseY;
+        game.context = context;
+      });
+      //Navigator.of(context).pop();
+      //Navigator.of(context).pushNamed('/game-loaded');
     }
   }
+
+  var borderMode = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +135,26 @@ class _GameUIState extends State<GameUI> {
             onPointerUp: game.onPointerUp,
             onPointerSignal: (PointerSignalEvent event) {
               if (event is PointerScrollEvent) {
-                if (event.scrollDelta.dy < 0) {
-                  game.zoomin();
-                } else if (event.scrollDelta.dy > 0) {
-                  game.zoomout();
+                if (keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {
+                  if (keys[LogicalKeyboardKey.altLeft.keyLabel] == true) {
+                    if (event.scrollDelta.dy < 0) {
+                      game.increaseTemp();
+                    } else if (event.scrollDelta.dy > 0) {
+                      game.decreaseTemp();
+                    }
+                  } else {
+                    if (event.scrollDelta.dy < 0) {
+                      game.increaseBrush();
+                    } else if (event.scrollDelta.dy > 0) {
+                      game.decreaseBrush();
+                    }
+                  }
+                } else {
+                  if (event.scrollDelta.dy < 0) {
+                    game.zoomin();
+                  } else if (event.scrollDelta.dy > 0) {
+                    game.zoomout();
+                  }
                 }
               }
             },
@@ -125,6 +162,59 @@ class _GameUIState extends State<GameUI> {
               game: game,
               initialActiveOverlays: [],
               overlayBuilderMap: {
+                'loading': (ctx, _) {
+                  //final rng = Random();
+
+                  return Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: EdgeInsets.all(2.w),
+                          child: Image.asset(
+                            'assets/images/puzzle/puzzle.png',
+                            filterQuality: FilterQuality.none,
+                            width: 10.w,
+                            height: 10.w,
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Column(
+                          children: [
+                            Spacer(flex: 100),
+                            Text(
+                              'Loading...',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                            Text(
+                              'Waiting for the server response',
+                              style: TextStyle(
+                                fontSize: 7.sp,
+                              ),
+                            ),
+                            Spacer(),
+                            Button(
+                              child: Text(
+                                'Click to go back',
+                                style: TextStyle(
+                                  fontSize: 7.sp,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            Spacer(flex: 100),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
                 'EditorMenu': (ctx, _) {
                   void refreshMenu() {
                     game.overlays.remove('EditorMenu');
@@ -142,92 +232,131 @@ class _GameUIState extends State<GameUI> {
                       child: Column(
                         children: [
                           Spacer(),
-                          Row(
-                            children: [
-                              Text(
-                                "Update Delay: ${game.delay}",
-                                style: TextStyle(
-                                  fontSize: 12.sp,
+                          Padding(
+                            padding: EdgeInsets.all(1.w),
+                            child: Row(
+                              children: [
+                                Text(
+                                  lang('update_delay', "Update Delay") +
+                                      ": ${game.delay}",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                  ),
                                 ),
-                              ),
-                              Spacer(),
-                              SizedBox(
-                                width: 40.w,
-                                child: Slider(
-                                  thumbColor: Colors.grey[900],
-                                  activeColor: Colors.black,
-                                  inactiveColor: Colors.black,
-                                  value: game.delay,
-                                  min: 0.01,
-                                  max: 5,
-                                  onChanged: (newVal) {
-                                    game.delay = (newVal * 100 ~/ 1) / 100;
-                                    refreshMenu();
-                                  },
-                                ),
-                              ),
-                            ],
+                                Spacer(),
+                                LayoutBuilder(builder: (context, cons) {
+                                  return Container(
+                                    width: 25.w,
+                                    height: 10.h,
+                                    padding: EdgeInsets.all(2.w),
+                                    child: Slider(
+                                      style: SliderThemeData(
+                                        thumbColor: Colors.black,
+                                        activeColor: Colors.blue,
+                                        inactiveColor: Colors.black,
+                                        disabledActiveColor: Colors.black,
+                                        disabledInactiveColor: Colors.black,
+                                        disabledThumbColor: Colors.black,
+                                        useThumbBall: true,
+                                      ),
+                                      value: game.delay,
+                                      min: 0.01,
+                                      max: 5,
+                                      onChanged: (newVal) {
+                                        game.delay = (newVal * 100 ~/ 1) / 100;
+                                        refreshMenu();
+                                      },
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                "Music Volume: ${floatMusic.playback.isPlaying ? (floatMusic.general.volume * 100 ~/ 1) : 0}% ",
-                                style: TextStyle(
-                                  fontSize: 12.sp,
+                          Padding(
+                            padding: EdgeInsets.all(1.w),
+                            child: Row(
+                              children: [
+                                Text(
+                                  lang('music_volume', 'Music Volume') +
+                                      ": ${flightMusic.playing ? (flightMusic.volume * 100 ~/ 1) : 0}% ",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                  ),
                                 ),
-                              ),
-                              Spacer(),
-                              SizedBox(
-                                width: 30.w,
-                                child: Slider(
-                                  thumbColor: Colors.grey[900],
-                                  activeColor: Colors.black,
-                                  inactiveColor: Colors.black,
-                                  value: floatMusic.playback.isPlaying
-                                      ? floatMusic.general.volume.toDouble()
-                                      : 0.0,
-                                  min: 0,
-                                  max: 1,
-                                  onChanged: (newVal) {
-                                    setLoopSoundVolume(
-                                      floatMusic,
-                                      newVal,
-                                    );
-                                    refreshMenu();
-                                  },
+                                Spacer(),
+                                Container(
+                                  width: 25.w,
+                                  height: 10.h,
+                                  padding: EdgeInsets.all(2.w),
+                                  child: Slider(
+                                    style: SliderThemeData(
+                                      thumbColor: Colors.black,
+                                      activeColor: Colors.blue,
+                                      inactiveColor: Colors.black,
+                                      disabledActiveColor: Colors.black,
+                                      disabledInactiveColor: Colors.black,
+                                      disabledThumbColor: Colors.black,
+                                      useThumbBall: true,
+                                    ),
+                                    value: flightMusic.playing
+                                        ? flightMusic.volume
+                                        : 0.0,
+                                    min: 0,
+                                    max: 1,
+                                    onChanged: (newVal) {
+                                      setLoopSoundVolume(
+                                        flightMusic,
+                                        newVal,
+                                      );
+                                      refreshMenu();
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           Spacer(),
-                          // Row(
-                          //   children: [
-                          //     Spacer(),
-                          //     SizedBox(
-                          //       width: 20.w,
-                          //       height: 10.h,
-                          //       child: TextFormField(
-                          //         controller: editorMenuWidthController,
-                          //         enabled: true,
-                          //       ),
-                          //     ),
-                          //     Text(
-                          //       "x",
-                          //       style: TextStyle(
-                          //         fontSize: 5.sp,
-                          //       ),
-                          //     ),
-                          //     SizedBox(
-                          //       width: 20.w,
-                          //       height: 10.h,
-                          //       child: TextFormField(
-                          //         controller: editorMenuHeightController,
-                          //         enabled: true,
-                          //       ),
-                          //     ),
-                          //     Spacer(),
-                          //   ],
-                          // ),
+                          Padding(
+                            padding: EdgeInsets.all(1.w),
+                            child: Row(
+                              children: [
+                                //Spacer(flex: 2),
+                                Text(
+                                  "Border: ${(cellInfo[borders[borderMode]] ?? defaultProfile).title}",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                  ),
+                                ),
+                                Spacer(),
+                                Container(
+                                  width: 25.w,
+                                  height: 10.h,
+                                  padding: EdgeInsets.all(2.w),
+                                  child: Slider(
+                                    style: SliderThemeData(
+                                      thumbColor: Colors.black,
+                                      activeColor: Colors.blue,
+                                      inactiveColor: Colors.black,
+                                      disabledActiveColor: Colors.black,
+                                      disabledInactiveColor: Colors.black,
+                                      disabledThumbColor: Colors.black,
+                                      useThumbBall: true,
+                                    ),
+                                    value: borderMode.toDouble(),
+                                    min: 0,
+                                    max: borders.length - 1,
+                                    divisions: borders.length - 1,
+                                    onChanged: (newVal) {
+                                      borderMode = newVal.toInt();
+                                      refreshMenu();
+                                    },
+                                  ),
+                                ),
+                                //Spacer(flex: 2),
+                              ],
+                            ),
+                          ),
+                          Spacer(),
                           Row(
                             children: [
                               Spacer(flex: 2),
@@ -238,20 +367,25 @@ class _GameUIState extends State<GameUI> {
                                       showDialog(
                                         context: context,
                                         builder: (ctx) {
-                                          return AlertDialog(
+                                          return ContentDialog(
                                             title: Text("Confirm exit?"),
                                             content: Text(
                                               "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
                                             ),
                                             actions: [
-                                              MaterialButton(
+                                              Button(
                                                 child: Text("Yes"),
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                   Navigator.pop(context);
+                                                  if (worldIndex != null) {
+                                                    worldManager.SaveWorld(
+                                                      worldIndex!,
+                                                    );
+                                                  }
                                                 },
                                               ),
-                                              MaterialButton(
+                                              Button(
                                                 child: Text("No"),
                                                 onPressed: () {
                                                   Navigator.pop(context);
@@ -316,7 +450,7 @@ class _GameUIState extends State<GameUI> {
                                       isAntiAlias: true,
                                       cacheWidth: 10.w.toInt(),
                                       cacheHeight: 10.w.toInt(),
-                                      scale: 20 / 5.w,
+                                      scale: 32 / 5.w,
                                     ),
                                   ),
                                   Text(
@@ -404,8 +538,16 @@ int ceil(num n) => floor(n + 0.999);
 
 Map<String, Sprite> spriteCache = {};
 
-void loadAllButtonTextures() {
-  Flame.images.loadAll([
+Future loadSkinTextures() {
+  return Flame.images.loadAll([
+    "skins/hands.png",
+    "skins/computer.png",
+    "skins/christmas.png",
+  ]);
+}
+
+Future loadAllButtonTextures() {
+  return Flame.images.loadAll([
     "back.png",
     "interface/save.png",
     "interface/load.png",
@@ -420,6 +562,10 @@ void loadAllButtonTextures() {
     "interface/cut.png",
     "interface/del.png",
     "interface/menu.png",
+    "interface/tools.png",
+    "interface/blueprints.png",
+    "interface/increase_brush.png",
+    "interface/decrease_brush.png",
   ]);
 }
 
@@ -608,7 +754,7 @@ void renderInfoBox(Canvas canvas, String title, String description) {
   );
 
   titleTP.layout();
-  final width = max(titleTP.width, 10.w);
+  final width = max(titleTP.width, 20.w);
   descriptionTP.layout(maxWidth: width);
   final height = titleTP.height + descriptionTP.height;
 
@@ -632,7 +778,7 @@ void renderInfoBox(Canvas canvas, String title, String description) {
   );
   canvas.drawRect(
     rect,
-    Paint()..color = Colors.grey[800]!,
+    Paint()..color = Colors.grey[180],
   );
   titleTP.paint(canvas, Offset(off.dx + 10, off.dy + 10));
   descriptionTP.paint(
@@ -708,14 +854,31 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var dragPos = false;
 
   // Particles
-  final redparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.red[800]);
-  final blueparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.blue[800]);
+  final redparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.red);
+  final blueparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.blue);
   final greenparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.green);
   final yellowparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.yellow);
 
-  void dispose() {
-    if (isMultiplayer) {
-      multiplayerListener.cancel(); // Memory management
+  // Brush stuff
+  var brushSize = 0;
+  var brushTemp = 0;
+
+  void increaseBrush() => brushSize++;
+  void decreaseBrush() => brushSize = max(brushSize - 1, 0);
+
+  void increaseTemp() => brushTemp++;
+  void decreaseTemp() => brushTemp--;
+
+  void whenSelected(String newSelection) {
+    if (newSelection.startsWith("blueprint ")) {
+      // Blueprint code
+      loadBlueprint(int.parse(newSelection.split(' ')[1]));
+    } else if (newSelection == "inc_brush") {
+      increaseBrush();
+    } else if (newSelection == "dec_brush") {
+      decreaseBrush();
+    } else {
+      currentSelection = cells.indexOf(newSelection);
     }
   }
 
@@ -730,20 +893,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       showDialog(
         context: context,
         builder: (ctx) {
-          return AlertDialog(
+          return ContentDialog(
             title: Text("Confirm exit?"),
             content: Text(
               "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
             ),
             actions: [
-              MaterialButton(
+              Button(
                 child: Text("Yes"),
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },
               ),
-              MaterialButton(
+              Button(
                 child: Text("No"),
                 onPressed: () {
                   Navigator.pop(context);
@@ -881,6 +1044,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           initial = loadStr(args.first);
         }
       } else if (cmd == "grid") {
+        if (overlays.isActive("loading")) {
+          overlays.remove("loading");
+          AchievementManager.complete("friends");
+          //print("No longer loading");
+        }
         if (isinitial) {
           grid = loadStr(args.first);
           initial = grid.copy;
@@ -890,6 +1058,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           buttonManager.buttons['play-btn']?.rotation = 0;
           buttonManager.buttons['wrap-btn']?.title =
               grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+
+          buildEmpty();
         } else {
           initial = loadStr(args.first);
         }
@@ -1009,6 +1179,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                         sendToServer('drop-hover $key');
                       },
                     );
+
+                    buildEmpty();
                   }
                 },
               );
@@ -1048,7 +1220,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          FlutterClipboard.copy(P2.encodeGrid(grid));
+          FlutterClipboard.copy(P3.encodeGrid(grid));
+          if (worldIndex != null) {
+            worldManager.SaveWorld(worldIndex!);
+          }
         },
         () => true,
         title: 'Save to clipboard',
@@ -1056,11 +1231,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             'Save the simulation as a encoded string into your clipboard',
       ),
     );
-
-    var catOff = 80.0;
-    var catSize = 60.0;
-
-    var cellSize = 40.0;
 
     if (edType == EditorType.making) {
       buttonManager.setButton(
@@ -1236,6 +1406,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
             buttonManager.buttons['paste-btn']?.texture =
                 game.pasting ? 'interface/paste_on.png' : 'interface/paste.png';
+
+            buttonManager.buttons['select-btn']?.texture =
+                "interface/select.png";
           },
           () => gridClip.active,
           title: 'Paste',
@@ -1320,6 +1493,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     if (isMultiplayer) {
                       sendToServer('setinit ${P2.encodeGrid(grid)}');
                     }
+
+                    buildEmpty();
                   }
                 },
               );
@@ -1368,11 +1543,70 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           description: 'When Wrap mode is on, cells will wrap around the grid',
         ),
       );
+
+      var catOff = 80.0;
+      var leftCatOff = 80.0;
+      var catSize = 60.0;
+
+      var cellSize = 40.0;
+
+      if (storage.getBool('mystic') == true) {
+        leftCatOff += 220;
+
+        buttonManager.buttons['play-btn']!.alignment =
+            ButtonAlignment.BOTTOMLEFT;
+
+        buttonManager.buttons['play-btn']!.position = Vector2(10, 50);
+
+        buttonManager.buttons['onetick-btn']!.alignment =
+            ButtonAlignment.BOTTOMLEFT;
+
+        buttonManager.buttons['onetick-btn']!.position = Vector2(60, 50);
+
+        buttonManager.buttons['restore-btn']!.alignment =
+            ButtonAlignment.BOTTOMLEFT;
+
+        buttonManager.buttons['restore-btn']!.position = Vector2(10, 100);
+
+        buttonManager.buttons['setinitial-btn']!.alignment =
+            ButtonAlignment.BOTTOMLEFT;
+
+        buttonManager.buttons['setinitial-btn']!.position = Vector2(60, 100);
+
+        buttonManager.buttons['wrap-btn']!.alignment = ButtonAlignment.TOPLEFT;
+
+        buttonManager.buttons['wrap-btn']!.position = Vector2(10, 90);
+
+        buttonManager.buttons['save-btn']!.alignment = ButtonAlignment.TOPLEFT;
+
+        buttonManager.buttons['save-btn']!.position = Vector2(90, 10);
+
+        buttonManager.buttons['load-btn']!.alignment = ButtonAlignment.TOPLEFT;
+
+        buttonManager.buttons['load-btn']!.position = Vector2(90, 50);
+
+        buttonManager.buttons['rot-cw-btn']!.alignment =
+            ButtonAlignment.BOTTOMRIGHT;
+
+        buttonManager.buttons['rot-cw-btn']!.position = Vector2(10, 100);
+
+        buttonManager.buttons['rot-ccw-btn']!.alignment =
+            ButtonAlignment.BOTTOMRIGHT;
+
+        buttonManager.buttons['rot-ccw-btn']!.position = Vector2(60, 100);
+
+        buttonManager.buttons['select-btn']!.alignment =
+            ButtonAlignment.BOTTOMRIGHT;
+
+        buttonManager.buttons['select-btn']!.position = Vector2(10, 10);
+        buttonManager.buttons['select-btn']!.size = Vector2(80, 80);
+      }
+
       for (var i = 0; i < categories.length; i++) {
         buttonManager.setButton(
           'cat$i',
           VirtualButton(
-            Vector2((catOff - catSize) / 2 + i * catOff, catOff),
+            Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff),
             Vector2(catSize, catSize),
             categories[i].look + '.png',
             ButtonAlignment.BOTTOMLEFT,
@@ -1382,17 +1616,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
               cat.opened = !cat.opened;
 
+              AchievementManager.complete("overload");
+
               for (var j = 0; j < cat.items.length; j++) {
                 buttonManager.buttons['cat${i}cell$j']?.time = 0;
                 buttonManager.buttons['cat${i}cell$j']?.startPos =
-                    (Vector2((catOff - catSize) / 2 + i * catOff, catOff) +
+                    (Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff) +
                             Vector2.all((catSize - cellSize) / 2)) *
                         uiScale;
               }
             },
             () => true,
-            title: categories[i].title,
-            description: categories[i].description,
+            title: lang("${categories[i]}.title", categories[i].title),
+            description: lang(
+                  "${categories[i]}.description",
+                  categories[i].description,
+                ) +
+                (debugMode ? "\nID: ${categories[i]}" : ""),
           ),
         );
         for (var j = 0; j < categories[i].items.length; j++) {
@@ -1401,7 +1641,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             'cat${i}cell$j',
             VirtualButton(
               Vector2(
-                  (catOff - catSize) / 2 +
+                  (leftCatOff - catSize) / 2 +
                       i * catOff +
                       (catSize - cellSize) / 2,
                   catOff + cellSize * (j + 1)),
@@ -1417,6 +1657,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
                   final isOpen = categories[i].items[j].opened;
 
+                  AchievementManager.complete("subcells");
+
                   resetAllCategories(categories[i]);
 
                   categories[i].items[j].opened = isOpen;
@@ -1427,28 +1669,36 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     buttonManager.buttons['cat${i}cell${j}sub$k']?.time = 0;
                     buttonManager.buttons['cat${i}cell${j}sub$k']?.startPos =
                         Vector2(
-                                (catOff - catSize) / 2 +
+                                (leftCatOff - catSize) / 2 +
                                     i * catOff +
                                     (catSize - cellSize) / 2,
                                 catOff + cellSize * (j + 1)) *
                             uiScale;
                   }
                 } else {
-                  game.currentSelection = cells.indexOf(
-                    categories[i].items[j],
-                  );
+                  whenSelected(categories[i].items[j]);
                 }
               },
               () {
                 return categories[i].opened;
               },
               title: isCategory
-                  ? categories[i].items[j].title
-                  : (cellInfo[categories[i].items[j]] ?? defaultProfile).title,
+                  ? lang("${categories[i]}.${categories[i].items[j]}.title",
+                      categories[i].items[j].title)
+                  : lang(
+                      "${categories[i].items[j]}.title",
+                      (cellInfo[categories[i].items[j]] ?? defaultProfile)
+                          .title),
               description: isCategory
-                  ? categories[i].items[j].description
-                  : (cellInfo[categories[i].items[j]] ?? defaultProfile)
-                      .description,
+                  ? categories[i].items[j].description +
+                      (debugMode
+                          ? "\nID: ${categories[i].toString()}.${categories[i].items[j].toString()}"
+                          : "")
+                  : lang(
+                          "${categories[i].toString()}.${categories[i].items[j].toString()}.description",
+                          (cellInfo[categories[i].items[j]] ?? defaultProfile)
+                              .description) +
+                      (debugMode ? "\nID: ${categories[i].items[j]}" : ""),
             )..time = 50,
           );
 
@@ -1457,7 +1707,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (isCategory) {
             final cat = categories[i].items[j] as CellCategory;
             final catPos = Vector2(
-                (catOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2,
+                (leftCatOff - catSize) / 2 +
+                    i * catOff +
+                    (catSize - cellSize) / 2,
                 catOff + cellSize * (j + 1));
             for (var k = 0; k < cat.items.length; k++) {
               final cell = cat.items[k] as String;
@@ -1474,10 +1726,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   Vector2.all(cellSize),
                   "$cell.png",
                   ButtonAlignment.BOTTOMLEFT,
-                  () => game.currentSelection = cells.indexOf(cell),
+                  () => whenSelected(cell),
                   () => cat.opened,
-                  title: (cellInfo[cell] ?? defaultProfile).title,
-                  description: (cellInfo[cell] ?? defaultProfile).description,
+                  title: lang(
+                    "$cell.title",
+                    (cellInfo[cell] ?? defaultProfile).title,
+                  ),
+                  description: lang(
+                    "$cell.description",
+                    (cellInfo[cell] ?? defaultProfile).description +
+                        (debugMode ? "\nID: $cell" : ""),
+                  ),
                 )
                   ..time = 50
                   ..duration += k * 0.005,
@@ -1487,11 +1746,63 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
       }
     }
+
+    buttonManager.buttons.forEach((id, btn) {
+      btn.time = 500;
+    });
   }
+
+  late Sprite emptyImage;
+
+  Future buildEmpty() async {
+    final rowCompose = ImageComposition();
+    for (var x = 0; x < grid.width; x++) {
+      rowCompose.add(
+        Flame.images.fromCache("empty.png"),
+        Vector2(x * 32, 0),
+      );
+    }
+    final rowImage = await rowCompose.compose();
+    final emptyCompose = ImageComposition();
+    for (var y = 0; y < grid.height; y++) {
+      emptyCompose.add(rowImage, Vector2(0, y * 32));
+    }
+    emptyImage = Sprite(await emptyCompose.compose());
+  }
+
+  var debugMode = false;
+  var interpolation = true;
+  var cellbar = false;
 
   @override
   Future<void>? onLoad() async {
-    Flame.images.load('base.png');
+    await Flame.images.load('base.png');
+    await Flame.images.load('empty.png');
+
+    // Load effects
+    await Flame.images.loadAll([
+      "effects/stopped.png",
+      "effects/started.png",
+      "effects/heat.png",
+      "effects/cold.png",
+      "effects/consistent.png",
+    ]);
+
+    await loadSkinTextures();
+
+    debugMode = storage.getBool("debug") ?? false;
+    interpolation = storage.getBool("interpolation") ?? true;
+    cellbar = storage.getBool("cellbar") ?? false;
+
+    if (edType == EditorType.making) {
+      // In sandbox
+      AchievementManager.complete("editor");
+    } else if (edType == EditorType.loaded) {
+      // In puzzle
+      AchievementManager.complete("solving");
+    }
+
+    await buildEmpty();
 
     // Handle multiplayer
     if (isMultiplayer) {
@@ -1506,11 +1817,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           showDialog(
             context: context,
             builder: (ctx) {
-              return AlertDialog(
+              return ContentDialog(
                 title: Text('You have been kicked'),
                 content: Text(
                   'You have been kicked from the game. This means your connection timed out or the server closed.',
                 ),
+                actions: [
+                  Button(
+                    child: Text('Ok'),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
               );
             },
           );
@@ -1525,6 +1842,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 content: Text(
                   'An error has occured in the game. Error: $e',
                 ),
+                actions: [
+                  Button(
+                    child: Text('Ok'),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
               );
             },
           );
@@ -1536,19 +1859,22 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       Flame.images.load('cursor.png');
 
       clientID = Uuid().v4();
+
+      overlays.add('loading');
     }
 
-    loadAllButtonTextures();
+    cellSize = defaultCellSize.toDouble();
+
+    await loadAllButtonTextures();
     if (edType == EditorType.loaded) {
-      storedOffX = canvasSize.x / 2 - (grid.width / 2) * defaultCellSize;
-      storedOffY = canvasSize.y / 2 - (grid.height / 2) * defaultCellSize;
+      wantedCellSize ~/= (max(grid.width, grid.height) / 2);
+      storedOffX = canvasSize.x / 2 - (grid.width / 2) * cellSize;
+      storedOffY = canvasSize.y / 2 - (grid.height / 2) * cellSize;
     }
     await Flame.images.loadAll(
       cells.map((name) => textureMap["$name.png"] ?? "$name.png").toList(),
     );
     await Flame.images.load('pixel_on.png');
-    await Flame.images.load("enemy_particles.png");
-    await Flame.images.load("physical_enemy_particles.png");
 
     loadAllButtons();
 
@@ -1571,12 +1897,35 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void render(Canvas canvas) {
     this.canvas = canvas;
 
-    canvas.drawRect(Offset.zero & Size(canvasSize.x, canvasSize.y),
-        Paint()..color = Colors.grey[900]!);
+    if (overlays.isActive("loading")) {
+      canvas.drawRect(
+        Offset.zero & Size(canvasSize.x, canvasSize.y),
+        Paint()..color = Colors.black,
+      );
+      return;
+    }
+
+    canvas.drawRect(
+      Offset.zero & Size(canvasSize.x, canvasSize.y),
+      Paint()..color = Colors.grey[200],
+    );
 
     //canvas.save();
 
     canvas.translate(offX, offY);
+
+    if (!firstRender) {
+      emptyImage.render(
+        canvas,
+        position: Vector2.zero(),
+        size: Vector2(
+          grid.width * cellSize,
+          grid.height * cellSize,
+        ),
+      );
+    }
+
+    firstRender = false;
 
     var sx = floor((-offX - cellSize) / cellSize);
     var sy = floor((-offY - cellSize) / cellSize);
@@ -1596,15 +1945,31 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       ey = min(ey + extra, grid.height);
     }
 
-    final xs = [];
-    final ys = [];
+    final renderMap = <int, List<int>>{};
+
+    // grid.loopChunks(
+    //   "all",
+    //   GridAlignment.BOTTOMLEFT,
+    //   (Cell c, int x, int y) {
+    //     if (grid.at(x, y).id != "empty") {
+    //       renderMap[x] ??= [];
+    //       renderMap[x]!.add(y);
+    //     }
+    //     renderEmpty(grid.at(x, y), x, y);
+    //   },
+    //   minx: sx,
+    //   miny: sy,
+    //   maxx: ex,
+    //   maxy: ey,
+    //   fastChunk: false, // Fast chunk has some problems
+    // );
 
     for (var x = sx; x < ex; x++) {
       for (var y = sy; y < ey; y++) {
         if (grid.inside(x, y)) {
           if (grid.at(x, y).id != "empty") {
-            xs.add(x);
-            ys.add(y);
+            renderMap[x] ??= [];
+            renderMap[x]!.add(y);
           }
           renderEmpty(grid.at(x, y), x, y);
         }
@@ -1613,19 +1978,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (realisticRendering && (running || onetick)) {
       for (var b in grid.brokenCells) {
-        b.render(canvas, (itime % delay) / delay);
+        b.render(canvas, interpolation ? (itime % delay) / delay : 1);
       }
     }
 
-    for (var i = 0; i < xs.length; i++) {
-      final x = xs[i];
-      final y = ys[i];
-      if (grid.inside(x, y)) {
-        if (grid.at(x, y).id != "empty") {
+    renderMap.forEach(
+      (x, ys) {
+        for (var y in ys) {
           renderCell(grid.at(x, y), x, y);
         }
-      }
-    }
+      },
+    );
 
     if (edType == EditorType.making &&
         realisticRendering &&
@@ -1633,22 +1996,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         !(pasting || selecting)) {
       var mx = cellMouseX; // shorter names
       var my = cellMouseY; // shorter names
-      if (grid.inside(mx, my)) {
-        if (grid.wrap) {
-          mx += grid.width;
-          mx %= grid.width;
-          my += grid.height;
-          my %= grid.height;
+      for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+        for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
+          if (grid.inside(cx, cy)) {
+            final ocx = cx;
+            final ocy = cy;
+            if (grid.wrap) {
+              cx += grid.width;
+              cx %= grid.width;
+              cy += grid.height;
+              cy %= grid.height;
+            }
+            renderCell(
+              Cell(cx, cy)
+                ..id = cells[currentSelection]
+                ..rot = currentRotation
+                ..lastvars.lastRot = currentRotation,
+              cx,
+              cy,
+              Paint()..color = Colors.white.withOpacity(0.5),
+            );
+            cx = ocx;
+            cy = ocy;
+          }
         }
-        renderCell(
-          Cell(mx, my)
-            ..id = cells[currentSelection]
-            ..rot = currentRotation
-            ..lastvars.lastRot = currentRotation,
-          mx,
-          my,
-          Paint()..color = Colors.white.withOpacity(0.5),
-        );
       }
     }
 
@@ -1698,7 +2069,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       final selScreenY = (selY * cellSize);
       canvas.drawRect(
         Offset(selScreenX, selScreenY) & Size(selW * cellSize, selH * cellSize),
-        Paint()..color = (Colors.grey[300]!.withOpacity(0.4)),
+        Paint()..color = (Colors.grey[100].withOpacity(0.4)),
       );
     }
 
@@ -1711,12 +2082,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.restore();
 
-    buttonManager.forEach(
-      (key, button) {
-        button.canvasSize = canvasSize;
-        button.render(canvas, canvasSize);
-      },
-    );
+    if (cellbar) {
+      canvas.drawRect(
+        Offset(0, canvasSize.y - 110 * uiScale) &
+            Size(canvasSize.x, 110 * uiScale),
+        Paint()..color = Colors.grey[180],
+      );
+
+      final w = 5.0 * uiScale;
+
+      canvas.drawRect(
+        Offset(w, canvasSize.y - 110 * uiScale + w) &
+            Size(canvasSize.x - w, 110 * uiScale - w),
+        Paint()
+          ..color = Colors.grey[60]
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = w,
+      );
+    }
 
     cursors.forEach(
       (id, pos) {
@@ -1727,6 +2110,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             size: Vector2.all(cellSize / 2),
           );
         }
+      },
+    );
+
+    AchievementRenderer.draw(canvas, canvasSize);
+
+    buttonManager.forEach(
+      (key, button) {
+        button.canvasSize = canvasSize;
+        button.render(canvas, canvasSize);
       },
     );
 
@@ -1743,15 +2135,34 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
     }
 
+    if (keys[LogicalKeyboardKey.shiftLeft.keyLabel] == true) {
+      final mx = cellMouseX;
+      final my = cellMouseY;
+
+      final c = safeAt(mx, my);
+
+      if (c != null) {
+        final id = c.id;
+
+        renderInfoBox(
+            canvas,
+            (cellInfo[id] ?? defaultProfile).title,
+            (cellInfo[id] ?? defaultProfile).description +
+                (debugMode ? "\nID: ${c.id}" : ""));
+      }
+    }
+
     canvas.translate(offX, offY);
 
     super.render(canvas);
   }
 
   void renderEmpty(Cell cell, int x, int y) {
-    final off = Vector2(x * cellSize.toDouble(), y * cellSize.toDouble());
-    if (true) {
-      Sprite(Flame.images.fromCache('empty.png')).render(
+    if (grid.placeable(x, y) != "empty" &&
+        backgrounds.contains(grid.placeable(x, y))) {
+      final off = Vector2(x * cellSize.toDouble(), y * cellSize.toDouble());
+      Sprite(Flame.images.fromCache('backgrounds/${grid.placeable(x, y)}.png'))
+          .render(
         canvas,
         position: off,
         size: Vector2(
@@ -1759,19 +2170,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           cellSize.toDouble(),
         ),
       );
-      if (grid.placeable(x, y) != "empty" &&
-          backgrounds.contains(grid.placeable(x, y))) {
-        Sprite(Flame.images
-                .fromCache('backgrounds/${grid.placeable(x, y)}.png'))
-            .render(
-          canvas,
-          position: off,
-          size: Vector2(
-            cellSize.toDouble(),
-            cellSize.toDouble(),
-          ),
-        );
-      }
     }
   }
 
@@ -1796,7 +2194,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
       spriteCache['$file.png'] = sprite;
     }
-    final rot = (running || onetick
+    final rot = ((running || onetick) && interpolation
             ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay)
             : cell.rot) *
         halfPi;
@@ -1822,14 +2220,31 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     final current =
         Offset(x.toDouble(), y.toDouble()) * cellSize.toDouble() + center;
 
-    final off = rotateOff(
-            ((running || onetick) && cell.id != "empty")
-                ? interpolate(past, current, itime / delay)
-                : current,
-            -rot) -
-        center;
+    var off = ((running || onetick) && interpolation)
+        ? interpolate(past, current, itime / delay)
+        : current;
 
     canvas.rotate(rot);
+
+    // if (realisticRendering && paint == null) {
+    //   var shadowOff = rotateOff(off + center, -rot) - center * 1.8;
+
+    //   sprite
+    //     ..paint = ((paint ?? Paint())
+    //       ..color = Colors.black
+    //       ..blendMode = BlendMode.multiply)
+    //     ..render(
+    //       canvas,
+    //       position: shadowOff.toVector2(),
+    //       size: Vector2(
+    //         cellSize.toDouble() * scaleX,
+    //         cellSize.toDouble() * scaleY,
+    //       ),
+    //     );
+    // }
+
+    off = rotateOff(off, -rot) - center;
+
     sprite
       ..paint = paint ?? Paint()
       ..render(
@@ -1841,16 +2256,99 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ),
       );
 
+    // Skins
+    if (cell.id == "puzzle") {
+      // Ooooh boy
+      void drawSkin(String skin) {
+        if (SkinManager.skinEnabled(skin)) {
+          Sprite(Flame.images.fromCache('skins/$skin.png'))
+            ..paint = paint ?? Paint()
+            ..render(
+              canvas,
+              position: Vector2(off.dx * scaleX, off.dy * scaleY),
+              size: Vector2(
+                cellSize.toDouble() * scaleX,
+                cellSize.toDouble() * scaleY,
+              ),
+            );
+        }
+      }
+
+      drawSkin('computer');
+      drawSkin('hands');
+      drawSkin('christmas');
+    }
+
+    // Effects
+    if ((paint != null && brushTemp != 0) || (cell.data['heat'] ?? 0) != 0) {
+      final heat = paint == null ? (cell.data['heat'] ?? 0) : brushTemp;
+
+      Sprite(Flame.images
+          .fromCache(heat > 0 ? 'effects/heat.png' : 'effects/cold.png'))
+        ..paint = paint ?? Paint()
+        ..render(
+          canvas,
+          position: Vector2(off.dx * scaleX, off.dy * scaleY),
+          size: Vector2(
+            cellSize.toDouble() * scaleX,
+            cellSize.toDouble() * scaleY,
+          ),
+        );
+
+      final tp = TextPainter(
+        text: TextSpan(
+          text: "${abs(heat)}",
+          style: TextStyle(
+            fontSize: cellSize * 0.25,
+            color: heat > 0
+                ? Colors.orange["light"]
+                : Color.fromARGB(255, 33, 162, 194),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      tp.layout();
+      tp.paint(
+        canvas,
+        Offset(
+          off.dx * scaleX + cellSize * 0.3,
+          off.dy * scaleY - cellSize * 0.07,
+        ),
+      );
+    }
+
+    if (cell.tags.contains("consistent")) {
+      Sprite(Flame.images.fromCache("effects/consistent.png"))
+        ..paint = paint ?? Paint()
+        ..render(
+          canvas,
+          position: Vector2(off.dx * scaleX, off.dy * scaleY),
+          size: Vector2(
+            cellSize.toDouble() * scaleX,
+            cellSize.toDouble() * scaleY,
+          ),
+        );
+    }
+
     canvas.restore();
   }
 
   @override
   void update(double dt) {
+    if (overlays.isActive("loading")) {
+      return;
+    }
     updates++;
+    if (edType == EditorType.making) {
+      puzzleWin = false;
+    }
     redparticles.update(dt);
     blueparticles.update(dt);
     greenparticles.update(dt);
     yellowparticles.update(dt);
+
+    AchievementRenderer.update(dt);
     buttonManager.forEach(
       (key, button) {
         button.time += dt;
@@ -1897,8 +2395,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     // if (!overlays.isActive('Info')) {
     //   overlays.add('Info');
     // }
-    if (puzzleWin && !overlays.isActive("Win")) {
+    if (puzzleWin && !overlays.isActive("Win") && edType == EditorType.loaded) {
       overlays.add("Win");
+      CoinManager.give(Random().nextInt(7) + 3);
+      AchievementManager.complete("winner");
     }
     if (puzzleWin) return;
     if (!overlays.isActive("EditorMenu")) {
@@ -1948,21 +2448,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       if (!(pasting || selecting || edType == EditorType.loaded)) {
         if (mouseDown) {
-          final cx = (mouseX - offX) ~/ cellSize;
-          final cy = (mouseY - offY) ~/ cellSize;
-          if (grid.inside(cx, cy)) {
-            if (mouseButton == kPrimaryMouseButton) {
-              placeCell(currentSelection, currentRotation, cx, cy);
-            } else if (mouseButton == kSecondaryMouseButton) {
-              placeCell(0, 0, cx, cy);
-            } else if (mouseButton == kMiddleMouseButton) {
-              final id = grid.at(cx, cy).id;
+          final mx = (mouseX - offX) ~/ cellSize;
+          final my = (mouseY - offY) ~/ cellSize;
+          for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+            for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
+              if (grid.inside(cx, cy)) {
+                if (mouseButton == kPrimaryMouseButton) {
+                  placeCell(currentSelection, currentRotation, cx, cy);
+                } else if (mouseButton == kSecondaryMouseButton) {
+                  placeCell(0, 0, cx, cy);
+                } else if (mouseButton == kMiddleMouseButton) {
+                  final id = grid.at(cx, cy).id;
 
-              if (edType == EditorType.making) {
-                currentSelection = cells.indexOf(id);
-              } else if (edType == EditorType.loaded) {
-                if (cellsToPlace.contains(id)) {
-                  currentSelection = cells.indexOf(id);
+                  if (edType == EditorType.making) {
+                    if (cells.contains(id)) {
+                      currentSelection = cells.indexOf(id);
+                    }
+                  }
                 }
               }
             }
@@ -1987,6 +2489,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void placeCell(int id, int rot, int cx, int cy) {
     if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
+      //if (grid.at(cx, cy).id == id && grid.at(cx, cy).rot == rot) return;
       grid.set(
         cx,
         cy,
@@ -1995,19 +2498,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..rot = rot
           ..lastvars.lastRot = rot,
       );
+      if (brushTemp > 0) {
+        grid.at(cx, cy).data['heat'] = brushTemp;
+      }
       if (cells[id] == "empty" &&
           backgrounds.contains(cells[currentSelection])) {
         grid.setPlace(cx, cy, "empty");
         sendToServer("bg $cx $cy empty");
       } else {
-        sendToServer("place $cx $cy ${cells[id]} $rot");
+        sendToServer(
+          "place $cx $cy ${cells[id]} $rot ${P3.encodeData(grid.at(cx, cy).data)}",
+        );
       }
     } else if (edType == EditorType.loaded) {
       if (grid.placeable(cx, cy) == "rotatable") {
         grid.at(cx, cy).rot++;
         grid.at(cx, cy).rot %= 4;
         sendToServer(
-          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot}',
+          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${P3.encodeData(grid.at(cx, cy).data)}',
         );
         return;
       }
@@ -2016,7 +2524,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
         grid.set(cx, cy, Cell(cx, cy));
-        sendToServer('place $cx $cy empty 0');
+        sendToServer('place $cx $cy empty 0 ');
         sendToServer(
           'new-hover $clientID $cx $cy ${cells[currentSelection]} $currentRotation',
         );
@@ -2031,7 +2539,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             ..lastvars.lastRot = rot,
         );
         currentSelection = cells.indexOf("empty");
-        sendToServer('place $cx $cy ${cells[id]} $rot');
+        sendToServer('place $cx $cy ${cells[id]} $rot ');
         sendToServer('drop-hover $clientID');
       }
     }
@@ -2092,6 +2600,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   double get globalMouseY => (mouseY - offY) / cellSize - 0.5;
 
   Future<void> onPointerDown(PointerDownEvent event) async {
+    if (overlays.isActive("loading")) {
+      return;
+    }
     if (event.down && event.kind == PointerDeviceKind.mouse) {
       mouseX = event.position.dx;
       mouseY = event.position.dy;
@@ -2225,11 +2736,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     running = false;
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
+    timeGrid = null;
     if (isMultiplayer) sendToServer('setinit ${P2.encodeGrid(grid)}');
   }
 
   void restoreInitial() {
     if (inMenu) return;
+    bool differentSize =
+        (grid.width != initial.width || grid.height != initial.height);
     grid = initial.copy;
     isinitial = true;
     puzzleWin = false;
@@ -2237,6 +2751,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     running = false;
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
+    if (differentSize) buildEmpty();
+    timeGrid = null;
   }
 
   bool onetick = false;
@@ -2269,8 +2785,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       buttonManager.buttons["play-btn"]!.texture = "slide.png";
       buttonManager.buttons["play-btn"]!.rotation = 1;
       itime = delay;
+      AchievementManager.complete("start");
     } else {
-      if (puzzleWin == true || edType == EditorType.loaded) {
+      if (edType == EditorType.loaded) {
         restoreInitial();
       }
       puzzleWin = false;
@@ -2388,6 +2905,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } else if (keysPressed.contains(LogicalKeyboardKey.keyF) &&
             edType == EditorType.making) {
           oneTick();
+        } else if (keysPressed.contains(LogicalKeyboardKey.escape) &&
+            edType == EditorType.making) {
+          if (!overlays.isActive("EditorMenu")) {
+            overlays.add("EditorMenu");
+          } else {
+            overlays.remove("EditorMenu");
+          }
         }
       }
       for (var key in keysPressed) {
@@ -2480,8 +3004,8 @@ class ParticleSystem {
   }
 }
 
-extension on Size {
-  Offset toOffset() {
-    return Offset(width, height);
-  }
-}
+// extension on ui.Size {
+//   ui.Offset toOffset() {
+//     return Offset(width, height);
+//   }
+// }

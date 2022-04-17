@@ -85,6 +85,7 @@ Grid loadStr(String str) {
   if (str.startsWith('P2;')) return P2.decodeGrid(str);
   if (str.startsWith('V1;')) return MysticCodes.decodeV1(str);
   if (str.startsWith('V3;')) return MysticCodes.decodeV3(str);
+  if (str.startsWith('P3;')) return P3.decodeString(str);
 
   throw "Unsupported saving format";
 }
@@ -394,9 +395,10 @@ class P2 {
 
   static String sig = "P2;";
 
-  static String encodeGrid(Grid grid) {
+  static String encodeGrid(Grid grid,
+      {String title = "", String description = ""}) {
     var str = sig;
-    str += ";;"; // title and description
+    str += "$title;$description;"; // title and description
     str += (encodeNum(grid.width, valueString) + ';');
     str += (encodeNum(grid.height, valueString) + ';');
 
@@ -507,7 +509,7 @@ class MysticCodes {
   }
 
   static void SetCell(int c, int i, Grid grid) {
-    final y = grid.width - (i ~/ grid.width) - 1;
+    final y = grid.height - (i ~/ grid.width) - 1;
 
     if (c % 2 == 1) {
       grid.setPlace(i % grid.width, y, "place");
@@ -653,5 +655,163 @@ class MysticCodes {
     }
 
     return grid;
+  }
+}
+
+class P3 {
+  static String valueString =
+      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
+
+  static String signature = "P3;";
+
+  static String encodeData(Map<String, dynamic> data) {
+    var dataParts = [];
+    data.forEach(
+      (key, value) {
+        dataParts.add("$key=$value");
+      },
+    );
+    return dataParts.join('.');
+  }
+
+  static String encodeCell(int x, int y, Grid grid) {
+    final c = grid.at(x, y);
+    final bg = grid.placeable(x, y);
+
+    final tagsStr = c.tags.join('.');
+
+    final dataStr = encodeData(c.data);
+
+    return "${c.id}:$x:$y:${c.rot}:$dataStr:$tagsStr:$bg:${c.lifespan}";
+  }
+
+  // P3 Compex Validation System
+  static bool validate(int x, int y, Grid grid) {
+    final c = grid.at(x, y);
+    final bg = grid.placeable(x, y);
+
+    return (c.id != "empty" || bg != "empty");
+  }
+
+  static String encodeGrid(Grid grid,
+      {String title = "", String description = ""}) {
+    var str = signature;
+    str += "$title;$description;"; // Title and description
+    str += "${encodeNum(grid.width, valueString)};";
+    str += "${encodeNum(grid.height, valueString)};";
+
+    final cellDataList = [];
+
+    grid.forEach(
+      (cell, x, y) {
+        if (validate(x, y, grid)) {
+          cellDataList.add(encodeCell(x, y, grid));
+          //print(cellDataList.last);
+        }
+      },
+    );
+
+    final cellDataStr = base64.encode(
+      zlib.encode(
+        utf8.encode(
+          cellDataList.join(','),
+        ),
+      ),
+    );
+
+    str += "$cellDataStr;";
+
+    final props = [];
+
+    if (grid.wrap) props.add("W");
+
+    str += "${props.join('')};";
+
+    return str;
+  }
+
+  static Map<String, dynamic> getData(String str) {
+    if (str == "") return <String, dynamic>{};
+    final segs = str.split('.');
+    final data = <String, dynamic>{};
+    if (segs.isEmpty) return data;
+    segs.forEach((part) {
+      final p = part.split('=');
+
+      dynamic v = p[1];
+
+      if (v == "true" || v == "false") v = (v == "true");
+      if (int.tryParse(v) != null) v = int.parse(v);
+
+      data[p[0]] = v;
+    });
+    return data;
+  }
+
+  static P3Cell decodeCell(String str) {
+    final segs = str.split(':');
+
+    if (segs.length < 8) segs.add("0");
+
+    return P3Cell(
+      segs[0],
+      int.parse(segs[1]),
+      int.parse(segs[2]),
+      int.parse(segs[3]),
+      getData(segs[4]),
+      segs[5].split('.').toSet(),
+      segs[6],
+      int.parse(segs[7]),
+    );
+  }
+
+  static Grid decodeString(String str) {
+    final segs = str.split(';');
+    final newGrid = Grid(
+      decodeNum(segs[3], valueString),
+      decodeNum(segs[4], valueString),
+    );
+
+    final cellDataStr = segs[5] == "eJwDAAAAAAE="
+        ? ""
+        : utf8.decode(zlib.decode(base64.decode(segs[5])));
+
+    if (cellDataStr != "") {
+      final cellDataList = cellDataStr.split(',');
+
+      for (var cellData in cellDataList) {
+        decodeCell(cellData).placeOn(newGrid);
+      }
+    }
+
+    final props = segs[6].split('');
+    if (props.contains("W")) newGrid.wrap = true;
+
+    return newGrid;
+  }
+}
+
+class P3Cell {
+  int x, y, rot;
+  String id, bg;
+
+  Map<String, dynamic> data;
+  Set<String> tags;
+  int lifespan;
+
+  P3Cell(this.id, this.x, this.y, this.rot, this.data, this.tags, this.bg,
+      this.lifespan);
+
+  void placeOn(Grid grid) {
+    final c = Cell(x, y);
+    c.lastvars.lastRot = rot;
+    c.rot = rot;
+    c.id = id;
+    c.data = data;
+    c.tags = tags;
+    c.lifespan = lifespan;
+
+    grid.set(x, y, c);
+    grid.setPlace(x, y, bg);
   }
 }

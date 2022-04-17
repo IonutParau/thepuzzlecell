@@ -1,23 +1,12 @@
 part of layout;
 
-final puzzles = [
-  "easy/level1.txt",
-  "easy/level2.txt",
-  "easy/level3.txt",
-  "easy/level4.txt",
-  "easy/level5.txt",
-  "medium/level1.txt",
-  "medium/level2.txt",
-  "medium/level3.txt",
-  "medium/level4.txt",
-  "medium/level5.txt",
-  "medium/level6.txt",
-  "hard/level1.txt",
-  "hard/level2.txt",
-  "hard/level3.txt",
-];
+var puzzles = <String>[];
 
 int? puzzleIndex;
+
+Future loadAllPuzzles() async {
+  puzzles = (await loadJsonData('assets/puzzles.txt')).split('\n');
+}
 
 Future<String> loadJsonData(String path) async {
   var jsonText = await rootBundle.loadString(path);
@@ -32,71 +21,60 @@ class Puzzles extends StatefulWidget {
 }
 
 Future<void> loadPuzzle(int index) async {
-  final data = await loadJsonData('assets/puzzles/${puzzles[index]}');
+  final data = puzzles[index];
+  game = PuzzleGame();
   grid = loadStr(data);
   puzzleIndex = index;
 }
 
 class _PuzzlesState extends State<Puzzles> {
-  Icon tierToIcon(String tier, [double? size]) {
-    if (tier == "hard") {
-      return Icon(
-        Icons.cancel_outlined,
-        color: Colors.red,
-        size: size,
-      );
-    }
-    if (tier == "medium") {
-      return Icon(
-        Icons.hourglass_bottom,
-        color: Colors.orange[400],
-        size: size,
-      );
-    }
-    return Icon(
-      Icons.help_outline,
-      color: Colors.blue,
-      size: size,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Puzzles", style: fontSize(10.sp)),
+        title: Row(
+          children: [
+            Spacer(),
+            Text(lang("puzzles", "Puzzles"), style: fontSize(12.sp)),
+            Spacer(),
+          ],
+        ),
+        backgroundColor: Colors.grey[100],
+        automaticallyImplyLeading: false,
       ),
       body: ListView.builder(
         itemCount: puzzles.length,
         itemBuilder: (ctx, i) {
-          return FutureBuilder<String>(
-            future: loadJsonData('assets/puzzles/${puzzles[i]}'),
-            builder: (ctx, snap) {
-              if (snap.hasData) {
-                final isP1 = snap.data!.startsWith('P1;');
-                final title =
-                    isP1 ? snap.data!.split(';')[5] : snap.data!.split(';')[1];
-                final desc =
-                    isP1 ? snap.data!.split(';')[6] : snap.data!.split(';')[2];
-                return ListTile(
+          final data = puzzles[i];
+          if (data != "") {
+            final isP1 = data.startsWith('P1;');
+            final title = isP1 ? data.split(';')[5] : data.split(';')[1];
+            final desc = isP1 ? data.split(';')[6] : data.split(';')[2];
+            return Padding(
+              padding: EdgeInsets.all(0.1.w),
+              child: GestureDetector(
+                onTap: () {
+                  loadPuzzle(i).then(
+                    (_) => Navigator.of(context).pushNamed('/game-loaded'),
+                  );
+                },
+                child: ListTile(
                   title: Text(title),
                   subtitle: Text(desc),
-                  leading: tierToIcon(puzzles[i].split('/').first),
-                  onTap: () {
-                    loadPuzzle(i).then(
-                      (_) => Navigator.of(context).pushNamed('/game-loaded'),
-                    );
-                  },
-                );
-              } else {
-                return SizedBox(
-                  width: 5.w,
-                  height: 5.w,
-                  child: CircularProgressIndicator.adaptive(),
-                );
-              }
-            },
-          );
+                  leading: Image.asset(
+                    'assets/images/logo.png',
+                    filterQuality: FilterQuality.none,
+                    fit: BoxFit.fill,
+                    width: 2.w,
+                    height: 2.w,
+                  ),
+                  tileColor: Colors.grey[130],
+                ),
+              ),
+            );
+          } else {
+            return Text("");
+          }
         },
       ),
     );

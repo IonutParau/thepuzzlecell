@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 
 num clamp(num n, num minimum, num maximum) => min(max(n, minimum), maximum);
 
@@ -15,8 +15,8 @@ class Editor extends StatefulWidget {
 }
 
 class _EditorState extends State<Editor> {
-  int width = 50;
-  int height = 50;
+  int width = 100;
+  int height = 100;
 
   TextStyle fontSize(double fontSize) {
     return TextStyle(
@@ -49,77 +49,79 @@ class _EditorState extends State<Editor> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Editor', style: fontSize(12.sp)),
+    return ScaffoldPage(
+      header: Container(
+        color: Colors.grey[100],
+        child: Row(
+          children: [
+            Spacer(),
+            Text(
+              lang("editor", "Editor"),
+              style: TextStyle(
+                fontSize: 10.sp,
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
       ),
-      body: Column(
-        children: [
-          Spacer(),
-          Row(
+      content: Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: Column(
             children: [
-              Spacer(),
-              Container(
-                width: 60.w,
-                height: 40.h,
-                color: Colors.grey[900],
-                child: Column(
-                  children: [
-                    Spacer(),
-                    SizedBox(
-                      height: 10.h,
-                      child: Row(
-                        children: [
-                          Spacer(),
-                          SizedBox(
-                            width: 25.w,
-                            child: TextField(
-                              controller: widthController,
-                              onChanged: (str) => setState(
-                                () => width =
-                                    clamp(int.tryParse(str) ?? width, 1, 999)
-                                        .toInt(),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          Spacer(),
-                          SizedBox(
-                            width: 25.w,
-                            child: TextField(
-                              controller: heightController,
-                              onChanged: (str) => setState(
-                                () => height =
-                                    clamp(int.tryParse(str) ?? height, 1, 999)
-                                        .toInt(),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
+              Spacer(flex: 10),
+              Row(
+                children: [
+                  Spacer(flex: 5),
+                  SizedBox(
+                    width: 20.w,
+                    child: TextBox(
+                      header: lang('width', 'Width'),
+                      keyboardType: TextInputType.number,
+                      placeholder: '100',
+                      onChanged: (v) => setState(
+                        () => width = clamp(
+                                int.tryParse(v) ?? (v == "" ? 100 : width),
+                                1,
+                                999)
+                            .toInt(),
                       ),
                     ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: MaterialButton(
-                          child: Text(
-                            'Play!',
-                            style: fontSize(12.sp),
-                          ),
-                          onPressed: () => setState(play),
-                        ),
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    width: 20.w,
+                    child: TextBox(
+                      header: lang('height', 'Height'),
+                      keyboardType: TextInputType.number,
+                      placeholder: '100',
+                      onChanged: (v) => setState(
+                        () => height = clamp(
+                                int.tryParse(v) ?? (v == "" ? 100 : height),
+                                1,
+                                999)
+                            .toInt(),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Spacer(flex: 5),
+                ],
               ),
               Spacer(),
+              Button(
+                child: Text(
+                  lang('play', 'Play!'),
+                  style: fontSize(
+                    12.sp,
+                  ),
+                ),
+                onPressed: () => setState(play),
+              ),
+              Spacer(flex: 10),
             ],
           ),
-          Spacer(),
-        ],
+        ),
       ),
     );
   }

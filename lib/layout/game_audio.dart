@@ -1,26 +1,28 @@
 part of layout;
 
-final destroySound = Player(id: 1);
-final floatMusic = Player(id: 2);
+final destroySound = Player.asset('assets/audio/destroy.wav', autoPlay: false);
+final flightMusic = Player.asset('assets/audio/Flight.ogg', autoPlay: false);
 // late ReceivePort _audioComPort;
 // late SendPort _audioSendPort;
 // late Isolate _audioIso;
 
 void initSound() {
-  destroySound.open(
-    Media.asset(
-      'assets/audio/destroy.wav',
-    ),
-    autoStart: false,
-  );
-  destroySound.setVolume(0.5);
+  destroySound.callback = (e) {};
+  flightMusic.callback = (e) {};
+  // destroySound.open(
+  //   Media.asset(
+  //     'assets/audio/destroy.wav',
+  //   ),
+  //   autoStart: false,
+  // );
+  // destroySound.setVolume(0.5);
 
-  floatMusic.open(
-    Media.asset(
-      'assets/audio/Float.ogg',
-    ),
-    autoStart: false,
-  );
+  // flightMusic.open(
+  //   Media.asset(
+  //     'assets/audio/Flight.ogg',
+  //   ),
+  //   autoStart: false,
+  // );
   // _audioComPort = ReceivePort();
   // Isolate.spawn(
   //   _playSound,
@@ -54,29 +56,24 @@ void initSound() {
 //   );
 // }
 
-void playSound(Player sound) {
+void playSound(PlayerController sound) {
   if (inBruteForce) return;
-  if (sound.playback.isSeekable) {
-    sound.seek(Duration.zero);
-  }
+  if (sound.playing) sound.position = Duration.zero;
   sound.play();
 }
 
-void playOnLoop(Player sound, double volume) {
-  if (sound.playback.isSeekable) {
-    sound.seek(Duration.zero);
-  }
-  sound.setPlaylistMode(PlaylistMode.loop);
-  sound.setVolume(volume);
+void playOnLoop(PlayerController sound, double volume) {
+  sound.volume = volume;
+  sound.loop = true;
   sound.play();
 }
 
-void setLoopSoundVolume(Player sound, double volume) {
+void setLoopSoundVolume(PlayerController sound, double volume) {
   if (volume == 0) {
     sound.stop();
   } else {
-    if (sound.playback.isPlaying) {
-      sound.setVolume(volume);
+    if (sound.playing) {
+      sound.volume = volume;
     } else {
       playOnLoop(sound, volume);
     }

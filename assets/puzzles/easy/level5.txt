@@ -1,1 +1,0 @@
-P1;65;a;o;empty,wall,puzzle,slide,push,enemy,flag;More complicated;Figuring out how to solve it is more complicated;0|0|w|;1|0|t|;0|0|r|;1|0|e|;0|0|e|;1|0|y|;0|0|y|;2|0|w|;1|0|e|;0|0|w|;3|0|e|;1|0|w|;4|0|w|;0|0|w|;1|0|e|;0|0|r|;1|0|w|;0|0|e|;1|0|e|;0|0|r|;1|0|u|;0|0|e|;5|0|w|;0|0|e|;1|0|w|;0|0|w|;1|0|t|;0|0|e|;1|0|w|;0|0|t|;1|0|w|;6|0|w|;0|0|w|;1|0|w|;0|0|t|;1|0|t|;

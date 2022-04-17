@@ -1,14 +1,18 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/services.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/services.dart' show ClipboardData;
 import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+bool get isDesktop =>
+    Platform.isWindows || Platform.isLinux || Platform.isMacOS;
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -34,175 +38,212 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  int _navIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return ScaleAssist(
-      builder: (context, orientation) {
-        final buttonPadding = EdgeInsets.all(1.2.w);
-
-        final buttonStyle = fontSize(12.sp);
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('The Puzzle Cell', style: fontSize(10.sp)),
-            actions: [],
-            automaticallyImplyLeading: false,
-          ),
-          body: Stack(
-            children: [
-              Center(
-                child: AnimatedBuilder(
-                    animation: _controller,
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      scale: 200 / 50.w,
-                    ),
-                    builder: (context, child) {
-                      return Stack(
-                        children: [
-                          Transform.rotate(
-                            angle: -_controller.value * pi * 4,
-                            child: child,
-                          ),
-                        ],
-                      );
-                    }),
-              ),
-              Padding(
-                padding: EdgeInsets.all(3.w),
-                child: Row(
+      builder: (ctx, size) {
+        return StreamBuilder(
+          stream: langEvents.stream,
+          builder: (context, snapshot) {
+            return NavigationView(
+              appBar: NavigationAppBar(
+                automaticallyImplyLeading: false,
+                title: Row(
                   children: [
-                    Column(
-                      children: [
-                        Spacer(),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Puzzles', style: buttonStyle),
-                            onPressed: () =>
-                                Navigator.of(context).pushNamed('/puzzles'),
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Editor', style: buttonStyle),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/editor');
-                            },
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Multiplayer', style: buttonStyle),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/multiplayer');
-                            },
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Load Level', style: buttonStyle),
-                            onPressed: () {
-                              FlutterClipboard.controlV().then(
-                                (clipboard) {
-                                  try {
-                                    if (clipboard is ClipboardData) {
-                                      game = PuzzleGame();
-                                      grid = loadStr(clipboard.text!);
-                                      puzzleIndex = null;
-                                      Navigator.of(context)
-                                          .pushNamed('/game-loaded');
-                                    } else {
-                                      throw "wtf";
-                                    }
-                                  } catch (e) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (ctx) {
-                                        return AlertDialog(
-                                          title: Text('Invalid code'),
-                                          content: Text(
-                                            "The code you have in your clipboard is not valid code or can not pe properly loaded. Please try again after getting a proper level code\n$e",
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Quit', style: buttonStyle),
-                            onPressed: () {
-                              exit(0);
-                            },
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Spacer(
-                          flex: 1,
-                        ),
-                      ],
+                    Spacer(),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      filterQuality: FilterQuality.none,
+                      width: 2.w,
+                      height: 2.w,
                     ),
                     Spacer(),
-                    Column(
-                      children: [
-                        Spacer(),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Settings', style: buttonStyle),
-                            onPressed: () =>
-                                Navigator.of(context).pushNamed('/settings'),
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        // Padding(
-                        //   padding: buttonPadding,
-                        //   child: MaterialButton(
-                        //     child: Text('Texture Packs', style: buttonStyle),
-                        //     onPressed: () =>
-                        //         Navigator.of(context).pushNamed('/texturepack'),
-                        //     hoverColor: Colors.blue,
-                        //   ),
-                        // ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Credits', style: buttonStyle),
-                            onPressed: () =>
-                                Navigator.of(context).pushNamed('/credits'),
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Padding(
-                          padding: buttonPadding,
-                          child: MaterialButton(
-                            child: Text('Version', style: buttonStyle),
-                            onPressed: () =>
-                                Navigator.of(context).pushNamed('/version'),
-                            hoverColor: Colors.blue,
-                          ),
-                        ),
-                        Spacer(),
-                      ],
+                    Text(
+                      "The Puzzle Cell",
+                      style: fontSize(
+                        10.sp,
+                      ),
                     ),
+                    Spacer(flex: 200),
                   ],
                 ),
               ),
-            ],
-          ),
+              content: NavigationBody(
+                index: _navIndex,
+                children: [
+                  Editor(),
+                  Puzzles(),
+                  WorldUI(),
+                  MultiplayerPage(),
+                  Shop(),
+                  SettingsPage(),
+                  if (isDesktop) LangsUI(),
+                  CreditsPage(),
+                  VersionPage(),
+                ],
+              ),
+              pane: NavigationPane(
+                selected: _navIndex,
+                onChanged: (i) => setState(() => _navIndex = i),
+                displayMode: PaneDisplayMode.open,
+                items: [
+                  PaneItem(
+                    icon: Icon(FluentIcons.edit),
+                    title: Text(lang('editor', 'Editor')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.puzzle),
+                    title: Text(lang('puzzles', 'Puzzles')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FontAwesomeIcons.earthEurope),
+                    title: Text(lang('worlds', 'Worlds')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.my_network),
+                    title: Text(lang('multiplayer', 'Multiplayer')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.store_logo16),
+                    title: Text(lang('shop', 'In-Game Shop')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.settings),
+                    title: Text(lang('settings', 'Settings')),
+                  ),
+                  if (isDesktop)
+                    PaneItem(
+                      icon: Icon(FluentIcons.locale_language),
+                      title: Text(lang('languages', 'Languages')),
+                    ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.text_document),
+                    title: Text(lang('credits', 'Credits')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.change_entitlements),
+                    title: Text(lang('version', 'Version')),
+                  ),
+                  PaneItemAction(
+                    icon: Icon(FluentIcons.clipboard_list),
+                    title: Text(lang('loadLevel', 'Load Level')),
+                    onTap: () {
+                      try {
+                        FlutterClipboard.controlV().then(
+                          (str) {
+                            if (str is ClipboardData) {
+                              game = PuzzleGame();
+                              try {
+                                grid = loadStr(str.text ?? "");
+                                Navigator.pushNamed(context, '/game-loaded');
+                              } catch (e) {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) {
+                                    return ContentDialog(
+                                      title: Text(
+                                        lang(
+                                          'saveError',
+                                          'Invalid save code',
+                                        ),
+                                      ),
+                                      content: Text(
+                                        '${lang(
+                                          'saveErrorDesc',
+                                          'You are trying to load a corrupted, invalid or unsupported level code.',
+                                          {"error": e.toString()},
+                                        )}',
+                                      ),
+                                      actions: [
+                                        Button(
+                                          child: Text('Ok'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) {
+                                  return ContentDialog(
+                                    title: Text(
+                                      lang(
+                                        'noStringLoad',
+                                        'Invalid clipboard format',
+                                      ),
+                                    ),
+                                    content: Text(
+                                      '${lang(
+                                        'noStringLoadDesc',
+                                        'The clipboard data you have in your clipboard is not text',
+                                        {"error": e.toString()},
+                                      )}',
+                                    ),
+                                    actions: [
+                                      Button(
+                                        child: Text('Ok'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        );
+                      } catch (e) {
+                        //print(e);
+                        showDialog(
+                          context: context,
+                          builder: (ctx) {
+                            return ContentDialog(
+                              title: Text(
+                                lang(
+                                  'saveError',
+                                  'Invalid save code',
+                                ),
+                              ),
+                              content: Text(
+                                '${lang(
+                                  'saveErrorDesc',
+                                  'You are trying to load a corrupted, invalid or unsupported level code. Error: $e',
+                                  {"error": e.toString()},
+                                )}',
+                              ),
+                              actions: [
+                                Button(
+                                  child: Text('Ok'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                  PaneItemAction(
+                    icon: Icon(FluentIcons.leave),
+                    title: Text(lang('quit', 'Quit')),
+                    onTap: () {
+                      exit(0);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

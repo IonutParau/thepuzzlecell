@@ -1,39 +1,35 @@
-import 'package:flutter/material.dart';
-
+import 'package:flutter/material.dart' hide Colors;
+import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '1.2.3 Codename Multiplayer Update QuickFix 3';
+String currentVersion = '2.0 Codename World of Changes Update';
 
-List<String> changes = [
-  "QuickFix 1: Fixed physical enemies not being stopped by stoppers",
-  "QuickFix 1: Fixed all the types of flags",
-  "QuickFix 1: Added a Load New Puzzle button in puzzle mode multiplayer",
-  "QuickFix 1: Fixed a duplication bug in multiplayer",
-  "QuickFix 1: Nerfed mobile trash cell",
-  "QuickFix 1: Nerfed anchor cell",
-  "QuickFix 2: Added version checking support",
-  "QuickFix 2: Removed anchor cell nerfed, it made them not work",
-  "QuickFix 2: Patched a lot of other stuff",
-  "QuickFix 3: Fixed some broken cells",
-  "QuickFix 3: Switched to a new particle system that is less buggy",
-  "QuickFix 3: Made anchors ungearable",
+final List<String> changes = [
+  "Fixed some bugs",
+  "Added Constraints",
+  "Added Worlds",
+  "Switched from Material UI to Fluent UI",
+  "Replaced background music \"Float\" with \"Flight\"",
+  "Removed Update Visible because nobody used it",
 ];
 
-String getTrailing(String change) {
+IconData getTrailing(String change) {
   change = change.toLowerCase();
   if (change.startsWith('fixed') ||
       change.startsWith('patched') ||
       change.startsWith('moved') ||
       change.startsWith('reworked') ||
       change.startsWith('changed')) {
-    return '>';
+    return FluentIcons.change_entitlements;
   } else if (change.startsWith('added')) {
-    return '+';
+    return FluentIcons.insert;
   } else if (change.startsWith('quickfix')) {
-    return 'QF';
+    return FluentIcons.quick_note;
+  } else if (change.startsWith('replaced') || change.startsWith('switched')) {
+    return FluentIcons.switch_widget;
   }
 
-  return '-';
+  return FluentIcons.delete;
 }
 
 class VersionPage extends StatelessWidget {
@@ -41,7 +37,20 @@ class VersionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('The Puzzle Cell version $currentVersion'),
+        title: Row(
+          children: [
+            Spacer(),
+            Text(
+              'The Puzzle Cell version $currentVersion',
+              style: TextStyle(
+                fontSize: 7.sp,
+              ),
+            ),
+            Spacer(),
+          ],
+        ),
+        backgroundColor: Colors.grey[100],
+        automaticallyImplyLeading: false,
       ),
       body: ListView.builder(
         itemCount: changes.length + 1,
@@ -56,11 +65,9 @@ class VersionPage extends StatelessWidget {
           }
 
           return ListTile(
-            leading: Text(
+            leading: Icon(
               getTrailing(changes[i - 1]),
-              style: TextStyle(
-                fontSize: 5.sp,
-              ),
+              size: 5.sp,
             ),
             title: Text(changes[i - 1]),
           );

@@ -1,20 +1,20 @@
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:dart_vlc/dart_vlc.dart';
+import 'package:kplayer/kplayer.dart';
 
 import 'logic/logic.dart';
 
 void main() async {
   //await Flame.device.setLandscape();
   WidgetsFlutterBinding.ensureInitialized();
-  DartVLC.initialize();
+  Player.boot();
   await Flame.device.fullScreen();
   SystemChrome.setApplicationSwitcherDescription(
     ApplicationSwitcherDescription(
@@ -24,9 +24,21 @@ void main() async {
 
   initSound();
 
+  await loadAllPuzzles();
+  await loadBlueprints();
+  addBlueprints();
+
+  print(cells.length - backgrounds.length);
+
   //fixDefault();
 
   storage = await SharedPreferences.getInstance();
+
+  if (storage.getString("lang") != null) {
+    loadLangByName(storage.getString("lang")!);
+  }
+
+  worldManager.LoadWorldsFromSettings();
 
   if (storage.getDouble('ui_scale') == null) {
     await storage.setDouble('ui_scale', 1);
@@ -40,29 +52,19 @@ void main() async {
     await storage.setStringList('servers', []);
   }
 
-  runApp(const MyApp());
-}
-
-class LifecycleEventHandler extends WidgetsBindingObserver {
-  LifecycleEventHandler();
-
-//  @override
-//  Future<bool> didPopRoute()
-
-//  @override
-//  void didHaveMemoryPressure()
-
-  @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        break;
-      case AppLifecycleState.resumed:
-        break;
-    }
+  if (storage.getInt('coins') == null) {
+    await storage.setInt('coins', 0);
   }
+
+  if (storage.getStringList('skins') == null) {
+    await storage.setStringList('skins', <String>[]);
+  }
+
+  if (storage.getStringList('usedSkins') == null) {
+    await storage.setStringList('usedSkins', <String>[]);
+  }
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -79,12 +81,6 @@ class _MyAppState extends State<MyApp> {
   );
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addObserver(LifecycleEventHandler());
-  }
-
-  @override
   void dispose() {
     _splashController.dispose();
     super.dispose();
@@ -96,9 +92,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ScaleAssist(
       builder: (context, orientation) {
-        return MaterialApp(
+        return FluentApp(
           title: 'The Puzzle Cell',
-          theme: ThemeData.dark(),
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
           debugShowCheckedModeBanner: false,
           home: FlameSplashScreen(
             controller: _splashController,
@@ -107,16 +106,20 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.black,
                 ),
                 logoBuilder: (ctx) {
-                  return Scaffold(
-                    backgroundColor: Colors.black,
-                    body: Center(
+                  return ScaffoldPage(
+                    //backgroundColor: Colors.black,
+                    content: Center(
                       child: Column(
                         children: [
                           Spacer(),
                           SizedBox(
                             width: 20.w,
                             height: 20.w,
-                            child: Image.asset('assets/images/logo.png'),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.fill,
+                              filterQuality: FilterQuality.none,
+                            ),
                           ),
                           Text(
                             'The Puzzle Cell',
@@ -140,7 +143,7 @@ class _MyAppState extends State<MyApp> {
               if (!splashScreenOver) {
                 splashScreenOver = true;
                 setLoopSoundVolume(
-                  floatMusic,
+                  flightMusic,
                   storage.getDouble('music_volume')!,
                 );
                 //playOnLoop(floatMusic, storage.getDouble('music_volume')!);
@@ -165,6 +168,7 @@ class _MyAppState extends State<MyApp> {
             '/credits': (ctx) => CreditsPage(),
             '/multiplayer': (ctx) => MultiplayerPage(),
             '/texturepack': (ctx) => TexturePack(),
+            '/worlds': (ctx) => WorldUI(),
           },
         );
       },

@@ -1,1 +1,0 @@
-P1;65;p;i;wall,empty,key,push,flag,lock,puzzle;A bit harder;Keys & Locks exist;0|0|o|;1|0|y|;0|0|e|;1|0|t|;2|0|w|;0|0|e|;3|0|e|;0|0|y|;1|0|e|;0|0|w|;1|0|w|;4|0|w|;0|0|e|;3|0|e|;0|0|w|;1|0|e|;0|0|e|;1|0|e|;5|0|w|;1|0|e|;0|0|e|;6|0|w|;1|0|w|;0|0|o|;1|0|r|;
