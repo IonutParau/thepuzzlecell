@@ -1,6 +1,7 @@
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
@@ -13,6 +14,7 @@ import 'logic/logic.dart';
 
 void main() async {
   //await Flame.device.setLandscape();
+
   WidgetsFlutterBinding.ensureInitialized();
   Player.boot();
   await Flame.device.fullScreen();
@@ -90,87 +92,85 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaleAssist(
-      builder: (context, orientation) {
-        return FluentApp(
-          title: 'The Puzzle Cell',
-          theme: ThemeData(
-            brightness: Brightness.dark,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
-          debugShowCheckedModeBanner: false,
-          home: FlameSplashScreen(
-            controller: _splashController,
-            theme: FlameSplashTheme(
-                backgroundDecoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-                logoBuilder: (ctx) {
-                  return ScaffoldPage(
-                    //backgroundColor: Colors.black,
-                    content: Center(
-                      child: Column(
-                        children: [
-                          Spacer(),
-                          SizedBox(
-                            width: 20.w,
-                            height: 20.w,
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              fit: BoxFit.fill,
-                              filterQuality: FilterQuality.none,
-                            ),
+    return FluentApp(
+      title: 'The Puzzle Cell',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: FlameSplashScreen(
+        controller: _splashController,
+        theme: FlameSplashTheme(
+            backgroundDecoration: BoxDecoration(
+              color: Colors.black,
+            ),
+            logoBuilder: (ctx) {
+              return ScaleAssist(builder: (context, size) {
+                return ScaffoldPage(
+                  //backgroundColor: Colors.black,
+                  content: Center(
+                    child: Column(
+                      children: [
+                        Spacer(),
+                        SizedBox(
+                          width: 20.w,
+                          height: 20.w,
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.none,
                           ),
-                          Text(
-                            'The Puzzle Cell',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                            ),
+                        ),
+                        Text(
+                          'The Puzzle Cell',
+                          style: TextStyle(
+                            fontSize: 12.sp,
                           ),
-                          Text(
-                            'by A Monitor#1595',
-                            style: TextStyle(
-                              fontSize: 5.sp,
-                            ),
+                        ),
+                        Text(
+                          'by A Monitor#1595',
+                          style: TextStyle(
+                            fontSize: 5.sp,
                           ),
-                          Spacer(),
-                        ],
-                      ),
+                        ),
+                        Spacer(),
+                      ],
                     ),
-                  );
-                }),
-            onFinish: (ctx) {
-              if (!splashScreenOver) {
-                splashScreenOver = true;
-                setLoopSoundVolume(
-                  flightMusic,
-                  storage.getDouble('music_volume')!,
+                  ),
                 );
-                //playOnLoop(floatMusic, storage.getDouble('music_volume')!);
-                Navigator.of(ctx).pushNamed('/main');
-              }
-            },
-          ),
-          routes: {
-            '/main': (ctx) => MainScreen(),
-            '/editor': (ctx) => Editor(),
-            '/game': (ctx) {
-              game = PuzzleGame();
-              return Container(child: GameUI());
-            },
-            '/game-loaded': (ctx) {
-              game = PuzzleGame();
-              return Container(child: GameUI(editorType: EditorType.loaded));
-            },
-            '/puzzles': (ctx) => Puzzles(),
-            '/settings': (ctx) => SettingsPage(),
-            '/version': (ctx) => VersionPage(),
-            '/credits': (ctx) => CreditsPage(),
-            '/multiplayer': (ctx) => MultiplayerPage(),
-            '/texturepack': (ctx) => TexturePack(),
-            '/worlds': (ctx) => WorldUI(),
-          },
-        );
+              });
+            }),
+        onFinish: (ctx) {
+          if (!splashScreenOver) {
+            splashScreenOver = true;
+            setLoopSoundVolume(
+              flightMusic,
+              storage.getDouble('music_volume')!,
+            );
+            //playOnLoop(floatMusic, storage.getDouble('music_volume')!);
+            Navigator.of(ctx).pushNamed('/main');
+          }
+        },
+      ),
+      routes: {
+        '/main': (ctx) => MainScreen(),
+        '/editor': (ctx) => Editor(),
+        '/game': (ctx) {
+          game = PuzzleGame();
+          return Container(child: GameUI());
+        },
+        '/game-loaded': (ctx) {
+          game = PuzzleGame();
+          return Container(child: GameUI(editorType: EditorType.loaded));
+        },
+        '/puzzles': (ctx) => Puzzles(),
+        '/settings': (ctx) => SettingsPage(),
+        '/version': (ctx) => VersionPage(),
+        '/credits': (ctx) => CreditsPage(),
+        '/multiplayer': (ctx) => MultiplayerPage(),
+        '/texturepack': (ctx) => TexturePack(),
+        '/worlds': (ctx) => WorldUI(),
       },
     );
   }

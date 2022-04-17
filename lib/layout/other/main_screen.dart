@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show ClipboardData;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
@@ -11,8 +12,11 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-bool get isDesktop =>
-    Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+bool get isDesktop {
+  if (kIsWeb) return false;
+
+  return Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+}
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -26,6 +30,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     return TextStyle(
       fontSize: fontSize,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   late final AnimationController _controller = AnimationController(
