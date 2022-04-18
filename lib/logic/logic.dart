@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:http/http.dart' as http show get, post, Response;
+import 'package:yaml/yaml.dart' show loadYaml;
 
 import '../layout/tools/tools.dart';
 
@@ -63,6 +65,7 @@ part 'update/rocket.dart';
 part 'update/heat.dart';
 part 'update/timetravel.dart';
 part 'achievements.dart';
+part 'updatechecker.dart';
 
 late SharedPreferences storage;
 

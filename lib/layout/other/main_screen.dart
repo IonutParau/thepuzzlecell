@@ -91,6 +91,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   if (isDesktop) LangsUI(),
                   CreditsPage(),
                   VersionPage(),
+                  UpdateUI(),
                 ],
               ),
               pane: NavigationPane(
@@ -134,6 +135,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   PaneItem(
                     icon: Icon(FluentIcons.change_entitlements),
                     title: Text(lang('version', 'Version')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.update_restore),
+                    title: Text(lang('update', 'Update')),
                   ),
                   PaneItemAction(
                     icon: Icon(FluentIcons.clipboard_list),
