@@ -4,18 +4,15 @@ bool shouldHaveGenBias(String id, int side) {
   if (CellTypeManager.generators.contains(id) ||
       CellTypeManager.replicators.contains(id) ||
       CellTypeManager.superGens.contains(id)) {
-    if (id.contains("triple")) return (side == 0 || side == 3 || side == 1);
-    if (id.contains("ccw")) return (side == 3);
-    if (id.contains("cw")) return (side == 1);
-    if (id == "constructorgen" ||
-        id == "constructor_supgen" ||
-        id == "quad_rep") return true;
-
-    if (id.contains("double")) return (side == 1 || side == 3);
+    if (id == "quad_rep") return true;
 
     if (id.contains("opposite")) return (side == 0 || side == 2);
 
     if (id.contains("cross")) return (side == 0 || side == 3);
+
+    if (id == "triple_rep") return (side == 2 || side == 1 || side == 3);
+
+    return side == 0;
   }
 
   return false;

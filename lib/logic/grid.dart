@@ -447,24 +447,18 @@ class Grid {
     }
     brokenCells = [];
     final cells = <String>{};
-    // for (var chunkRow in chunks) {
-    //   for (var chunk in chunkRow) {
-    //     chunk.clear();
-    //   }
-    // }
+    reloadChunks();
 
-    // final List<List<Set<String>>> newcells = [];
+    final List<List<Set<String>>> newcells = [];
 
-    // for (var x = 0; x < ceil(width / chunkSize); x++) {
-    //   newcells.add([]);
-    //   for (var y = 0; y < ceil(height / chunkSize); y++) {
-    //     newcells.last.add({});
-    //   }
-    // }
+    for (var x = 0; x < ceil(width / chunkSize); x++) {
+      newcells.add([]);
+      for (var y = 0; y < ceil(height / chunkSize); y++) {
+        newcells.last.add({});
+      }
+    }
 
-    loopChunks(
-      "all",
-      GridAlignment.BOTTOMRIGHT,
+    forEach(
       (p0, p1, p2) {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
@@ -477,7 +471,7 @@ class Grid {
         //final cx = p1 ~/ chunkSize;
         //final cy = p2 ~/ chunkSize;
         //newcells[cx][cy].add(p0.id);
-        //setChunk(p1, p2, p0.id);
+        setChunk(p1, p2, p0.id);
       },
     );
 
