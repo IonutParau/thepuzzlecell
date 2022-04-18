@@ -190,6 +190,23 @@ class Grid {
     chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
   }
 
+  void updateCell(
+      void Function(Cell cell, int x, int y) callback, int? rot, String id) {
+    if (rot == null) {
+      // Update statically
+      loopChunks(id, GridAlignment.BOTTOMRIGHT, callback,
+          filter: (cell, x, y) => cell.id == id && !cell.updated);
+    } else {
+      loopChunks(
+        id,
+        fromRot(rot),
+        callback,
+        filter: (cell, x, y) =>
+            cell.id == id && cell.rot == rot && !cell.updated,
+      );
+    }
+  }
+
   void forEach(void Function(Cell cell, int x, int y) callback,
       [int? wantedDirection, String? id]) {
     if (id != null) {
@@ -436,7 +453,18 @@ class Grid {
     //   }
     // }
 
-    forEach(
+    // final List<List<Set<String>>> newcells = [];
+
+    // for (var x = 0; x < ceil(width / chunkSize); x++) {
+    //   newcells.add([]);
+    //   for (var y = 0; y < ceil(height / chunkSize); y++) {
+    //     newcells.last.add({});
+    //   }
+    // }
+
+    loopChunks(
+      "all",
+      GridAlignment.BOTTOMRIGHT,
       (p0, p1, p2) {
         p0.updated = false;
         p0.lastvars = LastVars(p0.rot, p1, p2);
@@ -445,9 +473,15 @@ class Grid {
         p0.cy = null;
         p0.lifespan++;
         cells.add(p0.id);
+
+        //final cx = p1 ~/ chunkSize;
+        //final cy = p2 ~/ chunkSize;
+        //newcells[cx][cy].add(p0.id);
         //setChunk(p1, p2, p0.id);
       },
     );
+
+    //chunks = newcells;
 
     return cells;
   }

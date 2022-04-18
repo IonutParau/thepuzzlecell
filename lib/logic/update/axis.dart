@@ -12,7 +12,7 @@ void doAxis(int x, int y, int dir) {
 
 void axis() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doAxis(x, y, cell.rot);
       },

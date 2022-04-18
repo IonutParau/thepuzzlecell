@@ -98,7 +98,7 @@ class _SkinTileState extends State<SkinTile> {
       padding: EdgeInsets.all(1.w),
       child: SizedBox(
         width: 50.w,
-        height: 7.h,
+        height: 5.w,
         child: ListTile(
           title: Row(
             children: [

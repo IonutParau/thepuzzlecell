@@ -93,12 +93,12 @@ void timetravel() {
       filter: (cell, x, y) => cell.id == "time_trash" && !cell.updated,
     );
 
-    grid.forEach(
+    grid.loopChunks(
+      "consistent",
+      GridAlignment.BOTTOMRIGHT,
       (Cell cell, int x, int y) {
         timeGrid!.set(x, y, cell.copy);
       },
-      null,
-      "consistent",
     );
 
     grid.forEach(
@@ -122,7 +122,9 @@ void timetravel() {
     );
 
     if (grid.cells.contains("consistency")) {
-      grid.forEach(
+      grid.loopChunks(
+        "all",
+        GridAlignment.BOTTOMRIGHT,
         (cell, x, y) {
           if (cell.tags.contains("consistent") && cell.id != "empty") {
             timeGrid!.set(x, y, cell);
@@ -135,5 +137,6 @@ void timetravel() {
     grid = timeGrid!.copy;
     playerKeys = 0;
     mustTimeTravel = false;
+    game.itime = game.delay;
   }
 }

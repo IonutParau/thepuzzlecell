@@ -2,28 +2,28 @@ part of logic;
 
 void transformers() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTransformer(x, y, cell.rot, cell.rot, 0, 0);
       },
       rot,
       "transformer",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0);
       },
       rot,
       "transformer_cw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0);
       },
       rot,
       "transformer_ccw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0);
         doTransformer(x, y, cell.rot, cell.rot, 0, 0);

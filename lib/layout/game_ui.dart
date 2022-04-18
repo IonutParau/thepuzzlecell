@@ -151,9 +151,9 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                   }
                 } else {
                   if (event.scrollDelta.dy < 0) {
-                    game.zoomin();
+                    game.zoomin(abs(event.scrollDelta.dy / 16).toDouble());
                   } else if (event.scrollDelta.dy > 0) {
-                    game.zoomout();
+                    game.zoomout(abs(event.scrollDelta.dy / 16).toDouble());
                   }
                 }
               }
@@ -877,6 +877,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       increaseBrush();
     } else if (newSelection == "dec_brush") {
       decreaseBrush();
+    } else if (newSelection == "zoomin") {
+      zoomin();
+    } else if (newSelection == "zoomout") {
+      zoomout();
     } else {
       currentSelection = cells.indexOf(newSelection);
     }
@@ -968,7 +972,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   bool mouseInside = true;
 
-  void properlyChangeZoom(int oldzoom, int newzoom) {
+  void properlyChangeZoom(double oldzoom, double newzoom) {
     final scale = newzoom / oldzoom;
 
     storedOffX = (storedOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
@@ -1867,7 +1871,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     await loadAllButtonTextures();
     if (edType == EditorType.loaded) {
-      wantedCellSize ~/= (max(grid.width, grid.height) / 2);
+      wantedCellSize /= (max(grid.width, grid.height) / 2);
       storedOffX = canvasSize.x / 2 - (grid.width / 2) * cellSize;
       storedOffY = canvasSize.y / 2 - (grid.height / 2) * cellSize;
     }
@@ -1894,6 +1898,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   Map<String, Vector2> cursors = {};
 
   @override
+  // Main game rendering
   void render(Canvas canvas) {
     this.canvas = canvas;
 
@@ -1962,6 +1967,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     //   maxx: ex,
     //   maxy: ey,
     //   fastChunk: false, // Fast chunk has some problems
+    //   filter: (cell, x, y) => true,
     // );
 
     for (var x = sx; x < ex; x++) {
@@ -1976,19 +1982,33 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
+    renderMap.forEach(
+      (x, ys) => ys.forEach(
+        (y) => renderCell(
+          grid.at(x, y),
+          x,
+          y,
+        ),
+      ),
+    );
+
     if (realisticRendering && (running || onetick)) {
       for (var b in grid.brokenCells) {
         b.render(canvas, interpolation ? (itime % delay) / delay : 1);
       }
     }
 
-    renderMap.forEach(
-      (x, ys) {
-        for (var y in ys) {
-          renderCell(grid.at(x, y), x, y);
-        }
-      },
-    );
+    // grid.loopChunks(
+    //   "all",
+    //   GridAlignment.BOTTOMLEFT,
+    //   renderCell,
+    //   // minx: sx,
+    //   // miny: sy,
+    //   // maxx: ex,
+    //   // maxy: ey,
+    //   fastChunk: false, // Fast chunk has some problems
+    //   filter: (cell, x, y) => cell.id != "empty",
+    // );
 
     if (edType == EditorType.making &&
         realisticRendering &&
@@ -2706,25 +2726,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       storedOffX *= sX;
       storedOffY *= sY;
-      wantedCellSize = (wantedCellSize * sX) ~/ 1;
+      wantedCellSize = (wantedCellSize * sX);
       cellSize *= sX;
     }
   }
 
-  void zoomout() {
+  void zoomout([double scale = 1]) {
     if (inMenu) return;
     if (wantedCellSize > (defaultCellSize) / 16) {
       final lastZoom = wantedCellSize;
-      wantedCellSize ~/= 2;
+      wantedCellSize /= (2 * scale);
       properlyChangeZoom(lastZoom, wantedCellSize);
     }
   }
 
-  void zoomin() {
+  void zoomin([double scale = 1]) {
     if (inMenu) return;
     if (wantedCellSize < (defaultCellSize) * 256) {
       final lastZoom = wantedCellSize;
-      wantedCellSize *= 2;
+      wantedCellSize *= (2 * scale);
       properlyChangeZoom(lastZoom, wantedCellSize);
     }
   }

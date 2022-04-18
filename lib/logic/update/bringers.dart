@@ -2,7 +2,7 @@ part of logic;
 
 void bringers() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doBringer(x, y, cell.rot);
       },

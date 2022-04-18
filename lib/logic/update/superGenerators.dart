@@ -48,6 +48,8 @@ void doSupGen(int x, int y, int dir, int gendir,
   final fx = frontX(x, dir) + offX;
   final fy = frontY(y, dir) + offY;
 
+  if (genOptimizer.shouldSkip(fx, fy, dir)) return;
+
   if (toGen.isNotEmpty) {
     for (var cell in toGen) {
       cell.updated = cell.updated ||
@@ -58,6 +60,7 @@ void doSupGen(int x, int y, int dir, int gendir,
       cell.rot += addedRot;
       cell.rot %= 4;
       if (!push(fx, fy, dir, 1, replaceCell: cell)) {
+        genOptimizer.skip(fx, fy, dir);
         return;
       }
     }
@@ -65,30 +68,31 @@ void doSupGen(int x, int y, int dir, int gendir,
 }
 
 void supgens() {
+  genOptimizer.clear();
   if (!grid.movable) return;
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, cell.rot, cell.rot);
       },
       rot,
       "supgen",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, (cell.rot + 1) % 4, cell.rot);
       },
       rot,
       "supgen_cw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, (cell.rot + 3) % 4, cell.rot);
       },
       rot,
       "supgen_ccw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, cell.rot, cell.rot);
         doSupGen(x, y, (cell.rot + 3) % 4, (cell.rot + 3) % 4);
@@ -96,7 +100,7 @@ void supgens() {
       rot,
       "cross_supgen",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, cell.rot + 3, cell.rot);
         doSupGen(x, y, cell.rot + 1, cell.rot);
@@ -104,7 +108,7 @@ void supgens() {
       rot,
       "double_supgen",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doSupGen(x, y, cell.rot + 3, cell.rot);
         doSupGen(x, y, cell.rot, cell.rot);
@@ -113,7 +117,7 @@ void supgens() {
       rot,
       "triple_supgen",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         final lx = frontX(0, cell.rot + 1);
         final ly = frontY(0, cell.rot + 1);

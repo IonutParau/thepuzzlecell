@@ -49,7 +49,7 @@ void doGate(int x, int y, int rot, GateType gateType) {
 void gates(Set<String> cells) {
   for (var rot in rotOrder) {
     if (cells.contains("and_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.AND);
         },
@@ -58,7 +58,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("or_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.OR);
         },
@@ -67,7 +67,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("xor_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.XOR);
         },
@@ -76,7 +76,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("not_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.NOT);
         },
@@ -85,7 +85,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("nand_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.NAND);
         },
@@ -94,7 +94,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("nor_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.NOR);
         },
@@ -103,7 +103,7 @@ void gates(Set<String> cells) {
       );
     }
     if (cells.contains("xnor_gate")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           doGate(x, y, cell.rot, GateType.XNOR);
         },

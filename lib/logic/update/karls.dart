@@ -1,7 +1,7 @@
 part of logic;
 
 void karls() {
-  grid.forEach(
+  grid.updateCell(
     (cell, x, y) {
       cell.updated = true;
       // print(cell.data['velX']);

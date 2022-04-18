@@ -22,21 +22,21 @@ void doVacuum(Cell cell, int x, int y) {
 
 void fans() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       doFan,
       rot,
       "fan",
     );
   }
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       doVacuum,
       rot,
       "vacuum",
     );
   }
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (c, x, y) {
         grabSide(x, y, c.rot - 1, c.rot, 0);
         grabSide(x, y, c.rot + 1, c.rot, 0);
@@ -46,7 +46,7 @@ void fans() {
     );
   }
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (c, x, y) {
         doDriller(frontX(x, c.rot), frontY(y, c.rot), c.rot);
       },
@@ -55,7 +55,7 @@ void fans() {
     );
   }
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (c, x, y) {
         nudge(frontX(x, c.rot), frontY(y, c.rot), c.rot);
       },

@@ -2,7 +2,7 @@ part of logic;
 
 void stoppers() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         final fx = frontX(x, cell.rot);
         final fy = frontY(y, cell.rot);

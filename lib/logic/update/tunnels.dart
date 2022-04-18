@@ -2,30 +2,31 @@ part of logic;
 
 void tunnels() {
   if (!grid.movable) return;
+  genOptimizer.clear();
   // Tunnels
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTunnel(x, y, cell.rot);
       },
       rot,
       "tunnel",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTunnel(x, y, cell.rot, (cell.rot + 1) % 4);
       },
       rot,
       "tunnel_cw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doTunnel(x, y, cell.rot, (cell.rot + 3) % 4);
       },
       rot,
       "tunnel_ccw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doMultiTunnel(x, y, cell.rot, [
           cell.rot + 1,
@@ -35,7 +36,7 @@ void tunnels() {
       rot,
       "dual_tunnel",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doMultiTunnel(x, y, cell.rot, [
           cell.rot,
@@ -50,21 +51,21 @@ void tunnels() {
 
   // Warpers
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doWarper(x, y, cell.rot, cell.rot);
       },
       rot,
       "warper",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doWarper(x, y, cell.rot, (cell.rot + 1) % 4);
       },
       rot,
       "warper_cw",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doWarper(x, y, cell.rot, (cell.rot + 3) % 4);
       },
@@ -83,6 +84,8 @@ bool doTunnel(int x, int y, int dir, [int? odir]) {
 
   final fx = frontX(x, odir);
   final fy = frontY(y, odir);
+
+  if (genOptimizer.shouldSkip(fx, fy, odir)) return false;
 
   var bx = frontX(x, dir + 2);
   var by = frontY(y, dir + 2);
@@ -113,6 +116,7 @@ bool doTunnel(int x, int y, int dir, [int? odir]) {
       grid.set(bx, by, Cell(bx, by));
       return true;
     } else {
+      genOptimizer.skip(fx, fy, odir);
       return false;
     }
   }

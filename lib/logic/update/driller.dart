@@ -2,7 +2,7 @@ part of logic;
 
 void drillers() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         cell.updated = true;
         doDriller(x, y, cell.rot);

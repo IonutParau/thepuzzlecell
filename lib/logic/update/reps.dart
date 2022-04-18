@@ -10,21 +10,21 @@ void doRep(int x, int y, int dir, int gendir,
 void reps() {
   if (!grid.movable) return;
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, cell.rot, cell.rot);
       },
       rot,
       "replicator",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, cell.rot, cell.rot, 0, 0, true);
       },
       rot,
       "physical_replicator",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, cell.rot, cell.rot);
         doRep(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4);
@@ -32,7 +32,7 @@ void reps() {
       rot,
       "opposite_replicator",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, cell.rot, cell.rot);
         doRep(x, y, (cell.rot + 3) % 4, (cell.rot + 3) % 4);
@@ -40,7 +40,7 @@ void reps() {
       rot,
       "cross_replicator",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4);
         doRep(x, y, cell.rot, cell.rot);
@@ -49,7 +49,7 @@ void reps() {
       rot,
       "triple_rep",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doRep(x, y, 0, 0);
         doRep(x, y, 1, 1);

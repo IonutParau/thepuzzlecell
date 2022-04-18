@@ -33,7 +33,7 @@ void doDarty(Cell cell, int x, int y, [bool forced = false]) {
 
 void dartys() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doDarty(cell, x, y);
       },

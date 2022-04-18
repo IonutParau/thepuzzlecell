@@ -135,65 +135,79 @@ void gens(Set cells) {
   genOptimizer.clear();
   for (var rot in rotOrder) {
     if (cells.contains("generator")) {
-      grid.forEach(
+      grid.loopChunks(
+        "generator",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot, rot);
         },
-        rot,
-        "generator",
+        filter: (cell, x, y) =>
+            cell.id == "generator" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("generator_cw")) {
-      grid.forEach(
+      grid.loopChunks(
+        "generator_cw",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot + 1, rot);
         },
-        rot,
-        "generator_cw",
+        filter: (cell, x, y) =>
+            cell.id == "generator_cw" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("generator_ccw")) {
-      grid.forEach(
+      grid.loopChunks(
+        "generator_ccw",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot - 1, rot);
         },
-        rot,
-        "generator_ccw",
+        filter: (cell, x, y) =>
+            cell.id == "generator_ccw" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("crossgen")) {
-      grid.forEach(
+      grid.loopChunks(
+        "crossgen",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot, rot);
           doGen(x, y, rot - 1, rot - 1);
         },
-        rot,
-        "crossgen",
+        filter: (cell, x, y) =>
+            cell.id == "crossgen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("doublegen")) {
-      grid.forEach(
+      grid.loopChunks(
+        "doublegen",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot - 1, rot);
           doGen(x, y, rot + 1, rot);
         },
-        rot,
-        "doublegen",
+        filter: (cell, x, y) =>
+            cell.id == "doublegen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("triplegen")) {
-      grid.forEach(
+      grid.loopChunks(
+        "triplegen",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot, rot);
           doGen(x, y, rot - 1, rot);
           doGen(x, y, rot + 1, rot);
         },
-        rot,
-        "triplegen",
+        filter: (cell, x, y) =>
+            cell.id == "triplegen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("constructorgen")) {
-      grid.forEach(
+      grid.loopChunks(
+        "constructorgen",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot, rot);
           doGen(x, y, rot - 1, rot);
@@ -205,20 +219,24 @@ void gens(Set cells) {
           doGen(x, y, rot, rot, floor(forward.dx + down.dx),
               floor(forward.dy + down.dy));
         },
-        rot,
-        "constructorgen",
+        filter: (cell, x, y) =>
+            cell.id == "constructorgen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("physical_gen")) {
-      grid.forEach(
+      grid.loopChunks(
+        "physical_gen",
+        fromRot(rot),
         (cell, x, y) {
           doGen(x, y, rot, rot, null, null, 0, true);
         },
-        rot,
-        "physical_gen",
+        filter: (cell, x, y) =>
+            cell.id == "physical_gen" && cell.rot == rot && !cell.updated,
       );
     }
-    grid.forEach(
+    grid.loopChunks(
+      "physical_gen_cw",
+      fromRot(rot),
       (cell, x, y) {
         doGen(
           x,
@@ -233,10 +251,12 @@ void gens(Set cells) {
           frontY(0, rot + 1) - frontY(0, rot),
         );
       },
-      rot,
-      "physical_gen_cw",
+      filter: (cell, x, y) =>
+          cell.id == "physical_gen_cw" && cell.rot == rot && !cell.updated,
     );
-    grid.forEach(
+    grid.loopChunks(
+      "physical_gen_ccw",
+      fromRot(rot),
       (cell, x, y) {
         doGen(
           x,
@@ -251,8 +271,8 @@ void gens(Set cells) {
           frontY(0, rot + 3) - frontY(0, rot),
         );
       },
-      rot,
-      "physical_gen_ccw",
+      filter: (cell, x, y) =>
+          cell.id == "physical_gen_ccw" && cell.rot == rot && !cell.updated,
     );
   }
 }

@@ -68,6 +68,10 @@ void quantums() {
       (cell, x, y) {
         if (cell.rot == rot) Unstable(x, y, cell.rot);
       },
+      filter: (cell, x, y) =>
+          cell.id == "unstable_mover" &&
+          cell.rot == rot &&
+          cell.updated == false,
     );
   }
 

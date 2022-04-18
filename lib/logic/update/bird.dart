@@ -3,7 +3,7 @@ part of logic;
 void birds() {
   if (!grid.movable) return;
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doBird(x, y, cell.rot);
       },

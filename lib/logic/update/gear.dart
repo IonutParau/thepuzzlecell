@@ -77,7 +77,7 @@ void doGear(int x, int y, RotationalType rt) {
 void gears(cells) {
   if (!grid.movable) return;
   if (cells.contains("gear_cw")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doGear(x, y, RotationalType.clockwise);
       },
@@ -86,7 +86,7 @@ void gears(cells) {
     );
   }
   if (cells.contains("gear_ccw")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doGear(x, y, RotationalType.counter_clockwise);
       },

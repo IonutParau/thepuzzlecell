@@ -1,6 +1,6 @@
 part of logic;
 
-var defaultCellSize = 40;
+var defaultCellSize = 40.0;
 var cellSize = defaultCellSize.toDouble();
 var wantedCellSize = defaultCellSize;
 
@@ -169,6 +169,8 @@ final cells = {
 }.toList();
 
 Map<String, String> textureMap = {
+  'zoomin.png': 'interface/zoomin.png',
+  'zoomout.png': 'interface/zoomout.png',
   "mech_p_gen.png": "mechanical/mech_p_gen.png",
   "rotator_rand.png": "rotators/rand_rotator.png",
   "mech_keyup.png": "base.png",
@@ -349,6 +351,8 @@ final categories = [
       ),
       "inc_brush",
       "dec_brush",
+      "zoomin",
+      "zoomout",
     ],
     "tool",
   ),
@@ -1274,5 +1278,21 @@ final cellInfo = <String, CellProfile>{
   "consistency": CellProfile(
     "Consistency",
     "Makes all of the cells have the Consistency effect, making them behave like a Consistent cell",
+  ),
+  "inc_brush": CellProfile(
+    "Increase Brush Size",
+    "Increases the brush size",
+  ),
+  "dec_brush": CellProfile(
+    "Decrease Brush Size",
+    "Decreases the brush size",
+  ),
+  "zoomin": CellProfile(
+    "Zoom In",
+    "Moves the camera closer to the grid",
+  ),
+  "zoomout": CellProfile(
+    "Zoom Out",
+    "Moves the camera away from the grid",
   ),
 };

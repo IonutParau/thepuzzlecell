@@ -2,7 +2,7 @@ part of logic;
 
 void speeds() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         if (nudge(x, y, cell.rot)) {
           final fx = frontX(x, cell.rot);
@@ -17,14 +17,14 @@ void speeds() {
       rot,
       "fast",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         nudge(x, y, cell.rot);
       },
       rot,
       "speed",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         cell.data['slow-toggled'] = !(cell.data['slow-toggled'] ?? false);
         if (cell.data['slow-toggled'] == true) {

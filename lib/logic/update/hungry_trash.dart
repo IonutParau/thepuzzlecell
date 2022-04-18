@@ -1,7 +1,7 @@
 part of logic;
 
 void hungryTrashes() {
-  grid.forEach(
+  grid.updateCell(
     (cell, x, y) {
       var ox = 0;
       var oy = 0;

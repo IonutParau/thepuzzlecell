@@ -2,7 +2,7 @@ part of logic;
 
 void rots(Set<String> cells) {
   if (cells.contains("rotator_cw")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         grid.rotate(
             frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
@@ -18,7 +18,7 @@ void rots(Set<String> cells) {
     );
   }
   if (cells.contains("rotator_ccw")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         grid.rotate(
             frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
@@ -34,7 +34,7 @@ void rots(Set<String> cells) {
     );
   }
   if (cells.contains("opposite_rotator")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         if (!cell.tags.contains("anchored"))
           grid.rotate(frontX(cell.cx ?? x, cell.rot),
@@ -69,7 +69,7 @@ void rots(Set<String> cells) {
     );
   }
   if (cells.contains("rotator_180")) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         grid.rotate(
             frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 2);
@@ -86,7 +86,7 @@ void rots(Set<String> cells) {
   }
   for (var rot in rotOrder) {
     if (cells.contains("redirector")) {
-      grid.forEach(
+      grid.updateCell(
         (cell, x, y) {
           final fx = frontX(x, cell.rot);
           final fy = frontY(y, cell.rot);

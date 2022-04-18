@@ -2,14 +2,14 @@ part of logic;
 
 void grabbers() {
   for (var rot in rotOrder) {
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doGrabber(x, y, cell.rot);
       },
       rot,
       "grabber",
     );
-    grid.forEach(
+    grid.updateCell(
       (cell, x, y) {
         doThief(x, y, cell.rot);
       },

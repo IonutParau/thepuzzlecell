@@ -23,14 +23,14 @@ void doAnt(RotationalType rt, Cell cell, int x, int y) {
 }
 
 void ants() {
-  grid.forEach(
+  grid.updateCell(
     (cell, x, y) {
       doAnt(RotationalType.clockwise, cell, x, y);
     },
     null,
     "ant_cw",
   );
-  grid.forEach(
+  grid.updateCell(
     (cell, x, y) {
       doAnt(RotationalType.counter_clockwise, cell, x, y);
     },

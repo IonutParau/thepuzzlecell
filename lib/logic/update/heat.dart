@@ -47,7 +47,9 @@ void doSnow(Cell cell, int x, int y) {
 }
 
 void heat() {
-  grid.forEach(
+  grid.loopChunks(
+    "all",
+    GridAlignment.BOTTOMRIGHT,
     (cell, x, y) {
       final temp = cell.data['heat'] ?? 0;
       if (temp >= 100) {
@@ -64,6 +66,6 @@ void heat() {
     },
   );
 
-  grid.forEach(doMagma, null, "magma");
-  grid.forEach(doSnow, null, "snow");
+  grid.updateCell(doMagma, null, "magma");
+  grid.updateCell(doSnow, null, "snow");
 }
