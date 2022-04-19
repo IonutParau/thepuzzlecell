@@ -166,9 +166,17 @@ final cells = {
   "mech_rotator_ccw",
   "rotator_rand",
   "mech_p_gen",
+  "unstable_gen",
+  "electron",
+  "neutron",
+  "proton",
 }.toList();
 
 Map<String, String> textureMap = {
+  "proton.png": "quantum/proton.png",
+  "neutron.png": "quantum/neutron.png",
+  "electron.png": "quantum/electron.png",
+  "unstable_gen.png": "quantum/generator.png",
   'zoomin.png': 'interface/zoomin.png',
   'zoomout.png': 'interface/zoomout.png',
   "mech_p_gen.png": "mechanical/mech_p_gen.png",
@@ -188,7 +196,7 @@ Map<String, String> textureMap = {
   "snow.png": "heat/snow.png",
   "collector.png": "movers/pullers/collector.png",
   "field.png": "quantum/field.png",
-  "unstable_mover.png": "movers/unstable.png",
+  "unstable_mover.png": "quantum/mover.png",
   "push_trash.png": "destroyers/trash/push_trash.png",
   "pull_trash.png": "destroyers/trash/pull_trash.png",
   "grab_trash.png": "destroyers/trash/grab_trash.png",
@@ -635,7 +643,11 @@ final categories = [
         "A hole new type of physics lies in this category",
         [
           "unstable_mover",
+          "unstable_gen",
           "field",
+          "proton",
+          "neutron",
+          "electron",
         ],
         "unstable_mover",
       ),

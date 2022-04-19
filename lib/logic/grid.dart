@@ -428,9 +428,12 @@ class Grid {
   }
 
   bool get movable {
+    if (cells.contains("empty")) return true;
     for (var passThrough in justMoveInsideOf) {
       if (cells.contains(passThrough)) return true;
     }
+    if (cells.containsAny(trashes)) return true;
+    if (cells.containsAny(enemies)) return true;
     if (cells.contains("semi_enemy") || cells.contains("semi_trash"))
       return true;
     return false;
@@ -666,7 +669,7 @@ class Grid {
       if (cells.contains("stopper")) stoppers,
       heat,
       if (cells.containsAny(CellTypeManager.mechanical)) mechs,
-      if (cells.containsAny(CellTypeManager.quantum)) quantums,
+      quantums,
       if (cells.contains("hungry_trash")) hungryTrashes,
       if (cells.containsAny(CellTypeManager.mirrors)) mirrors,
       if (cells.containsAny(CellTypeManager.rockets)) rockets,
