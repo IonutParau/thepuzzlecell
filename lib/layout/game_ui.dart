@@ -2407,7 +2407,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     // if (!overlays.isActive('Info')) {
     //   overlays.add('Info');
     // }
-    if (puzzleWin && !overlays.isActive("Win") && edType == EditorType.loaded) {
+    if (puzzleWin &&
+        (!overlays.isActive("Win")) &&
+        edType == EditorType.loaded) {
       overlays.add("Win");
       CoinManager.give(Random().nextInt(7) + 3);
       AchievementManager.complete("winner");

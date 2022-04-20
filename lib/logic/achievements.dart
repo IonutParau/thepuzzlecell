@@ -32,6 +32,7 @@ class AchievementManager {
     if (hasAchievement(achievement)) return;
     final a = achievements;
     a.add(achievement);
+    CoinManager.give(achievementData[a]!.prize);
     storage.setStringList("achievements", a);
     AchievementRenderer.show(achievement);
   }
