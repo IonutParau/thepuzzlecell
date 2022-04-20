@@ -246,7 +246,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 Spacer(),
                                 LayoutBuilder(builder: (context, cons) {
                                   return Container(
-                                    width: 25.w,
+                                    width: min(20.w, cons.maxWidth),
                                     height: 10.h,
                                     padding: EdgeInsets.all(2.w),
                                     child: Slider(
@@ -284,33 +284,37 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   ),
                                 ),
                                 Spacer(),
-                                Container(
-                                  width: 25.w,
-                                  height: 10.h,
-                                  padding: EdgeInsets.all(2.w),
-                                  child: Slider(
-                                    style: SliderThemeData(
-                                      thumbColor: Colors.black,
-                                      activeColor: Colors.blue,
-                                      inactiveColor: Colors.black,
-                                      disabledActiveColor: Colors.black,
-                                      disabledInactiveColor: Colors.black,
-                                      disabledThumbColor: Colors.black,
-                                      useThumbBall: true,
-                                    ),
-                                    value: flightMusic.playing
-                                        ? flightMusic.volume
-                                        : 0.0,
-                                    min: 0,
-                                    max: 1,
-                                    onChanged: (newVal) {
-                                      setLoopSoundVolume(
-                                        flightMusic,
-                                        newVal,
-                                      );
-                                      refreshMenu();
-                                    },
-                                  ),
+                                LayoutBuilder(
+                                  builder: (context, cons) {
+                                    return Container(
+                                      width: min(20.w, cons.maxWidth),
+                                      height: 10.h,
+                                      padding: EdgeInsets.all(2.w),
+                                      child: Slider(
+                                        style: SliderThemeData(
+                                          thumbColor: Colors.black,
+                                          activeColor: Colors.blue,
+                                          inactiveColor: Colors.black,
+                                          disabledActiveColor: Colors.black,
+                                          disabledInactiveColor: Colors.black,
+                                          disabledThumbColor: Colors.black,
+                                          useThumbBall: true,
+                                        ),
+                                        value: flightMusic.playing
+                                            ? flightMusic.volume
+                                            : 0.0,
+                                        min: 0,
+                                        max: 1,
+                                        onChanged: (newVal) {
+                                          setLoopSoundVolume(
+                                            flightMusic,
+                                            newVal,
+                                          );
+                                          refreshMenu();
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -364,37 +368,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 children: [
                                   MaterialButton(
                                     onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) {
-                                          return ContentDialog(
-                                            title: Text("Confirm exit?"),
-                                            content: Text(
-                                              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
-                                            ),
-                                            actions: [
-                                              Button(
-                                                child: Text("Yes"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  Navigator.pop(context);
-                                                  if (worldIndex != null) {
-                                                    worldManager.SaveWorld(
-                                                      worldIndex!,
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                              Button(
-                                                child: Text("No"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
+                                      game.exit();
                                     },
                                     child: Image.asset(
                                       'assets/images/' + 'back.png',
@@ -408,7 +382,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     ),
                                   ),
                                   Text(
-                                    'Exit Editor',
+                                    lang("exit", 'Exit Editor'),
                                     style: TextStyle(
                                       fontSize: 7.sp,
                                     ),
@@ -454,7 +428,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     ),
                                   ),
                                   Text(
-                                    'Clear',
+                                    lang('clear', 'Clear'),
                                     style: TextStyle(
                                       fontSize: 7.sp,
                                     ),
@@ -886,6 +860,48 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void exit() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return ContentDialog(
+          title: Text(
+            lang(
+              "confirm_exit",
+              "Confirm exit?",
+            ),
+          ),
+          content: Text(
+            lang(
+              "confirm_exit_desc",
+              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
+            ),
+          ),
+          actions: [
+            Button(
+              child: Text(lang("yes", "Yes")),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                if (worldIndex != null) {
+                  worldManager.SaveWorld(
+                    worldIndex!,
+                  );
+                }
+              },
+            ),
+            Button(
+              child: Text(lang("no", "No")),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void back() {
     if (edType == EditorType.making) {
       if (overlays.isActive('EditorMenu')) {
@@ -894,33 +910,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         overlays.add('EditorMenu');
       }
     } else {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return ContentDialog(
-            title: Text("Confirm exit?"),
-            content: Text(
-              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
-            ),
-            actions: [
-              Button(
-                child: Text("Yes"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-              ),
-              Button(
-                child: Text("No"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  resetAllCategories();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      exit();
     }
   }
 
@@ -1127,10 +1117,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ButtonAlignment.TOPLEFT,
         back,
         () => true,
-        title: edType == EditorType.making ? 'Editor Menu' : 'Exit Editor',
+        title: edType == EditorType.making
+            ? lang('editor_menu', 'Editor Menu')
+            : lang('exit', 'Exit Editor'),
         description: edType == EditorType.making
-            ? 'Opens the Editor Menu'
-            : 'Exits the editor',
+            ? lang('editor_menu_desc', 'Opens the Editor Menu')
+            : lang('exit_desc', 'Exits the editor'),
       ),
     );
 
@@ -1780,6 +1772,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   @override
   Future<void>? onLoad() async {
+    await loadAllButtonTextures();
+
     await Flame.images.load('base.png');
     await Flame.images.load('empty.png');
 
@@ -1868,8 +1862,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     cellSize = defaultCellSize.toDouble();
-
-    await loadAllButtonTextures();
     if (edType == EditorType.loaded) {
       wantedCellSize /= (max(grid.width, grid.height) / 2);
       storedOffX = canvasSize.x / 2 - (grid.width / 2) * cellSize;
