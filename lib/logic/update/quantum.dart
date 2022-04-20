@@ -83,8 +83,9 @@ void doField(Cell cell, int x, int y) {
 class RaycastInfo {
   late Cell hitCell;
   bool successful;
+  late int distance;
 
-  RaycastInfo.successful(Cell cell) : successful = true {
+  RaycastInfo.successful(Cell cell, this.distance) : successful = true {
     hitCell = cell.copy;
   }
 
@@ -94,16 +95,18 @@ class RaycastInfo {
 RaycastInfo raycast(int cx, int cy, int dx, int dy) {
   var x = cx;
   var y = cy;
+  var d = 0;
 
   while (true) {
     x += dx;
     y += dy;
+    d++;
     if (!grid.inside(x, y)) return RaycastInfo.broken();
 
     final cell = grid.at(x, y);
 
     if (cell.id != "empty") {
-      return RaycastInfo.successful(cell);
+      return RaycastInfo.successful(cell, d);
     }
   }
 }
@@ -111,9 +114,13 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
 int clamp(int n, int minn, int maxn) => max(minn, min(n, maxn));
 
 void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
+  final c = grid.at(x, y);
+
+  final force = 10;
+
   // Forces
-  var vx = 0;
-  var vy = 0;
+  double vx = c.data['vel_x'] ?? 0;
+  double vy = c.data['vel_y'] ?? 0;
 
   // Compute forces
   final offs = [1, 0, -1, 0, 0, 1, 0, -1, 1, 1, 1, -1, -1, 1, -1, -1];
@@ -126,26 +133,43 @@ void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
 
     if (cell.successful) {
       if (attracted.contains(cell.hitCell.id)) {
-        vx += ox;
-        vy += oy;
+        vx += ox / (cell.distance * cell.distance) * force;
+        vy += oy / (cell.distance * cell.distance) * force;
       }
       if (repelled.contains(cell.hitCell.id)) {
-        vx -= ox;
-        vy -= oy;
+        vx -= ox / (cell.distance * cell.distance) * force;
+        vy -= oy / (cell.distance * cell.distance) * force;
       }
     }
   }
 
+  // Save forces
+  c.data['vel_x'] = vx;
+  c.data['vel_y'] = vy;
+
   // Fix forces
-  vx = clamp(vx, -1, 1);
-  vy = clamp(vy, -1, 1);
+  if (vx < 0) vx = -1;
+  if (vx > 0) vx = 1;
+
+  if (vy < 0) vy = -1;
+  if (vy > 0) vy = 1;
 
   // Move
   if (vx != 0 || vy != 0) {
-    if (grid.inside(x + vx, y + vy) == false) return;
+    var cx = vx == 0 ? x : x + vx ~/ 1;
+    var cy = vy == 0 ? y : y + vy ~/ 1;
 
-    if (grid.at(x + vx, y + vy).id == "empty") {
-      moveCell(x, y, x + vx, y + vy);
+    if (grid.inside(cx, cy) && grid.at(cx, cy).id == "empty") {
+      moveCell(x, y, cx, cy);
+    } else if (grid.inside(cx, y) && grid.at(cx, y).id == "empty") {
+      c.data.remove('vel_y');
+      moveCell(x, y, cx, y);
+    } else if (grid.inside(x, cy) && grid.at(x, cy).id == "empty") {
+      c.data.remove('vel_x');
+      moveCell(x, y, x, cy);
+    } else {
+      c.data.remove('vel_x');
+      c.data.remove('vel_y');
     }
   }
 }
@@ -185,14 +209,14 @@ void quantums() {
   // My brain hurts
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["proton"], ["electron", "neutron"]);
+      physicsCell(x, y, ["proton"], ["electron"]);
     },
     null,
     "electron",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["neutron"], []);
+      physicsCell(x, y, ["neutron"], ["proton"]);
     },
     null,
     "proton",
