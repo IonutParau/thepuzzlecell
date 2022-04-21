@@ -320,46 +320,46 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                             ),
                           ),
                           Spacer(),
-                          Padding(
-                            padding: EdgeInsets.all(1.w),
-                            child: Row(
-                              children: [
-                                //Spacer(flex: 2),
-                                Text(
-                                  "Border: ${(cellInfo[borders[borderMode]] ?? defaultProfile).title}",
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                  ),
-                                ),
-                                Spacer(),
-                                Container(
-                                  width: 25.w,
-                                  height: 10.h,
-                                  padding: EdgeInsets.all(2.w),
-                                  child: Slider(
-                                    style: SliderThemeData(
-                                      thumbColor: Colors.black,
-                                      activeColor: Colors.blue,
-                                      inactiveColor: Colors.black,
-                                      disabledActiveColor: Colors.black,
-                                      disabledInactiveColor: Colors.black,
-                                      disabledThumbColor: Colors.black,
-                                      useThumbBall: true,
-                                    ),
-                                    value: borderMode.toDouble(),
-                                    min: 0,
-                                    max: borders.length - 1,
-                                    divisions: borders.length - 1,
-                                    onChanged: (newVal) {
-                                      borderMode = newVal.toInt();
-                                      refreshMenu();
-                                    },
-                                  ),
-                                ),
-                                //Spacer(flex: 2),
-                              ],
-                            ),
-                          ),
+                          // Padding(
+                          //   padding: EdgeInsets.all(1.w),
+                          //   child: Row(
+                          //     children: [
+                          //       //Spacer(flex: 2),
+                          //       Text(
+                          //         "Border: ${(cellInfo[borders[borderMode]] ?? defaultProfile).title}",
+                          //         style: TextStyle(
+                          //           fontSize: 12.sp,
+                          //         ),
+                          //       ),
+                          //       Spacer(),
+                          //       Container(
+                          //         width: 25.w,
+                          //         height: 10.h,
+                          //         padding: EdgeInsets.all(2.w),
+                          //         child: Slider(
+                          //           style: SliderThemeData(
+                          //             thumbColor: Colors.black,
+                          //             activeColor: Colors.blue,
+                          //             inactiveColor: Colors.black,
+                          //             disabledActiveColor: Colors.black,
+                          //             disabledInactiveColor: Colors.black,
+                          //             disabledThumbColor: Colors.black,
+                          //             useThumbBall: true,
+                          //           ),
+                          //           value: borderMode.toDouble(),
+                          //           min: 0,
+                          //           max: borders.length - 1,
+                          //           divisions: borders.length - 1,
+                          //           onChanged: (newVal) {
+                          //             borderMode = newVal.toInt();
+                          //             refreshMenu();
+                          //           },
+                          //         ),
+                          //       ),
+                          //       //Spacer(flex: 2),
+                          //     ],
+                          //   ),
+                          // ),
                           Spacer(),
                           Row(
                             children: [
@@ -2926,6 +2926,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           } else {
             overlays.remove("EditorMenu");
           }
+        } else if (keysPressed.contains(LogicalKeyboardKey.keyZ)) {
+          delay /= 2;
+          delay = max(delay, 0.01);
+        } else if (keysPressed.contains(LogicalKeyboardKey.keyX)) {
+          delay *= 2;
+          delay = min(delay, 5);
         }
       }
       for (var key in keysPressed) {

@@ -113,10 +113,12 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
 
 int clamp(int n, int minn, int maxn) => max(minn, min(n, maxn));
 
+const particleForce = 10;
+const particleForcePower = 5;
+const particleMaxDist = 10;
+
 void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
   final c = grid.at(x, y);
-
-  final force = 10;
 
   // Forces
   double vx = c.data['vel_x'] ?? 0;
@@ -132,13 +134,15 @@ void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
     final cell = raycast(x, y, ox, oy);
 
     if (cell.successful) {
-      if (attracted.contains(cell.hitCell.id)) {
-        vx += ox / (cell.distance * cell.distance) * force;
-        vy += oy / (cell.distance * cell.distance) * force;
-      }
-      if (repelled.contains(cell.hitCell.id)) {
-        vx -= ox / (cell.distance * cell.distance) * force;
-        vy -= oy / (cell.distance * cell.distance) * force;
+      if (cell.distance <= particleMaxDist) {
+        if (attracted.contains(cell.hitCell.id)) {
+          vx += ox / (pow(cell.distance, particleForcePower)) * particleForce;
+          vy += oy / (pow(cell.distance, particleForcePower)) * particleForce;
+        }
+        if (repelled.contains(cell.hitCell.id)) {
+          vx -= ox / (pow(cell.distance, particleForcePower)) * particleForce;
+          vy -= oy / (pow(cell.distance, particleForcePower)) * particleForce;
+        }
       }
     }
   }

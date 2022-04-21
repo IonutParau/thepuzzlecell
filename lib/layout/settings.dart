@@ -63,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         storage
                             .setDouble(
                               "delay",
-                              max(num.tryParse(str)!.toDouble(), 0.01),
+                              max(min(num.tryParse(str)!.toDouble(), 5), 0.01),
                             )
                             .then(
                               (e) => setState(
