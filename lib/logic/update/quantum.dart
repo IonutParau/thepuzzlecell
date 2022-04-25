@@ -101,6 +101,7 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
     x += dx;
     y += dy;
     d++;
+    if (d > (grid.width * grid.height)) return RaycastInfo.broken();
     if (!grid.inside(x, y)) return RaycastInfo.broken();
 
     final cell = grid.at(x, y);

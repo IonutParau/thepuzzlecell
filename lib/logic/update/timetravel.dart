@@ -81,7 +81,7 @@ void timetravel() {
     filter: (cell, x, y) => cell.id == "time_hole" && !cell.updated,
   );
 
-  if (mustTimeTravel && !puzzleWin) {
+  if (mustTimeTravel) {
     grid.loopChunks(
       "time_trash",
       GridAlignment.BOTTOMRIGHT,
@@ -138,5 +138,6 @@ void timetravel() {
     playerKeys = 0;
     mustTimeTravel = false;
     game.itime = game.delay;
+    puzzleWin = false;
   }
 }

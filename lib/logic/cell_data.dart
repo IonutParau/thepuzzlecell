@@ -170,6 +170,7 @@ final cells = {
   "electron",
   "neutron",
   "proton",
+  "sandbox",
 }.toList();
 
 Map<String, String> textureMap = {
@@ -181,11 +182,11 @@ Map<String, String> textureMap = {
   'zoomout.png': 'interface/zoomout.png',
   "mech_p_gen.png": "mechanical/mech_p_gen.png",
   "rotator_rand.png": "rotators/rand_rotator.png",
-  "mech_keyup.png": "base.png",
-  "mech_keyleft.png": "base.png",
-  "mech_keyright.png": "base.png",
-  "mech_rotator_cw.png": "base.png",
-  "mech_rotator_ccw.png": "base.png",
+  "mech_keyup.png": "mechanical/key_up.png",
+  "mech_keyleft.png": "mechanical/key_left.png",
+  "mech_keyright.png": "mechanical/key_right.png",
+  "mech_rotator_cw.png": "mechanical/rotator_cw.png",
+  "mech_rotator_ccw.png": "mechanical/rotator_ccw.png",
   "time_machine.png": "unique/time_travel/time_machine.png",
   "consistency.png": "unique/time_travel/consistency.png",
   "time_hole.png": "unique/time_travel/time_hole.png",
@@ -323,6 +324,8 @@ Map<String, String> textureMap = {
   'thief.png': 'movers/grabbers/thief.png',
   'inc_brush.png': 'interface/increase_brush.png',
   'dec_brush.png': 'interface/decrease_brush.png',
+  'inctab.png': 'interface/inctab.png',
+  'dectab.png': 'interface/dectab.png',
 };
 
 class CellProfile {
@@ -361,6 +364,8 @@ final categories = [
       "dec_brush",
       "zoomin",
       "zoomout",
+      "inctab",
+      "dectab",
     ],
     "tool",
   ),
@@ -676,6 +681,7 @@ final categories = [
       "karl",
       "darty",
       "anchor",
+      "sandbox",
     ],
     "unstable_mover",
   ),
@@ -737,6 +743,7 @@ final categories = [
     [
       "puzzle",
       "antipuzzle",
+      "propuzzle",
       "pmerge",
       "lock",
       "key",
@@ -1306,5 +1313,29 @@ final cellInfo = <String, CellProfile>{
   "zoomout": CellProfile(
     "Zoom Out",
     "Moves the camera away from the grid",
+  ),
+  "inctab": CellProfile(
+    "Increase Tab",
+    "Disabled in Multiplayer and when in a world. This goes up 1 tab layer. This can be used for editing multiple levels at once.",
+  ),
+  "dectab": CellProfile(
+    "Decrease Tab",
+    "Disabled in Multiplayer and when in a world. This goes down 1 tab layer. This can be used for editing multiple levels at once.",
+  ),
+  "proton": CellProfile(
+    "Wannabe-Proton",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Towards\nProton: Away\nNeutron: Towards",
+  ),
+  "electron": CellProfile(
+    "Wannabe-Electron",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Again\nProton: Towards\nNeutron: Ignores",
+  ),
+  "neutron": CellProfile(
+    "Wannabe-Neutron",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Ignores\nProton: Towards\nNeutron: Ignores",
+  ),
+  "sandbox": CellProfile(
+    "The Sandbox Cell",
+    "Places cells at random positions",
   ),
 };

@@ -8,6 +8,7 @@ final flightMusic = Player.asset('assets/audio/Flight.ogg', autoPlay: false);
 
 void initSound() {
   destroySound.callback = (e) {};
+  destroySound.volume = 0.4;
   flightMusic.callback = (e) {};
   // destroySound.open(
   //   Media.asset(

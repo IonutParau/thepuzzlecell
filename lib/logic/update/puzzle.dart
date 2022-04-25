@@ -54,11 +54,33 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
   }
 }
 
+void doSandbox(Cell cell, int x, int y) {
+  final rng = Random();
+
+  final cx = rng.nextInt(grid.width);
+  final cy = rng.nextInt(grid.height);
+  final r = rng.nextInt(4);
+  final t = cells[rng.nextInt(cells.length)];
+
+  grid.set(
+    cx,
+    cy,
+    Cell(cx, cy)
+      ..rot = r
+      ..lastvars.lastRot = r
+      ..id = t,
+  );
+}
+
 void puzzles(Set<String> cells) {
+  grid.updateCell(
+    doSandbox,
+    null,
+    "sandbox",
+  );
+
   for (var rot in rotOrder) {
-    grid.loopChunks(
-      "puzzle",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
@@ -71,6 +93,8 @@ void puzzles(Set<String> cells) {
           doPuzzleSide(x, y, cell.rot, cells);
         }
       },
+      rot,
+      "puzzle",
     );
     grid.loopChunks(
       "trash_puzzle",

@@ -363,13 +363,9 @@ class Grid {
     return grid[x][y];
   }
 
-  void setRenderChunk(int x, int y) {
-    renderChunks[x ~/ renderChunkSize][y ~/ renderChunkSize] = true;
-  }
-
   void setPlace(int x, int y, String id) {
     game.sendToServer("bg $x $y $id");
-    setRenderChunk(x, y);
+    //setRenderChunk(x, y);
     if (wrap) {
       place[(x + width) % width][(y + height) % height] = id;
       return;
@@ -396,14 +392,14 @@ class Grid {
         cell.lastvars.lastPos = Offset(lvx, lvy);
       }
       chunks[floor((nx) / chunkSize)][floor((ny) / chunkSize)].add(cell.id);
-      setRenderChunk(x, y);
+      //setRenderChunk(x, y);
       if (useSnowflake) snowflake.add(cell.id, cell.rot, nx, ny);
       return;
     }
     if (!inside(x, y)) return;
     grid[x][y] = cell;
     chunks[floor(x / chunkSize)][floor(y / chunkSize)].add(cell.id);
-    setRenderChunk(x, y);
+    //setRenderChunk(x, y);
     if (useSnowflake) snowflake.add(cell.id, cell.rot, x, y);
   }
 
@@ -666,38 +662,38 @@ class Grid {
     }
 
     final subticks = [
-      if (cells.contains("stopper")) stoppers,
+      stoppers,
       heat,
-      if (cells.containsAny(CellTypeManager.mechanical)) mechs,
+      mechs,
       quantums,
-      if (cells.contains("hungry_trash")) hungryTrashes,
-      if (cells.containsAny(CellTypeManager.mirrors)) mirrors,
-      if (cells.containsAny(CellTypeManager.rockets)) rockets,
-      if (cells.containsAny(CellTypeManager.generators)) gens,
-      if (cells.containsAny(CellTypeManager.superGens)) supgens,
-      if (cells.containsAny(CellTypeManager.replicators)) reps,
-      if (cells.containsAny(CellTypeManager.tunnels)) tunnels,
-      if (cells.containsAny(CellTypeManager.transformers)) transformers,
-      if (cells.containsAny(CellTypeManager.rotators)) rots,
-      if (cells.containsAny(CellTypeManager.gears)) gears,
-      if (cells.containsAny(CellTypeManager.grabbers)) grabbers,
-      if (cells.containsAny(CellTypeManager.speeds)) speeds,
-      if (cells.contains("driller")) drillers,
-      if (cells.containsAny(CellTypeManager.puller)) pullers,
-      if (cells.containsAny(CellTypeManager.movers)) movers,
-      if (cells.contains("liner")) liners,
-      if (cells.contains("bringer")) bringers,
-      if (cells.contains("axis")) axis,
-      if (cells.contains("bird")) birds,
-      if (cells.containsAny(CellTypeManager.fans)) fans,
+      hungryTrashes,
+      mirrors,
+      rockets,
+      gens,
+      supgens,
+      reps,
+      tunnels,
+      transformers,
+      rots,
+      gears,
+      grabbers,
+      speeds,
+      drillers,
+      pullers,
+      movers,
+      liners,
+      bringers,
+      axis,
+      birds,
+      fans,
       //if (cells.contains("magnet")) magnets,
       //if (cells.contains("digger")) diggers,
-      if (cells.containsAny(CellTypeManager.ants)) ants,
-      if (cells.contains("karl")) karls,
-      if (cells.contains("darty")) dartys,
-      if (cells.containsAny(CellTypeManager.puzzles)) puzzles,
-      if (cells.contains("pmerge")) pmerges,
-      if (cells.containsAny(CellTypeManager.gates)) gates,
+      ants,
+      karls,
+      dartys,
+      puzzles,
+      pmerges,
+      gates,
       if (cells.contains("auto_flag")) autoflag,
       timetravel,
     ];

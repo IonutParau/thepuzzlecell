@@ -540,6 +540,8 @@ Future loadAllButtonTextures() {
     "interface/blueprints.png",
     "interface/increase_brush.png",
     "interface/decrease_brush.png",
+    "interface/inctab.png",
+    "interface/dectab.png",
   ]);
 }
 
@@ -776,6 +778,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late WebSocketChannel channel;
 
+  // ignore: cancel_subscriptions
   late StreamSubscription multiplayerListener;
 
   int currentSelection = 0;
@@ -837,6 +840,29 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var brushSize = 0;
   var brushTemp = 0;
 
+  final gridTab = <int, Grid>{0: grid};
+  var gridTabIndex = 0;
+
+  void increaseTab() {
+    if (edType != EditorType.making || isMultiplayer) return;
+    if (!isinitial) return;
+    gridTabIndex++;
+    if (gridTab[gridTabIndex] == null) {
+      gridTab[gridTabIndex] = Grid(grid.width, grid.height);
+    }
+    grid = gridTab[gridTabIndex]!;
+  }
+
+  void decreaseTab() {
+    if (edType != EditorType.making || isMultiplayer) return;
+    if (!isinitial) return;
+    gridTabIndex--;
+    if (gridTab[gridTabIndex] == null) {
+      gridTab[gridTabIndex] = Grid(grid.width, grid.height);
+    }
+    grid = gridTab[gridTabIndex]!;
+  }
+
   void increaseBrush() => brushSize++;
   void decreaseBrush() => brushSize = max(brushSize - 1, 0);
 
@@ -855,6 +881,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       zoomin();
     } else if (newSelection == "zoomout") {
       zoomout();
+    } else if (newSelection == "inctab") {
+      increaseTab();
+    } else if (newSelection == "dectab") {
+      decreaseTab();
     } else {
       currentSelection = cells.indexOf(newSelection);
     }
@@ -1974,6 +2004,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
+    if (realisticRendering && (running || onetick)) {
+      for (var b in grid.brokenCells) {
+        b.render(canvas, interpolation ? (itime % delay) / delay : 1);
+      }
+    }
+
     renderMap.forEach(
       (x, ys) => ys.forEach(
         (y) => renderCell(
@@ -1983,12 +2019,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ),
       ),
     );
-
-    if (realisticRendering && (running || onetick)) {
-      for (var b in grid.brokenCells) {
-        b.render(canvas, interpolation ? (itime % delay) / delay : 1);
-      }
-    }
 
     // grid.loopChunks(
     //   "all",
