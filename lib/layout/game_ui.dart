@@ -378,7 +378,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       isAntiAlias: true,
                                       cacheWidth: 10.w.toInt(),
                                       cacheHeight: 10.w.toInt(),
-                                      scale: 20 / 5.w,
+                                      scale: 32 / 5.w,
                                     ),
                                   ),
                                   Text(
@@ -844,6 +844,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var gridTabIndex = 0;
 
   void increaseTab() {
+    gridTab[gridTabIndex] = grid;
     if (edType != EditorType.making || isMultiplayer) return;
     if (!isinitial) return;
     gridTabIndex++;
@@ -854,6 +855,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void decreaseTab() {
+    gridTab[gridTabIndex] = grid;
     if (edType != EditorType.making || isMultiplayer) return;
     if (!isinitial) return;
     gridTabIndex--;
@@ -1168,8 +1170,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ButtonAlignment.TOPRIGHT,
         playPause,
         () => true,
-        title: 'Play / Pause',
-        description: 'Play or Pause the simulation',
+        title: lang('playPause.title', 'Play / Pause'),
+        description: lang('playPause.desc', 'Play or Pause the simulation'),
       ),
     );
 
@@ -1195,8 +1197,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     running = false;
                     buttonManager.buttons['play-btn']?.texture = 'mover.png';
                     buttonManager.buttons['play-btn']?.rotation = 0;
-                    buttonManager.buttons['wrap-btn']?.title =
-                        grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+                    buttonManager.buttons['wrap-btn']?.title = grid.wrap
+                        ? lang('wrapModeOn', "Wrap Mode (ON)")
+                        : lang("wrapModeOff", "Wrap Mode (OFF)");
 
                     sendToServer('setinit ${P2.encodeGrid(grid)}');
 
@@ -1215,22 +1218,39 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               showDialog(
                 context: context,
                 builder: (ctx) {
-                  return AlertDialog(
+                  return ContentDialog(
                     title: Text(
-                      'Invalid save code',
+                      lang(
+                        'saveError',
+                        'Invalid save code',
+                      ),
                     ),
                     content: Text(
-                      'You are trying to load a corrupted, invalid or unsupported level code.',
+                      '${lang(
+                        'saveErrorDesc',
+                        'You are trying to load a corrupted, invalid or unsupported level code.',
+                        {"error": e.toString()},
+                      )}',
                     ),
+                    actions: [
+                      Button(
+                        child: Text('Ok'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
                   );
                 },
               );
             }
           },
           () => isinitial,
-          title: 'Load New Puzzle',
-          description:
-              'Load a new puzzle to play, please do not abuse this mechanic!',
+          title: lang('loadNewPuzzle.title', 'Load New Puzzle'),
+          description: lang(
+            'loadNewPuzzle.desc',
+            'Load a new puzzle to play, please do not abuse this mechanic!',
+          ),
         ),
       );
     }
@@ -1252,9 +1272,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           }
         },
         () => true,
-        title: 'Save to clipboard',
-        description:
-            'Save the simulation as a encoded string into your clipboard',
+        title: lang("save.title", 'Save to clipboard'),
+        description: lang(
+          'save.desc',
+          'Save the simulation as a encoded string into your clipboard',
+        ),
       ),
     );
 
@@ -1271,9 +1293,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ButtonAlignment.TOPRIGHT,
           e,
           () => true,
-          title: 'Rotate CW',
-          description:
-              'Rotates the cells in the UI or what you are about to paste clockwise',
+          title: lang('rotate_cw.title', 'Rotate CW'),
+          description: lang(
+            'rotate_cw.desc',
+            'Rotates the cells in the UI or what you are about to paste clockwise',
+          ),
         ),
       );
 
@@ -1289,12 +1313,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ButtonAlignment.TOPRIGHT,
           q,
           () => true,
-          title: 'Rotate CCW',
-          description:
-              'Rotates the cells in the UI or what you are about to paste counter-clockwise',
+          title: lang('rotate_ccw.title', 'Rotate CCW'),
+          description: lang(
+            'rotate_ccw.desc',
+            'Rotates the cells in the UI or what you are about to paste counter-clockwise',
+          ),
         ),
       );
 
+      // TODO: Translate more buttons
       buttonManager.setButton(
         "select-btn",
         VirtualButton(
@@ -1362,7 +1389,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0');
+                  sendToServer('place $cx $cy empty 0 0');
                 }
               }
             }
@@ -1402,7 +1429,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0');
+                  sendToServer('place $cx $cy empty 0 0');
                 }
               }
             }
@@ -1882,11 +1909,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         },
       );
 
-      sendToServer('version ${currentVersion.split(' ').first}');
+      clientID = storage.getString('clientID') ?? '@uuid';
+
+      while (clientID.contains('@uuid')) {
+        clientID = clientID.replaceFirst('@uuid', Uuid().v4());
+      }
+      //sendToServer('version ${currentVersion.split(' ').first}');
+      sendToServer('token ${jsonEncode({
+            "version": currentVersion.split(' ').first,
+            "clientID": clientID,
+          })}');
 
       Flame.images.load('cursor.png');
-
-      clientID = Uuid().v4();
 
       overlays.add('loading');
     }
@@ -2146,11 +2180,34 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     cursors.forEach(
       (id, pos) {
         if (id != clientID) {
-          Sprite(Flame.images.fromCache('cursor.png')).render(
+          final p = (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+          var c = 'cursor.png';
+          // Haha cool
+          if (id == "Monitor" || id == "MonitorDev") {
+            c = 'puzzle/puzzle.png';
+          } else if (id == "Blendi" || id == "BlendiDev") {
+            c = 'movers/movers/bird.png';
+          }
+          // Haha cooln't
+          Sprite(Flame.images.fromCache(c)).render(
             canvas,
-            position: (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY),
+            position: p,
             size: Vector2.all(cellSize / 2),
           );
+
+          if (debugMode) {
+            final tp = TextPainter(
+              textDirection: TextDirection.ltr,
+              text: TextSpan(
+                text: 'Monitor',
+                style: TextStyle(
+                  fontSize: cellSize / 6,
+                ),
+              ),
+            );
+            tp.layout();
+            tp.paint(canvas, p.toOffset());
+          }
         }
       },
     );
@@ -2551,7 +2608,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         sendToServer("bg $cx $cy empty");
       } else {
         sendToServer(
-          "place $cx $cy ${cells[id]} $rot ${P3.encodeData(grid.at(cx, cy).data)}",
+          "place $cx $cy ${cells[id]} $rot $brushTemp",
         );
       }
     } else if (edType == EditorType.loaded) {
@@ -2559,7 +2616,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         grid.at(cx, cy).rot++;
         grid.at(cx, cy).rot %= 4;
         sendToServer(
-          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${P3.encodeData(grid.at(cx, cy).data)}',
+          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${grid.at(cx, cy).data['heat'] ?? 0}',
         );
         return;
       }
@@ -2568,7 +2625,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
         grid.set(cx, cy, Cell(cx, cy));
-        sendToServer('place $cx $cy empty 0 ');
+        sendToServer('place $cx $cy empty 0 0');
         sendToServer(
           'new-hover $clientID $cx $cy ${cells[currentSelection]} $currentRotation',
         );
@@ -2660,6 +2717,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             mouseDown = false;
           }
         });
+        if (mouseY > (canvasSize.y - 110 * uiScale)) {
+          mouseDown = false;
+        }
         if (edType == EditorType.loaded && mouseDown && !running) {
           mouseDown = false;
           bool hijacked = false;

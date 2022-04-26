@@ -4,9 +4,7 @@ void liners() {
   if (!grid.movable) return;
 
   for (var rot in rotOrder) {
-    grid.loopChunks(
-      "liner",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (push(x, y, cell.rot, 0)) {
@@ -15,6 +13,8 @@ void liners() {
           pull(bx, by, cell.rot, 1);
         }
       },
+      rot,
+      "liner",
     );
   }
 }

@@ -9,12 +9,22 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _delayController = TextEditingController();
+  final TextEditingController _clientIDController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
     _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
+    _clientIDController.text = storage.getString("clientID") ?? "@uuid";
+  }
+
+  @override
+  void dispose() {
+    _delayController.dispose();
+    _clientIDController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -277,6 +287,34 @@ class _SettingsPageState extends State<SettingsPage> {
                             .then((e) => setState(() {}));
                       },
                     ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  '${lang('constant_clientID', 'Client ID')}: ',
+                  style: textStyle,
+                ),
+                SizedBox(
+                  width: 20.w,
+                  height: 5.h,
+                  child: TextBox(
+                    style: textBoxStyle,
+                    controller: _clientIDController,
+                    onChanged: (str) {
+                      storage
+                          .setString(
+                            "clientID",
+                            str.replaceAll(' ', ''),
+                          )
+                          .then(
+                            (e) => setState(
+                              () {},
+                            ),
+                          );
+                    },
                   ),
                 ),
               ],

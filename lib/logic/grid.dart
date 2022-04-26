@@ -364,7 +364,7 @@ class Grid {
   }
 
   void setPlace(int x, int y, String id) {
-    game.sendToServer("bg $x $y $id");
+    //game.sendToServer("bg $x $y $id");
     //setRenderChunk(x, y);
     if (wrap) {
       place[(x + width) % width][(y + height) % height] = id;

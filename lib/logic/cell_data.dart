@@ -1338,4 +1338,60 @@ final cellInfo = <String, CellProfile>{
     "The Sandbox Cell",
     "Places cells at random positions",
   ),
+  "pushable": CellProfile(
+    "Pushable",
+    "Can only be moved by a push force, also can't be generated",
+  ),
+  "pullable": CellProfile(
+    "Pullable",
+    "Can only be moved by a pull force, also can't be generated",
+  ),
+  "grabbable": CellProfile(
+    "Grabbable",
+    "Can only be moved by a grab force, also can't be generated",
+  ),
+  "swappable": CellProfile(
+    "Swappable",
+    "Can only be moved by a swap force, meaning it can only be moved by mirrors and drillers, also can't be generated",
+  ),
+  "generatable": CellProfile(
+    "Generatable",
+    "Can't be moved but can be generated",
+  ),
+  "transformable": CellProfile(
+    "Transformable",
+    "Can't be moved but can be transformed",
+  ),
+  "propuzzle": CellProfile(
+    "Pro-Puzzle",
+    "Can only be moved by puzzle force",
+  ),
+  "push_trash": CellProfile(
+    "Push Trash",
+    "Trash cell but can only eat stuff coming in with a push force",
+  ),
+  "pull_trash": CellProfile(
+    "Pull Trash",
+    "Can only eat stuff that is moving with a pull force",
+  ),
+  "grab_trash": CellProfile(
+    "Grab Trash",
+    "Can only eat stuff that is moving with a grab force",
+  ),
+  "swap_trash": CellProfile(
+    "Swap Trash",
+    "Can only eat stuff that is moving with a swap force",
+  ),
+  "gen_trash": CellProfile(
+    "Generator Trash",
+    "Like normal trash but can't be generated",
+  ),
+  "transform_trash": CellProfile(
+    "Transformer Trash",
+    "Like normal trash but can't be transformed",
+  ),
+  "puzzle_trash": CellProfile(
+    "Puzzle Trash",
+    "Can only eat stuff that is moving with a puzzle force",
+  ),
 };
