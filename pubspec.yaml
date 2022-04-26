@@ -13,7 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flame: any
   flame_splash_screen: any
-  fluent_ui: any
+  fluent_ui: ^3.11.0
   flutter:
     sdk: flutter
   font_awesome_flutter: any
