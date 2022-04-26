@@ -2158,6 +2158,48 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.restore();
 
+    cursors.forEach(
+      (id, pos) {
+        if (id != clientID) {
+          final p = (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+          var c = 'cursor.png';
+          // Haha cool
+          if (id == "Monitor" ||
+              id == "MonitorDev" ||
+              id == "AMonitor" ||
+              id == "AMonitor#1595") {
+            c = 'puzzle/puzzle.png';
+          } else if (id == "Blendi" ||
+              id == "BlendiDev" ||
+              id == "Blendi Goose") {
+            c = 'movers/movers/bird.png';
+          } else if (id == "k." || id == "kthebest") {
+            c = textureMap['grabber.png']!;
+          }
+          // Haha cooln't
+          Sprite(Flame.images.fromCache(c)).render(
+            canvas,
+            position: p,
+            size: Vector2.all(cellSize / 2),
+          );
+
+          if (debugMode) {
+            final tp = TextPainter(
+              textDirection: TextDirection.ltr,
+              text: TextSpan(
+                text: id,
+                style: TextStyle(
+                  fontSize: cellSize / 6,
+                ),
+              ),
+            );
+            tp.layout();
+            tp.paint(canvas, p.toOffset());
+          }
+        }
+      },
+    );
+
     if (cellbar) {
       canvas.drawRect(
         Offset(0, canvasSize.y - 110 * uiScale) &
@@ -2176,41 +2218,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ..strokeWidth = w,
       );
     }
-
-    cursors.forEach(
-      (id, pos) {
-        if (id != clientID) {
-          final p = (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
-          var c = 'cursor.png';
-          // Haha cool
-          if (id == "Monitor" || id == "MonitorDev") {
-            c = 'puzzle/puzzle.png';
-          } else if (id == "Blendi" || id == "BlendiDev") {
-            c = 'movers/movers/bird.png';
-          }
-          // Haha cooln't
-          Sprite(Flame.images.fromCache(c)).render(
-            canvas,
-            position: p,
-            size: Vector2.all(cellSize / 2),
-          );
-
-          if (debugMode) {
-            final tp = TextPainter(
-              textDirection: TextDirection.ltr,
-              text: TextSpan(
-                text: 'Monitor',
-                style: TextStyle(
-                  fontSize: cellSize / 6,
-                ),
-              ),
-            );
-            tp.layout();
-            tp.paint(canvas, p.toOffset());
-          }
-        }
-      },
-    );
 
     AchievementRenderer.draw(canvas, canvasSize);
 
@@ -2472,7 +2479,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         final dx = c.x - mx;
         final dy = c.y - my;
         final allowedDif = 0.1;
-        shouldCursor = (abs(dx) > allowedDif || abs(dy) > allowedDif);
+        shouldCursor = (c.x != mx || c.y != my);
       }
       if (shouldCursor) {
         sendToServer(

@@ -6,7 +6,7 @@ void autoflag() {
         !grid.cells.contains("key") &&
         !grid.cells.contains("lock")) {
       puzzleWin = true;
-      game.itime = game.delay;
+      if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
   }
 }

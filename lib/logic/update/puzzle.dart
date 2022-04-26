@@ -41,7 +41,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
   } else if (o.id == "flag") {
     if (!cells.containsAny(enemies)) {
       puzzleWin = true;
-      game.itime = game.delay;
+      if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
   }
 
@@ -96,9 +96,7 @@ void puzzles(Set<String> cells) {
       rot,
       "puzzle",
     );
-    grid.loopChunks(
-      "trash_puzzle",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
@@ -111,10 +109,10 @@ void puzzles(Set<String> cells) {
           doPuzzleSide(x, y, cell.rot, cells, "trash");
         }
       },
+      rot,
+      "trash_puzzle",
     );
-    grid.loopChunks(
-      "mover_puzzle",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
@@ -128,6 +126,8 @@ void puzzles(Set<String> cells) {
         }
         doPuzzleSide(x, y, cell.rot, cells);
       },
+      rot,
+      "mover_puzzle",
     );
   }
 }
