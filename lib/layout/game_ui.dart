@@ -2469,7 +2469,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         shouldCursor = true;
       } else {
         final c = cursors[clientID]!;
-        shouldCursor = (c.x != mx || c.y != my);
+        final dx = c.x - mx;
+        final dy = c.y - my;
+        final allowedDif = 0.1;
+        shouldCursor = (abs(dx) > allowedDif || abs(dy) > allowedDif);
       }
       if (shouldCursor) {
         sendToServer(
