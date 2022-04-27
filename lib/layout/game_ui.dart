@@ -576,15 +576,25 @@ class VirtualButton {
 
   bool hasRendered = true;
 
+  String? id;
+
   VirtualButton(this.position, Vector2 size, this.texture, this.alignment,
       this.callback, this.shouldRender,
-      {this.title = "Untitled", this.description = "No description"})
+      {this.title = "Untitled", this.description = "No description", this.id})
       : rotation = 0,
         lastRot = 0,
         startPos = position * storage.getDouble('ui_scale')!,
         this.size = size * storage.getDouble('ui_scale')! {
     position *= storage.getDouble('ui_scale')!;
+    translate();
   } // Constructors
+
+  void translate() {
+    if (id != null) {
+      title = lang("$id.title", title);
+      description = lang("$id.desc", description);
+    }
+  }
 
   void render(Canvas canvas, Vector2 canvasSize) {
     this.canvasSize = canvasSize;
@@ -693,6 +703,8 @@ class ButtonManager {
 
   void setButton(String key, VirtualButton button) {
     buttons[key] = button;
+    button.id = key;
+    button.translate();
   }
 
   void forEach(void Function(String key, VirtualButton button) callback) {
@@ -951,6 +963,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       gridClip.place(cellMouseX, cellMouseY);
       buttonManager.buttons['select-btn']!.texture = "interface/select.png";
       buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
+      selecting = false;
+      setPos = false;
     }
   }
 
@@ -1035,6 +1049,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           grid.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
           grid.grid[int.parse(args[0])][int.parse(args[1])].rot =
               int.parse(args[3]);
+          if (args.length > 4) {
+            grid.grid[int.parse(args[0])][int.parse(args[1])].data['heat'] =
+                int.tryParse(args[4]) ?? 0;
+          }
           grid.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
         } else {
           initial.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
@@ -1388,7 +1406,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cx = selX + x;
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
-                  grid.set(cx, cy, Cell(cx, cy));
+                  if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
                   sendToServer('place $cx $cy empty 0 0');
                 }
               }
@@ -1428,7 +1446,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cx = selX + x;
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
-                  grid.set(cx, cy, Cell(cx, cy));
+                  if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
                   sendToServer('place $cx $cy empty 0 0');
                 }
               }
@@ -1540,8 +1558,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     running = false;
                     buttonManager.buttons['play-btn']?.texture = 'mover.png';
                     buttonManager.buttons['play-btn']?.rotation = 0;
-                    buttonManager.buttons['wrap-btn']?.title =
-                        grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+                    buttonManager.buttons['wrap-btn']?.title = grid.wrap
+                        ? lang('wrapModeOn', "Wrap Mode (ON)")
+                        : lang("wrapModeOff", "Wrap Mode (OFF)");
 
                     if (isMultiplayer) {
                       sendToServer('setinit ${P2.encodeGrid(grid)}');
@@ -1586,13 +1605,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ButtonAlignment.TOPRIGHT,
           () {
             grid.wrap = !grid.wrap;
-            buttonManager.buttons['wrap-btn']?.title =
-                grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+            buttonManager.buttons['wrap-btn']?.title = grid.wrap
+                ? lang('wrapModeOn', "Wrap Mode (ON)")
+                : lang("wrapModeOff", "Wrap Mode (OFF)");
 
             sendToServer('wrap');
           },
           () => true,
-          title: 'Wrap Mode (OFF)',
+          title: lang("wrapModeOff", 'Wrap Mode (OFF)'),
           description: 'When Wrap mode is on, cells will wrap around the grid',
         ),
       );
@@ -2601,20 +2621,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
       //if (grid.at(cx, cy).id == id && grid.at(cx, cy).rot == rot) return;
-      grid.set(
-        cx,
-        cy,
-        Cell(cx, cy)
-          ..id = cells[id]
-          ..rot = rot
-          ..lastvars.lastRot = rot,
-      );
+      if (!isMultiplayer)
+        grid.set(
+          cx,
+          cy,
+          Cell(cx, cy)
+            ..id = cells[id]
+            ..rot = rot
+            ..lastvars.lastRot = rot,
+        );
       if (brushTemp > 0) {
-        grid.at(cx, cy).data['heat'] = brushTemp;
+        if (!isMultiplayer) grid.at(cx, cy).data['heat'] = brushTemp;
       }
       if (cells[id] == "empty" &&
           backgrounds.contains(cells[currentSelection])) {
-        grid.setPlace(cx, cy, "empty");
+        if (!isMultiplayer) grid.setPlace(cx, cy, "empty");
         sendToServer("bg $cx $cy empty");
       } else {
         sendToServer(
@@ -2623,8 +2644,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     } else if (edType == EditorType.loaded) {
       if (grid.placeable(cx, cy) == "rotatable") {
-        grid.at(cx, cy).rot++;
-        grid.at(cx, cy).rot %= 4;
+        if (!isMultiplayer) {
+          grid.at(cx, cy).rot++;
+          grid.at(cx, cy).rot %= 4;
+        }
         sendToServer(
           'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${grid.at(cx, cy).data['heat'] ?? 0}',
         );
@@ -2634,21 +2657,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         currentSelection = cells.indexOf(grid.at(cx, cy).id);
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
-        grid.set(cx, cy, Cell(cx, cy));
+        if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
         sendToServer('place $cx $cy empty 0 0');
         sendToServer(
           'new-hover $clientID $cx $cy ${cells[currentSelection]} $currentRotation',
         );
       } else if (grid.at(cx, cy).id == "empty" &&
           grid.placeable(cx, cy) == originalPlace) {
-        grid.set(
-          cx,
-          cy,
-          Cell(cx, cy)
-            ..id = cells[id]
-            ..rot = rot
-            ..lastvars.lastRot = rot,
-        );
+        if (isMultiplayer) {
+          grid.set(
+            cx,
+            cy,
+            Cell(cx, cy)
+              ..id = cells[id]
+              ..rot = rot
+              ..lastvars.lastRot = rot,
+          );
+        }
         currentSelection = cells.indexOf("empty");
         sendToServer('place $cx $cy ${cells[id]} $rot ');
         sendToServer('drop-hover $clientID');
@@ -2784,6 +2809,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           setPos = false;
           dragPos = false;
           mouseDown = false;
+          buttonManager.buttons['select-btn']!.texture = "interface/select.png";
+          buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
+          selecting = false;
+          setPos = false;
         }
       }
       // if (event.buttons == kSecondaryMouseButton) {

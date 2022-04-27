@@ -750,7 +750,7 @@ class GridClip {
         final sy = cy + y;
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
           cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy);
-          grid.set(sx, sy, cells[cx][cy].copy);
+          if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
           game.sendToServer(
             "place $sx $sy ${cells[cx][cy].id} ${cells[cx][cy].rot}",
           );

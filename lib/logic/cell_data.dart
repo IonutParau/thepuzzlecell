@@ -1394,4 +1394,40 @@ final cellInfo = <String, CellProfile>{
     "Puzzle Trash",
     "Can only eat stuff that is moving with a puzzle force",
   ),
+  "double_gen": CellProfile(
+    "Double Generator",
+    "Generator CW + Generator CCW",
+  ),
+  "double_supgen": CellProfile(
+    "Double Super Generator",
+    "Super Generator CW + Super Generator CCW",
+  ),
+  "rotator_rand": CellProfile(
+    "Random Rotator",
+    "Rotates the cells around it CW or CCW at random",
+  ),
+  "mech_keyup": CellProfile(
+    "Mechanical Up Key",
+    "Sends out a mechanical signal if the up arrow key is pressed",
+  ),
+  "mech_keyleft": CellProfile(
+    "Mechanical Left Key",
+    "Sends out a mechanical signal if the left arrow key is pressed",
+  ),
+  "mech_keyright": CellProfile(
+    "Mechanical Right Key",
+    "Sends out a mechanical signal if the right arrow key is pressed",
+  ),
+  "mech_p_gen": CellProfile(
+    "Mechanically Powered Generator",
+    "A generator that only generates if it has a mechanical signal",
+  ),
+  "mech_rotator_cw": CellProfile(
+    "Mechanically Powered Rotator CW",
+    "A rotator CW that only rotates if it has a mechanical signal",
+  ),
+  "mech_rotator_ccw": CellProfile(
+    "Mechanically Powered Rotator CCW",
+    "A rotator CCW that only rotates if it has a mechanical signal",
+  ),
 };
