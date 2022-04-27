@@ -19,10 +19,14 @@ bool shouldHaveGenBias(String id, int side) {
 }
 
 class GenOptimizer {
-  Map<String, bool> hasWorked = {};
+  final hasWorked = HashMap<int, bool>();
+
+  int hash(int x, int y, int dir) {
+    return (x + grid.width * y + dir * grid.width * grid.width);
+  }
 
   bool shouldSkip(int x, int y, int dir) {
-    if (hasWorked["$x $y $dir"] == false) {
+    if (hasWorked[hash(x, y, dir)] == false) {
       return true;
     }
 
@@ -30,7 +34,7 @@ class GenOptimizer {
   }
 
   void skip(int x, int y, int dir) {
-    hasWorked["$x $y $dir"] = false;
+    hasWorked[hash(x, y, dir)] = false;
   }
 
   void clear() {

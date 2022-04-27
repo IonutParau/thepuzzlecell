@@ -319,6 +319,32 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
+            if (storage.getBool('debug') == true)
+              Row(
+                children: [
+                  Text(
+                    '${lang('alt_render', 'Alternative Rendering')}: ',
+                    style: textStyle,
+                  ),
+                  SizedBox(
+                    width: 3.w,
+                    height: 5.h,
+                    child: Align(
+                      child: ToggleSwitch(
+                        checked: storage.getBool("alt_render") ?? false,
+                        onChanged: (newValue) {
+                          storage
+                              .setBool(
+                                "alt_render",
+                                newValue,
+                              )
+                              .then((e) => setState(() {}));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             // Row(
             //   children: [
             //     Text(

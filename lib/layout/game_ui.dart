@@ -1846,9 +1846,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var debugMode = false;
   var interpolation = true;
   var cellbar = false;
+  var altRender = false;
 
   @override
   Future<void>? onLoad() async {
+    debugMode = storage.getBool("debug") ?? false;
+    interpolation = storage.getBool("interpolation") ?? true;
+    cellbar = storage.getBool("cellbar") ?? false;
+    altRender = debug(storage.getBool("alt_render")) ?? false;
+
+    print(altRender);
+
     await loadAllButtonTextures();
 
     await Flame.images.load('base.png');
@@ -1864,10 +1872,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     ]);
 
     await loadSkinTextures();
-
-    debugMode = storage.getBool("debug") ?? false;
-    interpolation = storage.getBool("interpolation") ?? true;
-    cellbar = storage.getBool("cellbar") ?? false;
 
     if (edType == EditorType.making) {
       // In sandbox
@@ -1973,6 +1977,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   Map<String, Vector2> cursors = {};
 
+  void fancyRender(Canvas canvas) {
+    if (realisticRendering && (running || onetick)) {
+      for (var b in grid.brokenCells) {
+        b.render(canvas, interpolation ? (itime % delay) / delay : 1);
+      }
+    }
+  }
+
   @override
   // Main game rendering
   void render(Canvas canvas) {
@@ -2008,71 +2020,59 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     firstRender = false;
 
-    var sx = floor((-offX - cellSize) / cellSize);
-    var sy = floor((-offY - cellSize) / cellSize);
-    var ex = ceil((canvasSize.x - offX) / cellSize);
-    var ey = ceil((canvasSize.y - offY) / cellSize);
+    if (altRender) {
+      fancyRender(canvas);
 
-    sx = max(sx, 0);
-    sy = max(sy, 0);
-    ex = min(ex, grid.width);
-    ey = min(ey, grid.height);
+      grid.iterateRenderSpot(
+        (x, y) {
+          renderCell(grid.at(x, y), x, y);
+        },
+      );
+    } else {
+      var sx = floor((-offX - cellSize) / cellSize);
+      var sy = floor((-offY - cellSize) / cellSize);
+      var ex = ceil((canvasSize.x - offX) / cellSize);
+      var ey = ceil((canvasSize.y - offY) / cellSize);
 
-    if (realisticRendering) {
-      final extra = 5;
-      sx = max(sx - extra, 0);
-      sy = max(sy - extra, 0);
-      ex = min(ex + extra, grid.width);
-      ey = min(ey + extra, grid.height);
-    }
+      sx = max(sx, 0);
+      sy = max(sy, 0);
+      ex = min(ex, grid.width);
+      ey = min(ey, grid.height);
 
-    final renderMap = <int, List<int>>{};
+      if (realisticRendering) {
+        final extra = 5;
+        sx = max(sx - extra, 0);
+        sy = max(sy - extra, 0);
+        ex = min(ex + extra, grid.width);
+        ey = min(ey + extra, grid.height);
+      }
 
-    // grid.loopChunks(
-    //   "all",
-    //   GridAlignment.BOTTOMLEFT,
-    //   (Cell c, int x, int y) {
-    //     if (grid.at(x, y).id != "empty") {
-    //       renderMap[x] ??= [];
-    //       renderMap[x]!.add(y);
-    //     }
-    //     renderEmpty(grid.at(x, y), x, y);
-    //   },
-    //   minx: sx,
-    //   miny: sy,
-    //   maxx: ex,
-    //   maxy: ey,
-    //   fastChunk: false, // Fast chunk has some problems
-    //   filter: (cell, x, y) => true,
-    // );
+      final renderMap = <int, List<int>>{};
 
-    for (var x = sx; x < ex; x++) {
-      for (var y = sy; y < ey; y++) {
-        if (grid.inside(x, y)) {
-          if (grid.at(x, y).id != "empty") {
-            renderMap[x] ??= [];
-            renderMap[x]!.add(y);
+      for (var x = sx; x < ex; x++) {
+        for (var y = sy; y < ey; y++) {
+          if (grid.inside(x, y)) {
+            if (grid.at(x, y).id != "empty") {
+              renderMap[x] ??= [];
+              renderMap[x]!.add(y);
+            }
+            renderEmpty(grid.at(x, y), x, y);
           }
-          renderEmpty(grid.at(x, y), x, y);
         }
       }
-    }
 
-    if (realisticRendering && (running || onetick)) {
-      for (var b in grid.brokenCells) {
-        b.render(canvas, interpolation ? (itime % delay) / delay : 1);
-      }
-    }
+      fancyRender(canvas);
 
-    renderMap.forEach(
-      (x, ys) => ys.forEach(
-        (y) => renderCell(
-          grid.at(x, y),
-          x,
-          y,
+      renderMap.forEach(
+        (x, ys) => ys.forEach(
+          (y) => renderCell(
+            grid.at(x, y),
+            x,
+            y,
+          ),
         ),
-      ),
-    );
+      );
+    }
 
     // grid.loopChunks(
     //   "all",
@@ -2195,6 +2195,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             c = 'movers/movers/bird.png';
           } else if (id == "k." || id == "kthebest") {
             c = textureMap['grabber.png']!;
+          } else if (id == "eclips_e#0001") {
+            c = 'sandbox.png';
           }
           // Haha cooln't
           Sprite(Flame.images.fromCache(c)).render(

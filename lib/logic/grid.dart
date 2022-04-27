@@ -162,6 +162,27 @@ class Grid {
 
   GridUpdateConstraints? updateConstraints;
 
+  HashSet<int> renderSpots = HashSet<int>();
+
+  void markRenderSpot(int x, int y) {
+    if ((at(x, y).id != "empty") || (placeable(x, y) != "empty")) {
+      renderSpots.add(x + y * width);
+    }
+  }
+
+  void removeRenderSpot(int x, int y) {
+    if (at(x, y).id == "empty" && placeable(x, y) == "empty") {
+      renderSpots.remove(x + y * width);
+    } // Only remove if actually should remove
+  }
+
+  void iterateRenderSpot(void Function(int x, int y) callback) {
+    if (renderSpots.length == 0) return;
+    renderSpots.forEach((i) {
+      callback(i % width, i ~/ width);
+    });
+  }
+
   void remake() {
     grid = [];
     place = [];
@@ -186,8 +207,19 @@ class Grid {
       chunks[floor(((x + width) % width) / chunkSize)]
               [floor(((y + height) % height) / chunkSize)]
           .add(id);
+      if (id == "empty") {
+        removeRenderSpot((x + width) % width, (y + height) % height);
+      } else {
+        markRenderSpot((x + width) % width, (y + height) % height);
+      }
+      return;
     }
     chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
+    if (id == "empty") {
+      removeRenderSpot(x, y);
+    } else {
+      markRenderSpot(x, y);
+    }
   }
 
   void updateCell(
@@ -371,6 +403,11 @@ class Grid {
       return;
     }
     place[x][y] = id;
+    if (id == "empty") {
+      removeRenderSpot(x, y);
+    } else {
+      markRenderSpot(x, y);
+    }
   }
 
   void set(int x, int y, Cell cell) {
