@@ -71,3 +71,24 @@ Inthe text, @variablename gets replaced with the variable.
 | exit                | The name of the Exit button in the Editor Menu or title of the exit button                                                             |           |
 | exit_desc           | The description of the Exit button in puzzle mode                                                                                      |           |
 | clear               | The name of the Clear button i nthe Editor Menu                                                                                        |           |
+| wrapModeOn          | The title ot show when Wrap Mode is enabled                                                                                            |           |
+| wrapModeOff         | The title ot show when Wrap Mode is disabled                                                                                           |           |
+
+## Button IDs:
+
+Back button - `back-btn`
+Load new puzzle - `m-load-btn`
+Save button - `save-btn`
+Load button - `load-btn`
+Wrap button - `wrap-btn`
+Rotate CW - `rot-cw-btn`
+Rotate CCW - `rot-ccw-btn`
+Select button - `select-btn`
+Copy button - `copy-btn`
+Cut button - `cut-btn`
+Delete button (for selections) - `del-btn`
+Paste button - `paste-btn`
+Play / Pause button - `play-btn`
+One Tick button - `onetick-btn`
+Restore button - `restore-btn`
+Set Initial button - `setinitial-btn`
