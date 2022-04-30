@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0 Codename World of Changes Update';
+String currentVersion = '2.0.0.0 Codename World of Changes Update';
 
 final List<String> changes = [
   "Fixed some bugs",

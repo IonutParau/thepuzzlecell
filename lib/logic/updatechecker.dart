@@ -15,16 +15,12 @@ bool higherVersion(String v1, String v2) {
   }
 
   for (var i = 0; i < l; i++) {
-    if (segs1.length == i) {
-      return true;
-    } else if (segs2.length == i) {
-      return false;
-    } else if (int.parse(segs1[i]) < int.parse(segs2[i])) {
+    if (int.parse(segs1[i]) > int.parse(segs2[i])) {
       return true;
     }
   }
 
-  return true;
+  return false;
 }
 
 Future<String> getVersion() async {

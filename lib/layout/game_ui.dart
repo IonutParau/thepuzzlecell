@@ -394,7 +394,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 children: [
                                   MaterialButton(
                                     onPressed: () {
-                                      grid = Grid(grid.width, grid.height);
                                       if (game.running) {
                                         game.playPause();
                                         game.running = false;
@@ -413,6 +412,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                         game.sendToServer(
                                           'setinit ${P2.encodeGrid(grid)}',
                                         );
+                                      } else {
+                                        grid = Grid(grid.width, grid.height);
                                       }
                                     },
                                     child: Image.asset(
@@ -1069,8 +1070,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       } else if (cmd == "wrap") {
         if (isinitial) {
           grid.wrap = !grid.wrap;
-          buttonManager.buttons['wrap-btn']?.title =
-              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+          buttonManager.buttons['wrap-btn']?.title = grid.wrap
+              ? lang('wrapModeOn', "Wrap Mode (ON)")
+              : lang("wrapModeOff", "Wrap Mode (OFF)");
         } else {
           initial.wrap = !initial.wrap;
         }
@@ -1082,8 +1084,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           running = false;
           buttonManager.buttons['play-btn']?.texture = 'mover.png';
           buttonManager.buttons['play-btn']?.rotation = 0;
-          buttonManager.buttons['wrap-btn']?.title =
-              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+          buttonManager.buttons['wrap-btn']?.title = grid.wrap
+              ? lang('wrapModeOn', "Wrap Mode (ON)")
+              : lang("wrapModeOff", "Wrap Mode (OFF)");
+
+          buildEmpty();
         } else {
           initial = loadStr(args.first);
         }
@@ -1100,8 +1105,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           running = false;
           buttonManager.buttons['play-btn']?.texture = 'mover.png';
           buttonManager.buttons['play-btn']?.rotation = 0;
-          buttonManager.buttons['wrap-btn']?.title =
-              grid.wrap ? "Wrap Mode (ON)" : "Wrap Mode (OFF)";
+          buttonManager.buttons['wrap-btn']?.title = grid.wrap
+              ? lang('wrapModeOn', "Wrap Mode (ON)")
+              : lang("wrapModeOff", "Wrap Mode (OFF)");
 
           buildEmpty();
         } else {
@@ -1552,18 +1558,19 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               FlutterClipboard.controlV().then(
                 (str) {
                   if (str is ClipboardData) {
-                    grid = loadStr(str.text ?? "");
-                    initial = grid.copy;
                     isinitial = true;
                     running = false;
-                    buttonManager.buttons['play-btn']?.texture = 'mover.png';
-                    buttonManager.buttons['play-btn']?.rotation = 0;
-                    buttonManager.buttons['wrap-btn']?.title = grid.wrap
-                        ? lang('wrapModeOn', "Wrap Mode (ON)")
-                        : lang("wrapModeOff", "Wrap Mode (OFF)");
 
                     if (isMultiplayer) {
                       sendToServer('setinit ${P2.encodeGrid(grid)}');
+                    } else {
+                      grid = loadStr(str.text ?? "");
+                      initial = grid.copy;
+                      buttonManager.buttons['play-btn']?.texture = 'mover.png';
+                      buttonManager.buttons['play-btn']?.rotation = 0;
+                      buttonManager.buttons['wrap-btn']?.title = grid.wrap
+                          ? lang('wrapModeOn', "Wrap Mode (ON)")
+                          : lang("wrapModeOff", "Wrap Mode (OFF)");
                     }
 
                     buildEmpty();
@@ -1604,12 +1611,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           "interface/wrap.png",
           ButtonAlignment.TOPRIGHT,
           () {
-            grid.wrap = !grid.wrap;
-            buttonManager.buttons['wrap-btn']?.title = grid.wrap
-                ? lang('wrapModeOn', "Wrap Mode (ON)")
-                : lang("wrapModeOff", "Wrap Mode (OFF)");
-
-            sendToServer('wrap');
+            if (isMultiplayer) {
+              sendToServer('wrap');
+            } else {
+              grid.wrap = !grid.wrap;
+              buttonManager.buttons['wrap-btn']?.title = grid.wrap
+                  ? lang('wrapModeOn', "Wrap Mode (ON)")
+                  : lang("wrapModeOff", "Wrap Mode (OFF)");
+            }
           },
           () => true,
           title: lang("wrapModeOff", 'Wrap Mode (OFF)'),
@@ -2211,7 +2220,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               text: TextSpan(
                 text: id,
                 style: TextStyle(
-                  fontSize: cellSize / 6,
+                  color: Colors.white,
+                  fontSize: cellSize / 3,
                 ),
               ),
             );
@@ -2666,7 +2676,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         );
       } else if (grid.at(cx, cy).id == "empty" &&
           grid.placeable(cx, cy) == originalPlace) {
-        if (isMultiplayer) {
+        if (!isMultiplayer) {
           grid.set(
             cx,
             cy,
@@ -2894,6 +2904,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     puzzleWin = false;
     overlays.remove('Win');
     running = false;
+    buttonManager.buttons['wrap-btn']?.title = grid.wrap
+        ? lang('wrapModeOn', "Wrap Mode (ON)")
+        : lang("wrapModeOff", "Wrap Mode (OFF)");
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
     if (differentSize) buildEmpty();
@@ -3046,6 +3059,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             keysPressed.contains(LogicalKeyboardKey.backspace)) {
           if (pasting) {
             pasting = false;
+            buttonManager.buttons['select-btn']!.texture =
+                "interface/select.png";
+            buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
           }
         } else if (keysPressed.contains(LogicalKeyboardKey.keyF) &&
             edType == EditorType.making) {

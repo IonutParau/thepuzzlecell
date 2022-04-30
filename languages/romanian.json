@@ -1,6 +1,5 @@
 {
   "title": "Română (Romanian)",
-  "mainScreen": "Ecranul Principal",
   "editor": "Editor",
   "puzzles": "Puzzle-uri",
   "puzzle": "Puzzle",
@@ -46,6 +45,9 @@
   "update": "Update",
   "quit": "Opreşte",
   "shop": "Magazin",
+  "versionError": "Eroare în verificare de update-uri: @error",
+  "version_out_of_date": "Versiunea nu este cea mai nouă",
+  "version_ok": "Versiunea este cea mai nouă",
   "exit": "Ieși",
   "clear": "Șterge",
   "confirm_exit": "Confirmă ieșirea",

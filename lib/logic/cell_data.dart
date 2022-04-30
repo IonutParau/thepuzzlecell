@@ -1430,4 +1430,8 @@ final cellInfo = <String, CellProfile>{
     "Mechanically Powered Rotator CCW",
     "A rotator CCW that only rotates if it has a mechanical signal",
   ),
+  "unstable_gen": CellProfile(
+    "Unstable Generator",
+    "Like a normal generator, except it can generate anything through anything",
+  ),
 };
