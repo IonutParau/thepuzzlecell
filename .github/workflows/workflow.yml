@@ -36,7 +36,7 @@ jobs:
         with:
           channel: "master"
       - run: flutter pub get
-      - run: flutter config --build-linux-desktop
+      - run: flutter config --enable-linux-desktop
       - run: flutter build linux
       - uses: actions/upload-artifact@v3
         with:
