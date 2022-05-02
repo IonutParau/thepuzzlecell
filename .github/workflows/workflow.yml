@@ -28,18 +28,18 @@ jobs:
         with:
           name: thepuzzlecell-web
           path: build/web
-  build_linux:
+  build_android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+          with:
+            distribution: 'zulu'
+            java-version: '11'
       - uses: subosito/flutter-action@v2
         with:
-          channel: "dev"
+          channel: "stable"
       - run: flutter pub get
-      - run: flutter config --enable-linux-desktop
-      - run: sudo apt install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
-      - run: flutter build linux
-      - uses: actions/upload-artifact@v3
-        with:
-          name: thepuzzlecell-linux
-          path: build/linux/release/bundle
+      - run: flutter test
+      - run: flutter build apk
+      - run: flutter build appbundle
