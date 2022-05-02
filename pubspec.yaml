@@ -10,21 +10,21 @@ environment:
 
 dependencies:
   clipboard: any
-  cupertino_icons: ^1.0.2
-  flame: ^1.1.1
+  cupertino_icons: any
+  flame: any
   flame_splash_screen: any
-  fluent_ui: ^3.11.0
+  fluent_ui: any
   flutter:
     sdk: flutter
   font_awesome_flutter: any
-  http: ^0.13.4
+  http: any
   kplayer: any
   path: any
   shared_preferences: any
   sizer: any
   uuid: any
   web_socket_channel: any
-  yaml: ^3.1.0
+  yaml: any
 
 dev_dependencies:
   flutter_test:
