@@ -37,6 +37,7 @@ jobs:
           channel: "master"
       - run: flutter pub get
       - run: flutter config --enable-linux-desktop
+      - run: sudo apt install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
       - run: flutter build linux
       - uses: actions/upload-artifact@v3
         with:
