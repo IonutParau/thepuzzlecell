@@ -1299,7 +1299,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         title: lang("save.title", 'Save to clipboard'),
         description: lang(
           'save.desc',
-          'Save the simulation as a encoded string into your clipboard',
+          'Save the simulation as an encoded string into your clipboard',
         ),
       ),
     );
@@ -1345,7 +1345,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ),
       );
 
-      // TODO: Translate more buttons
       buttonManager.setButton(
         "select-btn",
         VirtualButton(

@@ -13,66 +13,66 @@ Inthe text, @variablename gets replaced with the variable.
 
 ## Fields:
 
-| Field format        | What it means for the language interpreter                                                                                             | Variables |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| cellid.title        | "The value of this field should be the title of the cell with ID cellid"                                                               |           |
-| cellid.desc         | "The value of this field should be the description of the cell with ID cellid"                                                         |           |
-| buttonid.title      | "The value of this field should be the title of the button with ID buttonid"                                                           |           |
-| buttonid.desc       | "The value of this field should be the description of the button with ID buttonid"                                                     |           |
-| categoryid.title    | "The value of this field should be the title of the category with ID categoryid"                                                       |           |
-| categoryid.desc     | "The value of this field should be the description of the category with ID categoryid"                                                 |           |
-| subcategoryid.title | "The value of this field should be the title of the subcategory with ID subcategoryid"                                                 |           |
-| subcategoryid.desc  | "The value of this field should be the description of the subcategory with ID subcategoryid"                                           |           |
-| title               | The title to show in the languages menu                                                                                                |           |
-| editor              | The name of the editor screen                                                                                                          |           |
-| puzzles             | The name of the puzzles screen                                                                                                         |           |
-| worlds              | The name of the worlds screen                                                                                                          |           |
-| puzzle              | The name of the puzzle button                                                                                                          |           |
-| delete              | The name of the delete button                                                                                                          |           |
-| multiplayer         | The name of the multiplayer screen                                                                                                     |           |
-| settings            | The name of the settings screen                                                                                                        |           |
-| languages           | The name of the language screen                                                                                                        |           |
-| credits             | The name of the credits screen                                                                                                         |           |
-| version             | The name of the version screen                                                                                                         |           |
-| loadLevel           | The name of the load level button                                                                                                      |           |
-| saveError           | The title of the Invalid Save error message                                                                                            |           |
-| saveErrorDesc       | The description of the Invalid Save error message                                                                                      | error     |
-| yes                 | For every confirmation prompt, this is what would get shown instead of Yes                                                             |           |
-| no                  | For every confirmation prompt, this is what would get shown instead of No                                                              |           |
-| world_del_title     | The title of the world delete confirmation prompt                                                                                      | world     |
-| world_del_content   | The message to show in the confirmation prompt                                                                                         |           |
-| add                 | The name of the add button in some pages                                                                                               |           |
-| create_world        | The title of the Create a World page                                                                                                   |           |
-| width               | The name of the width box                                                                                                              |           |
-| height              | The name of the height box                                                                                                             |           |
-| title_box           | The name of the title box in worlds                                                                                                    |           |
-| description         | The name of the description box in worlds                                                                                              |           |
-| play                | The name of the play button                                                                                                            |           |
-| connect             | The name of the connect button in multiplayer                                                                                          |           |
-| delete              | The name of the delete button in multiplayer and worlds                                                                                |           |
-| ip_address          | The name of the IP / Address text box in Multiplayer                                                                                   |           |
-| add_server          | Title of the Add Server page                                                                                                           |           |
-| multiplayer_servers | The title of the multiplayer servers that is different than `multiplayer` because it shows as the title of the page but no of the tile |           |
-| update              | The name of the update checker                                                                                                         |           |
-| versionError        | The text to show when an error occurs duing update checking                                                                            | error     |
-| version_ok          | The text to show when the current version IS the most up-to-date                                                                       |           |
-| version_out_of_date | The text to show when the current version ISN'T the most up-to-date                                                                    |           |
-| shop                | The title of the in-game skin store                                                                                                    |           |
-| quit                | The name of the Quit button to close the app                                                                                           |           |
-| update_delay        | The name of the Update Delay setting                                                                                                   |           |
-| realistic_render    | The name of the Realistic Rendering setting                                                                                            |           |
-| subticking          | The name of the Subticking setting                                                                                                     |           |
-| titles_description  | The name of the Titles and Description setting                                                                                         |           |
-| ui_scale            | The name of the UI Scale setting                                                                                                       |           |
-| music_volume        | The name of the Music Volume setting                                                                                                   |           |
-| debug_mode          | The name of the Debug Mode setting                                                                                                     |           |
-| interpolation       | The name of the Interpolation setting                                                                                                  |           |
-| cellbar             | The name of the Cellbar setting                                                                                                        |           |
-| exit                | The name of the Exit button in the Editor Menu or title of the exit button                                                             |           |
-| exit_desc           | The description of the Exit button in puzzle mode                                                                                      |           |
-| clear               | The name of the Clear button i nthe Editor Menu                                                                                        |           |
-| wrapModeOn          | The title ot show when Wrap Mode is enabled                                                                                            |           |
-| wrapModeOff         | The title ot show when Wrap Mode is disabled                                                                                           |           |
+| Field format        | What it means for the language interpreter                                                                                              | Variables |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| cellid.title        | "The value of this field should be the title of the cell with ID cellid"                                                                |           |
+| cellid.desc         | "The value of this field should be the description of the cell with ID cellid"                                                          |           |
+| buttonid.title      | "The value of this field should be the title of the button with ID buttonid"                                                            |           |
+| buttonid.desc       | "The value of this field should be the description of the button with ID buttonid"                                                      |           |
+| categoryid.title    | "The value of this field should be the title of the category with ID categoryid"                                                        |           |
+| categoryid.desc     | "The value of this field should be the description of the category with ID categoryid"                                                  |           |
+| subcategoryid.title | "The value of this field should be the title of the subcategory with ID subcategoryid"                                                  |           |
+| subcategoryid.desc  | "The value of this field should be the description of the subcategory with ID subcategoryid"                                            |           |
+| title               | The title to show in the languages menu                                                                                                 |           |
+| editor              | The name of the editor screen                                                                                                           |           |
+| puzzles             | The name of the puzzles screen                                                                                                          |           |
+| worlds              | The name of the worlds screen                                                                                                           |           |
+| puzzle              | The name of the puzzle button                                                                                                           |           |
+| delete              | The name of the delete button                                                                                                           |           |
+| multiplayer         | The name of the multiplayer screen                                                                                                      |           |
+| settings            | The name of the settings screen                                                                                                         |           |
+| languages           | The name of the language screen                                                                                                         |           |
+| credits             | The name of the credits screen                                                                                                          |           |
+| version             | The name of the version screen                                                                                                          |           |
+| loadLevel           | The name of the load level button                                                                                                       |           |
+| saveError           | The title of the Invalid Save error message                                                                                             |           |
+| saveErrorDesc       | The description of the Invalid Save error message                                                                                       | error     |
+| yes                 | For every confirmation prompt, this is what would get shown instead of Yes                                                              |           |
+| no                  | For every confirmation prompt, this is what would get shown instead of No                                                               |           |
+| world_del_title     | The title of the world delete confirmation prompt                                                                                       | world     |
+| world_del_content   | The message to show in the confirmation prompt                                                                                          |           |
+| add                 | The name of the add button in some pages                                                                                                |           |
+| create_world        | The title of the Create a World page                                                                                                    |           |
+| width               | The name of the width box                                                                                                               |           |
+| height              | The name of the height box                                                                                                              |           |
+| title_box           | The name of the title box in worlds                                                                                                     |           |
+| description         | The name of the description box in worlds                                                                                               |           |
+| play                | The name of the play button                                                                                                             |           |
+| connect             | The name of the connect button in multiplayer                                                                                           |           |
+| remove              | The name of the delete button in multiplayer and worlds                                                                                 |           |
+| ip_address          | The name of the IP / Address text box in Multiplayer                                                                                    |           |
+| add_server          | Title of the Add Server page                                                                                                            |           |
+| multiplayer_servers | The title of the multiplayer servers that is different than `multiplayer` because it shows as the title of the page but not of the tile |           |
+| update              | The name of the update checker                                                                                                          |           |
+| versionError        | The text to show when an error occurs duing update checking                                                                             | error     |
+| version_ok          | The text to show when the current version IS the most up-to-date                                                                        |           |
+| version_out_of_date | The text to show when the current version ISN'T the most up-to-date                                                                     |           |
+| shop                | The title of the in-game skin store                                                                                                     |           |
+| quit                | The name of the Quit button to close the app                                                                                            |           |
+| update_delay        | The name of the Update Delay setting                                                                                                    |           |
+| realistic_render    | The name of the Realistic Rendering setting                                                                                             |           |
+| subticking          | The name of the Subticking setting                                                                                                      |           |
+| titles_description  | The name of the Titles and Description setting                                                                                          |           |
+| ui_scale            | The name of the UI Scale setting                                                                                                        |           |
+| music_volume        | The name of the Music Volume setting                                                                                                    |           |
+| debug_mode          | The name of the Debug Mode setting                                                                                                      |           |
+| interpolation       | The name of the Interpolation setting                                                                                                   |           |
+| cellbar             | The name of the Cellbar setting                                                                                                         |           |
+| exit                | The name of the Exit button in the Editor Menu or title of the exit button                                                              |           |
+| exit_desc           | The description of the Exit button in puzzle mode                                                                                       |           |
+| clear               | The name of the Clear button in the Editor Menu                                                                                         |           |
+| wrapModeOn          | The title ot show when Wrap Mode is enabled                                                                                             |           |
+| wrapModeOff         | The title ot show when Wrap Mode is disabled                                                                                            |           |
 
 ## Button IDs:
 

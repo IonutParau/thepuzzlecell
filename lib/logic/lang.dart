@@ -23,6 +23,9 @@ const _noData = <String, String>{};
 String lang(String key, String fallback, [Map<String, String> data = _noData]) {
   var v = currentLang[key] as String?;
   if (v == null) return fallback;
+  currentLang.forEach((key, value) {
+    v = v!.replaceAll("\#$key", value);
+  });
   data.forEach((key, value) {
     v = v!.replaceAll("\@$key", value);
   });
