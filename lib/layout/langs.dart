@@ -6,7 +6,7 @@ class LangsUI extends StatelessWidget {
   Widget langsList() {
     if (langs.isEmpty) {
       return Text(
-        'You have no\npre-installed languages',
+        'You have no\ninstalled translations',
         style: TextStyle(
           fontSize: 15.sp,
         ),
