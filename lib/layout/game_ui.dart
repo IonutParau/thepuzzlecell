@@ -1710,7 +1710,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             () => true,
             title: lang("${categories[i]}.title", categories[i].title),
             description: lang(
-                  "${categories[i]}.description",
+                  "${categories[i]}.desc",
                   categories[i].description,
                 ) +
                 (debugMode ? "\nID: ${categories[i]}" : ""),
@@ -1771,12 +1771,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                       (cellInfo[categories[i].items[j]] ?? defaultProfile)
                           .title),
               description: isCategory
-                  ? categories[i].items[j].description +
+                  ? lang('${categories[i]}.${categories[i].items[j]}.desc',
+                          categories[i].items[j].description) +
                       (debugMode
                           ? "\nID: ${categories[i].toString()}.${categories[i].items[j].toString()}"
                           : "")
                   : lang(
-                          "${categories[i].toString()}.${categories[i].items[j].toString()}.description",
+                          "${categories[i].items[j].toString()}.desc",
                           (cellInfo[categories[i].items[j]] ?? defaultProfile)
                               .description) +
                       (debugMode ? "\nID: ${categories[i].items[j]}" : ""),
@@ -1814,7 +1815,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     (cellInfo[cell] ?? defaultProfile).title,
                   ),
                   description: lang(
-                    "$cell.description",
+                    "$cell.desc",
                     (cellInfo[cell] ?? defaultProfile).description +
                         (debugMode ? "\nID: $cell" : ""),
                   ),
