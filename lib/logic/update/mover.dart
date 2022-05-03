@@ -10,7 +10,7 @@ void movers() {
         if (cell.rot != rot) return;
         doSpeedMover(x, y, cell.rot, 0, 2);
       },
-      filter: (c, x, y) => c.id == "fast_mover" && c.rot == rot,
+      filter: (c, x, y) => c.id == "fast_mover" && c.rot == rot && !c.updated,
     );
     grid.loopChunks(
       "mover",
@@ -30,7 +30,7 @@ void movers() {
           push(x, y, cell.rot, 0);
         }
       },
-      filter: (c, x, y) => c.id == "slow_mover" && c.rot == rot,
+      filter: (c, x, y) => c.id == "slow_mover" && c.rot == rot && !c.updated,
     );
     grid.loopChunks(
       "releaser",
@@ -46,7 +46,7 @@ void movers() {
           front.updated = false;
         }
       },
-      filter: (c, x, y) => c.id == "releaser" && c.rot == rot,
+      filter: (c, x, y) => c.id == "releaser" && c.rot == rot && !c.updated,
     );
   }
 }
