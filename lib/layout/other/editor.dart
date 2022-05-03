@@ -87,6 +87,10 @@ class _EditorState extends State<Editor> {
                                 999)
                             .toInt(),
                       ),
+                      keyboardAppearance: Brightness.dark,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[180],
+                      ),
                     ),
                   ),
                   Spacer(),
@@ -102,6 +106,10 @@ class _EditorState extends State<Editor> {
                                 1,
                                 999)
                             .toInt(),
+                      ),
+                      keyboardAppearance: Brightness.dark,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[180],
                       ),
                     ),
                   ),
