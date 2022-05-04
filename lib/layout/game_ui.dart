@@ -102,6 +102,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
         game.edType = EditorType.loaded;
         game.mouseX = mouseX;
         game.mouseY = mouseY;
+        game.mouseInside = false;
         game.context = context;
       });
       //Navigator.of(context).pop();
@@ -122,6 +123,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
           onHover: (e) {
             game.mouseX = e.localPosition.dx;
             game.mouseY = e.localPosition.dy;
+            game.mouseInside = true;
           },
           child: Listener(
             onPointerDown: game.onPointerDown,
@@ -1861,9 +1863,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     debugMode = storage.getBool("debug") ?? false;
     interpolation = storage.getBool("interpolation") ?? true;
     cellbar = storage.getBool("cellbar") ?? false;
-    altRender = debug(storage.getBool("alt_render")) ?? false;
-
-    print(altRender);
+    altRender = storage.getBool("alt_render") ?? false;
 
     await loadAllButtonTextures();
 
