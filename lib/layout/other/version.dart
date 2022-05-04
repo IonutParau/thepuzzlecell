@@ -18,6 +18,8 @@ final List<String> changes = [
   "Added Tools",
   "Added many more cells",
   "Added quantum cells",
+  "Added translation support (They have to be downloaded via the downloader) (disabled in Web)",
+  "Improved transitions",
 ];
 
 IconData getTrailing(String change) {

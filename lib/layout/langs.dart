@@ -14,7 +14,7 @@ class LangsUI extends StatelessWidget {
     }
 
     return SizedBox(
-      width: 50.w,
+      width: 80.w,
       height: 60.h,
       child: ListView(
         children: [
@@ -168,6 +168,8 @@ class _LangsDownloaderState extends State<LangsDownloader> {
                     );
                   },
                 );
+                setState(() {});
+                langEvents.sink.add(true);
               }).catchError((v) {
                 showDialog(
                   context: context,
@@ -198,6 +200,8 @@ class _LangsDownloaderState extends State<LangsDownloader> {
                     );
                   },
                 );
+                setState(() {});
+                langEvents.sink.add(true);
               });
             },
           ),

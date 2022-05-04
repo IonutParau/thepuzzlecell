@@ -36,5 +36,5 @@ Future<String> getVersion() async {
 
   final versionYAML = loadYaml(versionYAMLResponse.body);
 
-  return versionYAML['version'];
+  return (versionYAML['gameVersion'] ?? versionYAML['version']);
 }
