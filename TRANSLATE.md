@@ -9,7 +9,7 @@ The button IDs can be found in the code, and this markdown file will also slow t
 
 ## Translation variables
 
-Inthe text, @variablename gets replaced with the variable.
+In the text, @variablename gets replaced with the variable.
 
 ## Fields:
 
@@ -82,19 +82,48 @@ Inthe text, @variablename gets replaced with the variable.
 
 ## Button IDs:
 
-Back button - `back-btn`
-Load new puzzle - `m-load-btn`
-Save button - `save-btn`
-Load button - `load-btn`
-Wrap button - `wrap-btn`
-Rotate CW - `rot-cw-btn`
-Rotate CCW - `rot-ccw-btn`
-Select button - `select-btn`
-Copy button - `copy-btn`
-Cut button - `cut-btn`
-Delete button (for selections) - `del-btn`
-Paste button - `paste-btn`
-Play / Pause button - `play-btn`
-One Tick button - `onetick-btn`
-Restore button - `restore-btn`
-Set Initial button - `setinitial-btn`
+- Back button - `back-btn`
+- Load new puzzle - `m-load-btn`
+- Save button - `save-btn`
+- Load button - `load-btn`
+- Wrap button - `wrap-btn`
+- Rotate CW - `rot-cw-btn`
+- Rotate CCW - `rot-ccw-btn`
+- Select button - `select-btn`
+- Copy button - `copy-btn`
+- Cut button - `cut-btn`
+- Delete button (for selections) - `del-btn`
+- Paste button - `paste-btn`
+- Play / Pause button - `play-btn`
+- One Tick button - `onetick-btn`
+- Restore button - `restore-btn`
+- Set Initial button - `setinitial-btn`
+
+## Example of JSON
+
+Translations use the JSON markup language.
+It is a markup language for describing objects with a syntax similar-ish to JavaScript's objects.
+
+Simple example:
+
+```json
+{
+  "field": "content"
+}
+```
+
+Those curly brackets (aka `{` and `}`) are only at the start it to mark it as an object.
+
+When typing multiple field-value pairs, add commas inbetween them.
+Like so:
+
+```json
+{
+  "field": "content",
+  "other_field": "other content"
+}
+```
+
+The last field-value pair must not have a , at the end or the parser fails and you get an error.
+
+Hope this helped you!
