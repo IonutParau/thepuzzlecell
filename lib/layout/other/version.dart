@@ -2,10 +2,10 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0.0.1';
+String currentVersion = '2.0.0.2';
 
 final List<String> changes = [
-  "Fixed a update checker bug",
+  "Fixed many image-related issues",
 ];
 
 IconData getTrailing(String change) {

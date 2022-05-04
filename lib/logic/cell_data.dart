@@ -1441,4 +1441,12 @@ final cellInfo = <String, CellProfile>{
     "Mechanical Down Key",
     "Sends out a mechanical signal if the down arrow key is pressed",
   ),
+  "thief": CellProfile(
+    "Thief",
+    "Like Releaser, but Grabber",
+  ),
+  "collector": CellProfile(
+    "Collector",
+    "Like Releaser, but Puller",
+  ),
 };
