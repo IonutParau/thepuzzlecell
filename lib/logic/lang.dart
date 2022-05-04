@@ -37,7 +37,9 @@ List<File> get langs {
     langDir.createSync();
   }
 
-  return langDir.listSync().map<File>((item) => item as File).toList()
+  return (langDir.listSync()..removeWhere((f) => f.path.endsWith(".json")))
+      .map<File>((item) => item as File)
+      .toList()
     ..addAll(externalLangs);
 }
 
