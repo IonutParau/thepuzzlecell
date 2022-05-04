@@ -136,7 +136,14 @@ class _AddServerState extends State<AddServer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(lang("add_server", "Add a server")),
+        title: Row(
+          children: [
+            Spacer(),
+            Text(lang("add_server", "Add a server")),
+            Spacer(),
+          ],
+        ),
+        backgroundColor: Colors.grey[100],
       ),
       body: Center(
         child: Container(
@@ -149,10 +156,10 @@ class _AddServerState extends State<AddServer> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(2.w),
+                    borderRadius: BorderRadius.circular(1.w),
                   ),
-                  width: 60.w,
-                  height: 30.h,
+                  width: 40.w,
+                  height: 20.h,
                   padding: EdgeInsets.all(1.w),
                   child: Column(
                     children: [
@@ -205,7 +212,15 @@ class _AddServerState extends State<AddServer> {
                       Spacer(),
                       MaterialButton(
                         color: Colors.blue,
-                        child: Text(lang("add", "Add")),
+                        child: Padding(
+                          padding: EdgeInsets.all(0.2.w),
+                          child: Text(
+                            lang("add", "Add"),
+                            style: TextStyle(
+                              fontSize: 7.sp,
+                            ),
+                          ),
+                        ),
                         onPressed: () async {
                           await storage.setStringList(
                             "servers",

@@ -218,101 +218,123 @@ class _WorldCreateState extends State<WorldCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(lang('create_world', 'Create A World')),
+        title: Row(
+          children: [
+            Spacer(),
+            Text(lang('create_world', 'Create A World')),
+            Spacer(),
+          ],
+        ),
+        backgroundColor: Colors.grey[100],
       ),
       body: Center(
         child: Column(
           children: [
+            Spacer(flex: 10),
+            Container(
+              width: 40.w,
+              height: 30.h,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(1.w),
+              ),
+              child: Column(
+                children: [
+                  Spacer(),
+                  Row(
+                    children: [
+                      Spacer(),
+                      Text(
+                        '${lang('title_box', 'Title')}: ',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          controller: titleController,
+                          style: TextStyle(
+                            fontSize: 7.sp,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Spacer(),
+                      Text(
+                        '${lang('description', 'Description')}: ',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          controller: descController,
+                          style: TextStyle(
+                            fontSize: 7.sp,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Spacer(),
+                      Text(
+                        '${lang('width', 'Width')}: ',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          controller: widthController,
+                          style: TextStyle(
+                            fontSize: 7.sp,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Spacer(),
+                      Text(
+                        '${lang('height', 'Height')}: ',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          controller: heightController,
+                          style: TextStyle(
+                            fontSize: 7.sp,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                  Spacer(),
+                ],
+              ),
+            ),
             Spacer(),
-            Row(
-              children: [
-                Spacer(),
-                Text(
-                  '${lang('title_box', 'Title')}: ',
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20.w,
-                  child: TextBox(
-                    controller: titleController,
-                    style: TextStyle(
-                      fontSize: 7.sp,
-                    ),
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-            Row(
-              children: [
-                Spacer(),
-                Text(
-                  '${lang('description', 'Description')}: ',
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20.w,
-                  child: TextBox(
-                    controller: descController,
-                    style: TextStyle(
-                      fontSize: 7.sp,
-                    ),
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-            Row(
-              children: [
-                Spacer(),
-                Text(
-                  '${lang('width', 'Width')}: ',
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20.w,
-                  child: TextBox(
-                    controller: widthController,
-                    style: TextStyle(
-                      fontSize: 7.sp,
-                    ),
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-            Row(
-              children: [
-                Spacer(),
-                Text(
-                  '${lang('height', 'Height')}: ',
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 20.w,
-                  child: TextBox(
-                    controller: heightController,
-                    style: TextStyle(
-                      fontSize: 7.sp,
-                    ),
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
             MaterialButton(
               child: Text(
                 lang('add', 'Add'),
                 style: fontSize(
-                  9.sp,
+                  7.sp,
                 ),
               ),
               color: Colors.blue,
@@ -338,7 +360,7 @@ class _WorldCreateState extends State<WorldCreate> {
                 }
               },
             ),
-            Spacer(),
+            Spacer(flex: 10),
           ],
         ),
       ),

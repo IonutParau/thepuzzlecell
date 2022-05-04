@@ -66,6 +66,19 @@ void mechs(Set<String> cells) {
       filter: (cell, x, y) => cell.id == "mech_keyright" && !cell.updated,
     );
   }
+  if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+    grid.loopChunks(
+      "mech_keydown",
+      GridAlignment.BOTTOMLEFT,
+      (cell, x, y) {
+        MechanicalManager.spread(x - 1, y);
+        MechanicalManager.spread(x + 1, y);
+        MechanicalManager.spread(x, y - 1);
+        MechanicalManager.spread(x, y + 1);
+      },
+      filter: (cell, x, y) => cell.id == "mech_keydown" && !cell.updated,
+    );
+  }
 
   // Power draw
   grid.loopChunks(

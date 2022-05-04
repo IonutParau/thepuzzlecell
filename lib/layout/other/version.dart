@@ -11,6 +11,13 @@ final List<String> changes = [
   "Switched from Material UI to Fluent UI",
   "Replaced background music \"Float\" with \"Flight\"",
   "Removed Update Visible because nobody used it",
+  "Added In-Game Store and Skins (they are local, so, your skins dont show for others in Multiplayer)",
+  "Added an Update Checker",
+  "Reworked all cell textures",
+  "Added Time Travel",
+  "Added Tools",
+  "Added many more cells",
+  "Added quantum cells",
 ];
 
 IconData getTrailing(String change) {

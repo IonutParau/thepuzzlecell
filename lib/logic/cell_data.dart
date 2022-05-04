@@ -1,6 +1,6 @@
 part of logic;
 
-var defaultCellSize = 40.0;
+var defaultCellSize = 64.0;
 var cellSize = defaultCellSize.toDouble();
 var wantedCellSize = defaultCellSize;
 
@@ -171,6 +171,7 @@ final cells = {
   "neutron",
   "proton",
   "sandbox",
+  "mech_keydown",
 }.toList();
 
 Map<String, String> textureMap = {
@@ -183,6 +184,7 @@ Map<String, String> textureMap = {
   "mech_p_gen.png": "mechanical/mech_p_gen.png",
   "rotator_rand.png": "rotators/rand_rotator.png",
   "mech_keyup.png": "mechanical/key_up.png",
+  "mech_keydown.png": "mechanical/key_down.png",
   "mech_keyleft.png": "mechanical/key_left.png",
   "mech_keyright.png": "mechanical/key_right.png",
   "mech_rotator_cw.png": "mechanical/rotator_cw.png",
@@ -701,6 +703,7 @@ final categories = [
           "mech_keyup",
           "mech_keyleft",
           "mech_keyright",
+          "mech_keydown",
         ],
         "mech_gen",
       ),
@@ -1433,5 +1436,9 @@ final cellInfo = <String, CellProfile>{
   "unstable_gen": CellProfile(
     "Unstable Generator",
     "Like a normal generator, except it can generate anything through anything",
+  ),
+  "mech_keydown": CellProfile(
+    "Mechanical Down Key",
+    "Sends out a mechanical signal if the down arrow key is pressed",
   ),
 };

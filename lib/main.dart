@@ -107,35 +107,37 @@ class _MyAppState extends State<MyApp> {
             ),
             logoBuilder: (ctx) {
               return ScaleAssist(builder: (context, size) {
-                return ScaffoldPage(
-                  //backgroundColor: Colors.black,
-                  content: Center(
-                    child: Column(
-                      children: [
-                        Spacer(),
-                        SizedBox(
-                          width: 20.w,
-                          height: 20.w,
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            fit: BoxFit.fill,
-                            filterQuality: FilterQuality.none,
+                return FluentTheme(
+                  data: ThemeData.dark(),
+                  child: ScaffoldPage(
+                    content: Center(
+                      child: Column(
+                        children: [
+                          Spacer(),
+                          SizedBox(
+                            width: 20.w,
+                            height: 20.w,
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.fill,
+                              filterQuality: FilterQuality.none,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'The Puzzle Cell',
-                          style: TextStyle(
-                            fontSize: 12.sp,
+                          Text(
+                            'The Puzzle Cell',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'by A Monitor#1595',
-                          style: TextStyle(
-                            fontSize: 5.sp,
+                          Text(
+                            'by A Monitor#1595',
+                            style: TextStyle(
+                              fontSize: 5.sp,
+                            ),
                           ),
-                        ),
-                        Spacer(),
-                      ],
+                          Spacer(),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -169,7 +171,6 @@ class _MyAppState extends State<MyApp> {
         '/version': (ctx) => VersionPage(),
         '/credits': (ctx) => CreditsPage(),
         '/multiplayer': (ctx) => MultiplayerPage(),
-        '/texturepack': (ctx) => TexturePack(),
         '/worlds': (ctx) => WorldUI(),
       },
     );

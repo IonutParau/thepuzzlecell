@@ -268,6 +268,7 @@ class CellTypeManager {
     "mech_keyup",
     "mech_keyleft",
     "mech_keyright",
+    "mech_keydown",
     "mech_rotator_cw",
     "mech_rotator_ccw",
   ];

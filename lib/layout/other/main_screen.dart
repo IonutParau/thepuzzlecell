@@ -57,28 +57,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           stream: langEvents.stream,
           builder: (context, snapshot) {
             return NavigationView(
-              appBar: NavigationAppBar(
-                automaticallyImplyLeading: false,
-                title: Row(
-                  children: [
-                    Spacer(),
-                    Image.asset(
-                      'assets/images/logo.png',
-                      filterQuality: FilterQuality.none,
-                      width: 2.w,
-                      height: 2.w,
-                    ),
-                    Spacer(),
-                    Text(
-                      "The Puzzle Cell",
-                      style: fontSize(
-                        10.sp,
-                      ),
-                    ),
-                    Spacer(flex: 200),
-                  ],
-                ),
-              ),
               content: NavigationBody(
                 index: _navIndex,
                 children: [
@@ -97,7 +75,29 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               pane: NavigationPane(
                 selected: _navIndex,
                 onChanged: (i) => setState(() => _navIndex = i),
-                displayMode: PaneDisplayMode.open,
+                displayMode: PaneDisplayMode.auto,
+                header: Padding(
+                  padding: EdgeInsets.all(0.1.w),
+                  child: Row(
+                    children: [
+                      Spacer(flex: 2),
+                      Image.asset(
+                        'assets/images/logo.png',
+                        filterQuality: FilterQuality.none,
+                        width: 2.w,
+                        height: 2.w,
+                      ),
+                      Spacer(),
+                      Text(
+                        "The Puzzle Cell",
+                        style: fontSize(
+                          6.sp,
+                        ),
+                      ),
+                      Spacer(flex: 2),
+                    ],
+                  ),
+                ),
                 items: [
                   PaneItem(
                     icon: Icon(FluentIcons.edit),

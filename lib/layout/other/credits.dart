@@ -8,8 +8,7 @@ final credits = [
   "k.#0086 for making our OST, \"Flight\"",
   "The Generator Cell#7431 for helping me remake all of the textures",
   "Everyone who has suggested the addition of features and cells",
-  "k.#0086 for making the sound effects",
-  "",
+  "Qwerty.R#9850 for making the sound effects",
 ];
 
 class CreditsPage extends StatelessWidget {

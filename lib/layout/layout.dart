@@ -2,6 +2,7 @@ library layout;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -21,6 +22,7 @@ import 'package:the_puzzle_cell/layout/other/other.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as path;
 import 'tools/tools.dart';
 export 'other/other.dart';
 import '../logic/logic.dart';

@@ -14,8 +14,6 @@ Map<String, bool> keys = {};
 
 const halfPi = pi / 2;
 
-var cellsPerPage = 9;
-
 num abs(num n) => n < 0 ? -n : n;
 
 class GameUI extends StatefulWidget {
@@ -57,10 +55,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
     }
 
     super.dispose();
-  }
-
-  void clampPage() {
-    page = min(max(page, 0), cells.length ~/ cellsPerPage);
   }
 
   @override
@@ -261,7 +255,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       ),
                                       value: game.delay,
                                       min: 0.01,
-                                      max: 5,
+                                      max: 1,
                                       onChanged: (newVal) {
                                         game.delay = (newVal * 100 ~/ 1) / 100;
                                         refreshMenu();
@@ -858,7 +852,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void increaseTab() {
     gridTab[gridTabIndex] = grid;
-    if (edType != EditorType.making || isMultiplayer) return;
+    if (edType != EditorType.making || isMultiplayer || worldIndex != null)
+      return;
     if (!isinitial) return;
     gridTabIndex++;
     if (gridTab[gridTabIndex] == null) {
@@ -869,7 +864,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void decreaseTab() {
     gridTab[gridTabIndex] = grid;
-    if (edType != EditorType.making || isMultiplayer) return;
+    if (edType != EditorType.making || isMultiplayer || worldIndex != null)
+      return;
     if (!isinitial) return;
     gridTabIndex--;
     if (gridTab[gridTabIndex] == null) {
@@ -1834,20 +1830,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     });
   }
 
-  late Sprite emptyImage;
+  Sprite? emptyImage;
 
   Future buildEmpty() async {
+    final e = Flame.images.fromCache('empty.png');
     final rowCompose = ImageComposition();
     for (var x = 0; x < grid.width; x++) {
-      rowCompose.add(
-        Flame.images.fromCache("empty.png"),
-        Vector2(x * 32, 0),
-      );
+      rowCompose.add(e, Vector2(x * e.width.toDouble(), 0));
     }
     final rowImage = await rowCompose.compose();
-    final emptyCompose = ImageComposition();
+    final emptyCompose = ImageComposition(
+      defaultBlendMode: BlendMode.color,
+    );
     for (var y = 0; y < grid.height; y++) {
-      emptyCompose.add(rowImage, Vector2(0, y * 32));
+      emptyCompose.add(
+        rowImage,
+        Vector2(0, y.toDouble()) * rowImage.height.toDouble(),
+      );
     }
     emptyImage = Sprite(await emptyCompose.compose());
   }
@@ -2007,6 +2006,32 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       return;
     }
 
+    if (emptyImage == null) {
+      canvas.drawRect(
+        Offset.zero & Size(canvasSize.x, canvasSize.y),
+        Paint()..color = Colors.black,
+      );
+      final tp = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+          text: 'Building Empty Image composition',
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: Colors.white,
+          ),
+        ),
+      );
+      tp.layout();
+
+      final pos = (canvasSize - tp.size.toVector2()) / 2;
+
+      tp.paint(
+        canvas,
+        pos.toOffset(),
+      );
+      return;
+    }
+
     canvas.drawRect(
       Offset.zero & Size(canvasSize.x, canvasSize.y),
       Paint()..color = Colors.grey[200],
@@ -2017,7 +2042,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.translate(offX, offY);
 
     if (!firstRender) {
-      emptyImage.render(
+      emptyImage!.render(
         canvas,
         position: Vector2.zero(),
         size: Vector2(
@@ -2312,6 +2337,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void renderCell(Cell cell, num x, num y, [Paint? paint]) {
+    if ((paint?.color.opacity ?? 0) < 1 && cell.id == "empty") {
+      final p = Offset(x.toDouble(), y.toDouble()) * cellSize;
+      final r = p & Size(cellSize, cellSize);
+
+      canvas.drawRect(
+        r,
+        Paint()
+          ..color = (Colors.black.withOpacity(
+            paint?.color.opacity ?? 0.5,
+          )),
+      );
+
+      return;
+    } // Help
+
     if (cell.id == "empty") return;
     var file = cell.id;
 
@@ -2343,18 +2383,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.save();
 
-    final cx = (x + grid.width) % grid.width;
-    final cy = (y + grid.height) % grid.height;
-
-    var lx = cell.lastvars.lastPos.dx.toInt();
-    var ly = cell.lastvars.lastPos.dy.toInt();
-
-    final dx = lx - cx;
-    final dy = ly - cy;
-
-    final past =
-        Offset((x + dx).toDouble(), (y + dy).toDouble()) * cellSize.toDouble() +
-            center;
+    final lp = cell.lastvars.lastPos;
+    final past = Offset(
+              (lp.dx + grid.width) % grid.width,
+              (lp.dy + grid.height) % grid.height,
+            ) *
+            cellSize.toDouble() +
+        center;
     final current =
         Offset(x.toDouble(), y.toDouble()) * cellSize.toDouble() + center;
 
@@ -2508,9 +2543,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         shouldCursor = true;
       } else {
         final c = cursors[clientID]!;
-        final dx = c.x - mx;
-        final dy = c.y - my;
-        final allowedDif = 0.1;
         shouldCursor = (c.x != mx || c.y != my);
       }
       if (shouldCursor) {
@@ -2600,15 +2632,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   placeCell(currentSelection, currentRotation, cx, cy);
                 } else if (mouseButton == kSecondaryMouseButton) {
                   placeCell(0, 0, cx, cy);
-                } else if (mouseButton == kMiddleMouseButton) {
-                  final id = grid.at(cx, cy).id;
-
-                  if (edType == EditorType.making) {
-                    if (cells.contains(id)) {
-                      currentSelection = cells.indexOf(id);
-                    }
-                  }
                 }
+              }
+            }
+          }
+          if (mouseButton == kMiddleMouseButton) {
+            final id = grid.at(mx, my).id;
+
+            if (edType == EditorType.making) {
+              if (cells.contains(id)) {
+                currentSelection = cells.indexOf(id);
               }
             }
           }
@@ -3078,7 +3111,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           delay = max(delay, 0.01);
         } else if (keysPressed.contains(LogicalKeyboardKey.keyX)) {
           delay *= 2;
-          delay = min(delay, 5);
+          delay = min(delay, 1);
         }
       }
       for (var key in keysPressed) {
