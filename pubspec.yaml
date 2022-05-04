@@ -4,7 +4,7 @@ description: The Puzzle Cell
 publish_to: "none"
 
 version: "2.0.0"
-gameVersion: "2.0.0.0"
+gameVersion: "2.0.0.1"
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

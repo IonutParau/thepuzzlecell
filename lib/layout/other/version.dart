@@ -2,24 +2,10 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0.0.0 Codename World of Changes Update';
+String currentVersion = '2.0.0.1';
 
 final List<String> changes = [
-  "Fixed some bugs",
-  "Added Constraints",
-  "Added Worlds",
-  "Switched from Material UI to Fluent UI",
-  "Replaced background music \"Float\" with \"Flight\"",
-  "Removed Update Visible because nobody used it",
-  "Added In-Game Store and Skins (they are local, so, your skins dont show for others in Multiplayer)",
-  "Added an Update Checker",
-  "Reworked all cell textures",
-  "Added Time Travel",
-  "Added Tools",
-  "Added many more cells",
-  "Added quantum cells",
-  "Added translation support (They have to be downloaded via the downloader) (disabled in Web)",
-  "Improved transitions",
+  "Fixed a update checker bug",
 ];
 
 IconData getTrailing(String change) {

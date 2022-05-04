@@ -62,9 +62,9 @@ class _UpdateUIState extends State<UpdateUI> {
                 future: _versionFuture,
                 builder: (ctx, snap) {
                   if (snap.hasData) {
-                    final higherV = higherVersion(versionToCheck, snap.data!);
+                    final higherV = higherVersion(snap.data!, versionToCheck);
 
-                    if (!higherV) {
+                    if (higherV) {
                       return MaterialButton(
                         child: Text(
                           lang(
