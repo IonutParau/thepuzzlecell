@@ -61,7 +61,8 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                 final response = snap.data!;
                 if (response.statusCode != 200)
                   return Icon(Icons.error, color: Colors.red["light"]);
-                return Icon(FluentIcons.accept, color: Colors.green);
+                return Icon(Icons.check_box_rounded,
+                    color: Colors.green["light"]);
               }
               return Icon(FluentIcons.clock, color: Colors.blue);
             }),
