@@ -406,7 +406,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       game.itime = 0;
                                       if (game.isMultiplayer) {
                                         game.sendToServer(
-                                          'setinit ${P2.encodeGrid(grid)}',
+                                          'setinit ${P3.encodeGrid(grid)}',
                                         );
                                       } else {
                                         grid = Grid(grid.width, grid.height);
@@ -1223,7 +1223,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                         ? lang('wrapModeOn', "Wrap Mode (ON)")
                         : lang("wrapModeOff", "Wrap Mode (OFF)");
 
-                    sendToServer('setinit ${P2.encodeGrid(grid)}');
+                    sendToServer('setinit ${P3.encodeGrid(grid)}');
 
                     hovers.forEach(
                       (key, value) {
@@ -1559,7 +1559,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     running = false;
 
                     if (isMultiplayer) {
-                      sendToServer('setinit ${P2.encodeGrid(grid)}');
+                      sendToServer('setinit ${str.text}');
                     } else {
                       grid = loadStr(str.text ?? "");
                       initial = grid.copy;
@@ -2504,6 +2504,29 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         );
     }
 
+    // Custom cell stuff
+    if (cell.id == "counter") {
+      final tp = TextPainter(
+        text: TextSpan(
+          text: "${cell.data['count'] ?? 0}",
+          style: TextStyle(
+            fontSize: cellSize * 0.25,
+            color: Colors.grey[100],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      tp.layout();
+      tp.paint(
+        canvas,
+        Offset(
+          off.dx * scaleX + cellSize / 2 - tp.width / 2,
+          off.dy * scaleY + cellSize / 2 - tp.height / 2,
+        ),
+      );
+    }
+
     canvas.restore();
   }
 
@@ -2925,7 +2948,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
     timeGrid = null;
-    if (isMultiplayer) sendToServer('setinit ${P2.encodeGrid(grid)}');
+    if (isMultiplayer) sendToServer('setinit ${P3.encodeGrid(grid)}');
   }
 
   void restoreInitial() {

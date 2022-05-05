@@ -172,9 +172,11 @@ final cells = {
   "proton",
   "sandbox",
   "mech_keydown",
+  "counter",
 }.toList();
 
 Map<String, String> textureMap = {
+  "counter.png": "destroyers/counter.png",
   "proton.png": "quantum/proton.png",
   "neutron.png": "quantum/neutron.png",
   "electron.png": "quantum/electron.png",
@@ -451,7 +453,7 @@ final categories = [
       ),
       CellCategory(
         "Pullers",
-        "They move forwards, pulling the cells behind it, but cant push",
+        "They move forwards, pulling the cells behind it, but can't push",
         [
           "puller",
           "slow_puller",
@@ -462,7 +464,7 @@ final categories = [
       ),
       CellCategory(
         "Grabbers",
-        "They grab cells on their side, they cant push themselves or the cells their grabbing",
+        "They grab cells on their side, they can't push themselves or the cells their grabbing",
         [
           "grabber",
           "thief",
@@ -472,7 +474,7 @@ final categories = [
       "driller",
       CellCategory(
         "Speeds",
-        "They move forward but cant push, pull, grab or drill",
+        "They move forward but can't push, pull, grab or drill",
         [
           "speed",
           "slow",
@@ -491,7 +493,7 @@ final categories = [
   ),
   CellCategory(
     "Forcers",
-    "Cells that move other cells but dont move themselves",
+    "Cells that move other cells but don't move themselves",
     [
       "fan",
       "vacuum",
@@ -631,6 +633,7 @@ final categories = [
           "transform_trash",
           "puzzle_trash",
           "wormhole",
+          "counter",
         ],
         "trash",
       ),
@@ -647,7 +650,7 @@ final categories = [
       // ),
       CellCategory(
         "Quantum Cells",
-        "A hole new type of physics lies in this category",
+        "A whole new type of physics lies in this category",
         [
           "unstable_mover",
           "unstable_gen",
@@ -695,7 +698,7 @@ final categories = [
       "cross_mech_gear",
       "displayer",
       CellCategory(
-        "Powet Givers",
+        "Power Givers",
         "They give mechanical power",
         [
           "mech_gen",
@@ -802,7 +805,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "releaser": CellProfile(
     "Releaser",
-    "A mover, except if a cell is in front of it, it stops it from updating. If it is stopped from moving ,it will allow the catched cell to update again",
+    "A mover, except if a cell is in front of it, it stops it from updating. If it is stopped from moving, it will allow the catched cell to update again",
   ),
   "fan": CellProfile(
     "Fan",
@@ -846,9 +849,8 @@ final cellInfo = <String, CellProfile>{
   ),
   "darty": CellProfile(
     "Darty",
-    "Moves forward, if it can push the cell in front it eats it and replicates, if it cant push it, it turns goes in another direction",
+    "Moves forward, if it can push the cell in front it eats it and replicates, if it can't push it, it turns goes in another direction",
   ),
-  "floppy": defaultProfile,
   "push": CellProfile(
     "Push",
     "Can be pushed from any side",
@@ -895,7 +897,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "lock": CellProfile(
     "Lock",
-    "Cant be moved, except if the player has a key when interacting with it, in which case it unlocks itself and becomes pushable",
+    "Can't be moved, except if the player has a key when interacting with it, in which case it unlocks itself and becomes pushable",
   ),
   "flag": CellProfile(
     "Flag",
@@ -911,7 +913,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "physical_gen": CellProfile(
     "Physical Generator",
-    "Like a generator except, if it cant move whats in front of it, it tries to move backwards to generate the cell",
+    "Like a generator except, if it can't move whats in front of it, it tries to move backwards to generate the cell",
   ),
   "pmerge": CellProfile(
     "PuzzleMerge™",
@@ -923,7 +925,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "opposite_rotator": CellProfile(
     "Opposite Rotator",
-    "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and inbetween, nothing",
+    "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and in between, nothing",
   ),
   "stopper": CellProfile(
     "Stopper",
@@ -1198,7 +1200,7 @@ final cellInfo = <String, CellProfile>{
     "Physical Generator bent clockwise",
   ),
   "physical_gen_ccw": CellProfile(
-    "Physical GeneratorC CW",
+    "Physical Generator CCW",
     "Physical Generator bent counter-clockwise",
   ),
   "fast_puller": CellProfile(
@@ -1291,7 +1293,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "time_machine": CellProfile(
     "Time Machine",
-    "Will send back in time the entire structure it is atteched to, but only when powered",
+    "Will send back in time the entire structure it is attached to, but only when powered",
   ),
   "time_hole": CellProfile(
     "Time Hole",
@@ -1397,7 +1399,7 @@ final cellInfo = <String, CellProfile>{
     "Puzzle Trash",
     "Can only eat stuff that is moving with a puzzle force",
   ),
-  "double_gen": CellProfile(
+  "doublegen": CellProfile(
     "Double Generator",
     "Generator CW + Generator CCW",
   ),
@@ -1448,5 +1450,9 @@ final cellInfo = <String, CellProfile>{
   "collector": CellProfile(
     "Collector",
     "Like Releaser, but Puller",
+  ),
+  "counter": CellProfile(
+    "Counter",
+    "Like a Trash cell, but also counts how many cells came in",
   ),
 };

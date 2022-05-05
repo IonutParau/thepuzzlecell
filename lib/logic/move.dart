@@ -234,6 +234,7 @@ final trashes = [
   "gen_trash",
   "transform_trash",
   "puzzle_trash",
+  "counter",
 ];
 
 final enemies = [
@@ -302,6 +303,9 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       if (mt == MoveType.push) {
         push(frontX(x, dir), frontY(y, dir), dir, 1);
       }
+    } else if (destroyer.id == "counter") {
+      grid.addBroken(moving, x, y);
+      destroyer.data['count'] = (destroyer.data['count'] ?? 0) + 1;
     } else {
       grid.addBroken(moving, x, y);
     }

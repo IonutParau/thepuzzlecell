@@ -2,10 +2,14 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0.0.2';
+String currentVersion = '2.0.1.0';
 
 final List<String> changes = [
-  "Fixed many image-related issues",
+  "Fixed typos & loading in Multiplayer",
+  "Added Edit button to server",
+  "Added server pinging",
+  "Added counter cell",
+  "Fixed a few textures",
 ];
 
 IconData getTrailing(String change) {
