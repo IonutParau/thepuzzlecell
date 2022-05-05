@@ -19,9 +19,9 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: any
   http: ^0.13.4
-  kplayer: any
+  kplayer: ^0.1.14
   path: any
-  shared_preferences: any
+  shared_preferences: ^2.0.13
   sizer: any
   uuid: any
   web_socket_channel: any
