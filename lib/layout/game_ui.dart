@@ -147,9 +147,9 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                   }
                 } else {
                   if (event.scrollDelta.dy < 0) {
-                    game.zoomin(abs(event.scrollDelta.dy / 16).toDouble());
+                    game.zoomin(abs(16 / event.scrollDelta.dy).toDouble());
                   } else if (event.scrollDelta.dy > 0) {
-                    game.zoomout(abs(event.scrollDelta.dy / 16).toDouble());
+                    game.zoomout(abs(16 / event.scrollDelta.dy).toDouble());
                   }
                 }
               }
