@@ -109,8 +109,9 @@ class LangsDownloader extends StatefulWidget {
 
 class _LangsDownloaderState extends State<LangsDownloader> {
   Widget versionTile(String name) {
-    final locallyExists =
-        File(path.join(langDir.path, '$name.json')).existsSync();
+    final f = File(path.join(langDir.path, '$name.json'));
+
+    final locallyExists = f.existsSync();
     return ListTile(
       title: Row(
         children: [
@@ -131,7 +132,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
                 color: Colors.white,
               ),
             ),
-            color: Colors.blue,
+            color: locallyExists ? Colors.blue : Colors.green,
             onPressed: () {
               final f = downloadLanguage(name);
 
@@ -205,6 +206,49 @@ class _LangsDownloaderState extends State<LangsDownloader> {
               });
             },
           ),
+          if (locallyExists)
+            MaterialButton(
+              child: Text(
+                lang("delete", "Delete"),
+                style: TextStyle(
+                  fontSize: 5.sp,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                f.deleteSync();
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return ContentDialog(
+                      title: Text(
+                        lang(
+                          'locally_removed',
+                          'Locally removed $name',
+                          {"name": name},
+                        ),
+                      ),
+                      content: Text(
+                        lang(
+                          'locally_removed_content',
+                          'You can install it back whenever you want',
+                        ),
+                      ),
+                      actions: [
+                        Button(
+                          child: Text("Ok"),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                currentLang = {};
+                setState(() {});
+                langEvents.sink.add(true);
+              },
+              color: Colors.red,
+            ),
         ],
       ),
     );

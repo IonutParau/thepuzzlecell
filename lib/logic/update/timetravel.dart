@@ -101,7 +101,9 @@ void timetravel() {
       },
     );
 
-    grid.forEach(
+    grid.loopChunks(
+      "time_machine",
+      GridAlignment.BOTTOMLEFT,
       (Cell cell, int x, int y) {
         if (cell.data['time_travelled'] == true) {
           final s = CellStructure()..build(x, y);
@@ -117,8 +119,7 @@ void timetravel() {
           );
         }
       },
-      null,
-      "time_machine",
+      filter: (c, x, y) => c.id == "time_machine",
     );
 
     if (grid.cells.contains("consistency")) {

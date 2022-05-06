@@ -8,7 +8,7 @@ final flightMusic = Player.asset('assets/audio/Flight.ogg', autoPlay: false);
 
 void initSound() {
   destroySound.callback = (e) {};
-  destroySound.volume = 0.4;
+  destroySound.volume = 1;
   flightMusic.callback = (e) {};
   // destroySound.open(
   //   Media.asset(
@@ -57,10 +57,12 @@ void initSound() {
 //   );
 // }
 
-void playSound(PlayerController sound) {
+void playSound(PlayerController sound, [double? volume]) {
   if (inBruteForce) return;
   if (sound.playing) sound.position = Duration.zero;
+  sound.volume = volume ?? game.sfxVolume;
   sound.play();
+  flightMusic.volume = storage.getDouble('music_volume') ?? 1;
 }
 
 void playOnLoop(PlayerController sound, double volume) {

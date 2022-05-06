@@ -153,7 +153,6 @@ class MechanicalManager {
       cell.updated = true;
       doDisplayer(x, y, cell.rot);
     } else if (cell.id == "time_machine") {
-      cell.updated = true;
       cell.data['time_travelled'] = true;
       travelTime();
     } else if (cell.id == "mech_rotator_cw") {

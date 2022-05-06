@@ -236,7 +236,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   lang('update_delay', "Update Delay") +
                                       ": ${game.delay}",
                                   style: TextStyle(
-                                    fontSize: 12.sp,
+                                    fontSize: 10.sp,
                                   ),
                                 ),
                                 Spacer(),
@@ -276,7 +276,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   lang('music_volume', 'Music Volume') +
                                       ": ${flightMusic.playing ? (flightMusic.volume * 100 ~/ 1) : 0}% ",
                                   style: TextStyle(
-                                    fontSize: 12.sp,
+                                    fontSize: 10.sp,
                                   ),
                                 ),
                                 Spacer(),
@@ -304,6 +304,10 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                         onChanged: (newVal) {
                                           setLoopSoundVolume(
                                             flightMusic,
+                                            newVal,
+                                          );
+                                          storage.setDouble(
+                                            'music_volume',
                                             newVal,
                                           );
                                           refreshMenu();
@@ -772,6 +776,8 @@ void renderInfoBox(Canvas canvas, String title, String description) {
 
 class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   late Canvas canvas;
+
+  double sfxVolume = 1;
 
   bool firstRender = true;
 
@@ -2706,9 +2712,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (!isMultiplayer) grid.setPlace(cx, cy, "empty");
         sendToServer("bg $cx $cy empty");
       } else {
-        sendToServer(
-          "place $cx $cy ${cells[id]} $rot $brushTemp",
-        );
+        if (backgrounds.contains(cells[id])) {
+          sendToServer(
+            "place $cx $cy ${cells[id]}",
+          );
+        } else {
+          sendToServer(
+            "place $cx $cy ${cells[id]} $rot $brushTemp",
+          );
+        }
       }
     } else if (edType == EditorType.loaded) {
       if (grid.placeable(cx, cy) == "rotatable") {
