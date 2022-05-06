@@ -19,8 +19,7 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: any
   http: ^0.13.4
-  kplayer: ^0.1.14
-  dart_vlc: ^0.1.8
+  kplayer: ^0.1.1
   path: any
   shared_preferences: ^2.0.13
   sizer: any
