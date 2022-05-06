@@ -1957,6 +1957,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             "version": currentVersion.split(' ').first,
             "clientID": clientID,
           })}');
+      sendToServer("debug ${storage.getBool("debug")}");
 
       Flame.images.load('cursor.png');
 
