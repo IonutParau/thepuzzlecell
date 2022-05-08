@@ -23,8 +23,8 @@ jobs:
         with:
           channel: "stable"
       - run: flutter pub get
-      - run: apt install vlc
-      - run: apt install libvlc-dev
+      - run: sudo apt install vlc
+      - run: sudo apt install libvlc-dev
       - run: flutter build linux
       - uses: actions/upload-artifact@v3
         with:
