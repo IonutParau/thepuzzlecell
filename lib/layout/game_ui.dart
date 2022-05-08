@@ -274,7 +274,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                               children: [
                                 Text(
                                   lang('music_volume', 'Music Volume') +
-                                      ": ${flightMusic.playing ? (flightMusic.volume * 100 ~/ 1) : 0}% ",
+                                      ": ${flightMusic.playback.isPlaying ? (flightMusic.general.volume * 100 ~/ 1) : 0}% ",
                                   style: TextStyle(
                                     fontSize: 10.sp,
                                   ),
@@ -296,8 +296,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                           disabledThumbColor: Colors.black,
                                           useThumbBall: true,
                                         ),
-                                        value: flightMusic.playing
-                                            ? flightMusic.volume
+                                        value: flightMusic.playback.isPlaying
+                                            ? flightMusic.general.volume
                                             : 0.0,
                                         min: 0,
                                         max: 1,

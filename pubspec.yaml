@@ -14,12 +14,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   flame: ^1.1.1
   flame_splash_screen: any
-  fluent_ui: ^3.11.0
+  fluent_ui:
+    git: https://github.com/bdlukaa/fluent_ui.git
   flutter:
     sdk: flutter
   font_awesome_flutter: any
   http: ^0.13.4
-  kplayer: ^0.1.1
+  dart_vlc: ^0.2.0
   path: any
   shared_preferences: ^2.0.13
   sizer: any

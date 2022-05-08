@@ -1,82 +1,60 @@
 part of layout;
 
-final destroySound = Player.asset('assets/audio/destroy.wav', autoPlay: false);
-final flightMusic = Player.asset('assets/audio/Flight.ogg', autoPlay: false);
-// late ReceivePort _audioComPort;
-// late SendPort _audioSendPort;
-// late Isolate _audioIso;
+late Player destroySound;
+late Player flightMusic;
 
 void initSound() {
-  destroySound.callback = (e) {};
-  destroySound.volume = 1;
-  flightMusic.callback = (e) {};
-  // destroySound.open(
-  //   Media.asset(
-  //     'assets/audio/destroy.wav',
-  //   ),
-  //   autoStart: false,
-  // );
-  // destroySound.setVolume(0.5);
+  flightMusic = Player(id: 69420, commandlineArguments: ['--no-video']);
+  destroySound = Player(id: 69421, commandlineArguments: ['--no-video']);
 
-  // flightMusic.open(
-  //   Media.asset(
-  //     'assets/audio/Flight.ogg',
-  //   ),
-  //   autoStart: false,
-  // );
-  // _audioComPort = ReceivePort();
-  // Isolate.spawn(
-  //   _playSound,
-  //   _audioComPort.sendPort,
-  // ).then(
-  //   (iso) {
-  //     _audioIso = iso;
-  //   },
-  // );
-  // _audioComPort.listen(
-  //   (message) {
-  //     if (message is SendPort) {
-  //       _audioSendPort = message;
-  //     }
-  //   },
-  // );
+  final destroy = Media.asset(
+    'assets/audio/destroy.wav',
+  );
+
+  final flight = Media.asset(
+    'assets/audio/Flight.ogg',
+  );
+
+  destroySound.add(
+    destroy,
+  );
+
+  flightMusic.add(
+    flight,
+  );
+
+  flightMusic.playbackStream.listen((event) {
+    if (event.isCompleted) {
+      flightMusic.play(); // Loop
+    }
+  });
 }
 
-// void _playSound(SendPort port) {
-//   final mainToIsolateStream = ReceivePort();
-//   port.send(mainToIsolateStream.sendPort);
-
-//   mainToIsolateStream.listen(
-//     (audio) {
-//       if (audio is Player) {
-//         DartVLC.initialize();
-//         audio.stop();
-//         audio.play();
-//       }
-//     },
-//   );
-// }
-
-void playSound(PlayerController sound, [double? volume]) {
+void playSound(Player sound, [double? volume]) {
   if (inBruteForce) return;
-  if (sound.playing) sound.position = Duration.zero;
-  sound.volume = volume ?? game.sfxVolume;
-  sound.play();
-  flightMusic.volume = storage.getDouble('music_volume') ?? 1;
+  if (sound.playback.isPlaying) {
+    sound.seek(Duration.zero);
+  } else {
+    sound.play();
+  }
+  sound.setVolume(volume ?? game.sfxVolume);
 }
 
-void playOnLoop(PlayerController sound, double volume) {
-  sound.volume = volume;
-  sound.loop = true;
-  sound.play();
+void playOnLoop(Player sound, double volume) {
+  if (sound.playback.isPlaying) {
+    sound.seek(Duration.zero);
+  } else {
+    sound.play();
+  }
+  sound.setVolume(volume);
 }
 
-void setLoopSoundVolume(PlayerController sound, double volume) {
+void setLoopSoundVolume(Player sound, double volume) {
   if (volume == 0) {
     sound.stop();
   } else {
-    if (sound.playing) {
-      sound.volume = volume;
+    if (sound.playback.isPlaying) {
+      sound.setVolume(volume);
     } else {
       playOnLoop(sound, volume);
     }

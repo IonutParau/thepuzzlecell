@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   padding: EdgeInsets.all(0.1.w),
                   child: Row(
                     children: [
-                      Spacer(flex: 2),
+                      Spacer(flex: 10),
                       Image.asset(
                         'assets/images/logo.png',
                         filterQuality: FilterQuality.none,
@@ -94,7 +94,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           6.sp,
                         ),
                       ),
-                      Spacer(flex: 2),
+                      Spacer(flex: 10),
                     ],
                   ),
                 ),

@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:kplayer/kplayer.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';

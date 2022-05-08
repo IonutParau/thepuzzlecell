@@ -1,22 +1,21 @@
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:kplayer/kplayer.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 
 import 'logic/logic.dart';
 
 void main() async {
   //await Flame.device.setLandscape();
 
+  DartVLC.initialize();
   WidgetsFlutterBinding.ensureInitialized();
-  Player.boot();
   await Flame.device.fullScreen();
   SystemChrome.setApplicationSwitcherDescription(
     ApplicationSwitcherDescription(
@@ -24,13 +23,9 @@ void main() async {
     ),
   );
 
-  initSound();
-
   await loadAllPuzzles();
   await loadBlueprints();
   addBlueprints();
-
-  print(cells.length - backgrounds.length);
 
   //fixDefault();
 
@@ -81,6 +76,12 @@ class _MyAppState extends State<MyApp> {
     fadeInDuration: Duration(milliseconds: 500),
     fadeOutDuration: Duration(milliseconds: 500),
   );
+
+  @override
+  void initState() {
+    initSound();
+    super.initState();
+  }
 
   @override
   void dispose() {
