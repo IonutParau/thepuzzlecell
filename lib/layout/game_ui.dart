@@ -2695,7 +2695,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
       //if (grid.at(cx, cy).id == id && grid.at(cx, cy).rot == rot) return;
-      if (!isMultiplayer)
+      if (!isMultiplayer || !isinitial)
         grid.set(
           cx,
           cy,
