@@ -173,9 +173,19 @@ final cells = {
   "sandbox",
   "mech_keydown",
   "counter",
+  "forker",
+  "forker_cw",
+  "forker_ccw",
+  "double_forker",
+  "triple_forker",
 }.toList();
 
 Map<String, String> textureMap = {
+  "forker.png": "recreators/forkers/forker.png",
+  "forker_cw.png": "recreators/forkers/forker_cw.png",
+  "forker_ccw.png": "recreators/forkers/forker_ccw.png",
+  "double_forker.png": "recreators/forkers/double_forker.png",
+  "triple_forker.png": "recreators/forkers/triple_forker.png",
   "counter.png": "destroyers/counter.png",
   "proton.png": "quantum/proton.png",
   "neutron.png": "quantum/neutron.png",
@@ -590,7 +600,19 @@ final categories = [
           "triple_transformer",
         ],
         "transformer",
-      )
+      ),
+      CellCategory(
+        "Forkers",
+        "A cell comes in from the back, a copy of it comes out",
+        [
+          "forker",
+          "forker_cw",
+          "forker_ccw",
+          "triple_forker",
+          "double_forker",
+        ],
+        "forker",
+      ),
     ],
     "generator",
   ),
@@ -1454,5 +1476,25 @@ final cellInfo = <String, CellProfile>{
   "counter": CellProfile(
     "Counter",
     "Like a Trash cell, but also counts how many cells came in",
+  ),
+  "forker": CellProfile(
+    "Forker",
+    "Cell comes in, copy comes out in front",
+  ),
+  "forker_cw": CellProfile(
+    "Forker CW",
+    "Forker bent clockwise",
+  ),
+  "forker_ccw": CellProfile(
+    "Forker CCW",
+    "Forker bet counter-clockise",
+  ),
+  "triple_forker": CellProfile(
+    "Triple Forker",
+    "Forker + Forker CW + Forker CCW",
+  ),
+  "double_forker": CellProfile(
+    "Double Forker",
+    "Forker CW + Forker CCW",
   ),
 };

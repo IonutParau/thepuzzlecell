@@ -68,23 +68,62 @@ part 'update/timetravel.dart';
 part 'achievements.dart';
 part 'updatechecker.dart';
 
+String findAssetDirPath() {
+  // print(path.absolute(
+  //   'build',
+  //   'linux',
+  //   'x64',
+  //   'debug',
+  //   'bundle',
+  //   'data',
+  //   'flutter_assets',
+  // ));
+
+  if (Directory(
+    path.absolute(
+      'build',
+      'windows',
+      'runner',
+      'Debug',
+      'data',
+      'flutter_assets',
+    ),
+  ).existsSync()) {
+    return path.absolute(
+      'build',
+      'windows',
+      'runner',
+      'Debug',
+      'data',
+      'flutter_assets',
+    );
+  }
+
+  if (Directory(
+    path.absolute(
+      'build',
+      'linux',
+      'x64',
+      'debug',
+      'bundle',
+      'data',
+      'flutter_assets',
+    ),
+  ).existsSync()) {
+    return path.absolute(
+      'build',
+      'linux',
+      'x64',
+      'debug',
+      'bundle',
+      'data',
+      'flutter_assets',
+    );
+  }
+
+  return path.absolute('data', 'flutter_assets');
+}
+
 late SharedPreferences storage;
 
-final String assetsPath = kDebugMode &&
-        Directory(path.absolute(
-          'build',
-          'windows',
-          'runner',
-          'Debug',
-          'data',
-          'flutter_assets',
-        )).existsSync()
-    ? path.absolute(
-        'build',
-        'windows',
-        'runner',
-        'Debug',
-        'data',
-        'flutter_assets',
-      )
-    : path.absolute('data', 'flutter_assets'); // What is a spagetti code
+final String assetsPath = findAssetDirPath();

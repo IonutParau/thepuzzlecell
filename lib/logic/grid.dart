@@ -86,6 +86,13 @@ class Cell {
   }
 
   String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags";
+
+  void rotate(int amount) {
+    lastvars.lastRot = rot;
+    rot += amount;
+    while (rot < 0) rot += 4;
+    rot %= 4;
+  }
 }
 
 Grid grid = Grid(100, 100);

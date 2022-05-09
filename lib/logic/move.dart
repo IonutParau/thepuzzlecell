@@ -144,6 +144,11 @@ bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
 
   if (trashes.contains(into.id) && !into.tags.contains("stopped")) return true;
 
+  if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"]
+      .contains(into.id)) {
+    return (side == into.rot);
+  }
+
   return false;
 }
 
@@ -280,6 +285,88 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     } else {
       grid.addBroken(moving, x, y);
     }
+  }
+
+  if (destroyer.id == "forker") {
+    grid.addBroken(moving, x, y);
+    final r = destroyer.rot;
+    push(
+      frontX(x, r),
+      frontY(y, r),
+      r,
+      1,
+      replaceCell: moving.copy,
+    );
+    return;
+  }
+  if (destroyer.id == "forker_cw") {
+    grid.addBroken(moving, x, y);
+    final r = destroyer.rot + 1;
+    push(
+      frontX(x, r),
+      frontY(y, r),
+      r,
+      1,
+      replaceCell: moving.copy..rotate(1),
+    );
+    return;
+  }
+  if (destroyer.id == "forker_ccw") {
+    grid.addBroken(moving, x, y);
+    final r = destroyer.rot + 3;
+    push(
+      frontX(x, r),
+      frontY(y, r),
+      r,
+      1,
+      replaceCell: moving.copy..rotate(3),
+    );
+    return;
+  }
+  if (destroyer.id == "double_forker") {
+    grid.addBroken(moving, x, y);
+    final r = destroyer.rot;
+    push(
+      frontX(x, r + 1),
+      frontY(y, r + 1),
+      r + 1,
+      1,
+      replaceCell: moving.copy..rotate(1),
+    );
+    push(
+      frontX(x, r + 3),
+      frontY(y, r + 3),
+      r + 3,
+      1,
+      replaceCell: moving.copy..rotate(3),
+    );
+    return;
+  }
+  if (destroyer.id == "triple_forker") {
+    grid.addBroken(moving, x, y);
+    final r = destroyer.rot;
+    push(
+      frontX(x, r),
+      frontY(y, r),
+      r,
+      1,
+      replaceCell: moving.copy,
+    );
+    push(
+      frontX(x, r + 1),
+      frontY(y, r + 1),
+      r + 1,
+      1,
+      replaceCell: moving.copy..rotate(1),
+    );
+    push(
+      frontX(x, r + 3),
+      frontY(y, r + 3),
+      r + 3,
+      1,
+      replaceCell: moving.copy..rotate(3),
+    );
+    return;
   }
 
   if (trashes.contains(destroyer.id)) {
