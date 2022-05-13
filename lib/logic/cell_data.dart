@@ -178,7 +178,10 @@ final cells = {
   "forker_ccw",
   "double_forker",
   "triple_forker",
+  "graviton",
 }.toList();
+
+final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
   "forker.png": "recreators/forkers/forker.png",
@@ -190,6 +193,7 @@ Map<String, String> textureMap = {
   "proton.png": "quantum/proton.png",
   "neutron.png": "quantum/neutron.png",
   "electron.png": "quantum/electron.png",
+  "graviton.png": "quantum/graviton.png",
   "unstable_gen.png": "quantum/generator.png",
   'zoomin.png': 'interface/zoomin.png',
   'zoomout.png': 'interface/zoomout.png',
@@ -680,6 +684,7 @@ final categories = [
           "proton",
           "neutron",
           "electron",
+          "graviton",
         ],
         "unstable_mover",
       ),
@@ -1351,15 +1356,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "proton": CellProfile(
     "Wannabe-Proton",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Towards\nProton: Away\nNeutron: Towards",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Towards\nProton: Away\nNeutron: Towards\nGravtion: Towards",
   ),
   "electron": CellProfile(
     "Wannabe-Electron",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Again\nProton: Towards\nNeutron: Ignores",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Away\nProton: Towards\nNeutron: Ignores\nGravtion: Towards",
   ),
   "neutron": CellProfile(
     "Wannabe-Neutron",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Ignores\nProton: Towards\nNeutron: Ignores",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Ignores\nProton: Towards\nNeutron: Ignores\nGravtion: Towards",
   ),
   "sandbox": CellProfile(
     "The Sandbox Cell",
@@ -1496,5 +1501,9 @@ final cellInfo = <String, CellProfile>{
   "double_forker": CellProfile(
     "Double Forker",
     "Forker CW + Forker CCW",
+  ),
+  "graviton": CellProfile(
+    "Graviton",
+    "It is only attracted to other Gravitons, but all particles are attracted to it",
   ),
 };

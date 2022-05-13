@@ -146,7 +146,7 @@ bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
 
   if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"]
       .contains(into.id)) {
-    return (side == into.rot);
+    return (dir == into.rot);
   }
 
   return false;

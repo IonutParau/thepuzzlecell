@@ -146,10 +146,10 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                     }
                   }
                 } else {
-                  if (event.scrollDelta.dy < 0) {
-                    game.zoomin(abs(event.scrollDelta.dy / 16).toDouble());
-                  } else if (event.scrollDelta.dy > 0) {
-                    game.zoomout(abs(event.scrollDelta.dy / 16).toDouble());
+                  if (event.scrollDelta.dy > 0) {
+                    game.zoomin(abs(16 / event.scrollDelta.dy).toDouble());
+                  } else if (event.scrollDelta.dy < 0) {
+                    game.zoomout(abs(16 / event.scrollDelta.dy).toDouble());
                   }
                 }
               }
@@ -2936,7 +2936,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void zoomout([double scale = 1]) {
     if (inMenu) return;
-    if (wantedCellSize > (defaultCellSize) / 16) {
+    if (wantedCellSize < (defaultCellSize) * 512) {
       final lastZoom = wantedCellSize;
       wantedCellSize /= (2 * scale);
       properlyChangeZoom(lastZoom, wantedCellSize);
@@ -2945,7 +2945,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void zoomin([double scale = 1]) {
     if (inMenu) return;
-    if (wantedCellSize < (defaultCellSize) * 256) {
+    if (wantedCellSize > (defaultCellSize) / 64) {
       final lastZoom = wantedCellSize;
       wantedCellSize *= (2 * scale);
       properlyChangeZoom(lastZoom, wantedCellSize);

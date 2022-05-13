@@ -214,23 +214,30 @@ void quantums() {
   // My brain hurts
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["proton"], ["electron"]);
+      physicsCell(x, y, ["proton", "graviton"], ["electron"]);
     },
     null,
     "electron",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["neutron"], ["proton"]);
+      physicsCell(x, y, ["neutron", "graviton"], ["proton"]);
     },
     null,
     "proton",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["proton"], []);
+      physicsCell(x, y, ["proton", "graviton"], []);
     },
     null,
     "neutron",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, ["graviton"], []);
+    },
+    null,
+    "graviton",
   );
 }

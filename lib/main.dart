@@ -17,11 +17,6 @@ void main() async {
   DartVLC.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.fullScreen();
-  SystemChrome.setApplicationSwitcherDescription(
-    ApplicationSwitcherDescription(
-      label: "The Puzzle Cell",
-    ),
-  );
 
   await loadAllPuzzles();
   await loadBlueprints();
