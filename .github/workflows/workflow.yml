@@ -23,12 +23,14 @@ jobs:
         with:
           channel: "stable"
       - run: flutter pub get
-      - run: brew install cmake
-      - run: flutter config --enable-macos-desktop
-      - run: flutter build macos
+      - run: sudo apt install vlc
+      - run: sudo apt install libvlc-dev
+      - run: sudo apt install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+      - run: flutter config --enable-linux-desktop
+      - run: flutter build linux
       - uses: actions/upload-artifact@v3
         with:
-          name: thepuzzlecell-macos
+          name: thepuzzlecell-web
           path: build/linux/x64/release/bundle
   # build_macos:
   #   runs-on: macOS-latest
