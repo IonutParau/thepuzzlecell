@@ -75,6 +75,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     initSound();
+    texturePacks.forEach(
+      (tp) {
+        tp.load(false);
+      },
+    ); // How to make people with 50,000 random texture packs they never use but keep installed mad
     super.initState();
   }
 

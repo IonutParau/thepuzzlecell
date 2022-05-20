@@ -1,26 +1,24 @@
 library logic;
 
+// All the high-quality code I didn't bother writing
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:http/http.dart' as http show get;
 import 'package:yaml/yaml.dart' show loadYaml;
-
 import '../layout/tools/tools.dart';
-
 import 'package:path/path.dart' as path;
 
+// Stuffz
 part 'grid.dart';
 part 'update.dart';
 part 'move.dart';
@@ -31,7 +29,9 @@ part 'blueprints.dart';
 part 'lang.dart';
 part 'coins.dart';
 part 'skins.dart';
+part 'texturepack.dart';
 
+// Update methods
 part 'update/mover.dart';
 part 'update/puller.dart';
 part 'update/grabber.dart';
