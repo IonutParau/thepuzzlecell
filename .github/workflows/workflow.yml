@@ -30,7 +30,7 @@ jobs:
       - run: flutter build linux
       - uses: actions/upload-artifact@v3
         with:
-          name: thepuzzlecell-web
+          name: thepuzzlecell-linux
           path: build/linux/x64/release/bundle
   # build_macos:
   #   runs-on: macOS-latest
