@@ -1044,6 +1044,29 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   late ButtonManager buttonManager;
 
+  Map<String, dynamic> parseCellDataStr(String str) {
+    if (num.tryParse(str) != null) {
+      return {"heat": num.parse(str)};
+    }
+    final pairs = str.split(':');
+    final m = <String, dynamic>{};
+
+    for (var pair in pairs) {
+      final segs = pair.split('=');
+      final key = segs[0];
+
+      if (num.tryParse(segs[1]) != null) {
+        m[key] = num.parse(segs[1]);
+      } else if (segs[1] == "true" || segs[1] == "false") {
+        m[key] = (segs[1] == "true");
+      } else {
+        m[key] = segs[1];
+      }
+    }
+
+    return m;
+  }
+
   void multiplayerCallback(data) {
     if (data is String) {
       final cmd = data.split(' ').first;
@@ -1055,8 +1078,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           grid.grid[int.parse(args[0])][int.parse(args[1])].rot =
               int.parse(args[3]);
           if (args.length > 4) {
-            grid.grid[int.parse(args[0])][int.parse(args[1])].data['heat'] =
-                int.tryParse(args[4]) ?? 0;
+            grid.grid[int.parse(args[0])][int.parse(args[1])].data =
+                parseCellDataStr(args[4]);
           }
           grid.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
         } else {
@@ -2461,7 +2484,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     // Effects
     if ((paint != null && brushTemp != 0) ||
         ((cell.data['heat'] ?? 0) != 0 &&
-            (cell.id == "magma" || cell.id == "snow"))) {
+            !(cell.id == "magma" || cell.id == "snow"))) {
       final heat = paint == null ? (cell.data['heat'] ?? 0) : brushTemp;
 
       Sprite(Flame.images
