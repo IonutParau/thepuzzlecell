@@ -24,7 +24,9 @@ void mechs(Set<String> cells) {
       },
       filter: (c, x, y) => c.id == "mech_gen" && c.rot == rot && !c.updated,
     );
+  }
 
+  for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
         if (cell.data['toggled'] == true) {
@@ -147,7 +149,6 @@ class MechanicalManager {
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
-    if (cell.id == "mech_toggle") return true;
     if (cell.id.startsWith('mech_')) return true;
     return CellTypeManager.mechanical.contains(cell.id);
   }
