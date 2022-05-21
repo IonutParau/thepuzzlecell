@@ -2459,7 +2459,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     // Effects
-    if ((paint != null && brushTemp != 0) || (cell.data['heat'] ?? 0) != 0) {
+    if ((paint != null && brushTemp != 0) ||
+        ((cell.data['heat'] ?? 0) != 0 &&
+            (cell.id == "magma" || cell.id == "snow"))) {
       final heat = paint == null ? (cell.data['heat'] ?? 0) : brushTemp;
 
       Sprite(Flame.images
@@ -2691,6 +2693,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   String originalPlace = "empty";
 
+  String cellDataStr(Map<String, dynamic> cellData) {
+    final l = [];
+
+    cellData.forEach((key, value) {
+      l.add("$key=$value");
+    });
+
+    return l.join(':');
+  }
+
   void placeCell(int id, int rot, int cx, int cy) {
     if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
@@ -2718,7 +2730,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           );
         } else {
           sendToServer(
-            "place $cx $cy ${cells[id]} $rot $brushTemp",
+            "place $cx $cy ${cells[id]} $rot heat=$brushTemp",
           );
         }
       }
@@ -2729,7 +2741,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           grid.at(cx, cy).rot %= 4;
         }
         sendToServer(
-          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${grid.at(cx, cy).data['heat'] ?? 0}',
+          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${cellDataStr(grid.at(cx, cy).data)}',
         );
         return;
       }
@@ -2755,7 +2767,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           );
         }
         currentSelection = cells.indexOf("empty");
-        sendToServer('place $cx $cy ${cells[id]} $rot ');
+        sendToServer(
+          'place $cx $cy ${cells[id]} $rot 0',
+        );
         sendToServer('drop-hover $clientID');
       }
     }

@@ -44,18 +44,7 @@ bool doGrabber(int x, int y, int dir, [int rdepth = 0]) {
   var depth = 0;
   if (grid.inside(fx, fy)) {
     final f = grid.at(fx, fy);
-    if ((f.id == "grabber" ||
-            (f.id == "mech_grabber" && MechanicalManager.on(f, true)) ||
-            f.id == "thief") &&
-        (f.rot == dir)) {
-      if (doGrabber(fx, fy, dir, rdepth + 1)) {
-        depth++;
-      } else {
-        return false;
-      }
-    } else {
-      if (!moveInsideOf(f, fx, fy, dir, MoveType.grab)) return false;
-    }
+    if (!moveInsideOf(f, fx, fy, dir, MoveType.grab)) return false;
   }
   push(x, y, dir, 1, mt: MoveType.grab);
   grabSide(x, y, dir - 1, dir, depth);

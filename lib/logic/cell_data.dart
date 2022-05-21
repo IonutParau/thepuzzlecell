@@ -179,6 +179,8 @@ final cells = {
   "double_forker",
   "triple_forker",
   "graviton",
+  "hawk",
+  "pelican",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
@@ -344,6 +346,8 @@ Map<String, String> textureMap = {
   'dec_brush.png': 'interface/decrease_brush.png',
   'inctab.png': 'interface/inctab.png',
   'dectab.png': 'interface/dectab.png',
+  'pelican.png': 'movers/grabbers/pelican.png',
+  'hawk.png': 'movers/pullers/hawk.png',
 };
 
 class CellProfile {
@@ -473,6 +477,7 @@ final categories = [
           "slow_puller",
           "fast_puller",
           "collector",
+          "hawk",
         ],
         "puller",
       ),
@@ -482,6 +487,7 @@ final categories = [
         [
           "grabber",
           "thief",
+          "pelican",
         ],
         "grabber",
       ),
@@ -1505,5 +1511,13 @@ final cellInfo = <String, CellProfile>{
   "graviton": CellProfile(
     "Graviton",
     "It is only attracted to other Gravitons, but all particles are attracted to it",
+  ),
+  "hawk": CellProfile(
+    "Hawk",
+    "Like a bird, but it pulls",
+  ),
+  "pelican": CellProfile(
+    "Pelican",
+    "Like a bird, but it grabs",
   ),
 };

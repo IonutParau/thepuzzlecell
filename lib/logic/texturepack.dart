@@ -22,7 +22,7 @@ class TexturePack {
         (id, p) {
           print('Changed image ID: $id.png');
           textureMap['$id.png'] =
-              'texture_packs/${(dir.path.split(path.separator).last)}/$p'; // Epico
+              'texture_packs/${(dir.path.split(path.separator).last)}/$p';
         },
       );
     }

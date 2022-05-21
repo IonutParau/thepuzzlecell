@@ -500,9 +500,8 @@ final withBias = [
   "bringer",
   "collector",
   "thief",
-  "rocket",
-  "rocket_cw",
-  "rocket_ccw",
+  "hawk",
+  "pelican",
 ];
 
 final noForce = [];
@@ -538,6 +537,12 @@ int addedForce(Cell cell, int dir, MoveType mt) {
       return -1;
     }
     if (cell.id == "bird") {
+      cell.updated = true;
+    }
+    if (cell.id == "hawk") {
+      cell.updated = true;
+    }
+    if (cell.id == "pelican") {
       cell.updated = true;
     }
   }
@@ -664,6 +669,7 @@ bool push(int x, int y, int dir, int force,
       if (mt == MoveType.sync && c.id == "sync") {
         c.tags.add("sync move");
       }
+
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
       grid.set(ox, oy, replaceCell);
       postmove(c, ox, oy, dir, force, mt);
