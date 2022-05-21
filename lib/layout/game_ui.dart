@@ -2315,12 +2315,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     );
 
     if (storage.getBool('show_titles') ?? true) {
+      var hasShown = false;
       buttonManager.forEach(
         (key, button) {
           if (button.isHovered(mouseX.toInt(), mouseY.toInt()) &&
               button.shouldRender() &&
               mouseInside &&
-              !key.startsWith('hidden-')) {
+              !key.startsWith('hidden-') &&
+              !hasShown) {
+            hasShown = true;
             renderInfoBox(canvas, button.title, button.description);
           }
         },

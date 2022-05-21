@@ -24,6 +24,21 @@ void mechs(Set<String> cells) {
       },
       filter: (c, x, y) => c.id == "mech_gen" && c.rot == rot && !c.updated,
     );
+
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.data['toggled'] == true) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+
+          if (grid.inside(fx, fy)) {
+            MechanicalManager.spread(fx, fy, 0, false, cell.rot);
+          }
+        }
+      },
+      rot,
+      "mech_toggle",
+    );
   }
 
   if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
@@ -132,6 +147,7 @@ class MechanicalManager {
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
+    if (cell.id == "mech_toggle") return true;
     if (cell.id.startsWith('mech_')) return true;
     return CellTypeManager.mechanical.contains(cell.id);
   }
@@ -178,6 +194,17 @@ class MechanicalManager {
     } else if (cell.id == "mech_p_gen") {
       cell.updated = true;
       doGen(x, y, cell.rot, cell.rot);
+    } else if (cell.id == "mech_toggle") {
+      cell.data['toggled'] = ((cell.data['toggled'] ?? false) == false);
+
+      if (cell.data['toggled'] == true) {
+        final fx = frontX(x, cell.rot);
+        final fy = frontY(y, cell.rot);
+
+        if (grid.inside(fx, fy)) {
+          MechanicalManager.spread(fx, fy, 0, false, cell.rot);
+        }
+      }
     }
   }
 

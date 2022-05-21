@@ -181,6 +181,7 @@ final cells = {
   "graviton",
   "hawk",
   "pelican",
+  "mech_toggle",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
@@ -348,6 +349,7 @@ Map<String, String> textureMap = {
   'dectab.png': 'interface/dectab.png',
   'pelican.png': 'movers/grabbers/pelican.png',
   'hawk.png': 'movers/pullers/hawk.png',
+  'mech_toggle.png': 'mechanical/mech_toggle.png',
 };
 
 class CellProfile {
@@ -729,6 +731,7 @@ final categories = [
     [
       "mech_gear",
       "cross_mech_gear",
+      "mech_toggle",
       "displayer",
       CellCategory(
         "Power Givers",
@@ -1519,5 +1522,9 @@ final cellInfo = <String, CellProfile>{
   "pelican": CellProfile(
     "Pelican",
     "Like a bird, but it grabs",
+  ),
+  "mech_toggle": CellProfile(
+    "Mechanical Toggle",
+    "When it gets input from the back, it toggles",
   ),
 };

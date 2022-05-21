@@ -8,9 +8,7 @@ final List<String> changes = [
   "Fixed a few bugs",
   "Added Delete button to installed translations",
   "Added Forkers",
-  "Added Shifters",
   "Added Graviton",
-  "Added Anti-Generators",
   "Added Hawk & Pelican",
 ];
 

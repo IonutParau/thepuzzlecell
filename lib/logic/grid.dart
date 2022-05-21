@@ -230,15 +230,19 @@ class Grid {
   }
 
   void updateCell(
-      void Function(Cell cell, int x, int y) callback, int? rot, String id) {
+      void Function(Cell cell, int x, int y) callback, int? rot, String id,
+      {bool invertOrder = false}) {
     if (rot == null) {
       // Update statically
-      loopChunks(id, GridAlignment.BOTTOMRIGHT, callback,
+      loopChunks(
+          id,
+          invertOrder ? GridAlignment.TOPLEFT : GridAlignment.BOTTOMRIGHT,
+          callback,
           filter: (cell, x, y) => cell.id == id && !cell.updated);
     } else {
       loopChunks(
         id,
-        fromRot(rot),
+        fromRot((rot + (invertOrder ? 2 : 0)) % 4),
         callback,
         filter: (cell, x, y) =>
             cell.id == id && cell.rot == rot && !cell.updated,

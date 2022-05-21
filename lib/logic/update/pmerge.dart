@@ -27,13 +27,13 @@ void mergePuzzle(int x, int y, int dir) {
 
 void pmerges() {
   for (var rot in rotOrder) {
-    grid.loopChunks(
-      "pmerge",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         mergePuzzle(x, y, cell.rot);
       },
+      rot,
+      "pmerge",
     );
   }
 }
