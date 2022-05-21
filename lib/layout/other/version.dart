@@ -2,14 +2,11 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0.2.0';
+String currentVersion = '2.0.2.1';
 
 final List<String> changes = [
-  "Fixed a few bugs",
-  "Added Delete button to installed translations",
-  "Added Forkers",
-  "Added Graviton",
-  "Added Hawk & Pelican",
+  "Fixed cellbar blocking mouse presses at incorrect times",
+  "Fixed the invalid zoomout bug",
 ];
 
 IconData getTrailing(String change) {

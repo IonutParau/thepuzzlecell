@@ -56,6 +56,10 @@ void main() async {
     await storage.setStringList('usedSkins', <String>[]);
   }
 
+  if (storage.getBool("invert_zoom_scroll") == null) {
+    await storage.setBool("invert_zoom_scroll", true);
+  }
+
   runApp(const MyApp());
 }
 

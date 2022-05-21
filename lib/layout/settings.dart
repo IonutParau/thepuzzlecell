@@ -319,32 +319,57 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            if (storage.getBool('debug') == true)
-              Row(
-                children: [
-                  Text(
-                    '${lang('alt_render', 'Alternative Rendering')}: ',
-                    style: textStyle,
-                  ),
-                  SizedBox(
-                    width: 3.w,
-                    height: 5.h,
-                    child: Align(
-                      child: ToggleSwitch(
-                        checked: storage.getBool("alt_render") ?? false,
-                        onChanged: (newValue) {
-                          storage
-                              .setBool(
-                                "alt_render",
-                                newValue,
-                              )
-                              .then((e) => setState(() {}));
-                        },
-                      ),
+            Row(
+              children: [
+                Text(
+                  '${lang('invert_zoom_scroll', 'Invert Zoom Scrolling')}: ',
+                  style: textStyle,
+                ),
+                SizedBox(
+                  width: 3.w,
+                  height: 5.h,
+                  child: Align(
+                    child: ToggleSwitch(
+                      checked: storage.getBool("invert_zoom_scroll") ?? true,
+                      onChanged: (newValue) {
+                        storage
+                            .setBool(
+                              "invert_zoom_scroll",
+                              newValue,
+                            )
+                            .then((e) => setState(() {}));
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            // if (storage.getBool('debug') == true)
+            //   Row(
+            //     children: [
+            //       Text(
+            //         '${lang('alt_render', 'Alternative Rendering')}: ',
+            //         style: textStyle,
+            //       ),
+            //       SizedBox(
+            //         width: 3.w,
+            //         height: 5.h,
+            //         child: Align(
+            //           child: ToggleSwitch(
+            //             checked: storage.getBool("alt_render") ?? false,
+            //             onChanged: (newValue) {
+            //               storage
+            //                   .setBool(
+            //                     "alt_render",
+            //                     newValue,
+            //                   )
+            //                   .then((e) => setState(() {}));
+            //             },
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
             // Row(
             //   children: [
             //     Text(

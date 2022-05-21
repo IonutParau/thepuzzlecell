@@ -146,10 +146,11 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                     }
                   }
                 } else {
+                  final inv = storage.getBool("invert_zoom_scroll") ?? true;
                   if (event.scrollDelta.dy > 0) {
-                    game.zoomin(abs(16 / event.scrollDelta.dy).toDouble());
+                    inv ? game.zoomin() : game.zoomout();
                   } else if (event.scrollDelta.dy < 0) {
-                    game.zoomout(abs(16 / event.scrollDelta.dy).toDouble());
+                    inv ? game.zoomout() : game.zoomin();
                   }
                 }
               }
@@ -2872,7 +2873,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             mouseDown = false;
           }
         });
-        if (mouseY > (canvasSize.y - 110 * uiScale)) {
+        if (mouseY > (canvasSize.y - 110 * uiScale) && cellbar) {
           mouseDown = false;
         }
         if (edType == EditorType.loaded && mouseDown && !running) {
@@ -2974,20 +2975,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  void zoomout([double scale = 1]) {
+  void zoomout() {
     if (inMenu) return;
-    if (wantedCellSize < (defaultCellSize) * 512) {
+    if (wantedCellSize > (defaultCellSize) / 16) {
       final lastZoom = wantedCellSize;
-      wantedCellSize /= (2 * scale);
+      wantedCellSize /= 2;
+      wantedCellSize = max(
+        wantedCellSize,
+        (defaultCellSize / 16),
+      );
       properlyChangeZoom(lastZoom, wantedCellSize);
     }
   }
 
-  void zoomin([double scale = 1]) {
+  void zoomin() {
     if (inMenu) return;
-    if (wantedCellSize > (defaultCellSize) / 64) {
+    if (wantedCellSize < (defaultCellSize) * 512) {
       final lastZoom = wantedCellSize;
-      wantedCellSize *= (2 * scale);
+      wantedCellSize *= 2;
+      wantedCellSize = min(wantedCellSize, defaultCellSize * 512);
       properlyChangeZoom(lastZoom, wantedCellSize);
     }
   }
