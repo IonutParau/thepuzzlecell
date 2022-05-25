@@ -7,6 +7,7 @@ String currentVersion = '2.0.2.1';
 final List<String> changes = [
   "Fixed cellbar blocking mouse presses at incorrect times",
   "Fixed the invalid zoomout bug",
+  "Texture packs support YAML",
 ];
 
 IconData getTrailing(String change) {

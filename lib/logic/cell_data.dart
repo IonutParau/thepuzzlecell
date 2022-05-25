@@ -981,7 +981,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "pixel": CellProfile(
     "WiFi Pixel",
-    "Turns on if powered using WiFi Displayer",
+    "Turns on if powered or using WiFi Displayer",
   ),
   "displayer": CellProfile(
     "WiFi Displayer",

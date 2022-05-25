@@ -13,8 +13,6 @@ class TexturePack {
 
     final f = File(path.join(dir.path, 'pack.json'));
 
-    print(f.path);
-
     if (f.existsSync()) {
       final m = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
 
@@ -25,6 +23,16 @@ class TexturePack {
               'texture_packs/${(dir.path.split(path.separator).last)}/$p';
         },
       );
+    } else {
+      final yamlF = File(path.join(dir.path, 'pack.yaml'));
+
+      if(yamlF.existsSync()) {
+        final m = loadYaml(f.readAsStringSync()) as Map<String, dynamic>;
+
+        m.forEach((key, value) {
+          textureMap['$key.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$value';
+        });
+      }
     }
   }
 }

@@ -4,6 +4,44 @@ var inBruteForce = false;
 
 final useSnowflake = false;
 
+final subticks = [
+  biomes,
+  stoppers,
+  heat,
+  mechs,
+  quantums,
+  hungryTrashes,
+  mirrors,
+  rockets,
+  gens,
+  supgens,
+  reps,
+  tunnels,
+  transformers,
+  rots,
+  gears,
+  grabbers,
+  speeds,
+  drillers,
+  pullers,
+  movers,
+  liners,
+  bringers,
+  axis,
+  birds,
+  fans,
+  //if (cells.contains("magnet")) magnets,
+  //if (cells.contains("digger")) diggers,
+  ants,
+  karls,
+  dartys,
+  puzzles,
+  pmerges,
+  gates,
+  autoflag,
+  timetravel,
+];
+
 class LastVars {
   Offset lastPos;
   int lastRot;
@@ -708,43 +746,6 @@ class Grid {
     if (tickCount % 10 == 0) {
       refreshChunks();
     }
-
-    final subticks = [
-      stoppers,
-      heat,
-      mechs,
-      quantums,
-      hungryTrashes,
-      mirrors,
-      rockets,
-      gens,
-      supgens,
-      reps,
-      tunnels,
-      transformers,
-      rots,
-      gears,
-      grabbers,
-      speeds,
-      drillers,
-      pullers,
-      movers,
-      liners,
-      bringers,
-      axis,
-      birds,
-      fans,
-      //if (cells.contains("magnet")) magnets,
-      //if (cells.contains("digger")) diggers,
-      ants,
-      karls,
-      dartys,
-      puzzles,
-      pmerges,
-      gates,
-      if (cells.contains("auto_flag")) autoflag,
-      timetravel,
-    ];
 
     final subticking = storage.getBool('subtick') ?? false;
     if (subticking) {

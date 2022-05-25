@@ -30,6 +30,8 @@ part 'lang.dart';
 part 'coins.dart';
 part 'skins.dart';
 part 'texturepack.dart';
+part 'achievements.dart';
+part 'updatechecker.dart';
 
 // Update methods
 part 'update/mover.dart';
@@ -65,8 +67,7 @@ part 'update/antigen.dart';
 part 'update/rocket.dart';
 part 'update/heat.dart';
 part 'update/timetravel.dart';
-part 'achievements.dart';
-part 'updatechecker.dart';
+part 'update/biomes.dart';
 
 String findAssetDirPath() {
   // print(path.absolute(
