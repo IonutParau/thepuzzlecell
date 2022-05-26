@@ -2287,7 +2287,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       },
     );
 
-    if (cellbar) {
+    if (cellbar && edType == EditorType.making) {
       canvas.drawRect(
         Offset(0, canvasSize.y - 110 * uiScale) &
             Size(canvasSize.x, 110 * uiScale),

@@ -8,6 +8,7 @@ final List<String> changes = [
   "Fixed cellbar blocking mouse presses at incorrect times",
   "Fixed the invalid zoomout bug",
   "Texture packs support YAML",
+  "Fixed cellbar appearing in puzzle mode",
 ];
 
 IconData getTrailing(String change) {
