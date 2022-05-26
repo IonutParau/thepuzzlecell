@@ -2873,7 +2873,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             mouseDown = false;
           }
         });
-        if (mouseY > (canvasSize.y - 110 * uiScale) && cellbar) {
+        if (mouseY > (canvasSize.y - 110 * uiScale) && cellbar && edType == EditorType.making) {
           mouseDown = false;
         }
         if (edType == EditorType.loaded && mouseDown && !running) {
