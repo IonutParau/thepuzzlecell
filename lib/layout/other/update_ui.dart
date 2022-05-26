@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors;
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../logic/logic.dart'
     show getVersion, higherVersion, lang, versionToCheck;
 import '../../utils/ScaleAssist.dart';
@@ -76,7 +77,7 @@ class _UpdateUIState extends State<UpdateUI> {
                           ),
                         ),
                         onPressed: () {
-                          print("Pretend you went to itch.io");
+                          launchUrlString("https://ionut-alexandru.itch.io/the-puzzle-cell");
                         },
                         color: Colors.red,
                       );
@@ -91,7 +92,9 @@ class _UpdateUIState extends State<UpdateUI> {
                             fontSize: 5.sp,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          launchUrlString("https://ionut-alexandru.itch.io/the-puzzle-cell");
+                        },
                         color: Colors.green,
                       );
                     }

@@ -2695,11 +2695,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
           if (mouseButton == kMiddleMouseButton) {
-            final id = grid.at(mx, my).id;
+            if(grid.inside(mx, my)) {
+              final id = grid.at(mx, my).id;
 
-            if (edType == EditorType.making) {
-              if (cells.contains(id)) {
-                currentSelection = cells.indexOf(id);
+              if (edType == EditorType.making) {
+                if (cells.contains(id)) {
+                  currentSelection = cells.indexOf(id);
+                }
               }
             }
           }
