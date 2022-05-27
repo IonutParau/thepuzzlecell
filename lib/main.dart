@@ -1,15 +1,17 @@
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:dart_vlc/dart_vlc.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'logic/logic.dart';
+
+late ThemeData td;
 
 void main() async {
   //await Flame.device.setLandscape();
@@ -24,13 +26,18 @@ void main() async {
 
   //fixDefault();
 
+  td = ThemeData(
+    brightness: Brightness.dark,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
+
   storage = await SharedPreferences.getInstance();
 
   if (storage.getString("lang") != null) {
     loadLangByName(storage.getString("lang")!);
   }
 
-  worldManager.LoadWorldsFromSettings();
+  worldManager.loadWorldsFromSettings();
 
   if (storage.getDouble('ui_scale') == null) {
     await storage.setDouble('ui_scale', 1);
@@ -60,6 +67,10 @@ void main() async {
     await storage.setBool("invert_zoom_scroll", true);
   }
 
+  if (storage.getBool("fullscreen") != null) {
+    await windowManager.setFullScreen(storage.getBool("fullscreen")!);
+  }
+
   runApp(const MyApp());
 }
 
@@ -79,6 +90,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     initSound();
+    setSoundDevice(getAudioDevice());
     texturePacks.forEach(
       (tp) {
         tp.load(false);
@@ -99,10 +111,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return FluentApp(
       title: 'The Puzzle Cell',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: td,
       debugShowCheckedModeBanner: false,
       home: FlameSplashScreen(
         controller: _splashController,
@@ -113,7 +122,7 @@ class _MyAppState extends State<MyApp> {
             logoBuilder: (ctx) {
               return ScaleAssist(builder: (context, size) {
                 return FluentTheme(
-                  data: ThemeData.dark(),
+                  data: td,
                   child: ScaffoldPage(
                     content: Center(
                       child: Column(

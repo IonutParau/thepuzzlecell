@@ -2,13 +2,15 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.0.2.1';
+String currentVersion = '2.1.0.0 The Biomes Update';
 
 final List<String> changes = [
-  "Fixed cellbar blocking mouse presses at incorrect times",
-  "Fixed the invalid zoomout bug",
-  "Texture packs support YAML",
-  "Fixed cellbar appearing in puzzle mode",
+  "Added ability to change audio device",
+  "Added biomes",
+  "Added Fullscreen toggle",
+  "Planned: Added the Property Editor (opened with ` key)",
+  "Planned: Added Memory Generators",
+  "Planned: Optimized generators",
 ];
 
 IconData getTrailing(String change) {
@@ -39,7 +41,7 @@ class VersionPage extends StatelessWidget {
           children: [
             Spacer(),
             Text(
-              'The Puzzle Cell version $currentVersion',
+              'The Puzzle Cell v$currentVersion',
               style: TextStyle(
                 fontSize: 7.sp,
               ),

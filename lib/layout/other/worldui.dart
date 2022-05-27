@@ -160,7 +160,7 @@ class WorldTile extends StatelessWidget {
                             child: Text(lang("yes", "Yes")),
                             onPressed: () {
                               Navigator.pop(context);
-                              worldManager.DeleteWorld(index);
+                              worldManager.deleteWorld(index);
                               whenPressed();
                             },
                             color: Colors.red,
@@ -340,7 +340,7 @@ class _WorldCreateState extends State<WorldCreate> {
               color: Colors.blue,
               onPressed: () {
                 try {
-                  worldManager.AddWorld(
+                  worldManager.addWorld(
                     titleController.text,
                     descController.text,
                     int.parse(widthController.text),

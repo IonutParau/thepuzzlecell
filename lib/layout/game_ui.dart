@@ -934,7 +934,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 if (worldIndex != null) {
-                  worldManager.SaveWorld(
+                  worldManager.saveWorld(
                     worldIndex!,
                   );
                 }
@@ -1320,7 +1320,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         () {
           FlutterClipboard.copy(P3.encodeGrid(grid));
           if (worldIndex != null) {
-            worldManager.SaveWorld(worldIndex!);
+            worldManager.saveWorld(worldIndex!);
           }
         },
         () => true,
@@ -2357,7 +2357,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (grid.placeable(x, y) != "empty" &&
         backgrounds.contains(grid.placeable(x, y))) {
       final off = Vector2(x * cellSize.toDouble(), y * cellSize.toDouble());
-      Sprite(Flame.images.fromCache('backgrounds/${grid.placeable(x, y)}.png'))
+      Sprite(Flame.images.fromCache(textureMap[grid.placeable(x, y) + '.png'] ??
+              'backgrounds/${grid.placeable(x, y)}.png'))
           .render(
         canvas,
         position: off,
@@ -2695,7 +2696,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
           if (mouseButton == kMiddleMouseButton) {
-            if(grid.inside(mx, my)) {
+            if (grid.inside(mx, my)) {
               final id = grid.at(mx, my).id;
 
               if (edType == EditorType.making) {
@@ -2875,7 +2876,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             mouseDown = false;
           }
         });
-        if (mouseY > (canvasSize.y - 110 * uiScale) && cellbar && edType == EditorType.making) {
+        if (mouseY > (canvasSize.y - 110 * uiScale) &&
+            cellbar &&
+            edType == EditorType.making) {
           mouseDown = false;
         }
         if (edType == EditorType.loaded && mouseDown && !running) {
@@ -3179,8 +3182,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 "interface/select.png";
             buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
           } else {
-            if(edType == EditorType.making) {
-              if(!overlays.isActive("EditorMenu")) {
+            if (edType == EditorType.making) {
+              if (!overlays.isActive("EditorMenu")) {
                 overlays.add("EditorMenu");
               } else {
                 overlays.remove("EditorMenu");

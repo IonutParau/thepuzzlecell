@@ -150,6 +150,8 @@ List<String> backgrounds = [
   "blue_place",
   "yellow_place",
   "rotatable",
+  "biome_cw",
+  "biome_ccw",
 ];
 
 class Grid {
@@ -452,6 +454,7 @@ class Grid {
       return;
     }
     place[x][y] = id;
+    chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
     if (id == "empty") {
       removeRenderSpot(x, y);
     } else {
@@ -552,6 +555,7 @@ class Grid {
         p0.cy = null;
         p0.lifespan++;
         cells.add(p0.id);
+        cells.add(place[p1][p2]);
 
         //final cx = p1 ~/ chunkSize;
         //final cy = p2 ~/ chunkSize;

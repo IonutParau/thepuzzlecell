@@ -182,11 +182,15 @@ final cells = {
   "hawk",
   "pelican",
   "mech_toggle",
+  "biome_cw",
+  "biome_ccw",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "biome_cw.png": "backgrounds/biomes/biome_cw.png",
+  "biome_ccw.png": "backgrounds/biomes/biome_ccw.png",
   "forker.png": "recreators/forkers/forker.png",
   "forker_cw.png": "recreators/forkers/forker_cw.png",
   "forker_ccw.png": "recreators/forkers/forker_ccw.png",
@@ -447,9 +451,21 @@ final categories = [
       CellCategory(
         "Placeables",
         "Also called backgrounds, they are behind cells and determine the behavior when in puzzle mode",
-        ["place", "yellow_place", "blue_place", "red_place", "rotatable"],
+        [
+          "place",
+          "yellow_place",
+          "blue_place",
+          "red_place",
+          "rotatable",
+        ],
         "place",
         max: 3,
+      ),
+      CellCategory(
+        "Biomes",
+        "Like placeables, but while the game is running, they interact with the cell above it",
+        ["biome_cw", "biome_ccw"],
+        "biome_cw",
       ),
     ],
     "ghost",
