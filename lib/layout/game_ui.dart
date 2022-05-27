@@ -3178,6 +3178,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             buttonManager.buttons['select-btn']!.texture =
                 "interface/select.png";
             buttonManager.buttons['paste-btn']!.texture = "interface/paste.png";
+          } else {
+            if(edType == EditorType.making) {
+              if(!overlays.isActive("EditorMenu")) {
+                overlays.add("EditorMenu");
+              } else {
+                overlays.remove("EditorMenu");
+              }
+            }
           }
         } else if (keysPressed.contains(LogicalKeyboardKey.keyF) &&
             edType == EditorType.making) {
