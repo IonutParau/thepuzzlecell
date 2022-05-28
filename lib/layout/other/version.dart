@@ -8,9 +8,11 @@ final List<String> changes = [
   "Added ability to change audio device",
   "Added biomes",
   "Added Fullscreen toggle",
+  "Reworked the generator optimization",
+  "Planned: Added setting to change chunk size",
   "Planned: Added the Property Editor (opened with ` key)",
   "Planned: Added Memory Generators",
-  "Planned: Optimized generators",
+  "Planned: Added Water and Sand",
 ];
 
 IconData getTrailing(String change) {

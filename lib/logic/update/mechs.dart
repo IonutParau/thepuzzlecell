@@ -46,7 +46,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
     grid.loopChunks(
       "mech_keyup",
-      GridAlignment.BOTTOMLEFT,
+      GridAlignment.bottomleft,
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y);
         MechanicalManager.spread(x + 1, y);
@@ -60,7 +60,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
     grid.loopChunks(
       "mech_keyleft",
-      GridAlignment.BOTTOMLEFT,
+      GridAlignment.bottomleft,
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y);
         MechanicalManager.spread(x + 1, y);
@@ -73,7 +73,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
     grid.loopChunks(
       "mech_keyright",
-      GridAlignment.BOTTOMLEFT,
+      GridAlignment.bottomleft,
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y);
         MechanicalManager.spread(x + 1, y);
@@ -86,7 +86,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
     grid.loopChunks(
       "mech_keydown",
-      GridAlignment.BOTTOMLEFT,
+      GridAlignment.bottomleft,
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y);
         MechanicalManager.spread(x + 1, y);
@@ -100,7 +100,7 @@ void mechs(Set<String> cells) {
   // Power draw
   grid.loopChunks(
     "all",
-    GridAlignment.BOTTOMLEFT,
+    GridAlignment.bottomleft,
     (cell, x, y) {
       drawPower(cell);
     },
@@ -174,24 +174,16 @@ class MechanicalManager {
       travelTime();
     } else if (cell.id == "mech_rotator_cw") {
       cell.updated = true;
-      grid.rotate(
-          frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
-          frontY(cell.cy ?? y, cell.rot + 1), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
-          frontY(cell.cy ?? y, cell.rot + 2), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
-          frontY(cell.cy ?? y, cell.rot + 3), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), 1);
     } else if (cell.id == "mech_rotator_ccw") {
       cell.updated = true;
-      grid.rotate(
-          frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
-          frontY(cell.cy ?? y, cell.rot + 1), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
-          frontY(cell.cy ?? y, cell.rot + 2), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
-          frontY(cell.cy ?? y, cell.rot + 3), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), -1);
     } else if (cell.id == "mech_p_gen") {
       cell.updated = true;
       doGen(x, y, cell.rot, cell.rot);
@@ -209,8 +201,7 @@ class MechanicalManager {
     }
   }
 
-  static void spread(int x, int y,
-      [int depth = 0, bool continueFirst = false, int? sentDir]) {
+  static void spread(int x, int y, [int depth = 0, bool continueFirst = false, int? sentDir]) {
     //print("e");
     AchievementManager.complete("circuitry");
     if (depth == 15) return;
@@ -218,7 +209,13 @@ class MechanicalManager {
     if (!connectable(sentDir, grid.at(x, y))) return;
     final cell = grid.at(x, y);
     if (onAt(x, y, true)) return;
+    if (cell.id == "mech_gear" || cell.id == "cross_mech_gear") {
+      if (grid.placeable(x, y) == "mechanical_halt") {
+        return;
+      }
+    }
     if (cell.id == "cross_mech_gear" && sentDir != null) {
+      cell.data['power'] = 2;
       grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
       return spread(
         frontX(x, sentDir),
@@ -232,8 +229,7 @@ class MechanicalManager {
     if (!cell.updated) {
       whenPowered(cell, x, y);
     }
-    if (cell.id == "mech_gear" && depth < 14)
-      grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+    if (cell.id == "mech_gear" && depth < 14) grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
     if (cell.id == "mech_gear" || (depth == 0 && continueFirst)) {
@@ -252,9 +248,7 @@ class MechanicalManager {
     }
   }
 
-  static bool on(Cell cell, [bool freshly = false]) =>
-      (cell.data['power'] ?? 0) > (freshly ? 1 : 0);
+  static bool on(Cell cell, [bool freshly = false]) => (cell.data['power'] ?? 0) > (freshly ? 1 : 0);
 
-  static bool onAt(int x, int y, [bool freshly = false]) =>
-      grid.inside(x, y) ? on(grid.at(x, y), freshly) : false;
+  static bool onAt(int x, int y, [bool freshly = false]) => grid.inside(x, y) ? on(grid.at(x, y), freshly) : false;
 }

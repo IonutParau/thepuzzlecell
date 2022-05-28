@@ -40,6 +40,12 @@ class GenOptimizer {
   void clear() {
     hasWorked.clear();
   }
+
+  void remove(int x, int y) {
+    for (var i = 0; i < 4; i++) {
+      hasWorked.remove(hash(x, y, i));
+    }
+  }
 }
 
 final GenOptimizer genOptimizer = GenOptimizer();
@@ -133,7 +139,6 @@ void doGen(int x, int y, int dir, int gendir,
 
 void gens(Set cells) {
   if (!grid.movable) return;
-  genOptimizer.clear();
   for (var rot in rotOrder) {
     if (cells.contains("generator")) {
       grid.loopChunks(

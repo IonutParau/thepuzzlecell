@@ -68,7 +68,6 @@ void doSupGen(int x, int y, int dir, int gendir,
 }
 
 void supgens() {
-  genOptimizer.clear();
   if (!grid.movable) return;
   for (var rot in rotOrder) {
     grid.updateCell(

@@ -55,7 +55,7 @@ void timetravel() {
   //if (mustTimeTravel) print("Must time travel");
   grid.loopChunks(
     "consistency",
-    GridAlignment.BOTTOMRIGHT,
+    GridAlignment.bottomright,
     (cell, x, y) {
       cell.tags.add("consistent");
       safeAt(x - 1, y)?.tags.add("consistent");
@@ -71,7 +71,7 @@ void timetravel() {
 
   grid.loopChunks(
     "time_hole",
-    GridAlignment.BOTTOMRIGHT,
+    GridAlignment.bottomright,
     (Cell cell, int x, int y) {
       doTimeHoleSide(x, y, -1, 0);
       doTimeHoleSide(x, y, 1, 0);
@@ -84,7 +84,7 @@ void timetravel() {
   if (mustTimeTravel) {
     grid.loopChunks(
       "time_trash",
-      GridAlignment.BOTTOMRIGHT,
+      GridAlignment.bottomright,
       (Cell cell, int x, int y) {
         if (cell.data['time_travelled'] == true) {
           timeGrid!.set(x, y, debug<Cell>(cellFromData(cell.data, x, y)));
@@ -95,7 +95,7 @@ void timetravel() {
 
     grid.loopChunks(
       "consistent",
-      GridAlignment.BOTTOMRIGHT,
+      GridAlignment.bottomright,
       (Cell cell, int x, int y) {
         timeGrid!.set(x, y, cell.copy);
       },
@@ -103,7 +103,7 @@ void timetravel() {
 
     grid.loopChunks(
       "time_machine",
-      GridAlignment.BOTTOMLEFT,
+      GridAlignment.bottomleft,
       (Cell cell, int x, int y) {
         if (cell.data['time_travelled'] == true) {
           final s = CellStructure()..build(x, y);
@@ -125,7 +125,7 @@ void timetravel() {
     if (grid.cells.contains("consistency")) {
       grid.loopChunks(
         "all",
-        GridAlignment.BOTTOMRIGHT,
+        GridAlignment.bottomright,
         (cell, x, y) {
           if (cell.tags.contains("consistent") && cell.id != "empty") {
             timeGrid!.set(x, y, cell);

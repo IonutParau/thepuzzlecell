@@ -144,8 +144,7 @@ bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
 
   if (trashes.contains(into.id) && !into.tags.contains("stopped")) return true;
 
-  if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"]
-      .contains(into.id)) {
+  if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"].contains(into.id)) {
     return (dir == into.rot);
   }
 
@@ -409,8 +408,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
   }
 }
 
-bool moveCell(int ox, int oy, int nx, int ny,
-    [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move]) {
+bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (dir == null) {
@@ -455,8 +453,7 @@ bool moveCell(int ox, int oy, int nx, int ny,
 }
 
 bool wouldWrap(int x, int y) {
-  return (((x + grid.width) % grid.width) != x ||
-      ((y + grid.height) % grid.height) != y);
+  return (((x + grid.width) % grid.width) != x || ((y + grid.height) % grid.height) != y);
 }
 
 int wrapX(int x) => (x + grid.width) % grid.width;
@@ -569,10 +566,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     }
   }
 
-  if ((cell.id == "fan" ||
-          (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) &&
-      cell.rot == odir &&
-      mt == MoveType.push) {
+  if ((cell.id == "fan" || (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) && cell.rot == odir && mt == MoveType.push) {
     return -1;
   }
 
@@ -598,11 +592,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
 //   return false;
 // }
 
-bool push(int x, int y, int dir, int force,
-    {MoveType mt = MoveType.push,
-    int depth = 0,
-    Cell? replaceCell,
-    bool shifted = false}) {
+bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell, bool shifted = false}) {
   replaceCell ??= Cell(x, y);
   if (!grid.inside(x, y)) return false;
   if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
@@ -623,8 +613,7 @@ bool push(int x, int y, int dir, int force,
       );
     }
   }
-  if ((dir % 2 == 0 && depth > grid.width) ||
-      (dir % 2 == 1 && depth > grid.height)) {
+  if ((dir % 2 == 0 && depth > grid.width) || (dir % 2 == 1 && depth > grid.height)) {
     return false;
   }
   dir %= 4;
@@ -663,9 +652,9 @@ bool push(int x, int y, int dir, int force,
     if (force <= 0) return false;
     // final cb = grid.at(ox, oy).copy;
     // grid.set(ox, oy, Cell(ox, oy));
-    final mightMove =
-        push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
+    final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
     if (mightMove) {
+      genOptimizer.remove(x, y);
       if (mt == MoveType.sync && c.id == "sync") {
         c.tags.add("sync move");
       }
@@ -680,8 +669,7 @@ bool push(int x, int y, int dir, int force,
   }
 }
 
-bool pushDistance(int x, int y, int dir, int force, int distance,
-    [MoveType mt = MoveType.push]) {
+bool pushDistance(int x, int y, int dir, int force, int distance, [MoveType mt = MoveType.push]) {
   final oforce = 0;
   final ox = x;
   final oy = y;
@@ -704,16 +692,14 @@ bool pushDistance(int x, int y, int dir, int force, int distance,
     }
   }
 
-  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir, mt)) &&
-      !moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
+  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir, mt)) && !moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
     return false;
   }
 
   return push(ox, oy, dir, oforce + 1, mt: mt);
 }
 
-bool pull(int x, int y, int dir, int force,
-    [MoveType mt = MoveType.pull, bool shifted = false]) {
+bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool shifted = false]) {
   if (!grid.inside(x, y)) return false;
   if (moveInsideOf(grid.at(x, y), x, y, dir, mt)) return true;
   if (!canMove(x, y, dir, force, mt)) return false;
@@ -885,9 +871,7 @@ void postmove(Cell cell, int x, int y, int dir, int force, MoveType mt) {
 
     cell.tags.add("push_glued");
 
-    if (safeAt(lx, ly)?.tags.contains("push_glued") == false)
-      push(lx, ly, dir, force);
-    if (safeAt(rx, ry)?.tags.contains("push_glued") == false)
-      push(rx, ry, dir, force);
+    if (safeAt(lx, ly)?.tags.contains("push_glued") == false) push(lx, ly, dir, force);
+    if (safeAt(rx, ry)?.tags.contains("push_glued") == false) push(rx, ry, dir, force);
   }
 }

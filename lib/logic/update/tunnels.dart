@@ -2,7 +2,6 @@ part of logic;
 
 void tunnels() {
   if (!grid.movable) return;
-  genOptimizer.clear();
   // Tunnels
   for (var rot in rotOrder) {
     grid.updateCell(

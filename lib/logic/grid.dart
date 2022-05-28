@@ -52,8 +52,7 @@ class LastVars {
           y.toDouble(),
         );
 
-  LastVars get copy =>
-      LastVars(lastRot, lastPos.dx.toInt(), lastPos.dy.toInt());
+  LastVars get copy => LastVars(lastRot, lastPos.dx.toInt(), lastPos.dy.toInt());
 }
 
 // For cells destroyed by entering destruction cells
@@ -86,8 +85,7 @@ class BrokenCell {
 
     if (!cells.contains(id)) id = "base";
 
-    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png'))
-        .render(canvas, position: screenPos, size: screenSize);
+    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize);
 
     canvas.restore();
   }
@@ -152,6 +150,13 @@ List<String> backgrounds = [
   "rotatable",
   "biome_cw",
   "biome_ccw",
+  "desert",
+  "snowy",
+  "forest",
+  "freezing",
+  "trash_biome",
+  "mechanical_halting",
+  "quantum_biome",
 ];
 
 class Grid {
@@ -161,8 +166,7 @@ class Grid {
 
   List<BrokenCell> brokenCells = [];
 
-  void addBroken(Cell cell, int dx, int dy,
-      [String type = "normal", int? rlvx, int? rlvy]) {
+  void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
     final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type);
 
     if (rlvx != null) b.lv.lastPos = Offset(rlvx.toDouble(), b.lv.lastPos.dy);
@@ -251,9 +255,7 @@ class Grid {
   // Only call this for manually changing id, grid.set() already does it for you
   void setChunk(int x, int y, String id) {
     if (wrap) {
-      chunks[floor(((x + width) % width) / chunkSize)]
-              [floor(((y + height) % height) / chunkSize)]
-          .add(id);
+      chunks[floor(((x + width) % width) / chunkSize)][floor(((y + height) % height) / chunkSize)].add(id);
       if (id == "empty") {
         removeRenderSpot((x + width) % width, (y + height) % height);
       } else {
@@ -269,29 +271,23 @@ class Grid {
     }
   }
 
-  void updateCell(
-      void Function(Cell cell, int x, int y) callback, int? rot, String id,
-      {bool invertOrder = false}) {
+  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
+    if (!cells.contains(id)) return;
+
     if (rot == null) {
       // Update statically
-      loopChunks(
-          id,
-          invertOrder ? GridAlignment.TOPLEFT : GridAlignment.BOTTOMRIGHT,
-          callback,
-          filter: (cell, x, y) => cell.id == id && !cell.updated);
+      loopChunks(id, invertOrder ? GridAlignment.topleft : GridAlignment.bottomright, callback, filter: (cell, x, y) => cell.id == id && !cell.updated);
     } else {
       loopChunks(
         id,
         fromRot((rot + (invertOrder ? 2 : 0)) % 4),
         callback,
-        filter: (cell, x, y) =>
-            cell.id == id && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == id && cell.rot == rot && !cell.updated,
       );
     }
   }
 
-  void forEach(void Function(Cell cell, int x, int y) callback,
-      [int? wantedDirection, String? id]) {
+  void forEach(void Function(Cell cell, int x, int y) callback, [int? wantedDirection, String? id]) {
     if (id != null) {
       if (!cells.contains(id)) return;
       var sx = 0;
@@ -318,8 +314,7 @@ class Grid {
                   if ((x >= 0 && x < width && y >= 0 && y < height)) {
                     final cell = at(x, y);
                     if (cell.updated == false) {
-                      if (cell.id == id &&
-                          cell.rot == (wantedDirection ?? cell.rot)) {
+                      if (cell.id == id && cell.rot == (wantedDirection ?? cell.rot)) {
                         cell.updated = true;
                         callback(cell, x, y);
                       }
@@ -343,8 +338,7 @@ class Grid {
                   if ((x >= 0 && x < width && y >= 0 && y < height)) {
                     final cell = at(x, y);
                     if (cell.updated == false) {
-                      if (cell.id == id &&
-                          cell.rot == (wantedDirection ?? cell.rot)) {
+                      if (cell.id == id && cell.rot == (wantedDirection ?? cell.rot)) {
                         cell.updated = true;
                         callback(cell, x, y);
                       }
@@ -454,7 +448,7 @@ class Grid {
       return;
     }
     place[x][y] = id;
-    chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
+    setChunk(x, y, id);
     if (id == "empty") {
       removeRenderSpot(x, y);
     } else {
@@ -463,8 +457,10 @@ class Grid {
   }
 
   void set(int x, int y, Cell cell) {
+    genOptimizer.remove(x, y);
     if (backgrounds.contains(cell.id)) {
       setPlace(x, y, cell.id);
+      setChunk(x, y, cell.id);
       return;
     }
     if (wrap) {
@@ -487,7 +483,7 @@ class Grid {
     }
     if (!inside(x, y)) return;
     grid[x][y] = cell;
-    chunks[floor(x / chunkSize)][floor(y / chunkSize)].add(cell.id);
+    setChunk(x, y, cell.id);
     //setRenderChunk(x, y);
     if (useSnowflake) snowflake.add(cell.id, cell.rot, x, y);
   }
@@ -519,12 +515,11 @@ class Grid {
     }
     if (cells.containsAny(trashes)) return true;
     if (cells.containsAny(enemies)) return true;
-    if (cells.contains("semi_enemy") || cells.contains("semi_trash"))
-      return true;
+    if (cells.contains("semi_enemy") || cells.contains("semi_trash")) return true;
     return false;
   }
 
-  Set<String> getCells() {
+  Set<String> prepareTick() {
     snowflake.clear();
     final types = <String>{};
     for (var bcell in brokenCells) {
@@ -535,34 +530,51 @@ class Grid {
     }
     brokenCells = [];
     final cells = <String>{};
-    reloadChunks();
+    //reloadChunks();
 
     final List<List<Set<String>>> newcells = [];
 
     for (var x = 0; x < ceil(width / chunkSize); x++) {
       newcells.add([]);
       for (var y = 0; y < ceil(height / chunkSize); y++) {
-        newcells.last.add({});
+        newcells.last.add({"empty"});
+      }
+    }
+
+    for (var chunkRow in chunks) {
+      for (var chunk in chunkRow) {
+        for (var cell in chunk) {
+          cells.add(cell);
+        }
       }
     }
 
     forEach(
-      (p0, p1, p2) {
-        p0.updated = false;
-        p0.lastvars = LastVars(p0.rot, p1, p2);
-        p0.tags = {};
-        p0.cx = null;
-        p0.cy = null;
-        p0.lifespan++;
-        cells.add(p0.id);
-        cells.add(place[p1][p2]);
+      // "all",
+      // GridAlignment.bottomright,
+      (cell, x, y) {
+        cell.updated = false;
+        cell.lastvars = LastVars(cell.rot, x, y);
+        cell.tags = {};
+        cell.cx = null;
+        cell.cy = null;
+        cell.lifespan++;
+        cells.add(cell.id);
+        cells.add(place[x][y]);
+
+        //newcells[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
 
         //final cx = p1 ~/ chunkSize;
         //final cy = p2 ~/ chunkSize;
         //newcells[cx][cy].add(p0.id);
-        setChunk(p1, p2, p0.id);
       },
+      // filter: (c, x, y) => true,
+      // fastChunk: false,
     );
+
+    // if (tickCount % 100 == 0) {
+    //   chunks = newcells;
+    // }
 
     //chunks = newcells;
 
@@ -570,14 +582,14 @@ class Grid {
   }
 
   void rotate(int x, int y, int rot) {
+    genOptimizer.remove(x, y);
     if (!inside(x, y)) return;
     final id = at(x, y).id;
     if (id == "anchor") {
       doAnchor(x, y, rot);
       return;
     }
-    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
-      return;
+    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
     if (id == "sync") {
@@ -609,6 +621,8 @@ class Grid {
   int renderChunkSize = storage.getInt('render_side') ?? 25;
 
   bool inChunk(int x, int y, String chunkID) {
+    if (chunkID == "*") return true;
+
     if (chunkID == "render") {
       return renderChunks[x ~/ renderChunkSize][y ~/ renderChunkSize];
     }
@@ -618,14 +632,8 @@ class Grid {
     return (chunks[x ~/ chunkSize][y ~/ chunkSize].contains(chunkID));
   }
 
-  void loopChunks(String chunkID, GridAlignment loopMode,
-      Function(Cell cell, int x, int y) forEach,
-      {bool Function(Cell cell, int x, int y)? filter,
-      int minx = 0,
-      int miny = 0,
-      int? maxx,
-      int? maxy,
-      bool fastChunk = true}) {
+  void loopChunks(String chunkID, GridAlignment loopMode, Function(Cell cell, int x, int y) forEach,
+      {bool Function(Cell cell, int x, int y)? filter, int minx = 0, int miny = 0, int? maxx, int? maxy, bool fastChunk = true}) {
     filter ??= (Cell c, int x, int y) {
       if (chunkID == "all") return true;
       if (chunkID == "render") return c.id != "empty";
@@ -635,7 +643,7 @@ class Grid {
     maxx ??= width - 1;
     maxy ??= height - 1;
 
-    if (loopMode == GridAlignment.TOPLEFT) {
+    if (loopMode == GridAlignment.topleft) {
       var x = maxx;
       var y = miny;
       while (y < height) {
@@ -644,7 +652,7 @@ class Grid {
         while (x >= 0) {
           final c = at(x, y);
           if (filter(c, x, y)) {
-            if (chunkID != "all") c.updated = true;
+            if (chunkID != "all" && chunkID != "*") c.updated = true;
             //c.id = "ghost";
             forEach(c, x, y);
           }
@@ -662,7 +670,7 @@ class Grid {
           y += chunkSize;
         }
       }
-    } else if (loopMode == GridAlignment.BOTTOMRIGHT) {
+    } else if (loopMode == GridAlignment.bottomright) {
       var x = minx;
       var y = miny;
       while (y < height) {
@@ -688,7 +696,7 @@ class Grid {
           y += chunkSize;
         }
       }
-    } else if (loopMode == GridAlignment.TOPRIGHT) {
+    } else if (loopMode == GridAlignment.topright) {
       var x = minx;
       var y = maxy;
       while (x < width) {
@@ -714,7 +722,7 @@ class Grid {
           x += chunkSize;
         }
       }
-    } else if (loopMode == GridAlignment.BOTTOMLEFT) {
+    } else if (loopMode == GridAlignment.bottomleft) {
       var x = minx;
       var y = miny;
       while (x < width) {
@@ -745,7 +753,7 @@ class Grid {
 
   void update() {
     tickCount++;
-    cells = getCells();
+    cells = prepareTick();
     //print(cells);
     if (tickCount % 10 == 0) {
       refreshChunks();
@@ -772,10 +780,10 @@ class Grid {
 }
 
 enum GridAlignment {
-  TOPLEFT,
-  TOPRIGHT,
-  BOTTOMRIGHT,
-  BOTTOMLEFT,
+  topleft,
+  topright,
+  bottomright,
+  bottomleft,
 }
 
 GridAlignment fromRot(int rot) => GridAlignment.values[rot % 4];
@@ -828,8 +836,7 @@ class GridClip {
               sy %= grid.height;
             }
             final off = rotateOff(
-                  Offset(sx * cellSize + cellSize / 2,
-                      sy * cellSize + cellSize / 2),
+                  Offset(sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
                   -rot,
                 ) -
                 Offset(
@@ -838,11 +845,8 @@ class GridClip {
                     ) /
                     2;
             canvas.rotate(rot);
-            final file = textureMap['${cells[cx][cy].id}.png'] ??
-                '${cells[cx][cy].id}.png';
-            (Sprite(Flame.images.fromCache(file))
-                  ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
-                .render(
+            final file = textureMap['${cells[cx][cy].id}.png'] ?? '${cells[cx][cy].id}.png';
+            (Sprite(Flame.images.fromCache(file))..paint = (Paint()..color = Colors.white.withOpacity(0.2))).render(
               canvas,
               position: Vector2(off.dx, off.dy),
               size: Vector2.all(

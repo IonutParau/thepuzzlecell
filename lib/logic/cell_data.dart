@@ -184,13 +184,27 @@ final cells = {
   "mech_toggle",
   "biome_cw",
   "biome_ccw",
+  "desert",
+  "snowy",
+  "forest",
+  "freezing",
+  "trash_biome",
+  "mechanical_halting",
+  "quantum_biome",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "freezing.png": "backgrounds/biomes/biome_base.png",
+  "trash_biome.png": "backgrounds/biomes/biome_base.png",
+  "mechanical_halting.png": "backgrounds/biomes/biome_base.png",
+  "quantum_biome.png": "backgrounds/biomes/biome_base.png",
   "biome_cw.png": "backgrounds/biomes/biome_cw.png",
   "biome_ccw.png": "backgrounds/biomes/biome_ccw.png",
+  "desert.png": "backgrounds/biomes/desert.png",
+  "snowy.png": "backgrounds/biomes/snowy.png",
+  "forest.png": "backgrounds/biomes/forest.png",
   "forker.png": "recreators/forkers/forker.png",
   "forker_cw.png": "recreators/forkers/forker_cw.png",
   "forker_ccw.png": "recreators/forkers/forker_ccw.png",
@@ -371,8 +385,7 @@ class CellCategory {
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look,
-      {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
 
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
@@ -464,7 +477,17 @@ final categories = [
       CellCategory(
         "Biomes",
         "Like placeables, but while the game is running, they interact with the cell above it",
-        ["biome_cw", "biome_ccw"],
+        [
+          "biome_cw",
+          "biome_ccw",
+          "desert",
+          "snowy",
+          "forest",
+          "freezing",
+          "trash_biome",
+          "mechanical_halting",
+          "quantum_biome",
+        ],
         "biome_cw",
       ),
     ],
@@ -1542,5 +1565,41 @@ final cellInfo = <String, CellProfile>{
   "mech_toggle": CellProfile(
     "Mechanical Toggle",
     "When it gets input from the back, it toggles",
+  ),
+  "biome_cw": CellProfile(
+    "Biome CW",
+    "A background that rotates the cell above it clockwise",
+  ),
+  "biome_ccw": CellProfile(
+    "Biome CCW",
+    "A background that rotates the cell above it counter-clockwise",
+  ),
+  "desert": CellProfile(
+    "Desert",
+    "A biome that increases the heat of the cell above it",
+  ),
+  "snowy": CellProfile(
+    "Snowy",
+    "A biome that decreases the heat of the cell above it",
+  ),
+  "forest": CellProfile(
+    "Forest",
+    "A biome that resets the heat of the cell above it",
+  ),
+  "freezing": CellProfile(
+    "Freezing Biome",
+    "A biome that stops the cell above it",
+  ),
+  "trash_biome": CellProfile(
+    "Trash Biome",
+    "A biome that makes the cell above it stop existing",
+  ),
+  "mechanical_halting": CellProfile(
+    "Mechanical Halting",
+    "A biome that makes any mechanical gear above it stop transmitting signals",
+  ),
+  "quantum_biome": CellProfile(
+    "Quantum Biome",
+    "A biome that transforms the cell above it into a random cell",
   ),
 };

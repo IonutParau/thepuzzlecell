@@ -188,10 +188,7 @@ void quantums() {
         (cell, x, y) {
           if (cell.rot == rot) unstableMove(x, y, cell.rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "unstable_mover" &&
-            cell.rot == rot &&
-            cell.updated == false,
+        filter: (cell, x, y) => cell.id == "unstable_mover" && cell.rot == rot && cell.updated == false,
       );
       grid.updateCell(
         (cell, x, y) {
@@ -209,7 +206,7 @@ void quantums() {
     }
   }
 
-  grid.loopChunks("field", GridAlignment.TOPLEFT, doField);
+  grid.loopChunks("field", GridAlignment.topleft, doField);
 
   // My brain hurts
   grid.updateCell(

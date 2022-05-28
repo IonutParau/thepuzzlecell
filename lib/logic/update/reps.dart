@@ -8,7 +8,6 @@ void doRep(int x, int y, int dir, int gendir,
 }
 
 void reps() {
-  genOptimizer.clear();
   if (!grid.movable) return;
   for (var rot in rotOrder) {
     grid.updateCell(
