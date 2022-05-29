@@ -1,5 +1,14 @@
 part of layout;
 
+String encodeColor(Color color) {
+  return "${color.red}:${color.green}:${color.blue}:${color.alpha}";
+}
+
+Color decodeColor(String string) {
+  final parts = string.split(":");
+  return Color.fromARGB(int.parse(parts[3]), int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+}
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -18,25 +27,60 @@ class _SettingsPageState extends State<SettingsPage> {
     fontSize: 7.sp,
   );
 
-  @override
-  void initState() {
-    super.initState();
-
-    _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
-    _clientIDController.text = storage.getString("clientID") ?? "@uuid";
+  Widget colorSetting(String id, String langKey, String title, Color defaultValue) {
+    return Row(
+      children: [
+        Text(
+          '${lang(langKey, title)}: ',
+          style: textStyle,
+        ),
+        SizedBox(
+          child: Button(
+            child: Text(lang('choose_color', 'Choose a color'), style: textBoxStyle),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(lang('choose_color', 'Choose a color')),
+                    content: SingleChildScrollView(
+                      child: ColorPicker(
+                        pickerColor: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
+                        onColorChanged: (color) {
+                          setState(() {
+                            storage.setString(id, encodeColor(color));
+                          });
+                        },
+                      ),
+                    ),
+                    actions: [
+                      Button(
+                        child: Text('Restore to Default'),
+                        onPressed: () {
+                          setState(() {
+                            storage.setString(id, encodeColor(defaultValue));
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      Button(
+                        child: Text('Ok'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
-  @override
-  void dispose() {
-    _delayController.dispose();
-    _clientIDController.dispose();
-
-    super.dispose();
-  }
-
-  Widget checkboxSetting(
-      String id, String langKey, String title, bool defaultValue,
-      [void Function(bool v)? callback]) {
+  Widget checkboxSetting(String id, String langKey, String title, bool defaultValue, [void Function(bool v)? callback]) {
     return Row(
       children: [
         Text(
@@ -62,6 +106,22 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
+    _clientIDController.text = storage.getString("clientID") ?? "@uuid";
+  }
+
+  @override
+  void dispose() {
+    _delayController.dispose();
+    _clientIDController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -185,6 +245,32 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                     label: '${storage.getDouble('music_volume')! * 100}%',
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  lang('sfx_volume', 'SFX Volume') + ': ',
+                  style: textStyle,
+                ),
+                SizedBox(
+                  width: 20.w,
+                  height: 5.h,
+                  child: Slider(
+                    value: storage.getDouble("sfx_volume") ?? 1,
+                    min: 0,
+                    max: 1,
+                    onChanged: (v) => storage
+                        .setDouble(
+                          "sfx_volume",
+                          (v * 100 ~/ 1) / 100,
+                        )
+                        .then(
+                          (v) => setState(() {}),
+                        ),
+                    label: '${(storage.getDouble('sfx_volume') ?? 1) * 100}%',
                   ),
                 ),
               ],

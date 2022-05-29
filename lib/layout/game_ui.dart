@@ -2566,10 +2566,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (mouseButton == kMiddleMouseButton) {
             if (grid.inside(mx, my)) {
               final id = grid.at(mx, my).id;
+              final p = grid.placeable(mx, my);
 
               if (edType == EditorType.making) {
                 if (cells.contains(id)) {
                   currentSelection = cells.indexOf(id);
+                  if (id == "empty" && cells.contains(p)) {
+                    currentSelection = cells.indexOf(p);
+                  }
                 }
               }
             }
@@ -2623,7 +2627,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       } else {
         if (backgrounds.contains(cells[id])) {
           sendToServer(
-            "place $cx $cy ${cells[id]}",
+            "bg $cx $cy ${cells[id]}",
           );
         } else {
           sendToServer(

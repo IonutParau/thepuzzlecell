@@ -55,12 +55,8 @@ void initSound() {
 
 void playSound(Player sound, [double? volume]) {
   if (inBruteForce) return;
-  if (sound.playback.isPlaying) {
-    sound.seek(Duration.zero);
-  } else {
-    sound.play();
-  }
-  sound.setVolume(volume ?? game.sfxVolume);
+  sound.play();
+  sound.setVolume(volume ?? (storage.getDouble("sfx_volume") ?? 1));
 }
 
 void playOnLoop(Player sound, double volume) {

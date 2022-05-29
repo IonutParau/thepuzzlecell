@@ -813,7 +813,7 @@ class GridClip {
           cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy);
           if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
           game.sendToServer(
-            "place $sx $sy ${cells[cx][cy].id} ${cells[cx][cy].rot}",
+            "place $sx $sy ${cells[cx][cy].id} ${cells[cx][cy].rot} ${game.cellDataStr(cells[cx][cy].data)}",
           );
         }
       }

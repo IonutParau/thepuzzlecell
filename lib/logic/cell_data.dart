@@ -196,10 +196,10 @@ final cells = {
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
-  "freezing.png": "backgrounds/biomes/biome_base.png",
-  "trash_biome.png": "backgrounds/biomes/biome_base.png",
+  "freezing.png": "backgrounds/biomes/freezing.png",
+  "trash_biome.png": "backgrounds/biomes/trash_biome.png",
   "mechanical_halting.png": "backgrounds/biomes/biome_base.png",
-  "quantum_biome.png": "backgrounds/biomes/biome_base.png",
+  "quantum_biome.png": "backgrounds/biomes/quantum_biome.png",
   "biome_cw.png": "backgrounds/biomes/biome_cw.png",
   "biome_ccw.png": "backgrounds/biomes/biome_ccw.png",
   "desert.png": "backgrounds/biomes/desert.png",

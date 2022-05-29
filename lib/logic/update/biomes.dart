@@ -27,6 +27,10 @@ void biomes() {
     cell.tags.add("stopped");
   }, filter: (cell, x, y) => grid.placeable(x, y) == "freezing");
 
+  grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    grid.set(x, y, Cell(x, y));
+  }, filter: (cell, x, y) => grid.placeable(x, y) == "trash_biome");
+
   final rng = Random();
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {

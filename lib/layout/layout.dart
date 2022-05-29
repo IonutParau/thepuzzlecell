@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flame/components.dart';
@@ -17,6 +16,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Colors, ButtonStyle, Slider, SliderThemeData, Chip, ListTile;
 import 'package:flutter/services.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:the_puzzle_cell/layout/other/other.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';

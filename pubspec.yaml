@@ -18,6 +18,7 @@ dependencies:
   fluent_ui: ^3.12.0
   flutter:
     sdk: flutter
+  flutter_colorpicker: ^1.0.3
   font_awesome_flutter: any
   http: ^0.13.4
   path: any

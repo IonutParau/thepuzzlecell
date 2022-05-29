@@ -36,12 +36,15 @@ void heat() {
     GridAlignment.bottomright,
     (cell, x, y) {
       final temp = cell.data['heat'] ?? 0;
-      if (temp >= 100) {
+
+      final normalCell = (cell.id != "magma" && cell.id != "snow");
+
+      if (temp >= 100 && normalCell) {
         cell.id = "magma";
-      } else if (temp <= -100) {
+      } else if (temp <= -100 && normalCell) {
         cell.id = "snow";
       } else {
-        if (cell.id != "magma" && cell.id != "snow") {
+        if (normalCell) {
           if (temp > 0) {
             cell.updated = (cell.lifespan % (max(temp ~/ 3, 3)) == 0);
           }

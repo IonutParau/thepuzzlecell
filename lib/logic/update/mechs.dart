@@ -48,10 +48,10 @@ void mechs(Set<String> cells) {
       "mech_keyup",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y);
-        MechanicalManager.spread(x + 1, y);
-        MechanicalManager.spread(x, y - 1);
-        MechanicalManager.spread(x, y + 1);
+        MechanicalManager.spread(x - 1, y, 0, false, 2);
+        MechanicalManager.spread(x + 1, y, 0, false, 0);
+        MechanicalManager.spread(x, y - 1, 0, false, 3);
+        MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
       filter: (cell, x, y) => cell.id == "mech_keyup" && !cell.updated,
     );
@@ -62,10 +62,10 @@ void mechs(Set<String> cells) {
       "mech_keyleft",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y);
-        MechanicalManager.spread(x + 1, y);
-        MechanicalManager.spread(x, y - 1);
-        MechanicalManager.spread(x, y + 1);
+        MechanicalManager.spread(x - 1, y, 0, false, 2);
+        MechanicalManager.spread(x + 1, y, 0, false, 0);
+        MechanicalManager.spread(x, y - 1, 0, false, 3);
+        MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
       filter: (cell, x, y) => cell.id == "mech_keyleft" && !cell.updated,
     );
@@ -75,10 +75,10 @@ void mechs(Set<String> cells) {
       "mech_keyright",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y);
-        MechanicalManager.spread(x + 1, y);
-        MechanicalManager.spread(x, y - 1);
-        MechanicalManager.spread(x, y + 1);
+        MechanicalManager.spread(x - 1, y, 0, false, 2);
+        MechanicalManager.spread(x + 1, y, 0, false, 0);
+        MechanicalManager.spread(x, y - 1, 0, false, 3);
+        MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
       filter: (cell, x, y) => cell.id == "mech_keyright" && !cell.updated,
     );
@@ -88,10 +88,10 @@ void mechs(Set<String> cells) {
       "mech_keydown",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y);
-        MechanicalManager.spread(x + 1, y);
-        MechanicalManager.spread(x, y - 1);
-        MechanicalManager.spread(x, y + 1);
+        MechanicalManager.spread(x - 1, y, 0, false, 2);
+        MechanicalManager.spread(x + 1, y, 0, false, 0);
+        MechanicalManager.spread(x, y - 1, 0, false, 3);
+        MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
       filter: (cell, x, y) => cell.id == "mech_keydown" && !cell.updated,
     );
