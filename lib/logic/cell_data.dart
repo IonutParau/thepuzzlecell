@@ -198,7 +198,7 @@ final textureMapBackup = Map.from(textureMap);
 Map<String, String> textureMap = {
   "freezing.png": "backgrounds/biomes/freezing.png",
   "trash_biome.png": "backgrounds/biomes/trash_biome.png",
-  "mechanical_halting.png": "backgrounds/biomes/biome_base.png",
+  "mechanical_halting.png": "backgrounds/biomes/mechanical_halting.png",
   "quantum_biome.png": "backgrounds/biomes/quantum_biome.png",
   "biome_cw.png": "backgrounds/biomes/biome_cw.png",
   "biome_ccw.png": "backgrounds/biomes/biome_ccw.png",

@@ -209,10 +209,8 @@ class MechanicalManager {
     if (!connectable(sentDir, grid.at(x, y))) return;
     final cell = grid.at(x, y);
     if (onAt(x, y, true)) return;
-    if (cell.id == "mech_gear" || cell.id == "cross_mech_gear") {
-      if (grid.placeable(x, y) == "mechanical_halt") {
-        return;
-      }
+    if (grid.placeable(x, y) == "mechanical_halting") {
+      return;
     }
     if (cell.id == "cross_mech_gear" && sentDir != null) {
       cell.data['power'] = 2;
