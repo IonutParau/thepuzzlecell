@@ -1280,7 +1280,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          FlutterClipboard.copy(P3.encodeGrid(grid));
+          FlutterClipboard.copy(P4.encodeGrid(grid));
           if (worldIndex != null) {
             worldManager.saveWorld(worldIndex!);
           }

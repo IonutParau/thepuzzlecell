@@ -5,26 +5,47 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:the_puzzle_cell/main.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart' show P4;
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('Test P4 decoding', () {
+    expect(P4.decodeValue('0'), 0);
+    expect(P4.decodeValue('Test'), 'Test');
+    expect(P4.decodeValue('true'), true);
+    expect(P4.decodeValue('false'), false);
+    expect(P4.decodeValue('1.5'), 1.5);
+    expect(P4.decodeValue('(true:false:1.5:0)'), [true, false, 1.5, 0]);
+    expect(P4.decodeValue('(key=value:test=(this:is:a:list):someMap=(someKey=someValue:someNumber=0:someDouble=5.3:someBoolean=false))'), {
+      'key': 'value',
+      'test': ['this', 'is', 'a', 'list'],
+      'someMap': {'someKey': 'someValue', 'someNumber': 0, 'someDouble': 5.3, 'someBoolean': false}
+    });
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('Test P4 encoding', () {
+    expect(P4.encodeValue(0), '0');
+    expect(P4.encodeValue(2.5), '2.5');
+    expect(
+      P4.encodeValue([
+        'help',
+        {'test': 'thing'},
+        ['hlep', 'test']
+      ]),
+      '(help:(test=thing):(hlep:test))',
+    );
+    expect(
+      P4.encodeValue(<String, dynamic>{
+        'someList': [
+          'help',
+          {'test': 'thing'},
+          ['hlep', 'test'],
+        ],
+        'someMap': {
+          'key': 'value',
+        },
+      }),
+      '(someList=(help:(test=thing):(hlep:test)):someMap=(key=value))',
+    );
   });
 }
