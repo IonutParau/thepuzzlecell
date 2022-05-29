@@ -190,3 +190,14 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+class ConstantButtonValue<T> extends ButtonState<T> {
+  final T value;
+
+  ConstantButtonValue(this.value);
+
+  @override
+  T resolve(Set<ButtonStates> states) {
+    return value;
+  }
+}
