@@ -23,7 +23,7 @@ Device getAudioDevice() {
       }
     }
   }
-  return Devices.all.first;
+  return Devices.all.last; // Typically first is speakers and last is headphones, so headphones users can have a decent-ish experience
 }
 
 void initSound() {

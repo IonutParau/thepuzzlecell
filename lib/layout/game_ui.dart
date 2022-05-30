@@ -786,11 +786,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   double mouseY = 0;
   var mouseButton = -1;
 
-  double get offX => (storedOffX - canvasSize.x / 2) * (cellSize / wantedCellSize) + canvasSize.x / 2;
-  double get offY => (storedOffY - canvasSize.y / 2) * (cellSize / wantedCellSize) + canvasSize.y / 2;
+  double get offX => (smoothOffX - canvasSize.x / 2) * (cellSize / wantedCellSize) + canvasSize.x / 2;
+  double get offY => (smoothOffY - canvasSize.y / 2) * (cellSize / wantedCellSize) + canvasSize.y / 2;
 
   var storedOffX = 0.0;
   var storedOffY = 0.0;
+
+  var smoothOffX = 0.0;
+  var smoothOffY = 0.0;
 
   int updates = 0;
 
@@ -996,6 +999,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     storedOffX = (storedOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
     storedOffY = (storedOffY - canvasSize.y / 2) * scale + canvasSize.y / 2;
+
+    smoothOffX = (smoothOffX - canvasSize.x / 2) * scale + canvasSize.x / 2;
+    smoothOffY = (smoothOffY - canvasSize.y / 2) * scale + canvasSize.y / 2;
 
     // for (var child in this.children) {
     //   if (child is ParticleComponent) {
@@ -2483,9 +2489,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
     if (realisticRendering) {
-      cellSize = lerp(cellSize, wantedCellSize.toDouble(), dt * 10);
+      final speed = storage.getDouble("lerp_speed") ?? 10.0;
+      final t = dt * speed;
+      cellSize = lerp(cellSize, wantedCellSize.toDouble(), t);
+      smoothOffX = lerp(smoothOffX, storedOffX, t);
+      smoothOffY = lerp(smoothOffY, storedOffY, t);
     } else {
       cellSize = wantedCellSize.toDouble();
+      smoothOffX = storedOffX;
+      smoothOffY = storedOffY;
     }
     // if (overlays.isActive('CellBar')) {
     //   overlays.remove('CellBar');
@@ -3013,16 +3025,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is RawKeyDownEvent) {
+      final keysDown = keysPressed.map<String>((e) => e.keyLabel);
       if (keysPressed.contains(LogicalKeyboardKey.altLeft)) {
         // Alternative stuffz
       } else {
-        if (keysPressed.contains(LogicalKeyboardKey.keyQ)) {
+        if (keysDown.contains(LogicalKeyboardKey.keyQ.keyLabel)) {
           q();
-        } else if (keysPressed.contains(LogicalKeyboardKey.keyE)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.keyE.keyLabel)) {
           e();
-        } else if (keysPressed.contains(LogicalKeyboardKey.space) && !(keys[LogicalKeyboardKey.space.keyId] == true)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.space.keyLabel) && !(keys[LogicalKeyboardKey.space.keyLabel] == true)) {
           playPause();
-        } else if (keysPressed.contains(LogicalKeyboardKey.escape) || keysPressed.contains(LogicalKeyboardKey.backspace)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.escape.keyLabel) || keysDown.contains(LogicalKeyboardKey.backspace.keyLabel)) {
           if (pasting) {
             pasting = false;
             buttonManager.buttons['select-btn']!.texture = "interface/select.png";
@@ -3036,18 +3049,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               }
             }
           }
-        } else if (keysPressed.contains(LogicalKeyboardKey.keyF) && edType == EditorType.making) {
+        } else if (keysDown.contains(LogicalKeyboardKey.keyF.keyLabel) && edType == EditorType.making) {
           oneTick();
-        } else if (keysPressed.contains(LogicalKeyboardKey.escape) && edType == EditorType.making) {
+        } else if (keysDown.contains(LogicalKeyboardKey.escape.keyLabel) && edType == EditorType.making) {
           if (!overlays.isActive("EditorMenu")) {
             overlays.add("EditorMenu");
           } else {
             overlays.remove("EditorMenu");
           }
-        } else if (keysPressed.contains(LogicalKeyboardKey.keyZ)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.keyZ.keyLabel)) {
           delay /= 2;
           delay = max(delay, 0.01);
-        } else if (keysPressed.contains(LogicalKeyboardKey.keyX)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.keyX.keyLabel)) {
           delay *= 2;
           delay = min(delay, 1);
         }

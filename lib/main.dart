@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';

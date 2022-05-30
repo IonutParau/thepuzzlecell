@@ -9,19 +9,15 @@ final List<String> changes = [
   "Added biomes",
   "Added Fullscreen toggle",
   "Reworked the generator optimization",
+  "Reworked the settings page",
   "Planned: Added setting to change chunk size",
-  "Planned: Added the Property Editor (opened with ` key)",
   "Planned: Added Memory Generators",
   "Planned: Added Water and Sand",
 ];
 
 IconData getTrailing(String change) {
   change = change.toLowerCase();
-  if (change.startsWith('fixed') ||
-      change.startsWith('patched') ||
-      change.startsWith('moved') ||
-      change.startsWith('reworked') ||
-      change.startsWith('changed')) {
+  if (change.startsWith('fixed') || change.startsWith('patched') || change.startsWith('moved') || change.startsWith('reworked') || change.startsWith('changed')) {
     return FluentIcons.change_entitlements;
   } else if (change.startsWith('added')) {
     return FluentIcons.insert;
