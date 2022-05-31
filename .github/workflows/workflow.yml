@@ -40,6 +40,7 @@ jobs:
         with:
           channel: "stable"
       - run: brew install cmake
+      - run: gem install cocoapods
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: brew install xcode
