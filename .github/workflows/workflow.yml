@@ -42,4 +42,8 @@ jobs:
       - run: brew install cmake
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
-      - run: flutter build macos
+      - run: flutter build macos -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: thepuzzlecell-macos
+          path: build/macos/Build/Products/Release
