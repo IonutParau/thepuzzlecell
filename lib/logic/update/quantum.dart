@@ -6,8 +6,11 @@ void unstableMove(int x, int y, int dir) {
 
   final self = grid.at(x, y);
   self.updated = true;
+  var d = 0;
 
   while (true) {
+    d++;
+    if (d < grid.width * grid.height) return;
     cx = frontX(cx, dir);
     cy = frontY(cy, dir);
     if (!grid.inside(cx, cy)) return;
@@ -27,7 +30,10 @@ void unstableGen(int x, int y, int dir, Cell self) {
   var cx = x;
   var cy = y;
 
+  var d = 0;
   while (true) {
+    d++;
+    if (d < grid.width * grid.height) return;
     cx = frontX(cx, dir);
     cy = frontY(cy, dir);
     if (!grid.inside(cx, cy)) return;

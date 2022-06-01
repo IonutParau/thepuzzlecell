@@ -798,7 +798,10 @@ List<String> fancySplit(String thing, String sep) {
     } else if (c == ")") {
       depth--;
     }
-    if (depth == 0 && c == sep) {
+    if (depth == 0 && (c == sep || sep == "")) {
+      if (sep == "") {
+        things.last += c;
+      }
       things.add("");
     } else {
       things.last += c;
@@ -860,14 +863,25 @@ class P4 {
 
     grid.forEach(
       (cell, x, y) {
-        cellDataList.add(encodeCell(x, y, grid));
+        final cstr = encodeCell(x, y, grid);
+        if (cellDataList.isNotEmpty) {
+          final m = decodeValue(cellDataList.last);
+          final c = m['count'] ?? 1;
+          m.remove("count");
+          if (encodeValue(m) == cstr) {
+            m['count'] = c + 1;
+            cellDataList.last = encodeValue(m);
+            return;
+          }
+        }
+        cellDataList.add(cstr);
       },
     );
 
     final cellDataStr = baseEncoder.encode(
       Uint8List.fromList(zlib.encode(
         utf8.encode(
-          cellDataList.join(','),
+          cellDataList.join(''),
         ),
       )),
     );
@@ -892,13 +906,35 @@ class P4 {
 
     final g = Grid(width, height);
 
-    final cellDataList = utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()).split(',');
+    final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
+
+    while (rawCellDataList.first == "") {
+      rawCellDataList.removeAt(0);
+    }
+    while (rawCellDataList.last == "") {
+      rawCellDataList.removeLast();
+    }
+
+    final cellDataList = [];
+
+    for (var cellData in rawCellDataList) {
+      final m = decodeValue(cellData);
+
+      if (m['count'] != null) {
+        final c = int.parse(m['count']);
+        for (var i = 0; i < c; i++) {
+          cellDataList.add(cellData);
+        }
+      } else {
+        cellDataList.add(cellData);
+      }
+    }
 
     var i = 0;
 
     g.forEach(
       (cell, x, y) {
-        setCell(cellDataList[i], x, y, g);
+        setCell(rawCellDataList[i], x, y, g);
         i++;
       },
     );
