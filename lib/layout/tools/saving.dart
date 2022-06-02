@@ -852,7 +852,7 @@ class P4 {
     grid.setPlace(x, y, bg);
   }
 
-  static String encodeGrid(Grid grid, [String title = "", String description = ""]) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     print("Encoding with base ${base.length}");
     var str = header + '$title;$description;'; // Header, title and description
 

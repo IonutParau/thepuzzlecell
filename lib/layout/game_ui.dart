@@ -404,7 +404,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       game.itime = 0;
                                       if (game.isMultiplayer) {
                                         game.sendToServer(
-                                          'setinit ${P3.encodeGrid(grid)}',
+                                          'setinit ${P4.encodeGrid(grid)}',
                                         );
                                       } else {
                                         grid = Grid(grid.width, grid.height);
@@ -1221,7 +1221,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     buttonManager.buttons['play-btn']?.rotation = 0;
                     buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
 
-                    sendToServer('setinit ${P3.encodeGrid(grid)}');
+                    sendToServer('setinit ${P4.encodeGrid(grid)}');
 
                     hovers.forEach(
                       (key, value) {
@@ -2883,7 +2883,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
     timeGrid = null;
-    if (isMultiplayer) sendToServer('setinit ${P3.encodeGrid(grid)}');
+    if (isMultiplayer) sendToServer('setinit ${P4.encodeGrid(grid)}');
   }
 
   void restoreInitial() {

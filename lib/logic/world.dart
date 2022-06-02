@@ -26,7 +26,7 @@ class WorldManager {
   void saveWorld(int i) {
     final str = _worlds[i].split(';');
     var g = game.isinitial ? grid : game.initial;
-    _worlds[i] = P3.encodeGrid(g, title: str[1], description: str[2]);
+    _worlds[i] = P4.encodeGrid(g, title: str[1], description: str[2]);
     saveWorldsToSettings();
   }
 
