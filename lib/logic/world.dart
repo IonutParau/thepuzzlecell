@@ -19,7 +19,7 @@ class WorldManager {
 
   void addWorld(String title, String description, int x, int y) {
     final g = Grid(x, y);
-    _worlds.add(P3.encodeGrid(g, title: title, description: description));
+    _worlds.add(P4.encodeGrid(g, title: title, description: description));
     saveWorldsToSettings();
   }
 
