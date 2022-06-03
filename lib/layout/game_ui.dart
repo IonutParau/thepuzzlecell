@@ -902,7 +902,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           content: Text(
             lang(
               "confirm_exit_desc",
-              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nare you sure you want to exit?",
+              "You have pressed the Exit Editor button, which exits the game.\nAny unsaved progress will be gone forever.\nAre you sure you want to exit?",
             ),
           ),
           actions: [
@@ -1907,6 +1907,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       wantedCellSize /= (max(grid.width, grid.height) / 2);
       storedOffX = canvasSize.x / 2 - (grid.width / 2) * cellSize;
       storedOffY = canvasSize.y / 2 - (grid.height / 2) * cellSize;
+      smoothOffX = storedOffX;
+      smoothOffY = storedOffY;
     }
     await Flame.images.loadAll(
       cells.map((name) => textureMap["$name.png"] ?? "$name.png").toList(),
@@ -1921,6 +1923,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     puzzleWin = false;
     delay = storage.getDouble("delay") ?? 0.15;
     realisticRendering = storage.getBool("realistic_render") ?? true;
+
+    QueueManager.runQueue("post-game-init");
 
     return super.onLoad();
   }
@@ -2238,6 +2242,50 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
         renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: ${c.id}" : ""));
       }
+    }
+
+    if (grid.title != "" && edType == EditorType.loaded) {
+      // Render title and description
+
+      final titletp = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+          text: grid.title,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 40 * uiScale,
+          ),
+        ),
+      );
+
+      titletp.layout();
+
+      titletp.paint(
+        canvas,
+        Offset(
+          (canvasSize.x - titletp.width) / 2,
+          50 * uiScale,
+        ),
+      );
+
+      final descriptiontp = TextPainter(
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          text: grid.desc,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 30 * uiScale,
+          ),
+        ),
+      );
+
+      descriptiontp.layout(maxWidth: 50.w);
+
+      descriptiontp.paint(
+        canvas,
+        Offset((canvasSize.x - descriptiontp.width) / 2, 70 * uiScale + titletp.height),
+      );
     }
 
     canvas.translate(offX, offY);

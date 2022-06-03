@@ -171,6 +171,9 @@ class P1 {
       ),
     );
 
+    grid.title = segments[3];
+    grid.desc = segments[4];
+
     final cellTable = segments[3].split(',');
 
     if (segments[6] == "WRAP") {
@@ -342,6 +345,9 @@ class P1Plus {
       },
     );
 
+    grid.title = segments[1];
+    grid.desc = segments[2];
+
     return grid;
   }
 }
@@ -426,6 +432,8 @@ class P2 {
       decodeNum(segs[3], valueString),
       decodeNum(segs[4], valueString),
     );
+    grid.title = segs[1];
+    grid.desc = segs[2];
 
     final cellTable = segs[5].split(',');
 
@@ -744,6 +752,9 @@ class P3 {
       decodeNum(segs[4], valueString),
     );
 
+    newGrid.title = segs[1];
+    newGrid.desc = segs[2];
+
     final cellDataStr = segs[5] == "eJwDAAAAAAE=" ? "" : utf8.decode(zlib.decode(base64.decode(segs[5])));
 
     if (cellDataStr != "") {
@@ -906,6 +917,9 @@ class P4 {
 
     final g = Grid(width, height);
 
+    g.title = segs[1];
+    g.desc = segs[2];
+
     final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
 
     while (rawCellDataList.first == "") {
@@ -942,7 +956,14 @@ class P4 {
     final props = decodeValue(segs[6]);
     if (props is Map<String, dynamic>) {
       if (props['W'] != null) grid.wrap = props['W']!;
+
+      if (props['update_delay'] is num) {
+        QueueManager.add("post-game-init", () {
+          game.delay = props['update_delay']!;
+        });
+      }
     }
+
     return g;
   }
 

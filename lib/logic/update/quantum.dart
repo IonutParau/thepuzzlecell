@@ -10,7 +10,7 @@ void unstableMove(int x, int y, int dir) {
 
   while (true) {
     d++;
-    if (d < grid.width * grid.height) return;
+    if (d > grid.width * grid.height) return;
     cx = frontX(cx, dir);
     cy = frontY(cy, dir);
     if (!grid.inside(cx, cy)) return;

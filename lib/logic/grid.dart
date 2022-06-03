@@ -164,6 +164,9 @@ class Grid {
   late List<List<String>> place;
   late List<List<Set<String>>> chunks;
 
+  String title = "";
+  String desc = "";
+
   List<BrokenCell> brokenCells = [];
 
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
@@ -499,6 +502,8 @@ class Grid {
   Grid get copy {
     final grid = Grid(width, height);
     grid.wrap = wrap;
+    grid.title = title;
+    grid.desc = desc;
     forEach(
       (p0, p1, p2) {
         grid.setPlace(p1, p2, placeable(p1, p2));
@@ -541,13 +546,13 @@ class Grid {
       }
     }
 
-    for (var chunkRow in chunks) {
-      for (var chunk in chunkRow) {
-        for (var cell in chunk) {
-          cells.add(cell);
-        }
-      }
-    }
+    // for (var chunkRow in chunks) {
+    //   for (var chunk in chunkRow) {
+    //     for (var cell in chunk) {
+    //       cells.add(cell);
+    //     }
+    //   }
+    // }
 
     forEach(
       // "all",

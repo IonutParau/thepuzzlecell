@@ -32,6 +32,7 @@ part 'skins.dart';
 part 'texturepack.dart';
 part 'achievements.dart';
 part 'updatechecker.dart';
+part 'queue.dart';
 
 // Update methods
 part 'update/mover.dart';
