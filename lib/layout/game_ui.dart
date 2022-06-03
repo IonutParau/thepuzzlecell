@@ -2678,7 +2678,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             ..rot = rot
             ..lastvars.lastRot = rot,
         );
-      if (brushTemp > 0) {
+      if (brushTemp != 0) {
         if (!isMultiplayer) grid.at(cx, cy).data['heat'] = brushTemp;
       }
       if (cells[id] == "empty" && backgrounds.contains(cells[currentSelection])) {
