@@ -22,10 +22,13 @@ class QueueManager {
     }
   }
 
-  static void runQueue(String key) {
+  static void runQueue(String key, [int? limit]) {
     if (_queue.containsKey(key)) {
+      var i = 0;
       while (_queue[key]!.isNotEmpty) {
         _queue[key]!.removeAt(0)();
+        i++;
+        if (limit != null && i >= limit) return;
       }
     }
   }
