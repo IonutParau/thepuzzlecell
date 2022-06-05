@@ -5,6 +5,15 @@ class TexturePack {
 
   TexturePack(this.dir);
 
+  void setupMap(Map<String, dynamic> m) {
+    m.forEach(
+      (id, p) {
+        print('Changed image ID: $id.png');
+        textureMap['$id.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$p';
+      },
+    );
+  }
+
   void load([bool reset = true]) {
     print("Loaded folder in ${dir.path}");
     if (reset) {
@@ -14,24 +23,18 @@ class TexturePack {
     final f = File(path.join(dir.path, 'pack.json'));
 
     if (f.existsSync()) {
-      final m = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
-
-      m.forEach(
-        (id, p) {
-          print('Changed image ID: $id.png');
-          textureMap['$id.png'] =
-              'texture_packs/${(dir.path.split(path.separator).last)}/$p';
-        },
-      );
+      setupMap(jsonDecode(f.readAsStringSync()) as Map<String, dynamic>);
     } else {
       final yamlF = File(path.join(dir.path, 'pack.yaml'));
 
-      if(yamlF.existsSync()) {
-        final m = loadYaml(f.readAsStringSync()) as Map<String, dynamic>;
+      if (yamlF.existsSync()) {
+        setupMap(loadYaml(f.readAsStringSync()) as Map<String, dynamic>);
+      } else {
+        final tomlF = File(path.join(dir.path, 'pack.toml'));
 
-        m.forEach((key, value) {
-          textureMap['$key.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$value';
-        });
+        if (tomlF.existsSync()) {
+          setupMap(TomlDocument.parse(f.readAsStringSync()).toMap());
+        }
       }
     }
   }

@@ -25,6 +25,7 @@ dependencies:
   path: any
   shared_preferences: ^2.0.13
   sizer: any
+  toml: ^0.13.1
   url_launcher: ^6.1.2
   uuid: any
   web_socket_channel: any
