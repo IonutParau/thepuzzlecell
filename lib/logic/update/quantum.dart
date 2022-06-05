@@ -33,7 +33,7 @@ void unstableGen(int x, int y, int dir, Cell self) {
   var d = 0;
   while (true) {
     d++;
-    if (d < grid.width * grid.height) return;
+    if (d >= grid.width * grid.height) return;
     cx = frontX(cx, dir);
     cy = frontY(cy, dir);
     if (!grid.inside(cx, cy)) return;

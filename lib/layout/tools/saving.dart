@@ -877,15 +877,15 @@ class P4 {
         final cstr = encodeCell(x, y, grid);
         if (cellDataList.isNotEmpty) {
           final m = decodeValue(cellDataList.last);
-          final c = m['count'] ?? 1;
-          m.remove("count");
-          if (encodeValue(m) == cstr) {
+          final c = m['count'];
+
+          if (encodeValue(m['cell']) == cstr) {
             m['count'] = c + 1;
             cellDataList.last = encodeValue(m);
             return;
           }
         }
-        cellDataList.add(cstr);
+        cellDataList.add(encodeValue({"cell": cstr, "count": 1}));
       },
     );
 
@@ -929,18 +929,17 @@ class P4 {
       rawCellDataList.removeLast();
     }
 
+    print(rawCellDataList);
+
     final cellDataList = [];
 
     for (var cellData in rawCellDataList) {
       final m = decodeValue(cellData);
 
-      if (m['count'] != null) {
-        final c = int.parse(m['count']);
-        for (var i = 0; i < c; i++) {
-          cellDataList.add(cellData);
-        }
-      } else {
-        cellDataList.add(cellData);
+      final c = m['count'] ?? 1;
+
+      for (var i = 0; i < c; i++) {
+        cellDataList.add(encodeValue(m['cell']));
       }
     }
 
@@ -948,7 +947,9 @@ class P4 {
 
     g.forEach(
       (cell, x, y) {
-        setCell(rawCellDataList[i], x, y, g);
+        if (cellDataList.length > i) {
+          setCell(cellDataList[i], x, y, g);
+        }
         i++;
       },
     );

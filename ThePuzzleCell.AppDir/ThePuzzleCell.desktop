@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=The Puzzle Cell
+Exec=the_puzzle_cell %u
+Icon=ThePuzzleCell
+Categories=Game;

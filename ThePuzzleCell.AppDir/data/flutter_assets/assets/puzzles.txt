@@ -1,0 +1,8 @@
+P2;And here it begins;The start of your new adventure;y;y;empty,mover,enemy,auto_flag;eJwrrNHWKcSDS+BsLCgfm2BKDQClHRzo;;
+P2;Recreation;Generators can recreate cells;d;d;empty,mover,generator,enemy,auto_flag;eJwrrNHWKcSBS/DIIeMCItURhwc7SqFAFhNlUd+FAFt1o9I=;;
+P2;Rotating Victory;Rotators can rotate cells;d;d;rotator_cw,empty,rotator_ccw,mover,enemy,auto_flag;eJwrrNHWKQHifDCNB2nrpECV4lGWD1VSiKqMgNFEIqoaqU01k4hCWTQws6IGAIJjock=;;
+P2;Build-A-Machine;Construct a machine by putting cells together;d;d;empty,mover,push,rotator_cw,slide,enemy,auto_flag;eJwrrNHWKUTCJUjsfDQ5auMUqphDP1RFBKKR1RUkqs+DMgCIV6ZZ;;
+P2;Timing;They must make it to the right place at the right time;f;f;empty,mover,slide,rotator_cw,semi_enemy,rotator_ccw,auto_flag;eJwrrNHWKYTiSjANRSU1CDYMaaNhKMonXmkK8UqziFdaQbxSbAiHUhJCANOtlVRwAF2U5pFiKgBvhMIP;;
+P2;Interactive;You dont build... you move.;d;d;empty,wall,puzzle,key,lock,push,enemy,flag;eJwrrNEpxItKwGQ+NqkUVDUEzcFEWRgiWG3Han5FjU4eNjWuOGxPIeTOEiR3ZuF2JEGfEo9SSNYCAD9wndk=;;
+P2;Mechanically Sabotaged;Using advanced technology, they can make the enemy impossible to kill. Break the circuit before it makes the level unwinnable.;p;p;empty,mover,mech_trash,mech_gear,mech_mover,generator,wall,rotator_ccw,enemy,auto_flag;eJwrrNHWKcSBS/DIEYMx9ZOD8mt0UmAoC7eyZGyCmTU6eTA2nOGKpAAoGAqTcqwBAG7CXIM=;;
+P2;Mechanical Madness;Use the advanced technology to kill the enemies.;s;s;mech_gen,empty,mech_gear,rotator_180,mech_mover,push,enemy,mech_grabber,auto_flag;eJxLrdHWKUHC+UgYxC+H0ilIarKQ1FYgqcWH0c1FxQOOtFFY+HEeboMiYQzcaojwbmgNAEYijOU=;;
