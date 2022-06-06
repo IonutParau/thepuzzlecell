@@ -413,7 +413,7 @@ class P2 {
       },
     );
 
-    final cellStr = base64.encode(zlib.encode(utf8.encode(cells.join(','))));
+    final cellStr = base64.encode(deflate.encode(utf8.encode(cells.join(','))));
 
     str += (cellStr + ';');
 
@@ -437,7 +437,7 @@ class P2 {
 
     final cellTable = segs[5].split(',');
 
-    final cellData = utf8.decode(zlib.decode(base64.decode(segs[6])));
+    final cellData = utf8.decode(deflate.decode(base64.decode(segs[6])));
 
     final cells = cellData.split(',');
 

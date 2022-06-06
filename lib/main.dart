@@ -15,6 +15,8 @@ import 'logic/logic.dart';
 
 late ThemeData td;
 
+final deflate = ZLibCodec(level: ZLibOption.maxLevel);
+
 void main() async {
   //await Flame.device.setLandscape();
 
