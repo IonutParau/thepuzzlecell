@@ -191,11 +191,21 @@ final cells = {
   "trash_biome",
   "mechanical_halting",
   "quantum_biome",
+  "plant_body",
+  "plant_seed",
+  "plant_spore",
+  "plant_flower",
+  "plant_leaf",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "plant_body.png": "unique/plant/body.png",
+  "plant_leaf.png": "unique/plant/leaf.png",
+  "plant_seed.png": "unique/plant/seed.png",
+  "plant_spore.png": "unique/plant/spore.png",
+  "plant_flower.png": "unique/plant/flower.png",
   "freezing.png": "backgrounds/biomes/freezing.png",
   "trash_biome.png": "backgrounds/biomes/trash_biome.png",
   "mechanical_halting.png": "backgrounds/biomes/mechanical_halting.png",
@@ -757,8 +767,16 @@ final categories = [
         ],
         "magma",
       ),
-      "karl",
-      "darty",
+      CellCategory(
+        "Living Cells",
+        "Cells can now live",
+        [
+          "karl",
+          "darty",
+          "plant_seed",
+        ],
+        "plant_seed",
+      ),
       "anchor",
       "sandbox",
     ],
@@ -1601,5 +1619,25 @@ final cellInfo = <String, CellProfile>{
   "quantum_biome": CellProfile(
     "Quantum Biome",
     "A biome that transforms the cell above it into a random cell",
+  ),
+  "plant_seed": CellProfile(
+    "Plant Seed",
+    "It can only live 30 ticks with no food. If a wall is nearby, it wil ltake all the food in it. It will also then grow into a plant. This is also the controller of the plant.",
+  ),
+  "plant_flower": CellProfile(
+    "Plant Flower",
+    "It can only live 30 ticks with no food. It is where the Seed will order the spores to be shot out of.",
+  ),
+  "plant_spore": CellProfile(
+    "Plant Spore",
+    "Contains a copy of the DNA and randomly changes direction. If it tries to move into a wall, it will turn into a seed with that DNA sligtly mutated.",
+  ),
+  "plant_body": CellProfile(
+    "Plant Body",
+    "The body of the plant. It can only live 30 ticks with no food. When the plant is formed, this is where the flowers will come out of. They also try to protect the plant from non-plant parts.",
+  ),
+  "plant_leaf": CellProfile(
+    "Plant Leaf",
+    "Dies after 30 ticks with no food. This is like a body, but it also produces extra energy for the plant.",
   ),
 };

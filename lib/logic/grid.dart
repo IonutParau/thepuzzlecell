@@ -33,6 +33,7 @@ final subticks = [
   //if (cells.contains("magnet")) magnets,
   //if (cells.contains("digger")) diggers,
   ants,
+  plants,
   karls,
   dartys,
   puzzles,

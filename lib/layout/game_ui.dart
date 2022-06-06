@@ -2219,6 +2219,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       },
     );
 
+    if (debugMode && !isinitial) {
+      final tp = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+          text: 'Tick Count: ${grid.tickCount}',
+          style: TextStyle(
+            fontSize: 10.sp,
+          ),
+        ),
+      );
+
+      tp.layout();
+
+      tp.paint(canvas, Offset(10 * uiScale, 70 * uiScale));
+    }
     if (storage.getBool('show_titles') ?? true) {
       var hasShown = false;
       buttonManager.forEach(
@@ -2932,6 +2947,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.rotation = 0;
     timeGrid = null;
     if (isMultiplayer) sendToServer('setinit ${P4.encodeGrid(grid)}');
+    grid.tickCount = 0;
   }
 
   void restoreInitial() {
@@ -2948,6 +2964,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.rotation = 0;
     if (differentSize) buildEmpty();
     timeGrid = null;
+    grid.tickCount = 0;
   }
 
   bool onetick = false;

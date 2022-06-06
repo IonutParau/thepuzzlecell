@@ -70,6 +70,7 @@ part 'update/rocket.dart';
 part 'update/heat.dart';
 part 'update/timetravel.dart';
 part 'update/biomes.dart';
+part 'update/plant.dart';
 
 String findAssetDirPath() {
   // print(path.absolute(

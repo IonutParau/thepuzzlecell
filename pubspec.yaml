@@ -77,5 +77,6 @@ flutter:
     - assets/images/effects/
     - assets/images/heat/
     - assets/images/unique/time_travel/
+    - assets/images/unique/plant/
     - assets/audio/
     - languages/

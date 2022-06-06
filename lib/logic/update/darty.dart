@@ -4,12 +4,13 @@ void doDartySide(int x, int y, int dir) {
   final cell = grid.at(x, y);
   final front = inFront(x, y, cell.rot);
   if (front != null) {
-    if (moveInsideOf(
-        front, frontX(x, dir), frontY(y, dir), dir, MoveType.push)) {
+    if (moveInsideOf(front, frontX(x, dir), frontY(y, dir), dir, MoveType.push)) {
       moveFront(x, y, cell.rot);
     } else if (front.id != "darty") {
-      grid.set(frontX(x, cell.rot), frontY(y, cell.rot), cell.copy);
-      grid.rotate(x, y, 2);
+      if (rng.nextDouble() < 0.2) {
+        grid.set(frontX(x, cell.rot), frontY(y, cell.rot), cell.copy);
+        grid.rotate(x, y, 2);
+      }
     } else {
       if (!push(x, y, dir, 0)) {
         doDarty(grid.at(x, y), x, y, true);

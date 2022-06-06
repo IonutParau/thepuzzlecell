@@ -864,7 +864,6 @@ class P4 {
   }
 
   static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
-    print("Encoding with base ${base.length}");
     var str = header + '$title;$description;'; // Header, title and description
 
     str += '${encodeNum(grid.width, valueString)};';
@@ -928,8 +927,6 @@ class P4 {
     while (rawCellDataList.last == "") {
       rawCellDataList.removeLast();
     }
-
-    print(rawCellDataList);
 
     final cellDataList = [];
 
