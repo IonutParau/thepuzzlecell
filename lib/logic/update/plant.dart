@@ -115,16 +115,14 @@ void doPlantSeed(Cell cell, int x, int y) {
   final fx = frontX(x, cell.rot);
   final fy = frontY(y, cell.rot);
 
-  final f = grid.at(fx, fy);
-
   var extraEnergy = 0;
 
-  if (f.id == "wall") {
-    extraEnergy += 100;
+  if (grid.inside(fx, fy)) {
+    final f = grid.at(fx, fy);
+    if (f.id == "wall") {
+      extraEnergy += 100;
+    }
   }
-
-  var eToAdd = extraEnergy / max(plant.length, 1); // No division by 0 exception for u
-  final eInc = eToAdd;
 
   // Leaves
   for (var part in plant) {
@@ -133,9 +131,11 @@ void doPlantSeed(Cell cell, int x, int y) {
     final p = grid.at(px, py);
 
     if (p.id == "plant_leaf") {
-      eToAdd += eInc;
+      extraEnergy += 10;
     }
   }
+
+  var eToAdd = extraEnergy / max(plant.length, 1); // No division by 0 exception for u
 
   // Energy
   for (var part in plant) {
@@ -229,7 +229,7 @@ void doSpore(Cell cell, int x, int y) {
 
   final f = grid.at(fx, fy);
 
-  if (f.id == "wall") {
+  if (!canMove(fx, fy, dir, 1, MoveType.push)) {
     cell.id = "plant_seed";
     cell.rot = dir;
     cell.data.remove('plant_id');
@@ -256,6 +256,8 @@ void plants() {
   grid.updateCell(doPlantPartDie, null, "plant_flower");
 
   grid.updateCell(doPlantPartDie, null, "plant_body");
+
+  grid.updateCell(doPlantPartDie, null, "plant_leaf");
 
   grid.updateCell(doSpore, null, "plant_spore");
 }
