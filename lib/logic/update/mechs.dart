@@ -208,13 +208,25 @@ class MechanicalManager {
     if (!grid.inside(x, y)) return;
     if (!connectable(sentDir, grid.at(x, y))) return;
     final cell = grid.at(x, y);
-    if (onAt(x, y, true)) return;
+    if (onAt(x, y, true) && cell.id != "cross_mech_gear") return;
+    if (cell.id == "cross_mech_gear" && sentDir != null) {
+      if (sentDir % 2 == 0) {
+        if (cell.tags.contains("cross_sent 1")) return;
+      } else {
+        if (cell.tags.contains("cross sent 2")) return;
+      }
+    }
     if (grid.placeable(x, y) == "mechanical_halting") {
       return;
     }
     if (cell.id == "cross_mech_gear" && sentDir != null) {
       cell.data['power'] = 2;
       grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+      if (sentDir % 2 == 0) {
+        cell.tags.add("cross_sent 1");
+      } else {
+        cell.tags.add("cross_sent 2");
+      }
       return spread(
         frontX(x, sentDir),
         frontY(y, sentDir),

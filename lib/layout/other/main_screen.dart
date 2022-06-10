@@ -86,6 +86,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                         filterQuality: FilterQuality.none,
                         width: 2.w,
                         height: 2.w,
+                        fit: BoxFit.fill,
                       ),
                       Spacer(),
                       Text(
