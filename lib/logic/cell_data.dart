@@ -1633,7 +1633,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "plant_spore": CellProfile(
     "Plant Spore",
-    "Contains a copy of the DNA and randomly changes direction. If it tries to move into a wall, it will turn into a seed with that DNA sligtly mutated.",
+    "Contains a copy of the DNA and randomly changes direction. If it tries to move into an immovable object or out of the grid, it will turn into a seed with that DNA sligtly mutated.",
   ),
   "plant_body": CellProfile(
     "Plant Body",

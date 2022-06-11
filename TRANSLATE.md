@@ -85,6 +85,7 @@ In the text, @variablename gets replaced with the variable.
 | audioDevice             | The name of the current audio device text                                                                                               |           |
 | sfx_volume              | The name of the SFX volume setting                                                                                                      |           |
 | lerp_speed              | The name of the Lerp Speed setting                                                                                                      |           |
+| chunk_size              | The name of the Chunk Size setting                                                                                                      |           |
 
 ## Button IDs:
 

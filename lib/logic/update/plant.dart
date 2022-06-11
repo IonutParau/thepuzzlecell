@@ -217,13 +217,27 @@ void doPlantPartDie(Cell cell, int x, int y) {
   checkPlantDeath(cell, x, y);
 }
 
-void doSpore(Cell cell, int x, int y) {
+void doPlantSpore(Cell cell, int x, int y) {
   final dir = rng.nextInt(4);
 
   final fx = frontX(x, dir);
   final fy = frontY(y, dir);
 
-  if (!grid.inside(fx, fy)) return;
+  if (!grid.inside(fx, fy)) {
+    cell.id = "plant_seed";
+    cell.rot = dir;
+    cell.data.remove('plant_id');
+    cell.data.remove('plant_loaded');
+    cell.data.forEach(
+      (key, value) {
+        if (value is double && rng.nextBool()) {
+          cell.data[key] += rng.nextBool() ? -0.001 : 0.001;
+        }
+      },
+    );
+    grid.setChunk(x, y, "plant_seed");
+    return;
+  }
 
   if (checkPlantDeath(cell, x, y)) return;
 
@@ -234,6 +248,13 @@ void doSpore(Cell cell, int x, int y) {
     cell.rot = dir;
     cell.data.remove('plant_id');
     cell.data.remove('plant_loaded');
+    cell.data.forEach(
+      (key, value) {
+        if (value is double && rng.nextBool()) {
+          cell.data[key] += rng.nextBool() ? -0.001 : 0.001;
+        }
+      },
+    );
     grid.setChunk(x, y, "plant_seed");
     return;
   } else if (f.id == "plant_seed") {
@@ -259,5 +280,5 @@ void plants() {
 
   grid.updateCell(doPlantPartDie, null, "plant_leaf");
 
-  grid.updateCell(doSpore, null, "plant_spore");
+  grid.updateCell(doPlantSpore, null, "plant_spore");
 }

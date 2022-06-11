@@ -179,7 +179,7 @@ class Grid {
     brokenCells.add(b);
   }
 
-  var chunkSize = 25;
+  var chunkSize = storage.getInt('chunk_size') ?? 25;
 
   void reloadChunks() {
     chunks = [];
