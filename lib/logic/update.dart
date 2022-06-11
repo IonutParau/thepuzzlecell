@@ -131,14 +131,14 @@ void moveFront(int x, int y, int dir) {
   moveCell(x, y, fx, fy, dir);
 }
 
-int frontX(int x, int dir) {
+int frontX(int x, int dir, [int amount = 1]) {
   dir %= 4;
-  return x - (dir % 2 == 0 ? dir - 1 : 0);
+  return x - (dir % 2 == 0 ? dir - 1 : 0) * amount;
 }
 
-int frontY(int y, int dir) {
+int frontY(int y, int dir, [int amount = 1]) {
   dir %= 4;
-  return y - (dir % 2 == 1 ? dir - 2 : 0);
+  return y - (dir % 2 == 1 ? dir - 2 : 0) * amount;
 }
 
 extension SetX on Set<String> {
@@ -160,12 +160,7 @@ class CellTypeManager {
     "rocket_ccw",
   ];
 
-  static List<String> movers = [
-    "mover",
-    "slow_mover",
-    "fast_mover",
-    "releaser"
-  ];
+  static List<String> movers = ["mover", "slow_mover", "fast_mover", "releaser"];
 
   static List<String> puller = [
     "puller",
@@ -398,8 +393,7 @@ void doAnchor(int x, int y, int amount) {
 
   for (var i = 0; i < structure.coords.length; i++) {
     final v = structure.coords[i];
-    if (v != center)
-      grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
+    if (v != center) grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
   }
 
   for (var i = 0; i < structure.coords.length; i++) {

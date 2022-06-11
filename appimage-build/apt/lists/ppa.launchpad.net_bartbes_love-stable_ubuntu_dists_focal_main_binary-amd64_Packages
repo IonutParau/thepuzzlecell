@@ -1,0 +1,53 @@
+Package: liblove-dbg
+Source: love
+Priority: extra
+Section: debug
+Installed-Size: 15182
+Maintainer: Bart van Strien <bart.bes@gmail.com>
+Architecture: amd64
+Version: 11.4ppa2
+Depends: liblove0 (= 11.4ppa2)
+Filename: pool/main/l/love/liblove-dbg_11.4ppa2_amd64.deb
+Size: 14587972
+MD5sum: 595707a7a9a5616be795dda3c57131a3
+SHA1: 6fb2eb2f01f52db92605e1bbdce245e00dd80115
+SHA256: 86a874e173d91b6b2634f2a66843155e265ad965f689a80aef20b921d99fe1d7
+Description: 2D game engine - debug symbols
+Description-md5: e26815bda57156e3b412e88ca08506eb
+Build-Ids: 3187608d1d6e30a261924bb6f023567fdb236163
+Multi-Arch: same
+
+Package: liblove0
+Source: love
+Priority: extra
+Section: libs
+Installed-Size: 5184
+Maintainer: Bart van Strien <bart.bes@gmail.com>
+Architecture: amd64
+Version: 11.4ppa2
+Depends: libc6 (>= 2.17), libfreetype6 (>= 2.2.1), libgcc1 (>= 1:3.4), libluajit-5.1-2, libmodplug1 (>= 1:0.8.8.5), libmpg123-0 (>= 1.13.7), libogg0 (>= 1.1.4~dfsg), libopenal1 (>= 1.14), libsdl2-2.0-0 (>= 2.0.4), libstdc++6 (>= 5.2), libtheora0 (>= 1.0), libvorbisfile3 (>= 1.1.2), zlib1g (>= 1:1.2.0)
+Filename: pool/main/l/love/liblove0_11.4ppa2_amd64.deb
+Size: 1615594
+MD5sum: d4176e4e539e6ff75f0bde40ca55bc00
+SHA1: 23131e74707a6d243e54089a87ee67ee71420b0d
+SHA256: 4e72cd7a74cf06a168fa2c79250175d8e58782456d66d58c9d2ae4b88aaba798
+Description: 2D game engine - runtime
+Description-md5: f5f6605f79943701ec578693e6c69982
+Multi-Arch: same
+
+Package: love
+Priority: extra
+Section: games
+Installed-Size: 163
+Maintainer: Bart van Strien <bart.bes@gmail.com>
+Architecture: amd64
+Version: 11.4ppa2
+Depends: liblove0 (= 11.4ppa2), libc6 (>= 2.4), libluajit-5.1-2
+Filename: pool/main/l/love/love_11.4ppa2_amd64.deb
+Size: 106734
+MD5sum: f99cef6dc423194e90cf59f3789ed28d
+SHA1: 33d7c950c75cf32d0c9b5da36adf19d9a14ef48b
+SHA256: 266e690e83938d0fc9639dce33d6e99fae8d96ffe2393edfce14d71f2f200c43
+Description: 2D game engine
+Description-md5: 40e0926f43f84541c7e04a5ff2c2a169
+

@@ -1,0 +1,1643 @@
+Package: apt-clone
+Architecture: all
+Version: 0.4.1ubuntu3
+Section: admin
+Maintainer: Michael Vogt <michael.vogt@ubuntu.com>
+Installed-Size: 62
+Depends: python3:any, lsb-release, python3-apt, python3
+Recommends: dpkg-repack
+Filename: pool/apt-clone_0.4.1ubuntu3_all.deb
+Size: 12960
+MD5sum: fa3bf85a56e0d76c07bc565d15a07f45
+SHA1: 521ded5765ecab2af7ce9dbca96d043a038b10d3
+SHA256: f343c0b49196b66f3e31ac1ee1d3dfa3dba965c2fcf9a6919216c29f85f90a51
+SHA512: 9811309f8a879901f924b19a52860546bf7da0ded504796f0b2f1166a1e0765289be44b1518059a3543c2b9140bf4c96112464249e0efb3f63171cf5c9d186a7
+Homepage: https://launchpad.net/apt-clone
+Description: Script to create state bundles
+ This package can be used to clone/restore the packages on a apt based
+ system. It will save/restore the packages, sources.list, keyring and
+ automatic-installed states. It can also save/restore no longer
+ downloadable packages using dpkg-repack.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: archdetect-deb
+Architecture: amd64
+Version: 1.117ubuntu7
+Section: utils
+Source: hw-detect
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+Installed-Size: 70
+Depends: libc6 (>= 2.4), libdebian-installer4 (>= 0.110ubuntu3)
+Filename: pool/archdetect-deb_1.117ubuntu7_amd64.deb
+Size: 6240
+MD5sum: 05c947f34151abaab74395cfb7059d88
+SHA1: e327b8df1cf599bdb6faa8a04b669895300a5d4f
+SHA256: 098eb41012ab4e4427dfd1222d625a553d241625c044652755a0209d54ebb7ca
+SHA512: c8ffc31600af2ad945128fa1cdad902c956f0e89b1cfb83ae95cedd90afafe7d0422b96d1bfea2889c9b5a528fa36a742ab515b2b9aabadac3fb62aadbba1684
+Description: Hardware architecture detector
+ This package provides the 'archdetect' tool, which displays the current
+ machine architecture and subarchitecture.  The architecture corresponds to
+ that built into dpkg, and describes the CPU (and possibly kernel) types;
+ the subarchitecture distinguishes machines with different boot arrangements
+ that require special handling.
+ .
+ This package would be called 'archdetect', but a udeb of that name already
+ existed for use in the installer.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: b43-fwcutter
+Architecture: amd64
+Version: 1:019-4
+Priority: optional
+Section: contrib/utils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian QA Group <packages@qa.debian.org>
+Installed-Size: 98
+Depends: debconf (>= 0.5) | debconf-2.0, libc6 (>= 2.4)
+Filename: pool/b43-fwcutter_1%3a019-4_amd64.deb
+Size: 25728
+MD5sum: 88c18278e61c62225cbffb2a0bffd89a
+SHA1: d082692fc8c6fb36ccbf8639e4c5d32b42243a8f
+SHA256: b5b221f8ec1cb2f080198f6de5ee8eaa86fe9b40a00e0affa6395da66155a798
+SHA512: 41261c2759947b76904f441154cc6653d99a637e8b8d0b00cff81a1eae50638eb98c96772fe69d9773479c5817eb62f5a0e409e000b2847036de6d13a39207d9
+Homepage: http://wireless.kernel.org/en/users/Drivers/b43
+Description: utility for extracting Broadcom 43xx firmware
+ This package provides a tool for extracting BCM43xx wireless chip
+ firmware from Broadcom's proprietary driver files.
+ .
+ It is used by the firmware-b43(legacy)-installer packages as part of
+ the automated process of downloading and installing firmware.
+
+Package: bcmwl-kernel-source
+Architecture: amd64
+Version: 6.30.223.271+bdcom-0ubuntu7~20.04.3
+Priority: optional
+Section: admin
+Source: bcmwl
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Alberto Milone <alberto.milone@canonical.com>
+Installed-Size: 7890
+Depends: dkms, linux-libc-dev, libc6-dev
+Conflicts: bcmwl-modaliases
+Replaces: bcmwl-modaliases
+Filename: pool/bcmwl-kernel-source_6.30.223.271+bdcom-0ubuntu7~20.04.3_amd64.deb
+Size: 1545504
+MD5sum: fed397b45584c58a7bf93e49a3fa27c2
+SHA1: 2aac6a6cea2acb50d10e357353ecabfc4389001e
+SHA256: 84e50cbc1c70f37d218f540e441f11fcf4077de34bc9252403ac137c3b0e5859
+SHA512: c4804db3457d050c8ffbf6eb2432272ec70b5959490b7c387a48b14736d8c3e13fda66b18db0f04befd0ef8cdb80c39b76d129e11995b1d8a0f9b6cf848ffb6b
+Description: Broadcom 802.11 Linux STA wireless driver source
+ This package contains Broadcom 802.11 Linux STA wireless driver
+ for use with Broadcom's BCM4311-, BCM4312-, BCM4313-, BCM4321-,
+ BCM4322-, BCM43224-, and BCM43225-, BCM43227- and BCM43228-based
+ hardware.
+Modaliases: wl(pci:v000014E4d00004311sv*sd*bc02sc80i*, pci:v000014E4d00004312sv*sd*bc02sc80i*, pci:v000014E4d00004313sv*sd*bc02sc80i*, pci:v000014E4d00004315sv*sd*bc02sc80i*, pci:v000014E4d00004727sv*sd*bc02sc80i*, pci:v000014E4d00004328sv*sd*bc02sc80i*, pci:v000014E4d00004328sv*sd*bc02sc80i*, pci:v000014E4d00004329sv*sd*bc02sc80i*, pci:v000014E4d0000432asv*sd*bc02sc80i*, pci:v000014E4d0000432bsv*sd*bc02sc80i*, pci:v000014E4d0000432csv*sd*bc02sc80i*, pci:v000014E4d0000432dsv*sd*bc02sc80i*, pci:v000014E4d00004365sv*sd*bc02sc80i*, pci:v000014E4d00004353sv*sd*bc02sc80i*, pci:v000014E4d00004357sv*sd*bc02sc80i*, pci:v000014E4d00004358sv*sd*bc02sc80i*, pci:v000014E4d00004359sv*sd*bc02sc80i*, pci:v000014E4d00004331sv*sd*bc02sc80i*, pci:v000014E4d000043a0sv*sd*bc02sc80i*, pci:v000014E4d000043B1sv*sd*bc02sc80i*)
+
+Package: binutils-common
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Multi-Arch: same
+Build-Essential: yes
+Section: devel
+Source: binutils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 424
+Breaks: binutils (<< 2.29.1-3.1~)
+Replaces: binutils (<< 2.29.1-3.1~)
+Filename: pool/binutils-common_2.34-6ubuntu1.3_amd64.deb
+Size: 207032
+MD5sum: 281e6779eaece58f01e5cc659ed79aaf
+SHA1: 2cc91b9c1a166d4bb8b173d8ff78378e74f20c91
+SHA256: 8648a8b61a62112bc3f26ac1caef38f4581ab4c4896b4c455e208b554c9bcc5f
+SHA512: 64930e4494f046b04c907cf70edce87e2b5e5e7d40226865b4b1eb6d42fd826c0b0630f57db4d325d72910ae3769014323495da108b7f4a11f981b08347b2bd2
+Homepage: https://www.gnu.org/software/binutils/
+Description: Common files for the GNU assembler, linker and binary utilities
+ This package contains the localization files used by binutils packages for
+ various target architectures and parts of the binutils documentation. It is
+ not useful on its own.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: binutils-x86-64-linux-gnu
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Multi-Arch: allowed
+Build-Essential: yes
+Section: devel
+Source: binutils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 9848
+Depends: binutils-common (= 2.34-6ubuntu1.3), libbinutils (= 2.34-6ubuntu1.3), libc6 (>= 2.27), libctf-nobfd0 (>= 2.33.50), libctf0 (>= 2.33.50), libgcc-s1 (>= 3.0), libstdc++6 (>= 5.2), zlib1g (>= 1:1.1.4)
+Suggests: binutils-doc (= 2.34-6ubuntu1.3)
+Breaks: binutils (<< 2.29-6)
+Replaces: binutils (<< 2.29-6)
+Filename: pool/binutils-x86-64-linux-gnu_2.34-6ubuntu1.3_amd64.deb
+Size: 1613160
+MD5sum: d9769a7bf05be2ab35c4571976088708
+SHA1: c0b171b273fd38b3e1165ca67548206bc2288257
+SHA256: 499c1811723ec5fcc9dace115534edc971aa374a237040ac2d3266271aa81dae
+SHA512: dcb9bb00f38000ce678d762a023981558e5dde03bdd8fdaf760b63e37a0f6090e25e9790119101b6152eff97b423a0945e57619bb55426f349b4ea3b86941c80
+Homepage: https://www.gnu.org/software/binutils/
+Description: GNU binary utilities, for x86-64-linux-gnu target
+ This package provides GNU assembler, linker and binary utilities
+ for the x86-64-linux-gnu target.
+ .
+ You don't need this package unless you plan to cross-compile programs
+ for x86-64-linux-gnu and x86-64-linux-gnu is not your native platform.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: binutils
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Build-Essential: yes
+Section: devel
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 107
+Provides: binutils-gold, elf-binutils
+Depends: binutils-common (= 2.34-6ubuntu1.3), libbinutils (= 2.34-6ubuntu1.3), binutils-x86-64-linux-gnu (= 2.34-6ubuntu1.3)
+Suggests: binutils-doc (>= 2.34-6ubuntu1.3)
+Conflicts: binutils-mingw-w64-i686 (<< 2.23.52.20130612-1+3), binutils-mingw-w64-x86-64 (<< 2.23.52.20130612-1+3), binutils-multiarch (<< 2.27-8), modutils (<< 2.4.19-1)
+Filename: pool/binutils_2.34-6ubuntu1.3_amd64.deb
+Size: 3380
+MD5sum: 05d867f2a7c1fdec545185cae73fe758
+SHA1: 15ab0f774670e05303dbd3a8557e9ce9a08cba50
+SHA256: 7343d8bdb3dd407e58da5bbeda46eefb71e976e56224fcbbca8be1a428e53377
+SHA512: 28ca2f85485a7455787a88b3894bd66c1835a4ab4921abd853d03e35f91d4f8366a6529a09502ba681d7f092b2829db9b0de7ba7abfc4abd93c75b9b54958448
+Homepage: https://www.gnu.org/software/binutils/
+Description: GNU assembler, linker and binary utilities
+ The programs in this package are used to assemble, link and manipulate
+ binary and object files.  They may be used in conjunction with a compiler
+ and various libraries to build programs.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: build-essential
+Architecture: amd64
+Version: 12.8ubuntu1.1
+Build-Essential: yes
+Section: devel
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 21
+Depends: libc6-dev | libc-dev, gcc (>= 4:9.2), g++ (>= 4:9.2), make, dpkg-dev (>= 1.17.11)
+Filename: pool/build-essential_12.8ubuntu1.1_amd64.deb
+Size: 4664
+MD5sum: 0b5fa190c4f9965ddff12fc0b2afd2b0
+SHA1: 7305d9141302c5cdfad940f3e872518692e880ee
+SHA256: 50be2bfb66a8ce034179c7d95e5f177cce714e897028e1f4cacb564997b1c9e6
+SHA512: 436874793cae31db0aa0029e01ced2567d626c1b1e2b4203052c8844889fc64c323d7d6fafab612664676a19d4710d91a657304a075b2d9a6b46f60614a23ed3
+Description: Informational list of build-essential packages
+ If you do not plan to build Debian packages, you don't need this
+ package.  Starting with dpkg (>= 1.14.18) this package is required
+ for building Debian packages.
+ .
+ This package contains an informational list of packages which are
+ considered essential for building Debian packages.  This package also
+ depends on the packages on that list, to make it easy to have the
+ build-essential packages installed.
+ .
+ If you have this package installed, you only need to install whatever
+ a package specifies as its build-time dependencies to build the
+ package.  Conversely, if you are determining what your package needs
+ to build-depend on, you can always leave out the packages this
+ package depends on.
+ .
+ This package is NOT the definition of what packages are
+ build-essential; the real definition is in the Debian Policy Manual.
+ This package contains merely an informational list, which is all
+ most people need.   However, if this package and the manual disagree,
+ the manual is correct.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: dctrl-tools
+Architecture: amd64
+Version: 2.24-3
+Multi-Arch: foreign
+Section: utils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Rhonda D'Vine <rhonda@debian.org>
+Installed-Size: 296
+Provides: grep-dctrl
+Depends: libc6 (>= 2.14)
+Suggests: apt, debtags
+Conflicts: grep-dctrl
+Replaces: grep-dctrl
+Filename: pool/dctrl-tools_2.24-3_amd64.deb
+Size: 61476
+MD5sum: 41bf7f83114e09e7c181966e913a4f75
+SHA1: ca87f145e78f339cf924ebeb8007848287121a07
+SHA256: b2b2341945d582e9ba2f0cf5f5049f6ffef99b927eef4508b5144e9775c8ff56
+SHA512: eb07a017574d16f61493f27c9413195bbc1809894766bd36656c0c84b6088eb4b58e6d0a1f210abfe8c2e9956da9f6682b4b6dfc371ebc053de48ec61a22d996
+Homepage: https://github.com/ajkaijanaho/dctrl-tools
+Description: Command-line tools to process Debian package information
+ Debian package information is generally stored in files having a
+ special file format, dubbed the Debian control file format (the dctrl
+ format), a special case of the record jar file format.  These tools
+ operate on any files conforming in a general sense to that format and
+ are therefore widely applicable whenever those formats are in play.
+ .
+ Included are:
+ .
+   grep-dctrl     - Grep dctrl-format files
+   grep-available - Grep the DPKG available database
+   grep-status    - Grep the DPKG status database
+   grep-aptavail  - Grep the APT available database
+   grep-debtags   - Grep the Debtags package database
+ .
+   sort-dctrl     - Sort dctrl-format files
+ .
+   tbl-dctrl      - Tabulate dctrl-format files
+ .
+   sync-available - Sync the dpkg available database with
+                    the apt database
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: dkms
+Architecture: all
+Version: 2.8.1-5ubuntu2
+Multi-Arch: foreign
+Priority: optional
+Section: kernel
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dynamic Kernel Modules Support Team <dkms@packages.debian.org>
+Installed-Size: 289
+Pre-Depends: lsb-release
+Depends: kmod | kldutils, gcc | c-compiler, dpkg-dev, make | build-essential, coreutils (>= 7.4), patch, dctrl-tools
+Recommends: fakeroot, sudo, linux-headers-686-pae | linux-headers-amd64 | linux-headers-generic | linux-headers
+Suggests: menu, e2fsprogs
+Breaks: shim-signed (<< 1.34~)
+Filename: pool/dkms_2.8.1-5ubuntu2_all.deb
+Size: 66756
+MD5sum: 40dbd844b870dd21c51512ae5804ce44
+SHA1: 90b3847a02352a8f8625fec1e4a5faff7b307454
+SHA256: 7d6dfd0904f629836c79943f0db2fc0f3c0d3c4f1062ca4984970afff3e7f5b4
+SHA512: 3f225e8e7b2b2b4d1810f39530dcc19d3e5a920d9b6d051f9fd0e13de5c17f8f14ba376a53268d3932c79923e13e4b81deed9b2d65479203e32d31bfc2bb583d
+Homepage: https://github.com/dell-oss/dkms
+Description: Dynamic Kernel Module Support Framework
+ DKMS is a framework designed to allow individual kernel modules to be upgraded
+ without changing the whole kernel. It is also very easy to rebuild modules as
+ you upgrade kernels.
+
+Package: dpkg-dev
+Architecture: all
+Version: 1.19.7ubuntu3
+Multi-Arch: foreign
+Build-Essential: yes
+Section: utils
+Source: dpkg
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dpkg Developers <debian-dpkg@lists.debian.org>
+Installed-Size: 2074
+Depends: perl:any, libdpkg-perl (= 1.19.7ubuntu3), tar (>= 1.28-1), bzip2, xz-utils, patch (>= 2.7), make, binutils
+Recommends: build-essential, gcc | c-compiler, fakeroot, gnupg | gnupg2, gpgv | gpgv2, libalgorithm-merge-perl
+Suggests: debian-keyring
+Breaks: debhelper (<< 10.10.1~)
+Filename: pool/dpkg-dev_1.19.7ubuntu3_all.deb
+Size: 679036
+MD5sum: fc1e5c247b31a5bfbf798bb95f961c8b
+SHA1: e651be5b03766198e0b149ada1009abeaf3b1de3
+SHA256: c5163213c0096f4e59e8f34018820b06e60c9994c52561aafb0c821dafe5e35f
+SHA512: e99d5c6a6ffb79caf975047c2e4a44edf150f433fc454426eb8c3ebf911b244924dc5c84454911fc6514ea0cd6aaa0ee6cabf477286783bd9607acdd3c25996f
+Homepage: https://wiki.debian.org/Teams/Dpkg
+Description: Debian package development tools
+ This package provides the development tools (including dpkg-source)
+ required to unpack, build and upload Debian source packages.
+ .
+ Most Debian source packages will require additional tools to build;
+ for example, most packages need make and the C compiler gcc.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: dpkg-repack
+Architecture: all
+Version: 1.46
+Multi-Arch: foreign
+Section: admin
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dpkg Developers <debian-dpkg@lists.debian.org>
+Installed-Size: 39
+Depends: perl:any, libdpkg-perl
+Suggests: fakeroot
+Filename: pool/dpkg-repack_1.46_all.deb
+Size: 13432
+MD5sum: bea3a19df84aba5114dbac69c8562b6a
+SHA1: 342620f19456e41d98a04e3cf6c1b96c0ba92b86
+SHA256: f5995de79f505656d444f525859e69f22804aef01a2e5184f931452f255215bf
+SHA512: 8d9bc4973e0dab2e3ad914d9cf30ccb66bdaee0c7c1088ffa2d4a505a8145a03701c828b97f54008105212c72d210afef2136c76041410ba3e981273219f23a4
+Homepage: https://wiki.debian.org/Teams/Dpkg
+Description: Debian package archiving tool
+ dpkg-repack creates a .deb file out of a package that has already been
+ installed. If any changes have been made to the package while it was
+ unpacked (i.e. files in /etc were modified), the new package will inherit
+ the changes.
+ .
+ This utility can make it easy to copy packages from one computer to another,
+ or to recreate packages that are installed on your system, but no longer
+ available elsewhere, or to store the current state of a package before you
+ upgrade it.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: fakeroot
+Architecture: amd64
+Version: 1.24-1
+Multi-Arch: foreign
+Section: utils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Clint Adams <clint@debian.org>
+Installed-Size: 227
+Depends: libfakeroot (>= 1.24-1), libc6 (>= 2.15)
+Filename: pool/fakeroot_1.24-1_amd64.deb
+Size: 62636
+MD5sum: 85c1b602493dd9142bb4a04a9a131a0c
+SHA1: fa96074d805e83ea244a89419a5392fbc44a24fa
+SHA256: 2d9cc4fe6c6b0925e452d1454645171b957a37610a068e153abd6318746d996f
+SHA512: 46a99a9a590be4827c53cdbf8908db4e863b54dbaac7430e6f69bd288515bd4c1cb370d35c3c367c5f2676179d3b004bc007b60f401ab0409c555785bb2af3b3
+Description: tool for simulating superuser privileges
+ fakeroot provides a fake "root environment" by means of LD_PRELOAD and
+ SysV IPC (or TCP) trickery. It puts wrappers around getuid(), chown(),
+ stat(), and other file-manipulation functions, so that unprivileged
+ users can (for instance) populate .deb archives with root-owned files;
+ various build tools use fakeroot for this by default.
+ .
+ This package contains fakeroot command and the daemon that remembers
+ fake ownership/permissions of files manipulated by fakeroot
+ processes.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: g++-9
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Build-Essential: yes
+Section: devel
+Source: gcc-9
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 28016
+Provides: c++-compiler, c++abi2-dev
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), gcc-9 (= 9.4.0-1ubuntu1~20.04.1), libstdc++-9-dev (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.14), libgmp10 (>= 2:5.0.1~), libisl22 (>= 0.15), libmpc3, libmpfr6 (>= 3.1.3), zlib1g (>= 1:1.1.4)
+Suggests: g++-9-multilib, gcc-9-doc (>= 8)
+Filename: pool/g++-9_9.4.0-1ubuntu1~20.04.1_amd64.deb
+Size: 8420068
+MD5sum: 141ba0bdc34f74aa37fd080a86b6a056
+SHA1: 95e30b63f4667ab97162db112b5df88c12fd261f
+SHA256: 819e3aad1e0dfeef9a27317a20a960f9df516d1da2cc874f1a0474e2af91dd07
+SHA512: 7e450f3b9022171f9c4e1d4a030488f3e9a12f790577c86d211e48bb3d23772c1171466c551df7fc9a56c1d2b5771bf2515c17183e38680de3810a44881ca5ed
+Homepage: http://gcc.gnu.org/
+Description: GNU C++ compiler
+ This is the GNU C++ compiler, a fairly portable optimizing compiler for C++.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: g++
+Architecture: amd64
+Version: 4:9.3.0-1ubuntu2
+Build-Essential: yes
+Section: devel
+Source: gcc-defaults (1.185.1ubuntu2)
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 16
+Provides: c++-compiler, g++-x86-64-linux-gnu (= 4:9.3.0-1ubuntu2)
+Depends: cpp (= 4:9.3.0-1ubuntu2), gcc (= 4:9.3.0-1ubuntu2), g++-9 (>= 9.3.0-3~), gcc-9 (>= 9.3.0-3~)
+Suggests: g++-multilib
+Filename: pool/g++_4%3a9.3.0-1ubuntu2_amd64.deb
+Size: 1604
+MD5sum: a71faf81074613648ba94677fc2b67f3
+SHA1: a75a2f9d5e35da11428145410b1e5fb1dac4c2c6
+SHA256: c613719f24d30e87ed196f27a324a6820032675759330772a1e6620c7662840e
+SHA512: 5d97e9b6acbd0f631ebed16981509c5a2cf73526ce41af05614473d0cff78fb73b0d2d550bef83a16659144ce42f44654758e6dbab20a21c216114766517095b
+Description: GNU C++ compiler
+ This is the GNU C++ compiler, a fairly portable optimizing compiler for C++.
+ .
+ This is a dependency package providing the default GNU C++ compiler.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: gcc-9
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Build-Essential: yes
+Section: devel
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 29840
+Provides: c-compiler
+Depends: cpp-9 (= 9.4.0-1ubuntu1~20.04.1), gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libcc1-0 (>= 9.4.0-1ubuntu1~20.04.1), binutils (>= 2.34), libgcc-9-dev (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.15), libgcc-s1 (>= 3.0), libgmp10 (>= 2:5.0.1~), libisl22 (>= 0.15), libmpc3, libmpfr6 (>= 3.1.3), libstdc++6 (>= 5), zlib1g (>= 1:1.1.4)
+Recommends: libc6-dev (>= 2.13-0ubuntu6)
+Suggests: gcc-9-multilib, gcc-9-doc (>= 8), gcc-9-locales (>= 8)
+Replaces: cpp-9 (<< 7.1.1-8)
+Filename: pool/gcc-9_9.4.0-1ubuntu1~20.04.1_amd64.deb
+Size: 8273704
+MD5sum: 6bdd833d8c532d0cd7faced0439e92f6
+SHA1: 3bc7af06f0dd11ac1245911ba52868f69f01f38e
+SHA256: f2c456cd79618795fbb2ebb5748e3f9b6aada8e7795462d217b2abafe3eeaa90
+SHA512: 3326bb5bfc669057c5af09dd81e8c7b42a64dfd03fd947a2ffbf7f4cc69f05da1b4bf54dcf149fa2e570ecf270d7d3fea38446655470aa290e695ff923bafc40
+Homepage: http://gcc.gnu.org/
+Description: GNU C compiler
+ This is the GNU C compiler, a fairly portable optimizing compiler for C.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: gcc
+Architecture: amd64
+Version: 4:9.3.0-1ubuntu2
+Build-Essential: yes
+Section: devel
+Source: gcc-defaults (1.185.1ubuntu2)
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 50
+Provides: c-compiler, gcc-x86-64-linux-gnu (= 4:9.3.0-1ubuntu2)
+Depends: cpp (= 4:9.3.0-1ubuntu2), gcc-9 (>= 9.3.0-3~)
+Recommends: libc6-dev | libc-dev
+Suggests: gcc-multilib, make, manpages-dev, autoconf, automake, libtool, flex, bison, gdb, gcc-doc
+Conflicts: gcc-doc (<< 1:2.95.3)
+Filename: pool/gcc_4%3a9.3.0-1ubuntu2_amd64.deb
+Size: 5208
+MD5sum: c8434d667d10beb0f15ae2e175ead386
+SHA1: ac589aa5799c3705383a16679fd9e968bcc6385e
+SHA256: 78ab6a8841c68300ba39992e8e33190371e133b3592c601ed3052d54e2ba59ea
+SHA512: d235f02e9b7f04eea78a44c4ca0289775a73e412343f9841da0f9c3bafe878b3f254f60b793de8e561c6af1bca3db9aac5bf519aca3efbea6fe702f4b8cae471
+Description: GNU C compiler
+ This is the GNU C compiler, a fairly portable optimizing compiler for C.
+ .
+ This is a dependency package providing the default GNU C compiler.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: grub-efi-amd64
+Architecture: amd64
+Version: 2.04-1ubuntu44.2
+Multi-Arch: foreign
+Priority: optional
+Section: admin
+Source: grub2-unsigned
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: GRUB Maintainers <pkg-grub-devel@alioth-lists.debian.net>
+Installed-Size: 186
+Depends: debconf (>= 0.5) | debconf-2.0, grub-efi-amd64-bin (= 2.04-1ubuntu44.2), grub2-common (>= 2.02~beta2-9), ucf
+Conflicts: elilo, grub, grub-coreboot, grub-efi-ia32, grub-ieee1275, grub-legacy, grub-pc, grub-xen
+Replaces: grub, grub-common (<= 1.97~beta2-1), grub-coreboot, grub-efi-ia32, grub-ieee1275, grub-legacy, grub-pc, grub2 (<< 2.04-1ubuntu44.2)
+Filename: pool/grub-efi-amd64_2.04-1ubuntu44.2_amd64.deb
+Size: 46924
+MD5sum: a7520d98d38f06bc89b78c0f7fe9ad16
+SHA1: ada977639957426fadf6a05c489919a7c19c5452
+SHA256: e972c0723f9b6fc5b277fdaeb15b072be7b61e3e1df0571e44cd00f69180e6f9
+SHA512: f20655520ccb40b0fd59c39357d72473760abaca366de095744c4a2d1133f6560ea4dee893fcad15a7d04e8eb6051f7f24b3d52686f86e84bac21b6a63e1072f
+Homepage: https://www.gnu.org/software/grub/
+Description: GRand Unified Bootloader, version 2 (EFI-AMD64 version)
+ GRUB is a portable, powerful bootloader.  This version of GRUB is based on a
+ cleaner design than its predecessors, and provides the following new features:
+ .
+  - Scripting in grub.cfg using BASH-like syntax.
+  - Support for modern partition maps such as GPT.
+  - Modular generation of grub.cfg via update-grub.  Packages providing GRUB
+    add-ons can plug in their own script rules and trigger updates by invoking
+    update-grub.
+ .
+ This is a dependency package for a version of GRUB that has been built for
+ use with the EFI-AMD64 architecture, as used by Intel Macs (unless a BIOS
+ interface has been activated).  Installing this package indicates that this
+ version of GRUB should be the active boot loader.
+
+Package: grub-efi
+Architecture: amd64
+Version: 2.04-1ubuntu26.15
+Multi-Arch: foreign
+Priority: optional
+Section: oldlibs
+Source: grub2
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: GRUB Maintainers <pkg-grub-devel@alioth-lists.debian.net>
+Installed-Size: 16
+Depends: grub-common (= 2.04-1ubuntu26.15), grub-efi-amd64 (>= 2.04-1ubuntu26.15)
+Filename: pool/grub-efi_2.04-1ubuntu26.15_amd64.deb
+Size: 2596
+MD5sum: eeb450c4009903358e0bdb96877af521
+SHA1: 952eb5c17082c8f1b93e64ff1c43130f3d41fad0
+SHA256: a3f888e74fe4db98d24f4fcd4c87dd3dcf8039430ec8983ff750ff33ea6fb9c2
+SHA512: 30a1d2da3f1422329695592a0cf72d67375f8d7bf74d892a4fd099f60bda42ad5b54d574c523a9d182e49bd2c41bf2e7e4d4f0340b0fac62dfef3be3c4ad2eff
+Homepage: https://www.gnu.org/software/grub/
+Description: GRand Unified Bootloader, version 2 (dummy package)
+ This is a dummy transitional package that depends on either grub-efi-ia32 or
+ grub-efi-amd64, depending on the architecture.
+
+Package: libalgorithm-diff-perl
+Architecture: all
+Version: 1.19.03-2
+Section: perl
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Installed-Size: 106
+Depends: perl
+Recommends: libalgorithm-diff-xs-perl
+Filename: pool/libalgorithm-diff-perl_1.19.03-2_all.deb
+Size: 46616
+MD5sum: 03ca4c81021ae8a591beaab3b1a8cfc8
+SHA1: ef63a96af4a7a35f05d039d89a524bd6e746ea15
+SHA256: 6e774aa293dfa6c33222c9f7443354e94d86d86e2888b9e7a28a136f4c03a0c3
+SHA512: ff838c4d84dfcd03c3317b39087332565061bad3ae87e94e2d9d96704bd54b776725d8cc9b155586bf1220cf9299ec60e369daea38f50af987b2cdf16af8a576
+Homepage: https://metacpan.org/release/Algorithm-Diff
+Description: module to find differences between files
+ Algorithm::Diff is a Perl module that allows users to analyze text based on a
+ Longest Common Subsequence (LCS) algorithm. It can compare two files and find
+ the differences between them, which can produce the same information as the
+ common Unix tool 'diff'.
+ .
+ There is an XS-optimized implementation of the core loop, which accelerates
+ some types of diff output (see libalgorithm-diff-xs-perl).
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libalgorithm-diff-xs-perl
+Architecture: amd64
+Version: 0.04-6
+Section: perl
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Installed-Size: 46
+Depends: perl (>= 5.30.0-8), perlapi-5.30.0, libc6 (>= 2.14), libalgorithm-diff-perl
+Filename: pool/libalgorithm-diff-xs-perl_0.04-6_amd64.deb
+Size: 11344
+MD5sum: b5eff93d3d9865bf8f5737bb1eec3c6a
+SHA1: f2b7fa4e84619d07bec764f662cef0499477dbe8
+SHA256: e32bb578b65b5e50ae14c1aa8fcea4c59d9dc6b93de5ae685b91ea0be9b54172
+SHA512: 81ae347feb6839278ac3c3ed2d6c161ead4c4eddd79630a58920844cc3900573f523d1d4dab7ff464f8b2e5a387d850feadf72dbc6fb9a8d699b7163c6e56801
+Homepage: https://metacpan.org/release/Algorithm-Diff-XS
+Description: module to find differences between files (XS accelerated)
+ Algorithm::Diff::XS is a Perl diff utility module based on Joe Schaefer's
+ excellent but not very well-known Algorithm::LCS module, with a drop-in
+ interface identical to Algorithm::Diff.
+ .
+ Note that only the LCSidx function is optimized in XS at the moment, which
+ means only compact_diff will get significantly faster for large data sets,
+ while diff and sdiff will run in identical speed as Algorithm::Diff.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libalgorithm-merge-perl
+Architecture: all
+Version: 0.08-3
+Section: perl
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Installed-Size: 42
+Depends: perl, libalgorithm-diff-perl
+Filename: pool/libalgorithm-merge-perl_0.08-3_all.deb
+Size: 11992
+MD5sum: 6b456963b6629af0514be1b8ccbaa7fc
+SHA1: 869e827a5cd5d7951de2b9f20e3fa29c69fc8bc5
+SHA256: ff7a1922d430da383cc1ee20bee8fe464fb56605297dcbb3412338a356cc7ad6
+SHA512: 75b9718b025dee4264219254e3f63486088d5ac827ad1e7f7fff756a626edcdaca893aa8b7d4954250c26d140183c7bc8a52017cd33a8d84f4b8d3ed4b9603fb
+Homepage: https://metacpan.org/release/Algorithm-Merge
+Description: Perl module for three-way merge of textual data
+ Algorithm::Merge provides three-way merge and diff functions, complementing
+ the functionality offered by Algorithm::Diff (libalgorithm-diff-perl). Given
+ three sets of items, known as the original, left and right, this module can
+ take a three-way difference or merge them. Taking a difference provides an
+ array reference that is very similar to the behaviour of Algorithm::Diff. One
+ can also implement custom conflict resolution using the CONFLICT callback.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libasan5
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-9
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 14965
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.23), libgcc-s1
+Filename: pool/libasan5_9.4.0-1ubuntu1~20.04.1_amd64.deb
+Size: 2750612
+MD5sum: 6c74e54fc9d7ae8213e786f53ce1e42b
+SHA1: 8bae4559a2dd8b1bdcec6a430ad136fa08073a36
+SHA256: f16677930fd6e876d4bc2f4cf26e4b47c1544eb9af2bce05d1effdf86b4b6350
+SHA512: 5069b26fbaf11616766d05ef1ca9822a6c9675b42c15b4f296d14ccf9793cdeb4a6b1ad1002f0ff2334d99bcac102d86bf86ebe4738949b6ef825f2e63eeda72
+Homepage: http://gcc.gnu.org/
+Description: AddressSanitizer -- a fast memory error detector
+ AddressSanitizer (ASan) is a fast memory error detector.  It finds
+ use-after-free and {heap,stack,global}-buffer overflow bugs in C/C++ programs.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libatomic1
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 45
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.14)
+Filename: pool/libatomic1_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 9284
+MD5sum: c8d24eedc30e1a84995c583e5078ae79
+SHA1: e4d0e01533f57874df8f2fb6f7f92c799fee2787
+SHA256: 0bb3322122648d45f40d11e7f2d875d39062a18d837bf1b728e4e257b4ed4950
+SHA512: bb319fbceceeb3d0ca560e135a88a8c0837beb07b750248ea34dbda3b4cc9c2e8fadf42d23df5e0d1a57fd235d6648e2db565084b338b34ce06b87246e2662b4
+Homepage: http://gcc.gnu.org/
+Description: support library providing __atomic built-in functions
+ library providing __atomic built-in functions. When an atomic call cannot
+ be turned into lock-free instructions, GCC will make calls into this library.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libbinutils
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Multi-Arch: same
+Build-Essential: yes
+Section: devel
+Source: binutils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 2696
+Depends: libc6 (>= 2.14), zlib1g (>= 1:1.2.0), binutils-common (= 2.34-6ubuntu1.3)
+Breaks: binutils (<< 2.29-6)
+Replaces: binutils (<< 2.29-6)
+Filename: pool/libbinutils_2.34-6ubuntu1.3_amd64.deb
+Size: 473972
+MD5sum: 4290b2b41de24198098c2616d985349a
+SHA1: e41306038d27b284f3562071dda6d0e3e433ee43
+SHA256: eee99cd7808b932635d1447753a675eb65965ee84ca15de0b5f475d0934ce70d
+SHA512: 98955b2e585855868c368880244037706c68c3b815e421463e6e7479998eeb38336f1a1035446c913bcecadfc666b6620cec0994fd41a2b0aff272357e5691d9
+Homepage: https://www.gnu.org/software/binutils/
+Description: GNU binary utilities (private shared library)
+ This package includes the private shared libraries libbfd and libopcodes.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libc-dev-bin
+Architecture: amd64
+Version: 2.31-0ubuntu9.9
+Multi-Arch: foreign
+Build-Essential: yes
+Section: libdevel
+Source: glibc
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Installed-Size: 442
+Depends: libc6 (>> 2.31), libc6 (<< 2.32)
+Recommends: manpages, manpages-dev
+Filename: pool/libc-dev-bin_2.31-0ubuntu9.9_amd64.deb
+Size: 71824
+MD5sum: cb3f85efefbae74b320734fd1e2b7d29
+SHA1: fd7c5ae8d76e40cf14214debc64ed10516ad6fc2
+SHA256: 3ef71b40f6bbddddc5f4b69c125281a23958923a4b3b642f68d8fa437e948fbd
+SHA512: ced0856f0ede3e2d94c4c02d72d9f48ebb4c629a73849d55cc69b5be5ff2a97031644e7e884e83e8bce26f0195b7471d6a350722875411a075fce1230c134fb2
+Homepage: https://www.gnu.org/software/libc/libc.html
+Description: GNU C Library: Development binaries
+ This package contains utility programs related to the GNU C Library
+ development package.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+Original-Vcs-Browser: https://salsa.debian.org/glibc-team/glibc
+Original-Vcs-Git: https://salsa.debian.org/glibc-team/glibc.git
+
+Package: libc6-dev
+Architecture: amd64
+Version: 2.31-0ubuntu9.9
+Multi-Arch: same
+Build-Essential: yes
+Section: libdevel
+Source: glibc
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Installed-Size: 19079
+Provides: libc-dev
+Depends: libc6 (= 2.31-0ubuntu9.9), libc-dev-bin (= 2.31-0ubuntu9.9), linux-libc-dev, libcrypt-dev
+Suggests: glibc-doc, manpages-dev
+Conflicts: libc0.1-dev, libc0.3-dev, libc6.1-dev
+Breaks: binutils (<< 2.26), binutils-gold (<< 2.20.1-11), cmake (<< 2.8.4+dfsg.1-5), gcc-4.4 (<< 4.4.6-4), gcc-4.5 (<< 4.5.3-2), gcc-4.6 (<< 4.6.0-12), libhwloc-dev (<< 1.2-3), libjna-java (<< 3.2.7-4), liblouis-dev (<< 2.3.0-2), liblouisxml-dev (<< 2.4.0-2), libperl5.26 (<< 5.26.1-3), make (<< 3.81-8.1), pkg-config (<< 0.26-1)
+Filename: pool/libc6-dev_2.31-0ubuntu9.9_amd64.deb
+Size: 2518768
+MD5sum: d3307d38ff908ece5b0c0f56a1943f7c
+SHA1: 6b9e92a7b522d2f4eab7c9008ab1296e312b912c
+SHA256: d895c91e91786ea1f301547cb17a687763b409cdfc29bdc4a57388142b14345c
+SHA512: 8d426366ae026cbd75bbae8372357be11513d0cb3d3d13bddc1b8120d5b53bf72f35321bf3e0f8eeba8e60ae4adabf67e4e5ad23790d966be0411250ce72b309
+Homepage: https://www.gnu.org/software/libc/libc.html
+Description: GNU C Library: Development Libraries and Header Files
+ Contains the symlinks, headers, and object files needed to compile
+ and link programs which use the standard C library.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+Original-Vcs-Browser: https://salsa.debian.org/glibc-team/glibc
+Original-Vcs-Git: https://salsa.debian.org/glibc-team/glibc.git
+
+Package: libc6-i386
+Architecture: amd64
+Version: 2.31-0ubuntu9.9
+Priority: optional
+Section: libs
+Source: glibc
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Installed-Size: 14419
+Depends: libc6 (= 2.31-0ubuntu9.9)
+Conflicts: libc0.1-i386, libc6-amd64, libc6-i386:x32, libc6-mips32, libc6-mips64, libc6-mipsn32, libc6-powerpc, libc6-ppc64, libc6-s390, libc6-sparc, libc6-sparc64, libc6-x32:i386
+Replaces: libc6-dev-i386
+Filename: pool/libc6-i386_2.31-0ubuntu9.9_amd64.deb
+Size: 2729748
+MD5sum: 2665d883260f11fbcd0e304459b39b48
+SHA1: f732c58e365f0b3b45ea9c9f81bca72c3f8ee3ac
+SHA256: d361e2e2c4c803b837ac4a2c74843efb409c9ef3f239b561afd5ba9e0df679b6
+SHA512: 0be87f8ae06efefc88bb5d7cdac49edc29ee740770d46101e4e13ad6d179a955d5dd327afb598132daac64cdab145276f8bdde47d3c5acc274b5ed7dc9be45b1
+Homepage: https://www.gnu.org/software/libc/libc.html
+Description: GNU C Library: 32-bit shared libraries for AMD64
+ This package includes shared versions of the standard C
+ library and the standard math library, as well as many others.
+ This is the 32bit version of the library, meant for AMD64 systems.
+Original-Vcs-Browser: https://salsa.debian.org/glibc-team/glibc
+Original-Vcs-Git: https://salsa.debian.org/glibc-team/glibc.git
+
+Package: libcrypt-dev
+Architecture: amd64
+Version: 1:4.4.10-10ubuntu4
+Multi-Arch: same
+Build-Essential: yes
+Section: libdevel
+Source: libxcrypt
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Marco d'Itri <md@linux.it>
+Installed-Size: 321
+Provides: libcrypt1-dev
+Depends: libcrypt1 (= 1:4.4.10-10ubuntu4)
+Conflicts: libcrypt1-dev, libcrypt2-dev
+Breaks: libc6-dev (<< 2.31), manpages-dev (<< 5.01-1)
+Replaces: libc6-dev (<< 2.31), libcrypt1-dev, libcrypt2-dev, manpages-dev (<< 5.01-1)
+Filename: pool/libcrypt-dev_1%3a4.4.10-10ubuntu4_amd64.deb
+Size: 104104
+MD5sum: 8793f32f562b4fa2bd57f51de6a1a74e
+SHA1: 5572ad87cb46df76b8c6ddd1885192ebff1c5f63
+SHA256: f0a41d8e8cf379dbbdfc43169f34851ed452b3581e72c6654f2e290caf4e1b20
+SHA512: b3a47410604c22e7730761d16b2a770a3a59e563f3c23ca8a0713ce7cf4cc03211e7c2cd19de6756d5b0462f2abc05cd4fe7423a898a1056af24b495fe6bee08
+Description: libcrypt development files
+ This package contains the files needed for developing applications that
+ use libcrypt.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libctf-nobfd0
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Multi-Arch: same
+Build-Essential: yes
+Section: devel
+Source: binutils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 197
+Depends: libc6 (>= 2.14), zlib1g (>= 1:1.2.0)
+Filename: pool/libctf-nobfd0_2.34-6ubuntu1.3_amd64.deb
+Size: 47420
+MD5sum: 45efa7b27cdf5a82f0a63ee1c17cd33b
+SHA1: be0e2e97c1c3c0bf45455894c7974c25aa875edf
+SHA256: b1f18971c5c1034e607cd6c23137f9cce54d007cf1d3567ebc9f6cbf24ed8cbc
+SHA512: 8596f1d5c14701e15a0b99424b8eb2170358c37b32e3b5cc935575c3e7b15261ea82cbe34bf4a3c4d6a4cdfee0f13c30dc1cf9c4f4d7b18a644ceaeb9d998e94
+Homepage: https://www.gnu.org/software/binutils/
+Description: Compact C Type Format library (runtime, no BFD dependency)
+ This package includes the libctf-nobfd shared library.  The Compact C Type
+ Format (CTF) is a way of representing information about a binary program
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libctf0
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Multi-Arch: same
+Build-Essential: yes
+Section: devel
+Source: binutils
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Matthias Klose <doko@debian.org>
+Installed-Size: 130
+Depends: libbinutils (= 2.34-6ubuntu1.3), libc6 (>= 2.14), zlib1g (>= 1:1.2.0)
+Filename: pool/libctf0_2.34-6ubuntu1.3_amd64.deb
+Size: 46636
+MD5sum: 7fe59ceaa84da4e497ce575aefd4a454
+SHA1: 6010e24e9478d93a818f5d752253efa658b0af69
+SHA256: ad93b414c3c49455b4c635296c4610282a86eb370644532028d03085777ca95f
+SHA512: 1e3a552d9b7ac6d8fdbcba91dbcd89fd893a2e65d2cfa924bfb474c2b89b42d7c77d231e77ad6123da9eedce9cc943a5ad424f422f9fc5121540ba33be375300
+Homepage: https://www.gnu.org/software/binutils/
+Description: Compact C Type Format library (runtime, BFD dependency)
+ This package includes the libctf-nobfd shared library.  The Compact C Type
+ Format (CTF) is a way of representing information about a binary program
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libdebian-installer4
+Architecture: amd64
+Version: 0.110ubuntu3
+Multi-Arch: same
+Section: libs
+Source: libdebian-installer
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+Installed-Size: 84
+Depends: libc6 (>= 2.4)
+Breaks: cdebootstrap (<< 0.7.6+)
+Filename: pool/libdebian-installer4_0.110ubuntu3_amd64.deb
+Size: 21760
+MD5sum: 2a3ad026e4e8cfc6876167a2ea400a82
+SHA1: bd5752e62972b871324453cc9f6abbbf602c3997
+SHA256: e19b7191fe6a6b1ff63ec25524a2c4dedf19c9158deb837e4eca3ea601ab0da9
+SHA512: ef350c87ddef17e1af474d693a4cdf13613578733c3b4c8906cceec735045f2c03b19623e06882d5fa094bd9ef3d280a9e74531bd94500e05fdd9584491d86b8
+Description: Library of common debian-installer functions
+ This library is used by debian-installer to perform common functions
+ such as logging messages and executing commands. If you aren't
+ working on debian-installer or building your own install system based
+ on debian-installer, then you probably don't need this library.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: libdpkg-perl
+Architecture: all
+Version: 1.19.7ubuntu3
+Multi-Arch: foreign
+Build-Essential: yes
+Section: perl
+Source: dpkg
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dpkg Developers <debian-dpkg@lists.debian.org>
+Installed-Size: 2176
+Depends: perl:any, dpkg (>= 1.18.11)
+Recommends: libfile-fcntllock-perl, liblocale-gettext-perl, bzip2, xz-utils
+Suggests: debian-keyring, gnupg | gnupg2, gpgv | gpgv2, gcc | c-compiler, binutils, patch, sensible-utils, git, bzr
+Breaks: dgit (<< 3.13~), patch (<< 2.7), pkg-kde-tools (<< 0.15.28~)
+Filename: pool/libdpkg-perl_1.19.7ubuntu3_all.deb
+Size: 230268
+MD5sum: 03dda26abe5c0e6ca90f4863a01b9afd
+SHA1: 457128c6ad95b0d775e4febfcd0b1e7599cc6cf8
+SHA256: b7f34bb3574e2fae9054649d87a69e8d28a0f2c6a616d07a4f294d5462bb161c
+SHA512: 8683cfc83e2753d6b28f3ea3619e832d9b57ee12c0761e1401e52a652b6140ed32d7d66f124e2f19a24ff419a17fb43d15b68bc4f51f3abaf601353f188929a6
+Homepage: https://wiki.debian.org/Teams/Dpkg
+Description: Dpkg perl modules
+ This package provides the perl modules used by the scripts
+ in dpkg-dev. They cover a wide range of functionality. Among them
+ there are the following public modules:
+ .
+  - Dpkg: core variables
+  - Dpkg::Arch: architecture handling functions
+  - Dpkg::Build::Info: build information functions
+  - Dpkg::BuildFlags: set, modify and query compilation build flags
+  - Dpkg::BuildOptions: parse and manipulate DEB_BUILD_OPTIONS
+  - Dpkg::BuildProfiles: parse and manipulate build profiles
+  - Dpkg::Changelog: parse changelogs
+  - Dpkg::Changelog::Entry: represents a changelog entry
+  - Dpkg::Changelog::Parse: generic changelog parser for dpkg-parsechangelog
+  - Dpkg::Checksums: generate and parse checksums
+  - Dpkg::Compression: simple database of available compression methods
+  - Dpkg::Compression::FileHandle: transparently (de)compress files
+  - Dpkg::Compression::Process: wrapper around compression tools
+  - Dpkg::Conf: parse dpkg configuration files
+  - Dpkg::Control: parse and manipulate Debian control information
+    (.dsc, .changes, Packages/Sources entries, etc.)
+  - Dpkg::Control::Changelog: represent fields output by dpkg-parsechangelog
+  - Dpkg::Control::Fields: manage (list of known) control fields
+  - Dpkg::Control::Hash: parse and manipulate a block of RFC822-like fields
+  - Dpkg::Control::Info: parse files like debian/control
+  - Dpkg::Control::Tests: parse files like debian/tests/control
+  - Dpkg::Control::Tests::Entry: represents a debian/tests/control stanza
+  - Dpkg::Deps: parse and manipulate dependencies
+  - Dpkg::Deps::Simple: represents a single dependency statement
+  - Dpkg::Deps::Multiple: base module to represent multiple dependencies
+  - Dpkg::Deps::Union: list of unrelated dependencies
+  - Dpkg::Deps::AND: list of AND dependencies
+  - Dpkg::Deps::OR: list of OR dependencies
+  - Dpkg::Deps::KnownFacts: list of installed and virtual packages
+  - Dpkg::Exit: push, pop and run exit handlers
+  - Dpkg::Gettext: wrapper around Locale::gettext
+  - Dpkg::IPC: spawn sub-processes and feed/retrieve data
+  - Dpkg::Index: collections of Dpkg::Control (Packages/Sources files for
+    example)
+  - Dpkg::Interface::Storable: base object serializer
+  - Dpkg::Path: common path handling functions
+  - Dpkg::Source::Format: manipulate debian/source/format files
+  - Dpkg::Source::Package: extract Debian source packages
+  - Dpkg::Substvars: substitute variables in strings
+  - Dpkg::Vendor: identify current distribution vendor
+  - Dpkg::Version: parse and manipulate Debian package versions
+ .
+ All the packages listed in Suggests or Recommends are used by some of the
+ modules.
+Task: ubuntu-desktop-minimal, ubuntu-desktop, kubuntu-live, xubuntu-core, xubuntu-desktop, ubuntustudio-desktop-core, ubuntustudio-desktop, ubuntukylin-desktop, ubuntu-mate-core, ubuntu-mate-desktop, ubuntu-budgie-desktop
+
+Package: libfakeroot
+Architecture: amd64
+Version: 1.24-1
+Multi-Arch: same
+Section: utils
+Source: fakeroot
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Clint Adams <clint@debian.org>
+Installed-Size: 157
+Depends: libc6 (>= 2.14)
+Breaks: fakeroot (<< 1.20-2~)
+Replaces: fakeroot (<< 1.20-2~)
+Filename: pool/libfakeroot_1.24-1_amd64.deb
+Size: 25720
+MD5sum: cbcc9385d810aab2333674993348240f
+SHA1: 643e16b13608873b1b44b1498737cc67a761dc01
+SHA256: e542e0c0543be5b02d59306d3747a527e054225816465a2c3e4c97c6e7439222
+SHA512: f1d71c3a789d5a6d27bfc8b107fef5f5cec38fff3abbd65e5e30634a5491108ea31727c8269cb6ceeb1f30f26cacb615be6bd973497695f0d6c394e775426619
+Description: tool for simulating superuser privileges - shared libraries
+ fakeroot provides a fake "root environment" by means of LD_PRELOAD and
+ SysV IPC (or TCP) trickery. It puts wrappers around getuid(), chown(),
+ stat(), and other file-manipulation functions, so that unprivileged
+ users can (for instance) populate .deb archives with root-owned files;
+ various build tools use fakeroot for this by default.
+ .
+ This package contains the LD_PRELOAD libraries.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libfile-fcntllock-perl
+Architecture: amd64
+Version: 0.22-3build4
+Section: perl
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Installed-Size: 127
+Depends: perl (>= 5.30.0-7), perlapi-5.30.0, libc6 (>= 2.28)
+Suggests: gcc | c-compiler
+Filename: pool/libfile-fcntllock-perl_0.22-3build4_amd64.deb
+Size: 33052
+MD5sum: 86113e8bf1c34dad1bafae80004584f2
+SHA1: d257874e7d0cc56d0a8fb504a64e0fe3cd47097d
+SHA256: 50fd9b79824a5d3a5b47b10494fa73706ef399e421dafff7e198b32eabfc1d60
+SHA512: a10dcfa6a1f31465fb00d94f94feffae21157e61b8ddf3df498f2c8ba51166eb0643e302c31f46fcfe328d8355300993ac9229b1c6c65c95b4a882df9af44c1e
+Homepage: https://metacpan.org/release/File-FcntlLock
+Description: Perl module for file locking with fcntl(2)
+ File::FcntlLock is a Perl module to do file locking in an object oriented
+ fashion using the fcntl(2) system call. This allows locks on parts of a file
+ as well as on the whole file and overcomes some known problems with flock(2),
+ on which Perl's flock() function is based.
+ .
+ Furthermore due to its design it supports reliable locking over NFS.
+Task: ubuntu-desktop-minimal, ubuntu-desktop, kubuntu-live, xubuntu-core, xubuntu-desktop, ubuntustudio-desktop-core, ubuntustudio-desktop, ubuntukylin-desktop, ubuntu-mate-core, ubuntu-mate-desktop, ubuntu-budgie-desktop
+
+Package: libgcc-9-dev
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Multi-Arch: same
+Build-Essential: yes
+Section: libdevel
+Source: gcc-9
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 13887
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libgcc-s1 (>= 9.4.0-1ubuntu1~20.04.1), libgomp1 (>= 9.4.0-1ubuntu1~20.04.1), libitm1 (>= 9.4.0-1ubuntu1~20.04.1), libatomic1 (>= 9.4.0-1ubuntu1~20.04.1), libasan5 (>= 9.4.0-1ubuntu1~20.04.1), liblsan0 (>= 9.4.0-1ubuntu1~20.04.1), libtsan0 (>= 9.4.0-1ubuntu1~20.04.1), libubsan1 (>= 9.4.0-1ubuntu1~20.04.1), libquadmath0 (>= 9.4.0-1ubuntu1~20.04.1)
+Recommends: libc6-dev (>= 2.13-0ubuntu6)
+Breaks: libgccjit-9-dev (<< 9.3.0-6)
+Replaces: libgccjit-9-dev (<< 9.3.0-6)
+Filename: pool/libgcc-9-dev_9.4.0-1ubuntu1~20.04.1_amd64.deb
+Size: 2359120
+MD5sum: 540a6a0fbf5e4869863682fb4c65de7d
+SHA1: cb3389188c330fa4720ee2feacd953ffbad59e61
+SHA256: 9fda1c07ba0b0dedd7d72437f51e06fe2922c6f247c7f198bee1d002ea2248df
+SHA512: 9959509121015b9a3a874611faa04754233daf9fd4bc20cd41cd66ccfab6298f7db7c0583519b2eac9c6f9eedf32b29d20163c7be22c700def676dd11bd87d6c
+Homepage: http://gcc.gnu.org/
+Description: GCC support library (development files)
+ This package contains the headers and static library files necessary for
+ building C programs which use libgcc, libgomp, libquadmath, libssp or libitm.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libitm1
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 115
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.14)
+Filename: pool/libitm1_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 26196
+MD5sum: 8dd308d0ca2a8f24c6d89a3c23600d9b
+SHA1: a3e44e4277482b307384c33c3b3bfbfbd6868752
+SHA256: 56c32f95e93f058f3b5be132f4c964da3b9024274393124411278ffc9b8a90d6
+SHA512: 31648fb906dd170a8a6029c89e6449886d5ed93da2f21a1679f2c62591b0b7b01c9367f3549bd264736fda0df04a129211ae300fd42ead42a095704558eb0830
+Homepage: http://gcc.gnu.org/
+Description: GNU Transactional Memory Library
+ GNU Transactional Memory Library (libitm) provides transaction support for
+ accesses to the memory of a process, enabling easy-to-use synchronization of
+ accesses to shared memory by several threads.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: liblsan0
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 3220
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.17), libgcc-s1 (>= 3.3)
+Filename: pool/liblsan0_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 834692
+MD5sum: 66d037bb7e0643cf1d83dc54a2c963da
+SHA1: 3665f8ee38c6178d051c0670ec359df6668274b5
+SHA256: aceb9e647fa6b5b5fdcad131ebe6285f8989e7710a172d6422abcb25b775d489
+SHA512: b2b237b59cf8486fcd0ab46310600ed7d8afb927d17a24148efa2d80c38066deba80307399b2485827e4e8be233fb0bf502fa19a4b182dfb5710519cd51ff53b
+Homepage: http://gcc.gnu.org/
+Description: LeakSanitizer -- a memory leak detector (runtime)
+ LeakSanitizer (Lsan) is a memory leak detector which is integrated
+ into AddressSanitizer.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libquadmath0
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 304
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.23)
+Filename: pool/libquadmath0_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 146072
+MD5sum: 2d548b955a59524072e3164d49dd4929
+SHA1: 0bcf03021dfad625ac8c5e7876ba30e9f0ef842f
+SHA256: 4030dfa92a85d31e958b77365543bc28218a484135942c3c1b2f0ebdd4d97a16
+SHA512: a19acf9878eb4b073f642e6ec319006864e5d5df16c0c801b7611338202424b84833480c5bf4eb607c1bf11f1f81d8f8fdae758fffb252ebc209f9f553638d13
+Homepage: http://gcc.gnu.org/
+Description: GCC Quad-Precision Math Library
+ A library, which provides quad-precision mathematical functions on targets
+ supporting the __float128 datatype. The library is used to provide on such
+ targets the REAL(16) type in the GNU Fortran compiler.
+Task: xubuntu-desktop, ubuntustudio-video, ubuntustudio-publishing, ubuntustudio-photography, ubuntustudio-graphics, ubuntustudio-audio, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libstdc++-9-dev
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Multi-Arch: same
+Build-Essential: yes
+Section: libdevel
+Source: gcc-9
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 17645
+Provides: libstdc++-dev
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libgcc-9-dev (= 9.4.0-1ubuntu1~20.04.1), libstdc++6 (>= 9.4.0-1ubuntu1~20.04.1), libc6-dev (>= 2.13-0ubuntu6)
+Suggests: libstdc++-9-doc
+Conflicts: libg++2.8-dev, libg++27-dev, libg++272-dev (<< 2.7.2.8-1), libstdc++2.10-dev (<< 1:2.95.3-2), libstdc++2.8-dev, libstdc++2.9-dev, libstdc++2.9-glibc2.1-dev, libstdc++3.0-dev
+Filename: pool/libstdc++-9-dev_9.4.0-1ubuntu1~20.04.1_amd64.deb
+Size: 1722252
+MD5sum: d751922f7bda0853281c55662a1f4ac7
+SHA1: e3ca65b00f6f75d3fbd1fd35ede1e958b1ef7fda
+SHA256: 881b076200d6709dba5a9dce7e13c744e7f440bd1a59ad76fe8a12d75532c507
+SHA512: b58ac2b6e7d0b1ee2393f3cd1fc7caa829a99b18266b5e56fa2e68202712e0933b7789fefc6475de5dd1f52de11d191de2f083dcdeb72c0aaa633284d9b1aa07
+Homepage: http://gcc.gnu.org/
+Description: GNU Standard C++ Library v3 (development files)
+ This package contains the headers and static library files necessary for
+ building C++ programs which use libstdc++.
+ .
+ libstdc++-v3 is a complete rewrite from the previous libstdc++-v2, which
+ was included up to g++-2.95. The first version of libstdc++-v3 appeared
+ in g++-3.0.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libtsan0
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 8967
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.23), libgcc-s1 (>= 3.3)
+Filename: pool/libtsan0_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 2008872
+MD5sum: ec9f1b4c343a46813917ffb450b6c2cc
+SHA1: 39ecfd23a80c12e87a01114b21cf0e02df220513
+SHA256: 725df4093e718fadaacc31987fa5b0b0d9cf28d2de93ab21142f2c01bc28e549
+SHA512: 420ce298e42ee0bce443298be29109496a32ec987bb88c78b2248e7ff332b2e96af908cf717e28bf309084846f013622cecc22ecd46ae8c2012b409b716753f8
+Homepage: http://gcc.gnu.org/
+Description: ThreadSanitizer -- a Valgrind-based detector of data races (runtime)
+ ThreadSanitizer (Tsan) is a data race detector for C/C++ programs.
+ The Linux and Mac versions are based on Valgrind.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: libubsan1
+Architecture: amd64
+Version: 10.3.0-1ubuntu1~20.04
+Multi-Arch: same
+Build-Essential: yes
+Section: libs
+Source: gcc-10
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Installed-Size: 3012
+Depends: gcc-10-base (= 10.3.0-1ubuntu1~20.04), libc6 (>= 2.17), libgcc-s1 (>= 3.3), libstdc++6 (>= 4.1.1)
+Filename: pool/libubsan1_10.3.0-1ubuntu1~20.04_amd64.deb
+Size: 784116
+MD5sum: 7de128f8017a94f146870e60ab494322
+SHA1: 5eee5e7a3f6a60ead8ee5fc717d1b3e4f78eba66
+SHA256: 77ab8305beff5961319041a254ac37ede49fd79852313d9af77d51136e668c63
+SHA512: 363c416e158c5897fc97ea9cc196e88a2d1f5b8f810cfdce8bafaf6e5e5a62d9990b00e928aff24e0155743f41d9b5d9e0b6929fc1bd98640027f209acdf11e3
+Homepage: http://gcc.gnu.org/
+Description: UBSan -- undefined behaviour sanitizer (runtime)
+ UndefinedBehaviorSanitizer can be enabled via -fsanitize=undefined.
+ Various computations will be instrumented to detect undefined behavior
+ at runtime. Available for C and C++.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: linux-libc-dev
+Architecture: amd64
+Version: 5.4.0-110.124
+Multi-Arch: same
+Build-Essential: yes
+Section: devel
+Source: linux
+Maintainer: Ubuntu Kernel Team <kernel-team@lists.ubuntu.com>
+Installed-Size: 6057
+Provides: aufs-dev, linux-kernel-headers
+Conflicts: linux-kernel-headers
+Replaces: linux-kernel-headers
+Filename: pool/linux-libc-dev_5.4.0-110.124_amd64.deb
+Size: 1115004
+MD5sum: 437e04ae64c06a234fafa5619c28987e
+SHA1: ea7c119d391acd494ab7dc890ba856c16d75fbeb
+SHA256: f11ec36e7267de82fa1262056606e0b8d5d02e0bcadb85c488311405ce08dc66
+SHA512: 18048bc209654c4978f55c1852817d6c6cbe8c97c48594206c4cc2e92ea2c37dabe432a0357ccebd07a01d50b5ef6ade8235b4ea281eddd5f75eb7eb7ce7df09
+Description: Linux Kernel Headers for development
+ This package provides headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system
+ libraries. They are NOT meant to be used to build third-party modules for
+ your kernel. Use linux-headers-* packages for that.
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: lupin-support
+Architecture: amd64
+Version: 0.57build1
+Priority: extra
+Section: misc
+Source: lupin
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Agostino Russo <agostino.russo@gmail.com>
+Installed-Size: 67
+Depends: libc6 (>= 2.4), procps, lsb-base (>= 3.0-6), user-setup, grub-common (>= 2.00-5)
+Breaks: grub-pc (<< 1.99~20101122-1)
+Filename: pool/lupin-support_0.57build1_amd64.deb
+Size: 14032
+MD5sum: 7188a5a6633e18b3033ed54c227bb944
+SHA1: b6e5e6b138433e8632d4094fea031f292cecfac0
+SHA256: d1a39ef1c8adbe2d23db54c333ff39b235ac0aede951f256eba32fe877bde510
+SHA512: 03d910383b18a7609cda8945e43864015fbdd17b9b37ceacc89dfea16a8e41ad723f0b9f4aeddc02a6feccd568411e8e3e8260f62303bc077f8f367a109b3ad9
+Description: Support files for loop-mount installations
+ The Wubi installer provides a means for installing Ubuntu into a
+ loop-mounted filesystem image hosted on a Windows filesystem. lupin-support
+ provides a few extra files needed in such installations to make them work
+ well.
+
+Package: make
+Architecture: amd64
+Version: 4.2.1-1.2
+Multi-Arch: allowed
+Build-Essential: yes
+Section: devel
+Source: make-dfsg
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Manoj Srivastava <srivasta@debian.org>
+Installed-Size: 384
+Depends: libc6 (>= 2.27)
+Suggests: make-doc
+Conflicts: make-guile
+Replaces: make-guile
+Filename: pool/make_4.2.1-1.2_amd64.deb
+Size: 162292
+MD5sum: 88fde0193dafdf077fb69117ce1fe7c3
+SHA1: e6cdb7a566e5926b150e86f35bf06427aab946ff
+SHA256: 41e534af98cdb6219bc98fa4276d9c928a0862b8b373d49ee1fbe0ae5db64dc2
+SHA512: 7e47d0e0980d6e3e609b4e5ef18d7ff0588b53939e1bfb57edfe487f0f36556e4202bc08318f40a4450856fcc25fcd6786da0121cc201cdfc5e26a4fce620b4d
+Homepage: https://www.gnu.org/software/make/
+Description: utility for directing compilation
+ GNU Make is a utility which controls the generation of executables
+ and other target files of a program from the program's source
+ files. It determines automatically which pieces of a large program
+ need to be (re)created, and issues the commands to (re)create
+ them. Make can be used to organize any task in which targets (files)
+ are to be automatically updated based on input files whenever the
+ corresponding input is newer --- it is not limited to building
+ computer programs. Indeed, Make is a general purpose dependency
+ solver.
+Task: ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: manpages-dev
+Architecture: all
+Version: 5.05-1
+Multi-Arch: foreign
+Section: doc
+Source: manpages
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dr. Tobias Quathamer <toddy@debian.org>
+Installed-Size: 3879
+Depends: manpages
+Suggests: man-browser
+Breaks: libattr1-dev (<< 1:2.4.47-3), libbsd-dev (<< 0.8.4-1), manpages (<< 4.13-3)
+Replaces: libattr1-dev (<< 1:2.4.47-3), libbsd-dev (<< 0.8.4-1), manpages (<< 4.13-3)
+Filename: pool/manpages-dev_5.05-1_all.deb
+Size: 2265524
+MD5sum: 892c4b0ed0cafec57526d2b88e667a69
+SHA1: 40dbd8a665b60a537071e3f9197b42f58c182890
+SHA256: 512c79390eb690ee9e60943f233d45141c04a511eee9573888e795f523979d25
+SHA512: 8115847c5a72d8c16bcd3b7bfbfb4217e81a3c45f78443da41dadd9d7679cc9001a3e5416d4206bb4d1742e71b0cc7cbb7bb3536db7d240940fa18a283fa5044
+Homepage: https://www.kernel.org/doc/man-pages/
+Description: Manual pages about using GNU/Linux for development
+ These man pages describe the Linux programming interface, including
+ these two sections:
+  2 = Linux system calls.
+  3 = Library calls (note that a more comprehensive source of information
+      may be found in the glibc-doc and glibc-doc-reference packages).
+Task: ubuntustudio-video, ubuntu-mate-core, ubuntu-mate-desktop
+
+Package: mouseemu
+Architecture: amd64
+Version: 0.16-0ubuntu10
+Priority: optional
+Section: utils
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Original-Maintainer: Gaudenz Steinlin <gaudenz@debian.org>
+Installed-Size: 58
+Depends: libc6 (>= 2.15), procps, dmidecode
+Breaks: udev (<< 136-1)
+Filename: pool/mouseemu_0.16-0ubuntu10_amd64.deb
+Size: 16558
+MD5sum: 7eff583339f73c06742ac0af56204ac1
+SHA1: a71b9ac728f15ac4c9940944ee762e20a94114d7
+SHA256: 87100fcfa221b16188590b1d143e7b34d8aff7e246b5664f5e728e8547a3b127
+SHA512: 6426eeb7cb596b557af41a1d0e66516753ce2ceb219c13cf463bc047070c7b55c21f936814c4c924241e59274343f8e9a0c4fe10ec1758f9cb329dd19344c717
+Description: Emulate mouse buttons and mouse wheel
+ Mouseemu is a daemon to emulate mouse buttons on trackpads
+ with only one button. It lets you:
+  - emulate middle and right click
+  - emulate mouse wheel
+  - block trackpad while typing
+ .
+ It was initially developed for Apple PowerBooks
+ and iBooks, but it may be useful on other architectures
+ as well.
+ .
+ This program only works when booting a 2.6 kernel because
+ it uses the new uinput interface to emulate the mouse.
+
+Package: oem-config-kde
+Architecture: all
+Version: 20.04.15.19
+Priority: extra
+Section: universe/admin
+Source: ubiquity
+Origin: Ubuntu
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 199
+Provides: oem-config-frontend-20.04.15.19
+Depends: oem-config (= 20.04.15.19), ubiquity-frontend-kde (= 20.04.15.19)
+Filename: pool/oem-config-kde_20.04.15.19_all.deb
+Size: 3080
+MD5sum: 2255580f9df5b1414359fdfbc446dca8
+SHA1: 8a8e8ca0d65767c05c296a60b3b960a23f54b116
+SHA256: 1953376d20cff300cbae994139a78206aa799efdb77678dcff5fa1bdd21c761d
+SHA512: 52197b397dd4b01a7d5893d7025559942d0fcbe554b35c55cc335c2c80a0c83cec15fbc3eac5a1059aa573c09828c3352402a6027250ac3f6862e0ecc100f376
+Description: KDE frontend for end-user post-OEM-install configuration
+ The oem-config script re-asks a number of questions that are normally asked
+ during installation, and reconfigures the system accordingly. This allows a
+ vendor to install a skeleton system, clone it onto a large number of
+ machines, and ship it to end users, while still allowing end users to set
+ up their own username and password, language, timezone, and so on.
+ .
+ This is a KDE frontend to oem-config.
+
+Package: oem-config
+Architecture: all
+Version: 20.04.15.19
+Priority: optional
+Section: admin
+Source: ubiquity
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Installed-Size: 241
+Depends: oem-config-frontend-20.04.15.19, procps, ubiquity (= 20.04.15.19), debconf (>= 0.5) | debconf-2.0
+Filename: pool/oem-config_20.04.15.19_all.deb
+Size: 14000
+MD5sum: 7a9ac8954310d4536243d071d3f120f8
+SHA1: d4e9b2fe5f11d3510ca4e5b649b6e61b671a0d0d
+SHA256: dfaca839efe563d6a5d9c751b810cfcac4a35da41d2ce1b50f5c2dfcfb19b130
+SHA512: eda06badbb374e23d5c01caa6428a8ce4f61ca93defa27919515ff9cec097d6de139d692e1cb99eda11650ee1ea2d00e3192c187d50801feb5b02e85064b19e5
+Description: Perform end-user configuration after initial OEM installation
+ The oem-config script re-asks a number of questions that are normally asked
+ during installation, and reconfigures the system accordingly. This allows a
+ vendor to install a skeleton system, clone it onto a large number of
+ machines, and ship it to end users, while still allowing end users to set
+ up their own username and password, language, timezone, and so on.
+
+Package: python3-dbus.mainloop.pyqt5
+Architecture: amd64
+Version: 5.15.4+dfsg-1+20.04+focal+unstable+build20
+Priority: optional
+Section: universe/python
+Source: pyqt5
+Origin: Ubuntu
+Maintainer: Neon CI <neon@kde.org>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 61
+Depends: python3-dbus, python3 (>= 3~), libc6 (>= 2.14), libdbus-1-3 (>= 1.9.14), libqt5core5a (>= 5.15.2+p20.04+tunstable+git20210526.0044), libstdc++6 (>= 5)
+Filename: pool/python3-dbus.mainloop.pyqt5_5.15.4+dfsg-1+20.04+focal+unstable+build20_amd64.deb
+Size: 24784
+MD5sum: f3de15d91c5e3f620cae83d9109c9205
+SHA1: c607eb9faa62774d67d89987db9a70235e0348e7
+SHA256: 669ff5bc506dd6308b715c18101d1e5dd84ff2a6c0829c2bbc8ad3aabc918908
+SHA512: 30abbe20f9bdbf223bc7665bd56ec5fb5985b05c98f34fd109cb6a9b987d5a0e0ebebb914c23bd363d7ff85ac243c5b0263da55919a4487ccb4d15e8467dfb03
+Homepage: https://riverbankcomputing.com/software/pyqt/intro
+Description: D-Bus Qt main loop support for Python 3
+ The dbus.mainloop.pyqt5 module provides support for Qt main loop for
+ applications that use dbus-python. By default Qt uses main loop from
+ GLib on UNIX-like systems, not its own one.
+ .
+ This package contains the Python 3 version of this module.
+Task: kubuntu-desktop, kubuntu-full, lubuntu-desktop, ubuntustudio-audio
+
+Package: python3-debconf
+Architecture: all
+Version: 1.5.73
+Section: python
+Source: debconf
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Debconf Developers <debconf-devel@lists.alioth.debian.org>
+Installed-Size: 18
+Depends: debconf (= 1.5.73), python3:any
+Breaks: debconf (<< 1.5.64)
+Replaces: debconf (<< 1.5.64)
+Filename: pool/python3-debconf_1.5.73_all.deb
+Size: 4060
+MD5sum: dedef579d0698ebebd9c2a1e26017e8e
+SHA1: 65be04cd5d7b96558cf3ad914ecbfb2a14011086
+SHA256: 5fb9f520cc894c0ad711f02ab314444611111bfcfe25e467e85bc8ba436fdf6c
+SHA512: 9f76f7d2d55904a2a73f9efc5796b7e6afc17830cc9b0537a6b9cc5376b6d337006587b6c3e77aa0aa66835962406de75b02ca350a2de2c45e78b678a640cf1c
+Description: interact with debconf from Python 3
+ Debconf is a configuration management system for debian packages. Packages
+ use Debconf to ask questions when they are installed.
+ .
+ This package provides a debconf module to allow Python 3 programs to
+ interact with a debconf frontend.
+Task: server, ubuntu-desktop-minimal, ubuntu-desktop, cloud-image, kubuntu-live, xubuntu-desktop, lubuntu-desktop, ubuntustudio-desktop, ubuntukylin-desktop, ubuntu-mate-core, ubuntu-mate-desktop, ubuntu-budgie-desktop
+
+Package: python3-icu
+Architecture: amd64
+Version: 2.4.2-0ubuntu3
+Section: python
+Source: pyicu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Installed-Size: 1164
+Provides: python3.8-icu
+Depends: libc6 (>= 2.4), libgcc-s1 (>= 3.0), libicu66 (>= 66.1~rc-1~), libstdc++6 (>= 5), python3 (<< 3.9), python3 (>= 3.8~), python3:any
+Filename: pool/python3-icu_2.4.2-0ubuntu3_amd64.deb
+Size: 249896
+MD5sum: a535dfdc728fdd9ac2ff5652fc713dd3
+SHA1: 2318cb811476dfac98a965c17e53d01fb7936fe6
+SHA256: 9b70717fc132b9cdd706b2be84ca11cf08f50ca1ae7c652f879037b4e429f0c8
+SHA512: 39b51041d647a3b2e4ba4d0b3bda59768eb4df77cca67083dd0f8f4ffa9deae59fbea94131ced8d4ed40c6280fa356cc46c63954ae56b53f2055742a9baf5bd1
+Homepage: https://pypi.python.org/pypi/PyICU/
+Description: Python 3 extension wrapping the ICU C++ API
+ ICU is a C++ and C library that provides robust and full-featured
+ Unicode and locale support. This package provides an extension for
+ Python 3 which wraps the ICU C++ API.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+Python-Version: 3.8
+
+Package: python3-pam
+Architecture: amd64
+Version: 0.4.2-13.2ubuntu8
+Section: python
+Source: python-pam
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Dima Barsky <dima@debian.org>
+Installed-Size: 44
+Depends: python3 (<< 3.9), python3 (>= 3.8~), libc6 (>= 2.4), libpam0g (>= 0.99.7.1)
+Suggests: python3-pam-dbg
+Filename: pool/python3-pam_0.4.2-13.2ubuntu8_amd64.deb
+Size: 9052
+MD5sum: 5cb4d6ef6d3e3cc2b90b5a9c045cb4cb
+SHA1: 0b0fbea472e167885e8166f5ceddcb2fbc002da1
+SHA256: 04e67dd04099e2bc59081100d85de33c377aac0a91ec1a58d7e52d30d535834a
+SHA512: edb7868592dcbc5cd460f6e0b033fa01184d94d43ef8d6a91a6f3d5ce6d859d3e45aa9d36ea474f1a662549c8b4ae0d3aa060d36786ca847c51a4a6e034f565c
+Description: Python interface to the PAM library
+ This module makes the PAM (Pluggable Authentication Modules) functions
+ available in Python 3. With this module you can write Python 3 applications
+ that implement authentication services using PAM.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: python3-pyqt5.qtsvg
+Architecture: amd64
+Version: 5.15.4+dfsg-1+20.04+focal+unstable+build20
+Priority: optional
+Section: universe/python
+Source: pyqt5
+Origin: Ubuntu
+Maintainer: Neon CI <neon@kde.org>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 152
+Depends: python3-pyqt5 (= 5.15.4+dfsg-1+20.04+focal+unstable+build20), python3 (>= 3~), libc6 (>= 2.4), libqt5core5a (>= 5.15.2+p20.04+tunstable+git20210526.0044), libqt5gui5 (>= 5.15.2+p20.04+tunstable+git20210526.0044), libqt5svg5 (>= 5.15.2+p20.04+tunstable+git20210525.1108), libqt5widgets5 (>= 5.15.2+p20.04+tunstable+git20210526.0044), libstdc++6 (>= 5)
+Filename: pool/python3-pyqt5.qtsvg_5.15.4+dfsg-1+20.04+focal+unstable+build20_amd64.deb
+Size: 40744
+MD5sum: d099f76111f64d683e3fa9460c4b6c66
+SHA1: 16666439d43f246343678efb7542fbca09f7ac8c
+SHA256: 7f6cb2c59087e8c2573e72ad1fd93c9661cd8dd2512aac69c2cf151c29e41ed0
+SHA512: 06b4ea4f5fd22e9822c37920e387c27c9717f146ba34a9963ecbe0cdbaf1fced86f5a3109f521a71b673a27a5ae49aba7b72dcbe97401cbe52bbd177fb97b9b2
+Homepage: https://riverbankcomputing.com/software/pyqt/intro
+Description: Python 3 bindings for Qt5's SVG module
+ The SVG module of PyQt5 provides classes for displaying the contents of
+ SVG files.
+ .
+ This package contains the Python 3 version of this module.
+Task: kubuntu-live, ubuntustudio-video, ubuntustudio-publishing, ubuntustudio-audio
+
+Package: python3-pyqt5.qtwebkit
+Architecture: amd64
+Version: 5.15.4+dfsg-1+20.04+focal+unstable+build20
+Priority: optional
+Section: universe/python
+Source: pyqt5
+Origin: Ubuntu
+Maintainer: Neon CI <neon@kde.org>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 605
+Depends: python3-pyqt5 (= 5.15.4+dfsg-1+20.04+focal+unstable+build20), python3 (>= 3~), libc6 (>= 2.14), libqt5core5a (>= 5.15.2+p20.04+tunstable+git20210526.0044), libqt5gui5 (>= 5.15.2+p20.04+tunstable+git20210526.0044), libqt5network5 (>= 5.15.2+p20.04+tunstable+git20210526.0044), libqt5webkit5 (>= 5.212.0~alpha4), libqt5widgets5 (>= 5.15.2+p20.04+tunstable+git20210526.0044), libstdc++6 (>= 5)
+Filename: pool/python3-pyqt5.qtwebkit_5.15.4+dfsg-1+20.04+focal+unstable+build20_amd64.deb
+Size: 116836
+MD5sum: e574716bd426ce529b3c3a2ac5d0e35f
+SHA1: ca0394d32672e7e0c03a34944b9ffcbbd10b6056
+SHA256: 4dfe1695e9fcd6dab2d7a83f70d7073f81a7413788613ecaed4c12a5c29dc02b
+SHA512: c8ed9243c4a2f157c628aaa3516dbcff5ae315552670d0872efd9cf07a818f8f76b6c7934906431832177d62de373fcce121241557d646b879a0d62a96c54bf7
+Homepage: https://riverbankcomputing.com/software/pyqt/intro
+Description: Python 3 bindings for Qt5's WebKit module
+ The WebKit module of PyQt5 provides a Web browser engine that makes it easy
+ to embed HTML content into your PyQt application.
+ .
+ This package contains the Python 3 version of this module.
+Task: kubuntu-live, ubuntustudio-video
+
+Package: rdate
+Architecture: amd64
+Version: 1:1.10-2
+Section: net
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Thiago Andrade Marques <thmarques@gmail.com>
+Installed-Size: 60
+Depends: libbsd0 (>= 0.0), libc6 (>= 2.15)
+Replaces: netstd
+Filename: pool/rdate_1%3a1.10-2_amd64.deb
+Size: 17648
+MD5sum: d0c5c21eaba13ed9269f0f78d3c19ee5
+SHA1: 2ef078859a7efdd9430ea753879f4596728901b4
+SHA256: 6e90a275a967455773009de70da92973984935dd4371fd91e5009ea202159174
+SHA512: e6469bf4319d33867f1ede83ca2b0546402f5457c6e417c634463c41edcf1dbee6ef4b5f3cd2d642fce892a0d42882859960bc1d1727f3a05b496adbf3fe8a04
+Homepage: https://github.com/resurrecting-open-source-projects/openrdate
+Description: sets the system's date from a remote host with network time protocol
+ OpenRdate or openrdate or rdate displays and sets the local date and time from
+ the host name or address given as the argument. The time source may be an RFC
+ 868 TCP protocol server, which is usually implemented as a built-in service of
+ inetd(8), or an RFC 5905 protocol SNTP/NTP server. By default, rdate uses the
+ RFC 868 TCP protocol.
+ .
+ OpenRdate supports IPv4 and IPv6 protocols.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: setserial
+Architecture: amd64
+Version: 2.17-52
+Priority: optional
+Section: comm
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Thorsten Alteholz <debian@alteholz.de>
+Installed-Size: 117
+Depends: libc6 (>= 2.7), debconf (>= 0.5) | debconf-2.0, lsb-base (>= 3.0-6)
+Filename: pool/setserial_2.17-52_amd64.deb
+Size: 35896
+MD5sum: 7079809a59a80dcb3923e1bc26a5ff9c
+SHA1: d48bf6b3773905d457dba6ec80f74236df9e09a3
+SHA256: d534b298c895a8143a75baf2a11e4736c3669535d18dcc23b34b1231420928f8
+SHA512: 03b74dfdf69c378f6fed14e281ccf927a9a1003ae61054c51b0e33602c5d9f0836fd6ba7a2fbec89fd7d20c344656ed48bfa929d2c2a0d0d238defc1e0d0c34f
+Description: controls configuration of serial ports
+ Set and/or report the configuration information associated with
+ a serial port. This information includes what I/O port and which IRQ
+ a particular serial port is using.
+ .
+ This version has a completely new approach to configuration, so if you
+ have a setup other than the standard ttyS0 and 1, you will have to get
+ your hands dirty.
+ .
+ By default, only COM1-4 are configured by the kernel, using IRQ 3 and 4.
+ If you have other serial ports (such as an AST Fourport card), or
+ if you have mapped the IRQs differently (perhaps COM3 and 4 to other
+ IRQs to allow concurrent access with COM1 and 2) then you must have this
+ package.
+
+Package: shim
+Architecture: amd64
+Version: 15.4-0ubuntu9
+Section: admin
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Steve Langasek <vorlon@debian.org>
+Installed-Size: 27
+Breaks: shim-signed (<< 1.33~)
+Filename: pool/shim_15.4-0ubuntu9_amd64.deb
+Size: 12712
+MD5sum: 34a191ea9e2bd0eb473ce41478594276
+SHA1: 22f8b4399d42bf2b73698d34fe80e009d0db7648
+SHA256: 0dbc513fcb4d7b252806d2e0ab26d193fadb663f45bcab61f38122a19d05e99d
+SHA512: c199c28af5edeeed6d2bc8c904a317ba30b20f9f3210e711153eb4de4349d35bd33ad2d5929a979ec8cec97bd29dde87922efc062c6d033f645ee8925b073235
+Description: boot loader to chain-load signed boot loaders under Secure Boot
+ This package provides a minimalist boot loader which allows verifying
+ signatures of other UEFI binaries against either the Secure Boot DB/DBX or
+ against a built-in signature database.  Its purpose is to allow a small,
+ infrequently-changing binary to be signed by the UEFI CA, while allowing
+ an OS distributor to revision their main bootloader independently of the CA.
+Task: ubuntu-core
+
+Package: ubiquity-casper
+Architecture: all
+Version: 1.445.1
+Section: misc
+Source: casper
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 102
+Depends: laptop-detect, sudo
+Breaks: casper (<< 1.318)
+Replaces: casper (<< 1.318)
+Enhances: ubiquity
+Filename: pool/ubiquity-casper_1.445.1_all.deb
+Size: 11220
+MD5sum: 9cd48d3a1f4109d89998195d412d8af2
+SHA1: 4b69a168f75128210d25d533541522f4f18aa74c
+SHA256: 3bf07c90e1562130dd8e9a3d274c1f98482c3c32cd0f905c077c38c646844020
+SHA512: a074677e25cd965bb9bcd1c4809b6136e60c4911a1a9a4e8fd0c5ee6a7f067661dc987763f0cddc3adf25c204201d22324b18273b139fbed9e917d075e7038e3
+Description: Configuration hooks for live installer
+ This package provides hook scripts for the Ubiquity live installer that
+ repeat some pieces of configuration done by the live system boot process in
+ the system installed by Ubiquity.
+Tag: admin::boot, admin::filesystem, implemented-in::shell, protocol::smb, role::plugin, scope::utility, special::completely-tagged, works-with-format::iso9660
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: ubiquity-frontend-kde
+Architecture: all
+Version: 20.04.15.19
+Priority: optional
+Section: universe/admin
+Source: ubiquity
+Origin: Ubuntu
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 559
+Provides: ubiquity-frontend-20.04.15.19
+Depends: kde-window-manager | kwin, python3-dbus, python3-dbus.mainloop.pyqt5, python3-pyqt5, python3-pyqt5.qtsvg, python3-pyqt5.qtwebkit, ubiquity (= 20.04.15.19), xauth, python3:any (>= 3.1~)
+Filename: pool/ubiquity-frontend-kde_20.04.15.19_all.deb
+Size: 68908
+MD5sum: 27cb0bf2d2b4cf1473db914688bc51c3
+SHA1: b52dc170b9d8a5a14b49b142aad60b9d455e8b8c
+SHA256: 6ab9f8dc39e3d20ed5f311d34791f01dcbfd145ec37c6e5e8fc7c179f3f75682
+SHA512: f19fda69b4af05e22b2ea4678e147b3d95a94c861fe8eadf4ce6e6629718ebf26a126de266dfab41a4a0e85d34685eb646bf0b195bb3760af0aa4845bfa8226d
+Description: KDE frontend for Ubiquity live installer
+ This package provides a KDE-based user interface frontend for the Ubiquity
+ live CD installer.
+Task: kubuntu-live
+
+Package: ubiquity-ubuntu-artwork
+Architecture: all
+Version: 20.04.15.19
+Section: admin
+Source: ubiquity
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Installed-Size: 782
+Provides: ubiquity-artwork-20.04.15.19
+Filename: pool/ubiquity-ubuntu-artwork_20.04.15.19_all.deb
+Size: 524844
+MD5sum: b41c406280422272eeacf0a074dcb70f
+SHA1: 49d2cc9bd913944e973afb39476b8196591ec83c
+SHA256: 7ea2ac6dd8c3e893a8e07f5fde8e2de0860ac87668f09259b6068c02dada8297
+SHA512: 071d144281711c815afb5ce5aebe76675b7ca8764612d5ff91da9d02ad2040950c9b5df8496a8a1f41c40ef72df255c4e304ffb70d47de144e221dca7f3839fd
+Description: Ubuntu artwork for Ubiquity live installer
+ This package provides Ubuntu-themed user interface artwork, help files, and
+ user interface text for the Ubiquity live CD installer.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+
+Package: ubiquity
+Architecture: amd64
+Version: 20.04.15.19
+Section: admin
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Installed-Size: 17538
+Depends: adduser, apt-clone, archdetect-deb, cryptsetup, dbus-x11, dpkg-repack, grub-common, iso-codes, language-selector-common (>= 0.4.16), laptop-detect, lsb-release, ntfs-3g (>= 1:2011.1.15AR.4+2011.4.12-1), os-prober, passwd, policykit-1, python3-apt (>= 0.7.100.3~), python3-debconf, python3-icu (>= 1.0), python3-pam, rdate, sbsigntool, ubiquity-artwork-20.04.15.19, ubiquity-casper, ubiquity-frontend-20.04.15.19, wget, dctrl-tools, console-setup (>= 1.194ubuntu3), debconf (>= 0.5) | debconf-2.0, python3:any (>= 3.1~), libblkid1 (>= 2.24.2), libc6 (>= 2.15), libdebconfclient0 (>= 0.145), libdebian-installer4 (>= 0.110ubuntu3), libiw30 (>= 30~pre1), libparted-fs-resize0 (>= 3.1), libparted2 (>= 3.1)
+Recommends: btrfs-progs, dmraid, grub-pc | grub | grub-efi-amd64, lvm2, ubuntu-drivers-common (>= 0.6.3)
+Filename: pool/ubiquity_20.04.15.19_amd64.deb
+Size: 2937288
+MD5sum: ec9aaa19c23c80e2720caa32bcb28549
+SHA1: 423e0c406e2ab5fb21edf947165ff17bf0318620
+SHA256: 19e58879652fb20c5f8e0714d73cd73596a25f94f6c456225aa8c0aec7619abf
+SHA512: 1962abda77056b3e8c8b528067e3b8fb450255d86177e6bb7d773a0477193ebf08404580091bf07886de1e142c7856d59c2261e9e7ab7a9ccc15a9ccc038bbf0
+Description: Ubuntu live CD installer
+ This is a simple live CD installer designed to integrate well with Debian-
+ and Ubuntu-based systems, and to reuse code from d-i for ease of
+ maintenance.
+ .
+ Installing this package on a normal system is unlikely to be useful.
+Task: ubuntu-live, kubuntu-live, xubuntu-live, ubuntustudio-dvd-live, ubuntukylin-live, ubuntu-mate-live, ubuntu-budgie-live
+

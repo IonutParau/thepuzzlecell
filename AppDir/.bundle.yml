@@ -1,0 +1,139 @@
+apt:
+  sources:
+  - deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+  - deb http://security.ubuntu.com/ubuntu/ focal-security main restricted universe
+    multiverse
+  - deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+  - deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian
+    stable main
+  - deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
+  - deb [arch=amd64] file:/var/lib/preinstalled-pool/ focal main restricted universe
+    multiverse
+  - deb http://ppa.launchpad.net/graphics-drivers/ppa/ubuntu focal main
+  - deb http://ppa.launchpad.net/bartbes/love-stable/ubuntu focal main
+  - deb http://ppa.launchpad.net/papirus/papirus/ubuntu focal main
+  - deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main
+  - deb http://archive.neon.kde.org/user focal main
+  packages:
+  - libjbig0:amd64=2.1-3.1build1
+  - dconf-gsettings-backend:amd64=0.36.0-1
+  - liblz4-1:amd64=1.9.2-2ubuntu0.20.04.1
+  - libcolord2:amd64=1.4.4-2
+  - systemd:amd64=245.4-4ubuntu3.17
+  - libuuid1:amd64=2.34-0.1ubuntu9.3
+  - libaudit1:amd64=1:2.8.5-2ubuntu6
+  - libwebp6:amd64=0.6.1-2ubuntu0.20.04.1
+  - libatk1.0-0:amd64=2.35.1-1ubuntu2
+  - dbus:amd64=1.12.16-2ubuntu2.2
+  - tzdata:all=2022a-0ubuntu0.20.04
+  - libcairo-gobject2:amd64=1.16.0-4ubuntu1
+  - libacl1:amd64=2.2.53-6
+  - libgdk-pixbuf2.0-0:amd64=2.40.0+dfsg-3ubuntu0.2
+  - glib-networking-services:amd64=2.64.2-1ubuntu0.1
+  - libkmod2:amd64=27-1ubuntu2.1
+  - libthai0:amd64=0.1.28-3
+  - libpcre2-8-0:amd64=10.34-7
+  - libkrb5support0:amd64=1.17-6ubuntu4.1
+  - libxcomposite1:amd64=1:0.4.5-1
+  - libnettle7:amd64=3.5.1+really3.5.1-2ubuntu0.2
+  - libfontconfig1:amd64=2.13.1-2ubuntu3
+  - libkeyutils1:amd64=1.6-6ubuntu1.1
+  - libzstd1:amd64=1.4.4+dfsg-3ubuntu0.1
+  - gcc-10-base:amd64=10.3.0-1ubuntu1~20.04
+  - libpangoft2-1.0-0:amd64=1.44.7-2ubuntu4
+  - libidn2-0:amd64=2.2.0-2
+  - libaudit-common:all=1:2.8.5-2ubuntu6
+  - libgtk-3-0:amd64=3.24.20-0ubuntu1.1
+  - systemd-timesyncd:amd64=245.4-4ubuntu3.17
+  - libgpg-error0:amd64=1.37-1
+  - libgcrypt20:amd64=1.8.5-5ubuntu1.1
+  - libxinerama1:amd64=2:1.1.4-2
+  - libunistring2:amd64=0.9.10-2
+  - libjson-c4:amd64=0.13.1+dfsg-7ubuntu0.3
+  - libudev1:amd64=245.4-4ubuntu3.17
+  - libxdamage1:amd64=1:1.1.5-2
+  - libgtk-3-common:all=3.24.20-0ubuntu1.1
+  - libxml2:amd64=2.9.10+dfsg-5ubuntu0.20.04.3
+  - liblzma5:amd64=5.2.4-1ubuntu1.1
+  - libapparmor1:amd64=2.13.3-7ubuntu5.1
+  - libjpeg8:amd64=8c-2ubuntu8
+  - libatk1.0-data:all=2.35.1-1ubuntu2
+  - librest-0.7-0:amd64=0.8.1-1
+  - libgssapi-krb5-2:amd64=1.17-6ubuntu4.1
+  - libselinux1:amd64=3.0-1build2
+  - libgmp10:amd64=2:6.2.0+dfsg-4
+  - libsqlite3-0:amd64=3.31.1-4ubuntu0.3
+  - libproxy1v5:amd64=0.4.15-10ubuntu1.2
+  - libgraphite2-3:amd64=1.3.13-11build1
+  - libxkbcommon0:amd64=0.10.0-1
+  - libkrb5-3:amd64=1.17-6ubuntu4.1
+  - libffi7:amd64=3.3-4
+  - libgdk-pixbuf2.0-common:all=2.40.0+dfsg-3ubuntu0.2
+  - libcups2:amd64=2.3.1-9ubuntu1.2
+  - libxi6:amd64=2:1.7.10-0ubuntu1
+  - libpng16-16:amd64=1.6.37-2
+  - dbus-user-session:amd64=1.12.16-2ubuntu2.2
+  - liblcms2-2:amd64=2.12~rc1-2+20.04+focal+release+build9
+  - libfribidi0:amd64=1.0.8-2ubuntu0.1
+  - libk5crypto3:amd64=1.17-6ubuntu4.1
+  - libdbus-1-3:amd64=1.12.16-2ubuntu2.2
+  - libsoup2.4-1:amd64=2.70.0-1
+  - libatk-bridge2.0-0:amd64=2.34.2-0ubuntu2~20.04.1
+  - libjson-glib-1.0-common:all=1.4.4-2ubuntu2
+  - libicu66:amd64=66.1-2ubuntu2.1
+  - libpangocairo-1.0-0:amd64=1.44.7-2ubuntu4
+  - libexpat1:amd64=2.2.9-1ubuntu0.4
+  - libpcre3:amd64=2:8.39-12ubuntu0.1
+  - libtasn1-6:amd64=4.16.0-2
+  - libharfbuzz0b:amd64=2.6.4-1ubuntu4
+  - libxfixes3:amd64=1:5.0.3-2
+  - libgcc-s1:amd64=10.3.0-1ubuntu1~20.04
+  - libpsl5:amd64=0.21.0-1ubuntu1
+  - libcap2:amd64=1:2.32-1
+  - libp11-kit0:amd64=0.23.20-1ubuntu0.1
+  - libcap-ng0:amd64=0.7.9-2.1build1
+  - glib-networking-common:all=2.64.2-1ubuntu0.1
+  - libsoup-gnome2.4-1:amd64=2.70.0-1
+  - libxcursor1:amd64=1:1.2.0-2
+  - libdatrie1:amd64=0.2.12-3
+  - libpam-systemd:amd64=245.4-4ubuntu3.17
+  - libxext6:amd64=2:1.3.4-0ubuntu1
+  - zlib1g:amd64=1:1.2.11.dfsg-2ubuntu1.3
+  - libjson-glib-1.0-0:amd64=1.4.4-2ubuntu2
+  - libbrotli1:amd64=1.0.7-6ubuntu0.1
+  - libglib2.0-0:amd64=2.64.6-1~ubuntu20.04.4
+  - libavahi-common3:amd64=0.7-4ubuntu7.1
+  - libjpeg-turbo8:amd64=2.0.3-0ubuntu1.20.04.1
+  - libseccomp2:amd64=2.5.3-2+20.04+focal+release+build1
+  - xkb-data:all=2.29-2
+  - libtiff5:amd64=4.1.0+git191117-2ubuntu0.20.04.3
+  - libxrender1:amd64=1:0.9.10-1
+  - gsettings-desktop-schemas:all=3.36.0-1ubuntu1
+  - libargon2-1:amd64=0~20171227-0.2
+  - libcom-err2:amd64=1.45.5-2ubuntu1.1
+  - libsystemd0:amd64=245.4-4ubuntu3.17
+  - libcairo2:amd64=1.16.0-4ubuntu1
+  - dconf-service:amd64=0.36.0-1
+  - libpam0g:amd64=1.3.1-5ubuntu4.3
+  - glib-networking:amd64=2.64.2-1ubuntu0.1
+  - libpixman-1-0:amd64=0.38.4-0ubuntu1
+  - libstdc++6:amd64=10.3.0-1ubuntu1~20.04
+  - libmount1:amd64=2.34-0.1ubuntu9.3
+  - libssl1.1:amd64=1.1.1f-1ubuntu2.13
+  - libdevmapper1.02.1:amd64=2:1.02.167-1ubuntu1
+  - libfreetype6:amd64=2.10.1-2ubuntu0.1
+  - libhogweed5:amd64=3.5.1+really3.5.1-2ubuntu0.2
+  - libepoxy0:amd64=1.5.4-1
+  - libthai-data:all=0.1.28-3
+  - libblkid1:amd64=2.34-0.1ubuntu9.3
+  - libavahi-client3:amd64=0.7-4ubuntu7.1
+  - libcrypt1:amd64=1:4.4.10-10ubuntu4
+  - libdconf1:amd64=0.36.0-1
+  - libip4tc2:amd64=1.8.4-3ubuntu2
+  - libcryptsetup12:amd64=2:2.2.2-3ubuntu2.4
+  - libgnutls30:amd64=3.6.13-2ubuntu1.6
+  - libc6:amd64=2.31-0ubuntu9.9
+  - libatspi2.0-0:amd64=2.36.0-2
+  - libxrandr2:amd64=2:1.5.2-0ubuntu1
+  - libpango-1.0-0:amd64=1.44.7-2ubuntu4
+  - libavahi-common-data:amd64=0.7-4ubuntu7.1

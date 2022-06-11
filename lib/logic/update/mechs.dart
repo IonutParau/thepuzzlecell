@@ -43,6 +43,21 @@ void mechs(Set<String> cells) {
     );
   }
 
+  for (var rot in rotOrder) {
+    grid.updateCell(
+      (cell, x, y) {
+        if (MechanicalManager.on(cell, false) && !MechanicalManager.on(cell, true)) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+
+          pull(fx, fy, (cell.rot + 2) % 4, 1);
+        }
+      },
+      rot,
+      "piston",
+    );
+  }
+
   if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
     grid.loopChunks(
       "mech_keyup",
@@ -145,6 +160,7 @@ void drawPower(Cell cell) {
 class MechanicalManager {
   static bool connectable(int? dir, Cell cell) {
     if (cell.id == "empty") return false;
+    if (cell.id == "piston") return true;
     if (dir == null) return true;
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
@@ -198,6 +214,11 @@ class MechanicalManager {
           MechanicalManager.spread(fx, fy, 0, false, cell.rot);
         }
       }
+    } else if (cell.id == "piston") {
+      final fx = frontX(x, cell.rot);
+      final fy = frontY(y, cell.rot);
+
+      push(fx, fy, cell.rot, 1);
     }
   }
 

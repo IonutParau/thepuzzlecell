@@ -1,5 +1,7 @@
-cp -r build/linux/x64/release/bundle/* ./ThePuzzleCell.AppDir
+cp -r build/linux/x64/release/bundle/* ./AppDir
 
-./AppImage\ Compiler.AppImage ThePuzzleCell.AppDir/
+./appimage_builder.AppImage
 
-mv ./The_Puzzle_Cell-x86_64.AppImage ./build/ThePuzzleCell.AppImage
+mv ./The\ Puzzle\ Cell-latest-x86_64.AppImage build/The\ Puzzle\ Cell.AppImage
+
+rm The\ Puzzle\ Cell-latest-x86_64.AppImage.zsync

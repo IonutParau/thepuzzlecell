@@ -196,11 +196,13 @@ final cells = {
   "plant_spore",
   "plant_flower",
   "plant_leaf",
+  "piston",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "piston.png": "mechanical/piston.png",
   "plant_body.png": "unique/plant/body.png",
   "plant_leaf.png": "unique/plant/leaf.png",
   "plant_seed.png": "unique/plant/seed.png",
@@ -815,6 +817,7 @@ final categories = [
           "mech_rotator_cw",
           "mech_rotator_ccw",
           "pixel",
+          "piston",
         ],
         "mech_mover",
       ),
@@ -1639,5 +1642,9 @@ final cellInfo = <String, CellProfile>{
   "plant_leaf": CellProfile(
     "Plant Leaf",
     "Dies after 30 ticks with no food. This is like a body, but it also produces extra energy for the plant.",
+  ),
+  "piston": CellProfile(
+    "Piston",
+    "While powered, it will push. When turned off, it will pull once",
   ),
 };

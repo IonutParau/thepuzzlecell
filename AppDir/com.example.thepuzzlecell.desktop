@@ -1,0 +1,11 @@
+[Desktop Entry]
+X-AppImage-Arch=x86_64
+X-AppImage-Version=latest
+X-AppImage-Name=The Puzzle Cell
+Name=The Puzzle Cell
+Exec=the_puzzle_cell
+Icon=logo
+Type=Application
+Terminal=false
+Categories=Utility;
+Comment=

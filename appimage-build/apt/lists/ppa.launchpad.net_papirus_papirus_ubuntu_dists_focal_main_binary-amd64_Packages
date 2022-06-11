@@ -1,0 +1,250 @@
+Package: adapta-kde
+Priority: optional
+Section: kde
+Installed-Size: 3790
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20181023-177+pkg3~ubuntu20.04.1
+Recommends: qt5-style-kvantum, papirus-icon-theme
+Provides: qt5-style-kvantum-theme
+Filename: pool/main/a/adapta-kde/adapta-kde_20181023-177+pkg3~ubuntu20.04.1_all.deb
+Size: 1166276
+MD5sum: 06de3b1b453ad690324b2716400049ca
+SHA1: cfd07aeab90f9820b5331a09978b006909bb11c7
+SHA256: 05f672b211d83b4bf23434e72386e78a9ebf1db67bc26732d9d33990a0b73c9c
+Description: Adapta KDE
+Description-md5: 22fd69809abe807b7cd8d2a3e5805429
+Multi-Arch: foreign
+
+Package: arc-kde
+Priority: optional
+Section: kde
+Installed-Size: 24877
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20190629-174+pkg8~ubuntu20.04.1
+Recommends: qt5-style-kvantum, papirus-icon-theme
+Provides: qt5-style-kvantum-theme
+Filename: pool/main/a/arc-kde/arc-kde_20190629-174+pkg8~ubuntu20.04.1_all.deb
+Size: 22821148
+MD5sum: 90b9ac41d1a6a9fbecfec1c3b4e68ccc
+SHA1: 59ecfc1fb56542ecbcf0d32e90e2d927b4550750
+SHA256: 70d6290f083f2d2f11688a9de1498dfc42cd5b95effee87e28de425dac4bac78
+Description: Arc KDE
+Description-md5: d180a63933f8f766fa6375eb44912b9b
+Multi-Arch: foreign
+
+Package: claws-mail-themes-papirus
+Priority: optional
+Section: mail
+Installed-Size: 746
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20201019-29+pkg2~ubuntu20.04.1
+Recommends: claws-mail
+Enhances: claws-mail
+Filename: pool/main/c/claws-mail-themes-papirus/claws-mail-themes-papirus_20201019-29+pkg2~ubuntu20.04.1_all.deb
+Size: 112336
+MD5sum: cfdc641b37b569025a77c2ec1f9ffd4c
+SHA1: 8d686103457b036b9923db08ed10764aeceec175
+SHA256: dfd854560a4207fa6869dff69a03abd5aed1e57775302b777dc456ebcf8087c6
+Description: Papirus icon themes for the Claws Mail
+Description-md5: 74366966aaa9f93994f645a7335ad32d
+Multi-Arch: foreign
+
+Package: filezilla-theme-papirus
+Priority: optional
+Section: x11
+Installed-Size: 1623
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20200105-47+pkg3~ubuntu20.04.1
+Depends: filezilla
+Filename: pool/main/f/filezilla-theme-papirus/filezilla-theme-papirus_20200105-47+pkg3~ubuntu20.04.1_all.deb
+Size: 461680
+MD5sum: cdd1bb4304584b67e57b561079501493
+SHA1: 31ac63a6c3b9594e46543c630d9979f891ccabac
+SHA256: 32566cf0a92b1c3839bfa4bc8c247796c6e9962d2bfcf1b1576c48f0b4c5b6b9
+Description: Papirus theme for FileZilla
+Description-md5: d83ca594dfa616d8a41140303943a6b3
+Multi-Arch: foreign
+
+Package: kvantum
+Source: qt5-style-kvantum
+Priority: optional
+Section: oldlibs
+Installed-Size: 15
+Maintainer: Alf Gaida <agaida@siduction.org>,
+            Franciscarlos Santos Soares <prof.franciscarlos@gmail.com>,
+            ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+            Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 1.0.0+repack-1~focal1
+Depends: qt5-style-kvantum
+Filename: pool/main/q/qt5-style-kvantum/kvantum_1.0.0+repack-1~focal1_all.deb
+Size: 4148
+MD5sum: 5b3404a8d771266940bcc35fd72ae9cc
+SHA1: 274b6dbab945f484f61c553568eb88512577392f
+SHA256: 68d88ff4e4ba2b36fccc0f936340cbf3b0c01b5052393da2c75316b66c8401d7
+Description: transitional package
+Description-md5: bfe8ebc058cce6653c20fea6f85a4246
+
+Package: libreoffice-style-papirus
+Priority: optional
+Section: editors
+Installed-Size: 2953
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20180413-46+pkg3~ubuntu20.04.1
+Depends: libreoffice-common
+Filename: pool/main/libr/libreoffice-style-papirus/libreoffice-style-papirus_20180413-46+pkg3~ubuntu20.04.1_all.deb
+Size: 1554060
+MD5sum: 085a172658c3fddb189feafc3821972e
+SHA1: e4dccbbe84513bd94cc4b6d3709e691f56231e1b
+SHA256: b257cdc606309b42a490cee47d1c168fb010025953e3fbe607aea8b358db816a
+Description: Papirus symbol style for LibreOffice
+Description-md5: 446f24a15fbd037101bbd80aad5234dc
+Multi-Arch: foreign
+
+Package: materia-kde
+Priority: optional
+Section: kde
+Installed-Size: 8389
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20220510-310+pkg3~ubuntu20.04.1
+Recommends: qt5-style-kvantum, papirus-icon-theme
+Provides: qt5-style-kvantum-theme
+Filename: pool/main/m/materia-kde/materia-kde_20220510-310+pkg3~ubuntu20.04.1_all.deb
+Size: 2938844
+MD5sum: 337ed693baf4de892b601f9a80c0f313
+SHA1: 375678e08132292f8056816d7c5c45d4b73d777f
+SHA256: 654f86ffa8e0e6e9b0d06735810e8048b4d5cdc122c92496f6ff43ca954cf6ea
+Description: Materia KDE
+Description-md5: 718f777d099d1980e6d17e1311d7ee46
+Multi-Arch: foreign
+
+Package: papirus-folders
+Priority: optional
+Section: x11
+Installed-Size: 31
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 1.12.0-1~116~ubuntu20.04.1
+Recommends: papirus-icon-theme (>= 20171007)
+Depends: bash (>= 4.0)
+Filename: pool/main/p/papirus-folders/papirus-folders_1.12.0-1~116~ubuntu20.04.1_all.deb
+Size: 6900
+MD5sum: 016d40ecef37fb34c9810f916de1ac96
+SHA1: 4843823a3038c26471b4f65d5ae0e1ae33678654
+SHA256: f1fdca497cd0a9849663e95547e7f632af0b2303b2c091056070aadeb3bbe1ac
+Description: This package allows you to change the color of folders
+Description-md5: f39cbf624a84c236d786e1e8ab0a3f25
+Bugs: https://github.com/PapirusDevelopmentTeam/papirus-folders/issues
+Multi-Arch: foreign
+
+Package: papirus-icon-theme
+Priority: optional
+Section: x11
+Installed-Size: 196206
+Maintainer: Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 20220606-5885+pkg22~ubuntu20.04.1
+Replaces: papirus-gtk-icon-theme, papirus-kde-icon-theme
+Suggests: filezilla-theme-papirus
+Depends: hicolor-icon-theme
+Filename: pool/main/p/papirus-icon-theme/papirus-icon-theme_20220606-5885+pkg22~ubuntu20.04.1_all.deb
+Size: 22015872
+MD5sum: 8d49416e6d4b78cdd6f55a083db799ab
+SHA1: f80dcfe255a18e97691464d9c9078dafb52038a2
+SHA256: 22bcc6c9e56741b45be3d0477c7c84ecf23141e6b9baba6e79afab8eb95ed364
+Description: Papirus Icon Theme
+Description-md5: 55164fc112cf8426c45dcacd982cd2bd
+Bugs: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/issues
+
+Package: qt4-style-kvantum
+Priority: optional
+Section: x11
+Installed-Size: 959
+Maintainer: Alf Gaida <agaida@siduction.org>,
+            Franciscarlos Santos Soares <prof.franciscarlos@gmail.com>,
+            ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+            Sergei Eremenko <finalitik@gmail.com>
+Architecture: amd64
+Version: 1.0.0+repack-1~focal1
+Replaces: kvantum (<< 0.10.8+repack-1~)
+Depends: libc6 (>= 2.29), libgcc-s1 (>= 3.0), libqt4-svg (>= 4:4.5.3), libqtcore4 (>= 4:4.8.0), libqtgui4 (>= 4:4.8.0), libstdc++6 (>= 5), libx11-6
+Breaks: kvantum (<< 0.10.8+repack-1~)
+Filename: pool/main/q/qt4-style-kvantum/qt4-style-kvantum_1.0.0+repack-1~focal1_amd64.deb
+Size: 315920
+MD5sum: f86045767c31867c8f949448802c2df4
+SHA1: 2ff773367955f3b9976e0cf07c1f74411cda87c6
+SHA256: b1ee0c941797e6c83fe1b101a75abd1c982563261918ba136b0711908d9cca36
+Description: Kvantum style engine (Qt4 plugin)
+Description-md5: b021a0c2613ce8fa29a0a90668879f84
+
+Package: qt5-style-kvantum
+Priority: optional
+Section: x11
+Installed-Size: 1750
+Maintainer: Alf Gaida <agaida@siduction.org>,
+            Franciscarlos Santos Soares <prof.franciscarlos@gmail.com>,
+            ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+            Sergei Eremenko <finalitik@gmail.com>
+Architecture: amd64
+Version: 1.0.0+repack-1~focal1
+Recommends: qt4-style-kvantum, qt5-style-kvantum-l10n
+Replaces: kvantum (<< 0.10.8+repack-1~)
+Depends: libc6 (>= 2.29), libgcc-s1 (>= 3.0), libkf5windowsystem5 (>= 4.96.0), libqt5core5a (>= 5.12.2), libqt5gui5 (>= 5.11.0~rc1) | libqt5gui5-gles (>= 5.11.0~rc1), libqt5svg5 (>= 5.6.0~beta), libqt5widgets5 (>= 5.3.0), libqt5x11extras5 (>= 5.6.0), libstdc++6 (>= 5), libx11-6, qt5-style-kvantum-themes | qt5-style-kvantum-theme
+Breaks: kvantum (<< 0.10.8+repack-1~)
+Filename: pool/main/q/qt5-style-kvantum/qt5-style-kvantum_1.0.0+repack-1~focal1_amd64.deb
+Size: 519392
+MD5sum: b5483b73d46e7ad5a4fc50d7c1ced97f
+SHA1: de5e0ac28bd6ad391b063ff09e21896a02483f1b
+SHA256: bb33ec2ea6bbba26f07ce1746120c7f32806c6b8b6f3febab478d7e36fe35f2e
+Description: Kvantum style engine (binaries)
+Description-md5: 397a2de55c891192c3febb52edccc804
+
+Package: qt5-style-kvantum-l10n
+Source: qt5-style-kvantum
+Priority: optional
+Section: localization
+Installed-Size: 1496
+Maintainer: Alf Gaida <agaida@siduction.org>,
+            Franciscarlos Santos Soares <prof.franciscarlos@gmail.com>,
+            ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+            Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 1.0.0+repack-1~focal1
+Depends: qttranslations5-l10n
+Filename: pool/main/q/qt5-style-kvantum/qt5-style-kvantum-l10n_1.0.0+repack-1~focal1_all.deb
+Size: 182108
+MD5sum: 0130e06edf258ceafe2b74a8dbf64ef9
+SHA1: e2d398a8d51d4a1f927bde4a2d9c488687b6e238
+SHA256: 0d55a3cbed84d146d5899d2562481fba218dc6140a586c92794fa947b17ffe99
+Description: Kvantum style engine (localization)
+Description-md5: 692f051d3c5252888e63d7d2748362aa
+
+Package: qt5-style-kvantum-themes
+Source: qt5-style-kvantum
+Priority: optional
+Section: x11
+Installed-Size: 5381
+Maintainer: Alf Gaida <agaida@siduction.org>,
+            Franciscarlos Santos Soares <prof.franciscarlos@gmail.com>,
+            ChangZhuo Chen (陳昌倬) <czchen@debian.org>,
+            Sergei Eremenko <finalitik@gmail.com>
+Architecture: all
+Version: 1.0.0+repack-1~focal1
+Replaces: kvantum (<< 0.10.8+repack-1~)
+Provides: qt5-style-kvantum-theme
+Breaks: kvantum (<< 0.10.8+repack-1~)
+Filename: pool/main/q/qt5-style-kvantum/qt5-style-kvantum-themes_1.0.0+repack-1~focal1_all.deb
+Size: 318204
+MD5sum: 84bb76de5c81cc970d64641bfe5a3136
+SHA1: 7353158961be0f1b01921ef29120749476f10fb3
+SHA256: 75d66e9d251f4945c3ce79f05d22ae6fd3f6f8b6f31f0fe1d1b181d82e632e54
+Description: Kvantum style engine (themes)
+Description-md5: b5a8eb218918228e19dcdec95a9797ce
+Multi-Arch: foreign
+
