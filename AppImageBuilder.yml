@@ -47,6 +47,8 @@ AppDir:
     include:
       - libc6:amd64
       - libgtk-3-0
+      - vlc
+      - libvlc-dev
     exclude:
       - humanity-icon-theme
       - hicolor-icon-theme
