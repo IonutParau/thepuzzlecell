@@ -212,7 +212,7 @@ Map<String, String> textureMap = {
   "mem_gen.png": "recreators/memory/mem_gen.png",
   "mem_gen_cw.png": "recreators/memory/mem_gen_cw.png",
   "mem_gen_ccw.png": "recreators/memory/mem_gen_ccw.png",
-  "mem_gen_double.png": "recreators/memory/mem_gen_double",
+  "mem_gen_double.png": "recreators/memory/mem_gen_double.png",
   "mem_gen_triple.png": "recreators/memory/mem_gen_triple.png",
   "sand.png": "unique/sand.png",
   "water.png": "unique/water.png",
