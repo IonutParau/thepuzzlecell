@@ -70,6 +70,7 @@ flutter:
     - assets/images/recreators/tunnels/warpers/
     - assets/images/recreators/transformers/
     - assets/images/recreators/forkers/
+    - assets/images/recreators/memory/
     - assets/images/curves/
     - assets/images/puzzle/
     - assets/images/interface/
