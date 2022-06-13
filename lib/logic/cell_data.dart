@@ -199,11 +199,21 @@ final cells = {
   "piston",
   "sand",
   "water",
+  "mem_gen",
+  "mem_gen_cw",
+  "mem_gen_ccw",
+  "mem_gen_double",
+  "mem_gen_triple",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mem_gen.png": "recreators/memory/mem_gen.png",
+  "mem_gen_cw.png": "recreators/memory/mem_gen_cw.png",
+  "mem_gen_ccw.png": "recreators/memory/mem_gen_ccw.png",
+  "mem_gen_double.png": "recreators/memory/mem_gen_double",
+  "mem_gen_triple.png": "recreators/memory/mem_gen_triple.png",
   "sand.png": "unique/sand.png",
   "water.png": "unique/water.png",
   "piston.png": "mechanical/piston.png",
@@ -627,6 +637,18 @@ final categories = [
         ],
         "supgen",
         max: 4,
+      ),
+      CellCategory(
+        "Memory Generator",
+        "A generator that remembers what it has generated and when it tries to generate nothing, it will instead generate said cell",
+        [
+          "mem_gen",
+          "mem_gen_cw",
+          "mem_gen_ccw",
+          "mem_gen_double",
+          "mem_gen_triple",
+        ],
+        "mem_gen",
       ),
       CellCategory(
         "Replicators",
@@ -1660,5 +1682,25 @@ final cellInfo = <String, CellProfile>{
   "water": CellProfile(
     "Water",
     "Like Sand but if it fails to move, it will also try to go left. If it STILL fails, right.",
+  ),
+  "mem_gen": CellProfile(
+    "Memory Generator",
+    "Will remember what it generated and if it has nothing to generate, it will generate that cell",
+  ),
+  "mem_gen_cw": CellProfile(
+    "Memory Generator CW",
+    "Memory Generator but bent clockwise",
+  ),
+  "mem_gen_ccw": CellProfile(
+    "Memory Generator CCW",
+    "Memory Generator but bent counter-clockwise",
+  ),
+  "mem_gen_double": CellProfile(
+    "Memory Double Generator",
+    "Memory Generator CW + Memory Generator CCW",
+  ),
+  "mem_gen_triple": CellProfile(
+    "Memory Triple Generator",
+    "Memory Generator + Memory Generator CW + Memory Generator CCW",
   ),
 };
