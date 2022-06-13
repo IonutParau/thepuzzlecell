@@ -197,11 +197,15 @@ final cells = {
   "plant_flower",
   "plant_leaf",
   "piston",
+  "sand",
+  "water",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "sand.png": "unique/sand.png",
+  "water.png": "unique/water.png",
   "piston.png": "mechanical/piston.png",
   "plant_body.png": "unique/plant/body.png",
   "plant_leaf.png": "unique/plant/leaf.png",
@@ -781,6 +785,8 @@ final categories = [
       ),
       "anchor",
       "sandbox",
+      "water",
+      "sand",
     ],
     "unstable_mover",
   ),
@@ -1646,5 +1652,13 @@ final cellInfo = <String, CellProfile>{
   "piston": CellProfile(
     "Piston",
     "While powered, it will push. When turned off, it will pull once",
+  ),
+  "sand": CellProfile(
+    "Sand",
+    "Goes down. If it can't, it will try to go left-down. If it still can't, it wil ltry to go right-down.",
+  ),
+  "water": CellProfile(
+    "Water",
+    "Like Sand but if it fails to move, it will also try to go left. If it STILL fails, right.",
   ),
 };

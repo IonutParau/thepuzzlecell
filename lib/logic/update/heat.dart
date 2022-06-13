@@ -41,8 +41,10 @@ void heat() {
 
       if (temp >= 100 && normalCell) {
         cell.id = "magma";
+        grid.setChunk(x, y, "magma");
       } else if (temp <= -100 && normalCell) {
         cell.id = "snow";
+        grid.setChunk(x, y, "snow");
       } else {
         if (normalCell) {
           if (temp > 0) {

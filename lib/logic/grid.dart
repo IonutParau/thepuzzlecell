@@ -9,6 +9,7 @@ final subticks = [
   stoppers,
   heat,
   mechs,
+  automata,
   quantums,
   hungryTrashes,
   mirrors,
