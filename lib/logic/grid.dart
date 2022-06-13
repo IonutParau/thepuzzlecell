@@ -104,7 +104,35 @@ class Cell {
   int? cx;
   int? cy;
 
-  Cell(int x, int y) : lastvars = LastVars(0, x, y);
+  Cell(int x, int y, [int rot = 0])
+      : lastvars = LastVars(rot, x, y),
+        cx = x,
+        cy = y;
+
+  Map<String, dynamic> get toMap {
+    return {
+      "id": id,
+      "rot": rot,
+      "data": data,
+      "tags": tags,
+      "lifespan": lifespan,
+    };
+  }
+
+  static Cell fromMap(Map<String, dynamic> map, int x, int y) {
+    final cell = Cell(x, y, map["rot"]);
+
+    cell.id = map["id"];
+    cell.rot = map["rot"];
+    cell.data = map["data"];
+    cell.tags = map["tags"];
+    cell.lifespan = map["lifespan"];
+    cell.lastvars = LastVars(cell.rot, x, y);
+    cell.cx = x;
+    cell.cy = y;
+
+    return cell;
+  }
 
   Cell get copy {
     final c = Cell(lastvars.lastPos.dx.toInt(), lastvars.lastPos.dy.toInt());
