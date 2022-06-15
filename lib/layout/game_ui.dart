@@ -1017,8 +1017,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void onPointerMove(PointerMoveEvent event) {
+    final dx = event.position.dx - mouseX;
+    final dy = event.position.dy - mouseY;
+
     mouseX = event.position.dx;
     mouseY = event.position.dy;
+
+    if (middleMove && mouseDown && mouseButton == kMiddleMouseButton) {
+      storedOffX += dx;
+      storedOffY += dy;
+    }
   }
 
   void onMouseExit() {
@@ -1802,6 +1810,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var interpolation = true;
   var cellbar = false;
   var altRender = false;
+  var middleMove = false;
 
   @override
   Future<void>? onLoad() async {
@@ -1809,6 +1818,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     interpolation = storage.getBool("interpolation") ?? true;
     cellbar = storage.getBool("cellbar") ?? false;
     altRender = storage.getBool("alt_render") ?? false;
+    middleMove = storage.getBool("middle_move") ?? false;
 
     await loadAllButtonTextures();
 
@@ -2507,6 +2517,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.restore();
   }
 
+  // Main game update
   @override
   void update(double dt) {
     if (overlays.isActive("loading")) {
@@ -2638,7 +2649,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               }
             }
           }
-          if (mouseButton == kMiddleMouseButton) {
+          if (mouseButton == kMiddleMouseButton && !middleMove) {
             if (grid.inside(mx, my)) {
               final id = grid.at(mx, my).id;
               final p = grid.placeable(mx, my);
@@ -2875,28 +2886,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           setPos = false;
         }
       }
-      // if (event.buttons == kSecondaryMouseButton) {
-      //   final cx = (event.position.dx - offX) ~/ cellSize;
-      //   final cy = (event.position.dy - offY) ~/ cellSize;
-      //   if (grid.inside(cx, cy)) {
-      //     placeCell(0, 0, cx, cy);
-      //   }
-      // } else if (event.buttons == kMiddleMouseButton) {
-      //   final cx = (event.position.dx - offX) ~/ cellSize;
-      //   final cy = (event.position.dy - offY) ~/ cellSize;
-
-      //   if (grid.inside(cx, cy)) {
-      //     final id = grid.at(cx, cy).id;
-
-      //     if (edType == EditorType.making) {
-      //       currentSeletion = cells.indexOf(id);
-      //     } else if (edType == EditorType.loaded) {
-      //       if (cellsToPlace.contains(id)) {
-      //         currentSeletion = cells.indexOf(id);
-      //       }
-      //     }
-      //   }
-      // }
     }
   }
 

@@ -205,6 +205,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       ],
                     ),
                     checkboxSetting(
+                      'middle_move',
+                      'middle_move',
+                      'Middle Click Moving',
+                      false,
+                    ),
+                    checkboxSetting(
                       'subtick',
                       'subticking',
                       'Subticking',

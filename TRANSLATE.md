@@ -86,6 +86,7 @@ In the text, @variablename gets replaced with the variable.
 | sfx_volume              | The name of the SFX volume setting                                                                                                      |           |
 | lerp_speed              | The name of the Lerp Speed setting                                                                                                      |           |
 | chunk_size              | The name of the Chunk Size setting                                                                                                      |           |
+| middle_move             | The name of the Middle Click Move setting                                                                                               |           |
 
 ## Button IDs:
 
