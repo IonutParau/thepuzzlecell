@@ -16,6 +16,7 @@ final subticks = [
   rockets,
   gens,
   supgens,
+  memgens,
   reps,
   tunnels,
   transformers,

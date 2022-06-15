@@ -72,6 +72,7 @@ part 'update/timetravel.dart';
 part 'update/biomes.dart';
 part 'update/plant.dart';
 part 'update/automata.dart';
+part 'update/memgen.dart';
 
 String findAssetDirPath() {
   // print(path.absolute(
