@@ -22,7 +22,7 @@ class TexturePack {
         for (var fileExt in allowedFiles) if (file.endsWith(fileExt)) allowed = true;
 
         if (allowed) {
-          textureMap[file.split('/').last.split('.').first + '.png'] = file;
+          textureMap[file.split('/').last.split('.').first + '.png'] = fixPath(file);
         }
       }
     }
@@ -36,6 +36,12 @@ class TexturePack {
     );
   }
 
+  String fixPath(String p) {
+    final i = path.split(p).indexOf('texture_packs');
+
+    return 'texture_packs/' + dir.path.split(path.separator).last + "/" + path.split(p).sublist(i + 2).join('/');
+  }
+
   List<String> getFiles(String p) {
     var dir = Directory(p);
 
@@ -45,9 +51,9 @@ class TexturePack {
 
     l.forEach((subentry) {
       if (subentry is File) {
-        parts.add(path.split(subentry.path).last);
+        parts.add(subentry.path);
       } else if (subentry is Directory) {
-        parts.addAll(getFiles(subentry.path).map((str) => "$p/$str"));
+        parts.addAll(getFiles(subentry.path).map((str) => path.join(subentry.path, str)));
       }
     });
 
