@@ -13,15 +13,13 @@ final List<String> changes = [
   "Added setting to change chunk size",
   "Added Water and Sand",
   "Added Memory Generators",
+  "Added AutoDetect in texture packs",
+  "Added YAML and TOML support to texture packs",
 ];
 
 IconData getTrailing(String change) {
   change = change.toLowerCase();
-  if (change.startsWith('fixed') ||
-      change.startsWith('patched') ||
-      change.startsWith('moved') ||
-      change.startsWith('reworked') ||
-      change.startsWith('changed')) {
+  if (change.startsWith('fixed') || change.startsWith('patched') || change.startsWith('moved') || change.startsWith('reworked') || change.startsWith('changed')) {
     return FluentIcons.change_entitlements;
   } else if (change.startsWith('added')) {
     return FluentIcons.insert;
