@@ -5,13 +5,53 @@ class TexturePack {
 
   TexturePack(this.dir);
 
+  static List<String> allowedFiles = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".bmp",
+  ];
+
   void setupMap(Map<String, dynamic> m) {
+    if (m['autoDetect'] == true) {
+      final f = getFiles(dir.path);
+
+      for (var file in f) {
+        var allowed = false;
+
+        for (var fileExt in allowedFiles) if (file.endsWith(fileExt)) allowed = true;
+
+        if (allowed) {
+          textureMap[file.split('/').last.split('.').first + '.png'] = file;
+        }
+      }
+    }
+
     m.forEach(
       (id, p) {
-        print('Changed image ID: $id.png');
-        textureMap['$id.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$p';
+        if (p is String) {
+          textureMap['$id.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$p';
+        }
       },
     );
+  }
+
+  List<String> getFiles(String p) {
+    var dir = Directory(p);
+
+    final l = dir.listSync();
+
+    final parts = <String>[];
+
+    l.forEach((subentry) {
+      if (subentry is File) {
+        parts.add(path.split(subentry.path).last);
+      } else if (subentry is Directory) {
+        parts.addAll(getFiles(subentry.path).map((str) => "$p/$str"));
+      }
+    });
+
+    return parts;
   }
 
   void load([bool reset = true]) {
