@@ -125,7 +125,7 @@ class Cell {
 
     cell.id = map["id"];
     cell.rot = map["rot"];
-    cell.data = map["data"];
+    cell.data = map["data"] as Map<String, dynamic>;
     cell.tags = map["tags"];
     cell.lifespan = map["lifespan"];
     cell.lastvars = LastVars(cell.rot, x, y);

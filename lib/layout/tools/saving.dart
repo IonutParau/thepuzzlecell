@@ -969,7 +969,7 @@ class P4 {
     if (value is List || value is Set) {
       return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
     } else if (value is Map<String, dynamic>) {
-      final keys = [];
+      final keys = ["="];
 
       value.forEach((key, value) {
         keys.add('$key=${encodeValue(value)}');

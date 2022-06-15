@@ -31,13 +31,15 @@ void memGen(int x, int y, int indir, int outdir) {
 
   while (addedRot < 0) addedRot += 4;
 
-  push(
-    fx,
-    fy,
-    outdir,
-    1,
-    replaceCell: Cell.fromMap(c.data["memcell"]!, x, y)..rotate(addedRot),
-  );
+  if (c.data["memcell"] != null) {
+    push(
+      fx,
+      fy,
+      outdir,
+      1,
+      replaceCell: Cell.fromMap(c.data["memcell"]!, x, y)..rotate(addedRot),
+    );
+  }
 }
 
 void memgens() {
