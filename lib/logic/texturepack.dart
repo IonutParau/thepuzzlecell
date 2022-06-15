@@ -54,6 +54,28 @@ class TexturePack {
     return parts;
   }
 
+  Map<String, dynamic> getMap() {
+    final f = File(path.join(dir.path, 'pack.json'));
+
+    if (f.existsSync()) {
+      return jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
+    } else {
+      final yamlF = File(path.join(dir.path, 'pack.yaml'));
+
+      if (yamlF.existsSync()) {
+        return loadYaml(f.readAsStringSync()) as Map<String, dynamic>;
+      } else {
+        final tomlF = File(path.join(dir.path, 'pack.toml'));
+
+        if (tomlF.existsSync()) {
+          return TomlDocument.parse(f.readAsStringSync()).toMap();
+        }
+      }
+    }
+
+    return <String, dynamic>{};
+  }
+
   void load([bool reset = true]) {
     print("Loaded folder in ${dir.path}");
     if (reset) {
