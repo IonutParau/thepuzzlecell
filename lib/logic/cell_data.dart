@@ -204,11 +204,19 @@ final cells = {
   "mem_gen_ccw",
   "mem_gen_double",
   "mem_gen_triple",
+  "molten_puzzle",
+  "frozen_puzzle",
+  "unstable_puzzle",
+  "temporal_puzzle",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "molten_puzzle.png": "puzzle/molten_puzzle.png",
+  "frozen_puzzle.png": "puzzle/frozen_puzzle.png",
+  "unstable_puzzle.png": "puzzle/unstable_puzzle.png",
+  "temporal_puzzle.png": "puzzle/temporal_puzzle.png",
   "mem_gen.png": "recreators/memory/mem_gen.png",
   "mem_gen_cw.png": "recreators/memory/mem_gen_cw.png",
   "mem_gen_ccw.png": "recreators/memory/mem_gen_ccw.png",
@@ -1702,5 +1710,29 @@ final cellInfo = <String, CellProfile>{
   "mem_gen_triple": CellProfile(
     "Memory Triple Generator",
     "Memory Generator + Memory Generator CW + Memory Generator CCW",
+  ),
+  "molten_puzzle": CellProfile(
+    "Molten Puzzle",
+    "A puzzle cell that also heats up the cell in the direction you're moving in if it can't move it",
+  ),
+  "frozen_puzzle": CellProfile(
+    "Frozen Puzzle",
+    "A puzzle cell that also freezes the cell in the direction you're moving in if it can't move it",
+  ),
+  "unstable_puzzle": CellProfile(
+    "Unstable Puzzle",
+    "A mix of Puzzle cell and Unstable Mover",
+  ),
+  "temporal_puzzle": CellProfile(
+    "Temporal Puzzle",
+    "Puzzle cell but you can time travel by pressing F",
+  ),
+  "mover_puzzle": CellProfile(
+    "Mover Puzzle",
+    "Puzzle cell but constantly moves forward",
+  ),
+  "trash_puzzle": CellProfile(
+    "Trash Puzzle",
+    "Puzzle cell but deletes the cell in front of it if it can't be pushed",
   ),
 };

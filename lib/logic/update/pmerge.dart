@@ -21,6 +21,22 @@ void mergePuzzle(int x, int y, int dir) {
       f.id = "mover_puzzle";
       grid.setChunk(x, y, "mover_puzzle");
       o.id = "empty";
+    } else if (o.id == "unstable") {
+      f.id = "unstable_puzzle";
+      grid.setChunk(x, y, "unstable_puzzle");
+      o.id = "empty";
+    } else if (o.id == "snow") {
+      f.id = "frozen_puzzle";
+      grid.setChunk(x, y, "frozen_puzzle");
+      o.id = "empty";
+    } else if (o.id == "magma") {
+      f.id = "molten_puzzle";
+      grid.setChunk(x, y, "molten_puzzle");
+      o.id = "empty";
+    } else if (o.id == "time_trash") {
+      f.id = "temporal_puzzle";
+      grid.setChunk(x, y, "temporal_puzzle");
+      o.id = "empty";
     }
   }
 }

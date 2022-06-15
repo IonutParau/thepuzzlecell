@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flame/components.dart';
@@ -37,3 +36,4 @@ part 'settings.dart';
 part 'langs.dart';
 part 'shopui.dart';
 part 'achievement.dart';
+part 'mixed_render.dart';

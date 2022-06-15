@@ -1923,6 +1923,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.loadAll(
       cells.map((name) => textureMap["$name.png"] ?? "$name.png").toList(),
     );
+
     await Flame.images.load('pixel_on.png');
 
     loadAllButtons();

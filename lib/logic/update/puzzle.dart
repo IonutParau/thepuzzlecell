@@ -1,7 +1,6 @@
 part of logic;
 
-void doPuzzleSide(int x, int y, int dir, Set<String> cells,
-    [String type = "normal", int force = 1]) {
+void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "normal", int force = 1]) {
   AchievementManager.complete("incontrol");
   dir += 4;
   dir %= 4;
@@ -12,8 +11,13 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
 
   final o = grid.at(ox, oy);
   if (o.id.endsWith("puzzle") && o.id != "antipuzzle") {
+    var nextType = "normal";
     if (o.rot == puzzle.rot) {
-      if (o.id == "trash_puzzle") type = "trash";
+      if (o.id == "trash_puzzle") nextType = "trash";
+      if (o.id == "temporal_puzzle") nextType = "temporal";
+      if (o.id == "unstable_puzzle") nextType = "unstable";
+      if (o.id == "molten_puzzle") nextType = "molten";
+      if (o.id == "frozen_puzzle") nextType = "frozen";
       force++;
       o.updated = true;
     } else if (o.rot == ((puzzle.rot + 2) % 4)) {
@@ -22,7 +26,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
     }
     if (force == 0) return;
     if ((o.rot == puzzle.rot) || (o.rot == (puzzle.rot + 2) % 4)) {
-      doPuzzleSide(ox, oy, dir, cells, type, force);
+      doPuzzleSide(ox, oy, dir, cells, nextType, force);
     }
   }
   if (o.id == "key") {
@@ -45,11 +49,22 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells,
     }
   }
 
+  if (type == "unstable") {
+    unstableMove(x, y, dir);
+
+    return;
+  }
+
   if (push(x, y, dir, 1, mt: MoveType.puzzle)) {
     // DO stuff
   } else {
     if (type == "trash") {
+      grid.addBroken(grid.at(ox, oy), ox, oy);
       moveCell(x, y, ox, oy);
+    } else if (type == "frozen") {
+      addHeat(ox, oy, -1);
+    } else if (type == "molten") {
+      addHeat(ox, oy);
     }
   }
 }
@@ -78,6 +93,8 @@ void puzzles(Set<String> cells) {
     null,
     "sandbox",
   );
+
+  var removeTriggerKey = false;
 
   for (var rot in rotOrder) {
     grid.updateCell(
@@ -129,5 +146,76 @@ void puzzles(Set<String> cells) {
       rot,
       "mover_puzzle",
     );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells, "unstable");
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells, "unstable");
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells, "unstable");
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot, cells, "unstable");
+        }
+      },
+      rot,
+      "unstable_puzzle",
+    );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells, "frozen");
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells, "frozen");
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells, "frozen");
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot, cells, "frozen");
+        }
+      },
+      rot,
+      "frozen_puzzle",
+    );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells, "molten");
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells, "molten");
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells, "molten");
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot, cells, "molten");
+        }
+      },
+      rot,
+      "molten_puzzle",
+    );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells, "temporal");
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells, "temporal");
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells, "temporal");
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot, cells, "temporal");
+        } else if (keys[LogicalKeyboardKey.keyT.keyLabel] == true) {
+          cell.tags.add("consistent");
+          cells.add("consistency");
+          removeTriggerKey = true;
+          travelTime();
+        }
+      },
+      rot,
+      "temporal_puzzle",
+    );
   }
+
+  if (removeTriggerKey) keys.remove(LogicalKeyboardKey.keyT.keyLabel);
 }
