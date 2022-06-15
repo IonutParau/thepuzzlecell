@@ -19,7 +19,11 @@ void memGen(int x, int y, int indir, int outdir) {
 
   if (!grid.inside(bx, by)) return;
 
-  final b = grid.at(bx, by);
+  final b = grid.at(bx, by).copy;
+
+  if (b.tags.contains("gend $outdir")) return;
+
+  b.tags.add("gend $outdir");
 
   if (!ungennable.contains(b.id)) {
     c.data["memcell"] = b.toMap;
@@ -32,13 +36,18 @@ void memGen(int x, int y, int indir, int outdir) {
   while (addedRot < 0) addedRot += 4;
 
   if (c.data["memcell"] != null) {
+    final tgc = Cell.fromMap(c.data["memcell"]!, x, y)..rotate(addedRot);
+
+    if (shouldHaveGenBias(tgc.id, toSide(outdir, tgc.rot))) tgc.updated = true;
     push(
       fx,
       fy,
       outdir,
       1,
-      replaceCell: Cell.fromMap(c.data["memcell"]!, x, y)..rotate(addedRot),
+      replaceCell: tgc.copy,
     );
+    tgc.tags.remove("gend $outdir");
+    c.data["memcell"] = tgc.toMap;
   }
 }
 

@@ -154,6 +154,14 @@ extension SetX on Set<String> {
 }
 
 class CellTypeManager {
+  static List<String> memgens = [
+    "mem_gen",
+    "mem_gen_cw",
+    "mem_gen_ccw",
+    "mem_gen_double",
+    "mem_gen_triple",
+  ];
+
   static List<String> rockets = [
     "rocket",
     "rocket_cw",
