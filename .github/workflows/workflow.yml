@@ -31,7 +31,7 @@ jobs:
           name: thepuzzlecell-linux
           path: build/linux/x64/release/bundle
       - run: chmod +x build_appimage.sh
-      - run: ./build_appimage.sh
+      - run: sudo ./build_appimage.sh
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-appimage
