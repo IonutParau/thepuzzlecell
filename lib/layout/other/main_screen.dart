@@ -154,7 +154,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                 grid = loadStr(str.text ?? "");
                                 Navigator.pushNamed(context, '/game-loaded');
                               } catch (e) {
-                                print(e.toString());
                                 showDialog(
                                   context: context,
                                   builder: (ctx) {
@@ -198,8 +197,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                     content: Text(
                                       '${lang(
                                         'noStringLoadDesc',
-                                        'The clipboard data you have in your clipboard is not text.\nError: ${e.toString()}',
-                                        {"error": e.toString()},
+                                        'The clipboard data you have in your clipboard is not text.\nError: Clipboard is not text',
+                                        {"error": "Clipboard is not text"},
                                       )}',
                                     ),
                                     actions: [

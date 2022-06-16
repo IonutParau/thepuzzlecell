@@ -1685,7 +1685,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "sand": CellProfile(
     "Sand",
-    "Goes down. If it can't, it will try to go left-down. If it still can't, it wil ltry to go right-down.",
+    "Goes down. If it can't, it will try to go left-down. If it still can't, it will try to go right-down.",
   ),
   "water": CellProfile(
     "Water",
