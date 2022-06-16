@@ -275,9 +275,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: (storage.getInt("chunk_size") ?? 25).toDouble(),
+                            value: min(storage.getInt("chunk_size") ?? 25, 25).toDouble(),
                             min: 1,
-                            max: 100,
+                            max: 25,
                             onChanged: (v) => storage
                                 .setInt(
                                   "chunk_size",

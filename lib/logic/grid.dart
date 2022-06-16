@@ -223,17 +223,17 @@ class Grid {
       }
     }
 
-    renderChunks = [];
+    // renderChunks = [];
 
-    final renderChunkWidth = ceil(width / renderChunkSize);
-    final renderChunkHeight = ceil(height / renderChunkSize);
+    // final renderChunkWidth = ceil(width / renderChunkSize);
+    // final renderChunkHeight = ceil(height / renderChunkSize);
 
-    for (var x = 0; x < renderChunkWidth; x++) {
-      renderChunks.add([]);
-      for (var y = 0; y < renderChunkHeight; y++) {
-        renderChunks.last.add(false);
-      }
-    }
+    // for (var x = 0; x < renderChunkWidth; x++) {
+    //   renderChunks.add([]);
+    //   for (var y = 0; y < renderChunkHeight; y++) {
+    //     renderChunks.last.add(false);
+    //   }
+    // }
   }
 
   int width;
@@ -297,7 +297,7 @@ class Grid {
       }
       return;
     }
-    chunks[x ~/ chunkSize][y ~/ chunkSize].add(id);
+    chunks[floor(x / chunkSize)][floor(y ~/ chunkSize)].add(id);
     if (id == "empty") {
       removeRenderSpot(x, y);
     } else {
@@ -568,15 +568,6 @@ class Grid {
     final cells = <String>{};
     //reloadChunks();
 
-    final List<List<Set<String>>> newcells = [];
-
-    for (var x = 0; x < ceil(width / chunkSize); x++) {
-      newcells.add([]);
-      for (var y = 0; y < ceil(height / chunkSize); y++) {
-        newcells.last.add({"empty"});
-      }
-    }
-
     // for (var chunkRow in chunks) {
     //   for (var chunk in chunkRow) {
     //     for (var cell in chunk) {
@@ -597,6 +588,9 @@ class Grid {
         cell.lifespan++;
         cells.add(cell.id);
         cells.add(place[x][y]);
+        if (tickCount % 100 == 0) {
+          setChunk(x, y, cell.id);
+        }
 
         //newcells[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
 
@@ -649,8 +643,6 @@ class Grid {
     return empty / count;
   }
 
-  void refreshChunks() {}
-
   final snowflake = Snowflake();
 
   List<List<bool>> renderChunks = [];
@@ -659,13 +651,16 @@ class Grid {
   bool inChunk(int x, int y, String chunkID) {
     if (chunkID == "*") return true;
 
+    final cx = floor(x / chunkSize);
+    final cy = floor(y / chunkSize);
+
     if (chunkID == "render") {
       return renderChunks[x ~/ renderChunkSize][y ~/ renderChunkSize];
     }
     if (chunkID == "all") {
-      return (chunks[x ~/ chunkSize][y ~/ chunkSize].isNotEmpty);
+      return (chunks[cx][cy].isNotEmpty);
     }
-    return (chunks[x ~/ chunkSize][y ~/ chunkSize].contains(chunkID));
+    return (chunks[cx][cy].contains(chunkID));
   }
 
   void loopChunks(String chunkID, GridAlignment loopMode, Function(Cell cell, int x, int y) forEach,
@@ -791,9 +786,6 @@ class Grid {
     tickCount++;
     cells = prepareTick();
     //print(cells);
-    if (tickCount % 10 == 0) {
-      refreshChunks();
-    }
 
     final subticking = storage.getBool('subtick') ?? false;
     if (subticking) {
