@@ -427,11 +427,11 @@ class CellCategory {
 final categories = [
   CellCategory(
     "Tools",
-    "Tools that do tool things to make your life easier",
+    "Tools to make your life easier",
     [
       CellCategory(
         "Blueprints",
-        "You can click on them and they will override your pasteboard so you can paste them",
+        "These will override your pasteboard so you can paste them",
         [],
         "blueprint",
       ),
@@ -451,7 +451,7 @@ final categories = [
       "empty",
       CellCategory(
         "Push Cells",
-        "Cells that are only special in how they get pushed",
+        "Cells that can be pushed under specific conditions",
         [
           "push",
           "slide",
@@ -466,7 +466,7 @@ final categories = [
       ),
       CellCategory(
         "Constraints",
-        "Can only be pushed or can't be pushed by a specific force",
+        "Can only eat, be pushed, or not be pushed by a specific force",
         [
           "unpushable",
           "unpullable",
@@ -497,7 +497,7 @@ final categories = [
       "ghost",
       CellCategory(
         "Placeables",
-        "Also called backgrounds, they are behind cells and determine the behavior when in puzzle mode",
+        "Also known as backgrounds, cells can be placed on top of these, which determines the cell's behavior when in puzzle mode",
         [
           "place",
           "yellow_place",
@@ -510,7 +510,7 @@ final categories = [
       ),
       CellCategory(
         "Biomes",
-        "Like placeables, but while the game is running, they interact with the cell above it",
+        "Placeables/backgrounds that interact with the cell above it every tick",
         [
           "biome_cw",
           "biome_ccw",
@@ -533,7 +533,7 @@ final categories = [
     [
       CellCategory(
         "Movers",
-        "They move forwards, pushing what is in front",
+        "They move forwards, pushing cells forward",
         [
           "mover",
           "slow_mover",
@@ -558,7 +558,7 @@ final categories = [
       ),
       CellCategory(
         "Grabbers",
-        "They grab cells on their side, they can't push themselves or the cells their grabbing",
+        "They grab cells on their sides, they can't push neither themselves nor the grabbed cells",
         [
           "grabber",
           "thief",
@@ -597,7 +597,7 @@ final categories = [
       "nudger",
       CellCategory(
         "Mirrors",
-        "Swaps cells around",
+        "Swaps cells around themselves",
         ["mirror", "super_mirror"],
         "mirror",
       ),
@@ -611,11 +611,11 @@ final categories = [
   ),
   CellCategory(
     "Recreators",
-    "Cells that copy other cells",
+    "Cells that copy or create other cells",
     [
       CellCategory(
         "Generators",
-        "They copy whats behind towards where the arrow is facing",
+        "They copy the cell behind them towards where the arrow is facing",
         [
           "generator",
           "generator_cw",
@@ -633,7 +633,7 @@ final categories = [
       ),
       CellCategory(
         "Super Generators",
-        "Generators taken to the next level",
+        "Generators that generate entire rows of cells",
         [
           "supgen",
           "supgen_cw",
@@ -648,7 +648,7 @@ final categories = [
       ),
       CellCategory(
         "Memory Generator",
-        "A generator that remembers what it has generated and when it tries to generate nothing, it will instead generate said cell",
+        "Generators that remember what they have last generated and when there's nothing behind them, they will keep generating said cell",
         [
           "mem_gen",
           "mem_gen_cw",
@@ -673,7 +673,7 @@ final categories = [
       ),
       CellCategory(
         "Tunnels",
-        "Move cells from the back to the front",
+        "They move cells from their back to their front",
         [
           "tunnel",
           "tunnel_cw",
@@ -700,7 +700,7 @@ final categories = [
       ),
       CellCategory(
         "Forkers",
-        "A cell comes in from the back, a copy of it comes out",
+        "A cell comes in from the back, a copy of it comes out front",
         [
           "forker",
           "forker_cw",
@@ -728,12 +728,12 @@ final categories = [
   ),
   CellCategory(
     "Unique Cells",
-    "Special cells",
+    "Special cells that don't fit any other category",
     [
       "stopper",
       CellCategory(
         "Destroyers",
-        "They destroy other cells",
+        "They destroy or eat other cells",
         [
           "enemy",
           "semi_enemy",
@@ -783,7 +783,7 @@ final categories = [
       ),
       CellCategory(
         "Time Travel",
-        "Make sure you don't make a time paradox!",
+        "Can send stuff, including time, back to the initial state. Make sure you don't make a time paradox!",
         [
           "time_trash",
           "time_reset",
@@ -796,7 +796,7 @@ final categories = [
       ),
       CellCategory(
         "Heat Cells",
-        "Cells can now be hot, because yes",
+        "Cells can now be hot or cool",
         [
           "magma",
           "snow",
@@ -805,7 +805,7 @@ final categories = [
       ),
       CellCategory(
         "Living Cells",
-        "Cells can now live",
+        "Cells can now live through the power of AI",
         [
           "karl",
           "darty",
@@ -830,7 +830,7 @@ final categories = [
       "displayer",
       CellCategory(
         "Power Givers",
-        "They give mechanical power",
+        "They give cells mechanical power",
         [
           "mech_gen",
           "mech_trash",
@@ -843,7 +843,7 @@ final categories = [
       ),
       CellCategory(
         "Users",
-        "Cells that only do their thing when given mechanical power",
+        "Cells that only work when they receive mechanical power",
         [
           "mech_mover",
           "mech_puller",
@@ -859,7 +859,7 @@ final categories = [
       ),
       CellCategory(
         "Logic Gates",
-        "They take inputs and throw an output based off of a logical operation",
+        "They take mechanical inputs and throw a mechanical output based off of a logical operation",
         [
           "and_gate",
           "or_gate",
@@ -877,7 +877,7 @@ final categories = [
   ),
   CellCategory(
     "Puzzle Cells",
-    "Cells made to be used when making puzzles",
+    "Cells made to be used in puzzles",
     [
       "puzzle",
       "antipuzzle",
@@ -910,15 +910,15 @@ final borders = <String>{
 final cellInfo = <String, CellProfile>{
   "empty": CellProfile(
     "Empty",
-    "Placing it will erase what was before it. You can also right click to achieve the same effect",
+    "Placing it will erase what was before it. You can also right click to erase as well",
   ),
-  "wall": CellProfile("Wall", "Can't be moved"),
-  "ghost": CellProfile("Ghost Wall", "Can't be moved or generated"),
+  "wall": CellProfile("Wall", "Can't be moved, but can be generated"),
+  "ghost": CellProfile("Ghost Wall", "Can't be moved nor generated"),
   "place": CellProfile(
     "Placeable",
     "Allows the player to pick up the cell on top of this and place it on other placeable tiles",
   ),
-  "mover": CellProfile("Mover", "Moves forward, and it can also push forward"),
+  "mover": CellProfile("Mover", "Moves forward, can push forward"),
   "puller": CellProfile(
     "Puller",
     "Moves forward, unable to push, but instead pulls all cells behind it",
@@ -929,23 +929,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "liner": CellProfile(
     "Liner",
-    "It pushes the front and pulls the back, basically puller + pusher",
+    "Moves, pushes and pulls, basically puller + pusher",
   ),
   "bird": CellProfile(
     "Bird",
-    "It flies around and does its thing, its a bird after all",
+    "It flies around and does its thing, its a bird after all (Moves in a zigzag pattern when facing right/left, moves in a straight line when facing up/down, rotates clockwise if it can't move)",
   ),
   "releaser": CellProfile(
     "Releaser",
-    "A mover, except if a cell is in front of it, it stops it from updating. If it is stopped from moving, it will allow the catched cell to update again",
+    "A mover, that prevents the cell in front of it from updating. If it can't move, it will allow the cell in front of it to update",
   ),
   "fan": CellProfile(
     "Fan",
-    "It pushes away everything in front of it",
+    "It pushes the cell in front of it away",
   ),
   "wormhole": CellProfile(
     "Wormhole",
-    "When wrap around is enabled, any cell that falls in will be spawned on the opposite side of the map. Can be buggy. It destroys the incoming cell if wrap mode is disabled",
+    "When wrap mode is on, any cell that falls in will be spawned on the opposite side of the map. Can be buggy. Acts like trash cell if wrap mode is off",
   ),
   "generator": CellProfile(
     "Generator",
@@ -953,11 +953,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "generator_cw": CellProfile(
     "Generator CW",
-    "Generates the cell behind it in the right of it, applying rotation based on that",
+    "Generates the cell behind it to the right of it, rotating it clockwise",
   ),
   "generator_ccw": CellProfile(
     "Generator CCW",
-    "Generates the cell behind it in the left of it, appyling rotation based on that",
+    "Generates the cell behind it to the left of it, rotating it counter-clockwise",
   ),
   "triplegen": CellProfile(
     "Triple Generator",
@@ -981,7 +981,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "darty": CellProfile(
     "Darty",
-    "Moves forward, if it can push the cell in front it eats it and replicates, if it can't push it, it turns goes in another direction",
+    "Moves forward. If it can push the cell in front, it eats it and replicates. If it can't push nor move, it turns then moves",
   ),
   "push": CellProfile(
     "Push",
@@ -993,39 +993,39 @@ final cellInfo = <String, CellProfile>{
   ),
   "rotator_cw": CellProfile(
     "Rotator CW",
-    "Rotates all the cells touching it clockwise",
+    "Rotates adjacent cells clockwise",
   ),
   "rotator_ccw": CellProfile(
     "Rotator CCW",
-    "Rotates all the cells touching it counter-clockwise",
+    "Rotates adjacent cells counter-clockwise",
   ),
   "gear_cw": CellProfile(
     "Gear CW",
-    "Spins the cells touching it around itself clockwise",
+    "Spins surrounding cells clockwise around itself",
   ),
   "gear_ccw": CellProfile(
     "Gear CCW",
-    "Spins the cells touching it around itself counter-clockwise",
+    "Spins surrounding cells counter-clockwise around itself",
   ),
   "mirror": CellProfile(
     "Mirror",
-    "Swaps the cells the arrows are pointing to, if movable",
+    "Swaps the cells the arrows are pointing to, if able",
   ),
   "enemy": CellProfile(
     "Enemy",
-    "When something moves into it, it dies and so does the thing going into it",
+    "When something moves into it, it destroys it then dies",
   ),
   "trash": CellProfile(
     "Trash",
-    "When something moves into it, the thing moving into it dies, but the trash cell remains",
+    "Eats all cells that move into it",
   ),
   "puzzle": CellProfile(
     "Puzzle",
-    "It's you! Can be moved with the arrow keys when the game is running, when it moves a cell it is touching it \"interacts\" with it",
+    "It's you! Can be moved with the arrow keys when the game is running. When it moves a cell it is touching, it \"interacts\" with it",
   ),
   "key": CellProfile(
     "Key",
-    "Can be picked up by player using interaction",
+    "Can be picked up by player by interacting with it",
   ),
   "lock": CellProfile(
     "Lock",
@@ -1033,7 +1033,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "flag": CellProfile(
     "Flag",
-    "When a puzzle cell interacts with it, if there are no enemy cells on the grid, triggers a win",
+    "When a puzzle cell interacts with it, and there are no enemy cells on the grid, you win!",
   ),
   "antipuzzle": CellProfile(
     "Anti-Puzzle",
@@ -1041,15 +1041,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "tunnel": CellProfile(
     "Tunnel",
-    "Moves the cell from the back to the front instantly",
+    "Moves the cell from the back to the front",
   ),
   "physical_gen": CellProfile(
     "Physical Generator",
-    "Like a generator except, if it can't move whats in front of it, it tries to move backwards to generate the cell",
+    "A generator, except if it can't push the cell in front of it, it tries to move backwards to make space",
   ),
   "pmerge": CellProfile(
     "PuzzleMerge™",
-    "Using the latest quantum Sci-Fi stuff, we can combine specific cells with your puzzle cell to give it special stuff",
+    "Using the latest quantum Sci-Fi stuff, we can combine specific cells with your puzzle cell to give it special abilities!",
   ),
   "sync": CellProfile(
     "Sync Cell",
@@ -1057,7 +1057,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "opposite_rotator": CellProfile(
     "Opposite Rotator",
-    "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and in between, nothing",
+    "On one side we have a Rotator CW, on the opposite side a Rotator CCW, and in between, a push cell",
   ),
   "stopper": CellProfile(
     "Stopper",
@@ -1065,35 +1065,35 @@ final cellInfo = <String, CellProfile>{
   ),
   "mech_mover": CellProfile(
     "Mechanically Powered Mover",
-    "Only moves if it has been powered mechanically",
+    "Only moves if it receives mechanical power",
   ),
   "mech_gear": CellProfile(
     "Mechanical Gear",
-    "Can carry mechanical energy via it's spin",
+    "Can carry mechanical energy through spinning",
   ),
   "mech_gen": CellProfile(
     "Constant Mechanical Generator",
-    "This cell breaks the laws of physics and generates a constant stream of mechanical energy",
+    "This cell breaks the laws of physics and generates a constant stream of mechanical energy in front of it",
   ),
   "pixel": CellProfile(
     "WiFi Pixel",
-    "Turns on if powered or using WiFi Displayer",
+    "Turns white if powered or receiving a WiFi signal",
   ),
   "displayer": CellProfile(
     "WiFi Displayer",
-    "When powered sends WiFi signal to the WiFi Pixel in front of it from any distance",
+    "When powered, sends WiFi signal to the WiFi Pixel in front of it from any distance, even through other cells",
   ),
   "mech_puller": CellProfile(
     "Mechanically Powered Puller",
-    "Only pulls if it has been powered mechanically",
+    "Only pulls and moves if it receives mechanical power",
   ),
   "mech_grabber": CellProfile(
     "Mechanically Powered Grabber",
-    "Only grabs if it has been powered mechanically",
+    "Only grabs and moves if it receives mechanical power",
   ),
   "mech_fan": CellProfile(
     "Mechanically Powered Fan",
-    "Only pushes if it has been powered mechanically",
+    "Only pushes if it receives mechanical power",
   ),
   "mech_trash": CellProfile(
     "Trash-Based Mechanical Generator",
@@ -1101,7 +1101,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "cross_mech_gear": CellProfile(
     "Cross Mechanical Gear",
-    "It's like two gears stacked on top of eachother",
+    "It's like two gears stacked on top of each-other",
   ),
   "and_gate": CellProfile(
     "AND Gate",
@@ -1133,19 +1133,19 @@ final cellInfo = <String, CellProfile>{
   ),
   "rotator_180": CellProfile(
     "180 Degree Rotator",
-    "Rotates the cells around it 180 degrees",
+    "Rotates adjacent cells 180 degrees",
   ),
   "redirector": CellProfile(
     "Redirector",
-    "Makes the cell in front of it have the same rotation as the redirector",
+    "Sets rotation of the cell in front of it to the same rotation as the redirector",
   ),
   "vacuum": CellProfile(
     "Vacuum",
-    "Pulls the cell 2 tiles in front of it forwards",
+    "Pulls the cell 2 tiles in front of it towards itself",
   ),
   "onedir": CellProfile(
     "One Directional",
-    "Half of a slide cell",
+    "Can only be pushed in one direction",
   ),
   "twodir": CellProfile(
     "Two Directional",
@@ -1153,15 +1153,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "threedir": CellProfile(
     "Three Directional",
-    "You likely get the point by now",
+    "Can only be pushed in three directions... You likely get the point by now",
   ),
   "ant_cw": CellProfile(
     "Wheel CW",
-    "It spins, and that moves it",
+    "It spins clockwise, and that moves it",
   ),
   "ant_ccw": CellProfile(
     "Wheel CCW",
-    "It spins, and that moves it",
+    "It spins counter-clockwise, and that moves it",
   ),
   "driller": CellProfile(
     "Driller",
@@ -1169,11 +1169,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "speed": CellProfile(
     "Speed",
-    "Moves forward but can't push",
+    "Moves forward, can't push",
   ),
   "silent_trash": CellProfile(
     "Silent Trash Cell",
-    "Trash Cell except does not make an noise",
+    "Trash Cell that doesn't make a noise",
   ),
   "supgen": CellProfile(
     "Super Generator",
@@ -1181,11 +1181,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "supgen_cw": CellProfile(
     "Super Generator CW",
-    "Generates the entire row behind it on its right",
+    "Generates the entire row behind it on its right, rotating the row clockwise",
   ),
   "supgen_ccw": CellProfile(
     "Super Generator CCW",
-    "Generates the entire row behind it on its left",
+    "Generates the entire row behind it on its left, rotating the row counter-clockwise",
   ),
   "cross_supgen": CellProfile(
     "Cross Super Generator",
@@ -1201,7 +1201,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "super_mirror": CellProfile(
     "Super Mirror",
-    "Like a mirror, but swaps rows instead of just cells",
+    "A mirror that swaps entire rows",
   ),
   "tunnel_cw": CellProfile(
     "Tunnel CW",
@@ -1213,15 +1213,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "dual_tunnel": CellProfile(
     "Dual Tunnel",
-    "Tunnels the cell behind it into 2 positions by breaking physics",
+    "Moves the cell behind it into 2 positions by breaking physics",
   ),
   "triple_tunnel": CellProfile(
     "Triple Tunnel",
-    "Dual Tunnel + Tunnel. Breaks physics even more",
+    "Dual Tunnel + Tunnel. Breaks physics even more. Are there generators inside this thing?",
   ),
   "warper": CellProfile(
     "Warper",
-    "A stackable tunnel. It behaves like a tunnel, but if more warpers are but in front of it, it will tunnel it in their front",
+    "A stackable tunnel. Behaves like a tunnel, but if multiple warpers are in front of it, it will tunnel the cell to front of them",
   ),
   "warper_cw": CellProfile(
     "Warper CW",
@@ -1233,23 +1233,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "fast": CellProfile(
     "Fast",
-    "Speed but moves 2x as fast",
+    "Speed but moves twice as fast",
   ),
   "slow": CellProfile(
     "Slow",
-    "Speed but moves once every 2 ticks",
+    "Speed but moves half as much (once every 2 ticks)",
   ),
   "blue_place": CellProfile(
     "Blue Placeable",
-    "Allows the player to pick up the cell on top of this and place it on other blue placeable tiles",
+    "Allows the player to pick up the cell on top of it and place it on other blue placeable tiles",
   ),
   "red_place": CellProfile(
     "Red Placeable",
-    "Allows the player to pick up the cell on top of this and place it on other red placeable tiles",
+    "Allows the player to pick up the cell on top of it and place it on other red placeable tiles",
   ),
   "yellow_place": CellProfile(
     "Yellow Placeable",
-    "Allows the player to pick up the cell on top of this and place it on other yellow placeable tiles",
+    "Allows the player to pick up the cell on top of it and place it on other yellow placeable tiles",
   ),
   "rotatable": CellProfile(
     "Rotatable",
@@ -1257,7 +1257,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "slow_mover": CellProfile(
     "Slow Mover",
-    "Mover that moves every 2 ticks",
+    "Mover that moves half as much (once every 2 ticks)",
   ),
   "fast_mover": CellProfile(
     "Fast Mover",
@@ -1265,7 +1265,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "mobile_trash": CellProfile(
     "Mobile Trash",
-    "It can be moved, but when moved, the cell in front of it will die",
+    "Acts like a push cell, but when moved, the cell in front of it will die",
   ),
   "weight": CellProfile(
     "Weight",
@@ -1273,27 +1273,27 @@ final cellInfo = <String, CellProfile>{
   ),
   "cross_replicator": CellProfile(
     "Cross Replicator",
-    "Like the cross generator but replicators",
+    "2 replicators 90 degrees apart from each-other stacked as one",
   ),
   "opposite_replicator": CellProfile(
     "Opposite Replicator",
-    "2 replicators opposite of eachother stacked as one",
+    "2 replicators opposite of each-other stacked as one",
   ),
   "triple_rep": CellProfile(
     "Triple Replicator",
-    "3 replicators for the price of one",
+    "3 replicators stacked as one",
   ),
   "quad_rep": CellProfile(
     "Quad Replicator",
-    "4-way Replicator",
+    "4 replicators stacked as one",
   ),
   "physical_replicator": CellProfile(
     "Physical Replicator",
-    "Like the physical generator, but caused way more bugs",
+    "Like the physical generator as a replicator, but may cause more bugs",
   ),
   "transformer": CellProfile(
     "Transformer",
-    "This cell is quite over-powered. It will turn the cell in front of it into the cell behind it.",
+    "This cell is quite over-powered. It will turn the cell in front of it into a copy of the cell behind it.",
   ),
   "transformer_cw": CellProfile(
     "Transformer CW",
@@ -1309,11 +1309,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "semi_enemy": CellProfile(
     "Semi Enemy",
-    "Half Enemy, Half Push",
+    "Half Enemy, Half Push (Can be pushed from two sides)",
   ),
   "semi_trash": CellProfile(
     "Semi Trash",
-    "Half Trash, Half Push",
+    "Half Trash, Half Push (Can be pushed from two sides)",
   ),
   "auto_flag": CellProfile(
     "AutoFlag",
@@ -1337,23 +1337,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "fast_puller": CellProfile(
     "Fast Puller",
-    "Puller but moves 2x as fast",
+    "Puller but moves twice as fast",
   ),
   "slow_puller": CellProfile(
     "Slow Puller",
-    "Puller but moves once every 2 ticks",
+    "Puller but moves half as much (once every 2 ticks)",
   ),
   "anchor": CellProfile(
     "Anchor",
-    "When rotated, will rotate the structure touching it. Anchored rotators also stop rotating mid-execution to avoid bugs",
+    "When rotated, it will rotate the structure touching it. Anchored rotators also stop rotating mid-execution to avoid bugs",
   ),
   "hungry_trash": CellProfile(
     "Hungry Trash",
-    "Will go for cells around it to eat. Can eat anything. It splits for each axis it has to move. If there is food on opposite sides it cancels itself out",
+    "Will go for cells around it to eat. Can eat anything. It splits for each cell it eats. If there is food on opposite sides it won't eat nor split",
   ),
   "physical_trash": CellProfile(
     "Physical Trash",
-    "If something moves into it by pushing, it will push on the opposite side.",
+    "Trash, but if something moves into it by pushing, it will push the cell on opposite side away.",
   ),
   "physical_enemy": CellProfile(
     "Physical Enemy",
@@ -1369,7 +1369,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "swapper": CellProfile(
     "Swapper",
-    "Forces the cell in front of it to drill",
+    "Swaps 2 cells in front of it with each-other",
   ),
   "ungeneratable": CellProfile(
     "Ungeneratable",
@@ -1397,23 +1397,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "unstable_mover": CellProfile(
     "Unstable Mover",
-    "Moves forward but when a cell is in front of it, it will skip it",
+    "Moves forward but when a cell is in front of it, it will jump over it",
   ),
   "field": CellProfile(
     "Field",
-    "Goes around randomly, sometime generating a random cell",
+    "Goes to a random spot in the level, sometimes generating random cells",
   ),
   "time_trash": CellProfile(
     "Time Trash",
-    "When it eats a cell, it will reset time, but turn itself into the cell it ate",
+    "When it eats a cell, it will reset time and turn itself into the cell it ate",
   ),
   "time_reset": CellProfile(
     "Time Reset",
-    "Like Time Trash, but does not transform itself into the cell it ate",
+    "When it eats a cell, it will reset time without transforming itself",
   ),
   "consistent": CellProfile(
     "Consistent",
-    "Does not get reset by time. This does not mean its old version will also stop existing, it will get duplicated",
+    "Does not get reset by time travelling. This does not mean its old version will also stop existing, it will get duplicated",
   ),
   "magma": CellProfile(
     "Magma",
@@ -1421,23 +1421,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "snow": CellProfile(
     "Snow",
-    "Cools down nearby cells. Cells that reach a heat of -100 will turn into Snow",
+    "Cools down nearby cells. Cells that reach a heat of -100 or cold of 100 will turn into Snow",
   ),
   "time_machine": CellProfile(
     "Time Machine",
-    "Will send back in time the entire structure it is attached to, but only when powered",
+    "When powered, it will send the entire structure it is attached to back in time",
   ),
   "time_hole": CellProfile(
     "Time Hole",
-    "When a cell comes near it, it will be sucked into it and put back in time, but does not time travel.",
+    "When a cell gets adjacent it, it will be sucked into it and put back in time, but does not time travel.",
   ),
   "consistency": CellProfile(
     "Consistency",
-    "Makes all of the cells have the Consistency effect, making them behave like a Consistent cell",
+    "Makes all of the cells have the Consistency effect, making them behave like a Consistent cell (does not get reset by time travel)",
   ),
   "inc_brush": CellProfile(
     "Increase Brush Size",
-    "Increases the brush size",
+    "Increases the brush size, allowing you to place multiple cells at once",
   ),
   "dec_brush": CellProfile(
     "Decrease Brush Size",
@@ -1449,15 +1449,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "zoomout": CellProfile(
     "Zoom Out",
-    "Moves the camera away from the grid",
+    "Moves the camera away from the grid, allowing you to see more",
   ),
   "inctab": CellProfile(
     "Increase Tab",
-    "Disabled in Multiplayer and when in a world. This goes up 1 tab layer. This can be used for editing multiple levels at once.",
+    "Disabled in Multiplayer and when in a world. Goes up 1 tab layer. Used for editing multiple levels at once.",
   ),
   "dectab": CellProfile(
     "Decrease Tab",
-    "Disabled in Multiplayer and when in a world. This goes down 1 tab layer. This can be used for editing multiple levels at once.",
+    "Disabled in Multiplayer and when in a world. Goes down 1 tab layer. Used for editing multiple levels at once.",
   ),
   "proton": CellProfile(
     "Wannabe-Proton",
@@ -1473,23 +1473,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "sandbox": CellProfile(
     "The Sandbox Cell",
-    "Places cells at random positions",
+    "Places cells at random positions, but does not move itself",
   ),
   "pushable": CellProfile(
     "Pushable",
-    "Can only be moved by a push force, also can't be generated",
+    "Can only be pushed, also can't be generated",
   ),
   "pullable": CellProfile(
     "Pullable",
-    "Can only be moved by a pull force, also can't be generated",
+    "Can only be pulled, also can't be generated",
   ),
   "grabbable": CellProfile(
     "Grabbable",
-    "Can only be moved by a grab force, also can't be generated",
+    "Can only be grabbed, also can't be generated",
   ),
   "swappable": CellProfile(
     "Swappable",
-    "Can only be moved by a swap force, meaning it can only be moved by mirrors and drillers, also can't be generated",
+    "Can only be swapped, meaning it can only be interacted by mirrors and drillers, also can't be generated",
   ),
   "generatable": CellProfile(
     "Generatable",
@@ -1501,35 +1501,35 @@ final cellInfo = <String, CellProfile>{
   ),
   "propuzzle": CellProfile(
     "Pro-Puzzle",
-    "Can only be moved by puzzle force",
+    "Can only be moved by puzzle cell's force",
   ),
   "push_trash": CellProfile(
     "Push Trash",
-    "Trash cell but can only eat stuff coming in with a push force",
+    "Can only eat stuff that is pushed inside",
   ),
   "pull_trash": CellProfile(
     "Pull Trash",
-    "Can only eat stuff that is moving with a pull force",
+    "Can only eat stuff that is pulled inside",
   ),
   "grab_trash": CellProfile(
     "Grab Trash",
-    "Can only eat stuff that is moving with a grab force",
+    "Can only eat stuff that is moved inside by grabbing",
   ),
   "swap_trash": CellProfile(
     "Swap Trash",
-    "Can only eat stuff that is moving with a swap force",
+    "Can only eat stuff that is moved inside by swapping",
   ),
   "gen_trash": CellProfile(
     "Generator Trash",
-    "Like normal trash but can't be generated",
+    "Trash that can't be generated",
   ),
   "transform_trash": CellProfile(
     "Transformer Trash",
-    "Like normal trash but can't be transformed",
+    "Trash that can't be transform",
   ),
   "puzzle_trash": CellProfile(
     "Puzzle Trash",
-    "Can only eat stuff that is moving with a puzzle force",
+    "Can only eat stuff that is moved inside by puzzle cell",
   ),
   "doublegen": CellProfile(
     "Double Generator",
@@ -1541,11 +1541,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "rotator_rand": CellProfile(
     "Random Rotator",
-    "Rotates the cells around it CW or CCW at random",
+    "Rotates the cells around it either CW or CCW at random",
   ),
   "mech_keyup": CellProfile(
     "Mechanical Up Key",
-    "Sends out a mechanical signal if the up arrow key is pressed",
+    "Sends out a mechanical signal in 4 directions if the up arrow key is pressed",
   ),
   "mech_keyleft": CellProfile(
     "Mechanical Left Key",
@@ -1557,19 +1557,19 @@ final cellInfo = <String, CellProfile>{
   ),
   "mech_p_gen": CellProfile(
     "Mechanically Powered Generator",
-    "A generator that only generates if it has a mechanical signal",
+    "A generator that only generates if powered",
   ),
   "mech_rotator_cw": CellProfile(
     "Mechanically Powered Rotator CW",
-    "A rotator CW that only rotates if it has a mechanical signal",
+    "A rotator CW that only rotates if powered",
   ),
   "mech_rotator_ccw": CellProfile(
     "Mechanically Powered Rotator CCW",
-    "A rotator CCW that only rotates if it has a mechanical signal",
+    "A rotator CCW that only rotates if powered",
   ),
   "unstable_gen": CellProfile(
     "Unstable Generator",
-    "Like a normal generator, except it can generate anything through anything",
+    "Generator that can generate anything through anything",
   ),
   "mech_keydown": CellProfile(
     "Mechanical Down Key",
@@ -1577,19 +1577,19 @@ final cellInfo = <String, CellProfile>{
   ),
   "thief": CellProfile(
     "Thief",
-    "Like Releaser, but Grabber",
+    "Releaser, but as a Grabber",
   ),
   "collector": CellProfile(
     "Collector",
-    "Like Releaser, but Puller",
+    "Releaser, but as a Puller",
   ),
   "counter": CellProfile(
     "Counter",
-    "Like a Trash cell, but also counts how many cells came in",
+    "Trash cell that counts how many cells came in",
   ),
   "forker": CellProfile(
     "Forker",
-    "Cell comes in, copy comes out in front",
+    "A cell comes in, a copy comes out in front",
   ),
   "forker_cw": CellProfile(
     "Forker CW",
@@ -1613,23 +1613,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "hawk": CellProfile(
     "Hawk",
-    "Like a bird, but it pulls",
+    "Like a bird, but it pulls cells",
   ),
   "pelican": CellProfile(
     "Pelican",
-    "Like a bird, but it grabs",
+    "Like a bird, but it grabs cells",
   ),
   "mech_toggle": CellProfile(
     "Mechanical Toggle",
-    "When it gets input from the back, it toggles",
+    "When it gets a mechanical input from the back, it toggles between generating mechanical power and doing nothing",
   ),
   "biome_cw": CellProfile(
     "Biome CW",
-    "A background that rotates the cell above it clockwise",
+    "A biome that rotates the cell above it clockwise",
   ),
   "biome_ccw": CellProfile(
     "Biome CCW",
-    "A background that rotates the cell above it counter-clockwise",
+    "A biome that rotates the cell above it counter-clockwise",
   ),
   "desert": CellProfile(
     "Desert",
@@ -1637,23 +1637,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "snowy": CellProfile(
     "Snowy",
-    "A biome that decreases the heat of the cell above it",
+    "A biome that decreases the heat or increases the cold of the cell above it",
   ),
   "forest": CellProfile(
     "Forest",
-    "A biome that resets the heat of the cell above it",
+    "A biome that resets the heat and cold of the cell above it to 0",
   ),
   "freezing": CellProfile(
     "Freezing Biome",
-    "A biome that stops the cell above it",
+    "A biome that stops the cell above it from updating",
   ),
   "trash_biome": CellProfile(
     "Trash Biome",
-    "A biome that makes the cell above it stop existing",
+    "A biome that eats the cell above it",
   ),
   "mechanical_halting": CellProfile(
     "Mechanical Halting",
-    "A biome that makes any mechanical gear above it stop transmitting signals",
+    "A biome that makes any mechanical gear above it stop transmitting mechanical signals",
   ),
   "quantum_biome": CellProfile(
     "Quantum Biome",
@@ -1661,7 +1661,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "plant_seed": CellProfile(
     "Plant Seed",
-    "It can only live 30 ticks with no food. If a wall is nearby, it wil ltake all the food in it. It will also then grow into a plant. This is also the controller of the plant.",
+    "It can only live 30 ticks with no food. If a wall is nearby, it will take all the food in it. It will then grow into a plant. This is also the controller of the plant.",
   ),
   "plant_flower": CellProfile(
     "Plant Flower",
@@ -1681,15 +1681,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "piston": CellProfile(
     "Piston",
-    "While powered, it will push. When turned off, it will pull once",
+    "While powered, it will push like a Fan. When turned off, it will pull once like a Vacuum",
   ),
   "sand": CellProfile(
     "Sand",
-    "Goes down. If it can't, it will try to go left-down. If it still can't, it will try to go right-down.",
+    "Moves down. If it can't, it will move left-down. If it still can't, it will move right-down.",
   ),
   "water": CellProfile(
     "Water",
-    "Like Sand but if it fails to move, it will also try to go left. If it STILL fails, right.",
+    "Like Sand but if it fails to move, it will move left. If it still can't, it will move right.",
   ),
   "mem_gen": CellProfile(
     "Memory Generator",
@@ -1721,7 +1721,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "unstable_puzzle": CellProfile(
     "Unstable Puzzle",
-    "A mix of Puzzle cell and Unstable Mover",
+    "A mix of Puzzle cell and Unstable Mover (jumps over cells in front of it)",
   ),
   "temporal_puzzle": CellProfile(
     "Temporal Puzzle",
@@ -1729,10 +1729,10 @@ final cellInfo = <String, CellProfile>{
   ),
   "mover_puzzle": CellProfile(
     "Mover Puzzle",
-    "Puzzle cell but constantly moves forward",
+    "Puzzle cell but it constantly moves forward",
   ),
   "trash_puzzle": CellProfile(
     "Trash Puzzle",
-    "Puzzle cell but deletes the cell in front of it if it can't be pushed",
+    "Puzzle cell but if it can't push the cell in front of it, it eats that cell",
   ),
 };
