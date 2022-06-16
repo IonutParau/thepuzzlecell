@@ -1661,7 +1661,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "plant_seed": CellProfile(
     "Plant Seed",
-    "It can only live 30 ticks with no food. If a wall is nearby, it wil ltake all the food in it. It will also then grow into a plant. This is also the controller of the plant.",
+    "It can only live 30 ticks with no food. If a wall is nearby, it will take all the food in it. It will also then grow into a plant. This is also the controller of the plant.",
   ),
   "plant_flower": CellProfile(
     "Plant Flower",
