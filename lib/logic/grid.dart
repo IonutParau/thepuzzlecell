@@ -209,16 +209,16 @@ class Grid {
     brokenCells.add(b);
   }
 
-  var chunkSize = storage.getInt('chunk_size') ?? 25;
+  var chunkSize = /*storage.getInt('chunk_size') ??*/ 25;
 
   void reloadChunks() {
     chunks = [];
-    final chunkWidth = ceil(width / chunkSize);
-    final chunkHeight = ceil(height / chunkSize);
+    final chunkWidth = floor(width / chunkSize);
+    final chunkHeight = floor(height / chunkSize);
 
-    for (var x = 0; x < chunkWidth; x++) {
+    for (var x = 0; x <= chunkWidth; x++) {
       chunks.add([]);
-      for (var y = 0; y < chunkHeight; y++) {
+      for (var y = 0; y <= chunkHeight; y++) {
         chunks.last.add(<String>{});
       }
     }

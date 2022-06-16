@@ -265,32 +265,32 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Debug Mode',
                       false,
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          lang('chunk_size', 'Chunk Size') + ': ',
-                          style: textStyle,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                          height: 5.h,
-                          child: Slider(
-                            value: min(storage.getInt("chunk_size") ?? 25, 25).toDouble(),
-                            min: 1,
-                            max: 25,
-                            onChanged: (v) => storage
-                                .setInt(
-                                  "chunk_size",
-                                  v.toInt(),
-                                )
-                                .then(
-                                  (v) => setState(() {}),
-                                ),
-                            label: '${(storage.getInt('chunk_size') ?? 1)}',
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       lang('chunk_size', 'Chunk Size') + ': ',
+                    //       style: textStyle,
+                    //     ),
+                    //     SizedBox(
+                    //       width: 20.w,
+                    //       height: 5.h,
+                    //       child: Slider(
+                    //         value: min(storage.getInt("chunk_size") ?? 25, 25).toDouble(),
+                    //         min: 1,
+                    //         max: 25,
+                    //         onChanged: (v) => storage
+                    //             .setInt(
+                    //               "chunk_size",
+                    //               v.toInt(),
+                    //             )
+                    //             .then(
+                    //               (v) => setState(() {}),
+                    //             ),
+                    //         label: '${(storage.getInt('chunk_size') ?? 1)}',
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
                 ListView(
