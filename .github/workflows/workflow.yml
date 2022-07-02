@@ -30,6 +30,13 @@ jobs:
         with:
           name: thepuzzlecell-linux
           path: build/linux/x64/release/bundle
+      - run: chmod +x ./build_appimage.sh
+      - run: chmod a+x ./appimage_builder.AppImage
+      - run: ./build_appimage.sh
+      - uses: actions/upload-artifact@v3
+        with:
+          name: thepuzzlecell-appimage
+          path: "build/The Puzzle Cell.AppImage"
   # build_macos:
   #   runs-on: macOS-latest
   #   steps:
