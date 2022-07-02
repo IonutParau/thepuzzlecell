@@ -33,7 +33,7 @@ jobs:
       - run: chmod +x ./build_appimage.sh
       - run: chmod a+x ./appimage_builder.AppImage
       - run: ./build_appimage.sh
-      - run: mv build/The\ Puzzle\ Cell.AppImage build/appimage/TPC.AppImage
+      - run: mv ./build/The\ Puzzle\ Cell.AppImage ./build/appimage/TPC.AppImage
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-appimage
