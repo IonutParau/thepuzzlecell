@@ -13,7 +13,6 @@ final subticks = [
   quantums,
   hungryTrashes,
   mirrors,
-  rockets,
   gens,
   supgens,
   memgens,
@@ -203,75 +202,22 @@ class Grid {
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
     final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type);
 
-    if (rlvx != null) b.lv.lastPos = Offset(rlvx.toDouble(), b.lv.lastPos.dy);
-    if (rlvy != null) b.lv.lastPos = Offset(b.lv.lastPos.dx, rlvy.toDouble());
+    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
 
     brokenCells.add(b);
   }
 
-  var chunkSize = /*storage.getInt('chunk_size') ??*/ 25;
-
-  void reloadChunks() {
-    chunks = [];
-    final chunkWidth = floor(width / chunkSize);
-    final chunkHeight = floor(height / chunkSize);
-
-    for (var x = 0; x <= chunkWidth; x++) {
-      chunks.add([]);
-      for (var y = 0; y <= chunkHeight; y++) {
-        chunks.last.add(<String>{});
-      }
-    }
-
-    // renderChunks = [];
-
-    // final renderChunkWidth = ceil(width / renderChunkSize);
-    // final renderChunkHeight = ceil(height / renderChunkSize);
-
-    // for (var x = 0; x < renderChunkWidth; x++) {
-    //   renderChunks.add([]);
-    //   for (var y = 0; y < renderChunkHeight; y++) {
-    //     renderChunks.last.add(false);
-    //   }
-    // }
-  }
+  final chunkSize = 25;
 
   int width;
   int height;
 
-  int tickCount = 0;
+  List<int> chunkXList = [];
+  List<int> chunkYList = [];
 
-  bool wrap = false;
-
-  Set<String> cells = {};
-
-  GridUpdateConstraints? updateConstraints;
-
-  HashSet<int> renderSpots = HashSet<int>();
-
-  void markRenderSpot(int x, int y) {
-    if ((at(x, y).id != "empty") || (placeable(x, y) != "empty")) {
-      renderSpots.add(x + y * width);
-    }
-  }
-
-  void removeRenderSpot(int x, int y) {
-    if (at(x, y).id == "empty" && placeable(x, y) == "empty") {
-      renderSpots.remove(x + y * width);
-    } // Only remove if actually should remove
-  }
-
-  void iterateRenderSpot(void Function(int x, int y) callback) {
-    if (renderSpots.length == 0) return;
-    renderSpots.forEach((i) {
-      callback(i % width, i ~/ width);
-    });
-  }
-
-  void remake() {
+  void create() {
     grid = [];
     place = [];
-    reloadChunks();
     for (var x = 0; x < width; x++) {
       grid.add([]);
       place.add([]);
@@ -280,246 +226,90 @@ class Grid {
         place.last.add("empty");
       }
     }
-  }
 
-  void setConstraints(int sx, int sy, int ex, int ey) {
-    updateConstraints = GridUpdateConstraints(sx, sy, ex, ey);
-  }
+    final cx = ceil(width / chunkSize);
+    final cy = ceil(height / chunkSize);
 
-  // Only call this for manually changing id, grid.set() already does it for you
-  void setChunk(int x, int y, String id) {
-    if (wrap) {
-      chunks[floor(((x + width) % width) / chunkSize)][floor(((y + height) % height) / chunkSize)].add(id);
-      if (id == "empty") {
-        removeRenderSpot((x + width) % width, (y + height) % height);
-      } else {
-        markRenderSpot((x + width) % width, (y + height) % height);
+    chunks = [];
+
+    for (var x = 0; x < cx; x++) {
+      chunks.add([]);
+      for (var y = 0; y < cy; y++) {
+        chunks.last.add({});
       }
-      return;
     }
-    chunks[floor(x / chunkSize)][floor(y ~/ chunkSize)].add(id);
-    if (id == "empty") {
-      removeRenderSpot(x, y);
-    } else {
-      markRenderSpot(x, y);
-    }
-  }
 
-  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
-    if (!cells.contains(id)) return;
-
-    if (rot == null) {
-      // Update statically
-      loopChunks(id, invertOrder ? GridAlignment.topleft : GridAlignment.bottomright, callback, filter: (cell, x, y) => cell.id == id && !cell.updated);
-    } else {
-      loopChunks(
-        id,
-        fromRot((rot + (invertOrder ? 2 : 0)) % 4),
-        callback,
-        filter: (cell, x, y) => cell.id == id && cell.rot == rot && !cell.updated,
-      );
-    }
-  }
-
-  void forEach(void Function(Cell cell, int x, int y) callback, [int? wantedDirection, String? id]) {
-    if (id != null) {
-      if (!cells.contains(id)) return;
-      var sx = 0;
-      var sy = 0;
-      var ex = ceil(width / chunkSize);
-      var ey = ceil(height / chunkSize);
-
-      if (updateConstraints != null) {
-        sx = ceil(updateConstraints!.sx / chunkSize);
-        sy = ceil(updateConstraints!.sy / chunkSize);
-        ex = ceil(updateConstraints!.ex / chunkSize);
-        ey = ceil(updateConstraints!.ey / chunkSize);
+    for (var i = 0; i < cx; i++) {
+      for (var j = 0; j < chunkSize; j++) {
+        chunkXList.add(i);
       }
-      if (wantedDirection == 0) {
-        for (var cx = ex - 1; cx >= sx; cx--) {
-          for (var cy = ey - 1; cy >= sy; cy--) {
-            if (chunks[cx][cy].contains(id)) {
-              final startx = cx * chunkSize;
-              final starty = cy * chunkSize;
-              final endx = startx + chunkSize;
-              final endy = starty + chunkSize;
-              for (var x = endx - 1; x >= startx; x--) {
-                for (var y = endy - 1; y >= starty; y--) {
-                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
-                    final cell = at(x, y);
-                    if (cell.updated == false) {
-                      if (cell.id == id && cell.rot == (wantedDirection ?? cell.rot)) {
-                        cell.updated = true;
-                        callback(cell, x, y);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } else if (wantedDirection == 2 || wantedDirection == null) {
-        for (var cx = sx; cx < ex; cx++) {
-          for (var cy = sy; cy < ey; cy++) {
-            if (chunks[cx][cy].contains(id)) {
-              final startx = cx * chunkSize;
-              final starty = cy * chunkSize;
-              final endx = startx + chunkSize;
-              final endy = starty + chunkSize;
-              for (var x = startx; x < endx; x++) {
-                for (var y = starty; y < endy; y++) {
-                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
-                    final cell = at(x, y);
-                    if (cell.updated == false) {
-                      if (cell.id == id && cell.rot == (wantedDirection ?? cell.rot)) {
-                        cell.updated = true;
-                        callback(cell, x, y);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } else if (wantedDirection == 1) {
-        for (var cx = sx; cx < ex; cx++) {
-          for (var cy = ey - 1; cy >= sy; cy--) {
-            if (chunks[cx][cy].contains(id)) {
-              final startx = cx * chunkSize;
-              final starty = cy * chunkSize;
-              final endx = startx + chunkSize;
-              final endy = starty + chunkSize;
-              for (var x = startx; x < endx; x++) {
-                for (var y = endy - 1; y >= starty; y--) {
-                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
-                    final cell = at(x, y);
-                    if (cell.updated == false) {
-                      if (cell.id == id && cell.rot == 1) {
-                        cell.updated = true;
-                        callback(cell, x, y);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } else if (wantedDirection == 3) {
-        for (var cx = ex - 1; cx >= sx; cx--) {
-          for (var cy = sy; cy < ey; cy++) {
-            if (chunks[cx][cy].contains(id)) {
-              final startx = cx * chunkSize;
-              final starty = cy * chunkSize;
-              final endx = startx + chunkSize;
-              final endy = starty + chunkSize;
-              for (var x = endx - 1; x >= startx; x--) {
-                for (var y = starty; y < endy; y++) {
-                  if ((x >= 0 && x < width && y >= 0 && y < height)) {
-                    final cell = at(x, y);
-                    if (cell.updated == false) {
-                      if (cell.id == id && cell.rot == 3) {
-                        cell.updated = true;
-                        callback(cell, x, y);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      return;
     }
-    var sx = 0;
-    var sy = 0;
-    var ex = width;
-    var ey = height;
-
-    if (updateConstraints != null) {
-      sx = updateConstraints!.sx;
-      sy = updateConstraints!.sy;
-      ex = updateConstraints!.ex;
-      ey = updateConstraints!.ey;
-    }
-
-    for (var x = sx; x < ex; x++) {
-      for (var y = sy; y < ey; y++) {
-        if (inside(x, y)) {
-          final cell = at(x, y);
-          if (cell.rot == (wantedDirection ?? cell.rot)) {
-            callback(cell, x, y);
-          }
-        }
+    for (var i = 0; i < cy; i++) {
+      for (var j = 0; j < chunkSize; j++) {
+        chunkYList.add(i);
       }
     }
   }
 
-  Grid(this.width, this.height) {
-    remake();
-  }
+  int x(int rawX) => wrap ? ((rawX + width) % width) : rawX;
+  int y(int rawY) => wrap ? ((rawY + height) % height) : rawY;
 
   bool inside(int x, int y) {
     if (wrap) return true;
+
     return (x >= 0 && x < width && y >= 0 && y < height);
   }
 
   Cell at(int x, int y) {
-    if (wrap) {
-      return grid[(x + width) % width][(y + height) % height];
-    }
-    return grid[x][y];
+    return grid[this.x(x)][this.y(y)];
   }
 
-  void setPlace(int x, int y, String id) {
-    //game.sendToServer("bg $x $y $id");
-    //setRenderChunk(x, y);
-    if (wrap) {
-      place[(x + width) % width][(y + height) % height] = id;
-      return;
-    }
-    place[x][y] = id;
-    setChunk(x, y, id);
-    if (id == "empty") {
-      removeRenderSpot(x, y);
+  Cell? get(int x, int y) {
+    if (inside(x, y)) {
+      return at(x, y);
     } else {
-      markRenderSpot(x, y);
+      return null;
     }
   }
 
   void set(int x, int y, Cell cell) {
     genOptimizer.remove(x, y);
-    if (backgrounds.contains(cell.id)) {
-      setPlace(x, y, cell.id);
+
+    x = this.x(x);
+    y = this.y(y);
+
+    if (inside(x, y)) {
+      grid[x][y] = cell;
       setChunk(x, y, cell.id);
-      return;
     }
-    if (wrap) {
-      final nx = (x + width) % width;
-      final ny = (y + height) % height;
-      grid[nx][ny] = cell;
-      if ((nx != x) || (ny != y)) {
-        var lvx = cell.lastvars.lastPos.dx;
-        var lvy = cell.lastvars.lastPos.dy;
-        if (x >= width) lvx = (width - x - 1);
-        if (y >= height) lvy = (height - y - 1);
-        if (x < 0) lvx = (width - x - 1);
-        if (y < 0) lvy = (height - y - 1);
-        cell.lastvars.lastPos = Offset(lvx, lvy);
-      }
-      chunks[floor((nx) / chunkSize)][floor((ny) / chunkSize)].add(cell.id);
-      //setRenderChunk(x, y);
-      if (useSnowflake) snowflake.add(cell.id, cell.rot, nx, ny);
-      return;
+  }
+
+  void setPlace(int x, int y, String id) {
+    x = this.x(x);
+    y = this.y(y);
+    if (inside(x, y)) {
+      place[x][y] = "bg";
     }
-    if (!inside(x, y)) return;
-    grid[x][y] = cell;
-    setChunk(x, y, cell.id);
-    //setRenderChunk(x, y);
-    if (useSnowflake) snowflake.add(cell.id, cell.rot, x, y);
+  }
+
+  int cx(int x) => chunkXList[x];
+  int cy(int y) => chunkYList[y];
+
+  int chunkToCellX(int x) => x * chunkSize;
+  int chunkToCellY(int y) => y * chunkSize;
+
+  void setChunk(int x, int y, String id) {
+    final cx = x ~/ chunkSize;
+    final cy = y ~/ chunkSize;
+
+    chunks[cx][cy].add(id);
+  }
+
+  bool inChunk(int x, int y, String id) {
+    if (id == "*") return true;
+    if (id == "all") return chunks[cx(x)][cy(y)].isNotEmpty;
+
+    return chunks[cx(x)][cy(y)].contains(id);
   }
 
   String placeable(int x, int y) {
@@ -555,8 +345,133 @@ class Grid {
     return false;
   }
 
+  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
+    if (!cells.contains(id)) return;
+
+    if (rot == null) {
+      // Update statically
+      loopChunks(id, invertOrder ? GridAlignment.topleft : GridAlignment.bottomright, callback, filter: (cell, x, y) => cell.id == id && !cell.updated);
+    } else {
+      loopChunks(
+        id,
+        fromRot((rot + (invertOrder ? 2 : 0)) % 4),
+        callback,
+        filter: (cell, x, y) => cell.id == id && cell.rot == rot && !cell.updated,
+      );
+    }
+  }
+
+  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter}) {
+    filter ??= (Cell c, int x, int y) {
+      if (chunkID == "all") return true;
+      if (chunkID == "render") return c.id != "empty";
+      return (c.id == chunkID) && !c.updated;
+    };
+
+    // 0,0 to w,h
+    if (alignment == fromRot(2)) {
+      var x = 0;
+      var y = 0;
+
+      while (y < height) {
+        while (x < width) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all") at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            x = chunkToCellX(cx(x) + 1);
+          } else {
+            x++;
+          }
+        }
+        y++;
+      }
+    }
+
+    // w,h to 0,0
+    if (alignment == fromRot(0)) {
+      var x = height - 1;
+      var y = width - 1;
+
+      while (y >= 0) {
+        while (x >= 0) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all") at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            x = chunkToCellX(cx(x) - 1);
+          } else {
+            x--;
+          }
+        }
+        y--;
+      }
+    }
+
+    // 0,h to w,0
+    if (alignment == fromRot(1)) {
+      var x = 0;
+      var y = height - 1;
+
+      while (x < width) {
+        while (y >= 0) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all") at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            y = chunkToCellY(cy(y) - 1);
+          } else {
+            y--;
+          }
+        }
+        x++;
+      }
+    }
+
+    // w,0 to 0,h
+    if (alignment == fromRot(3)) {
+      var x = width - 1;
+      var y = 0;
+
+      while (x >= 0) {
+        while (y < height) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all") at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            y = chunkToCellY(cy(y) + 1);
+          } else {
+            y++;
+          }
+        }
+        x--;
+      }
+    }
+  }
+
+  void forEach(void Function(Cell cell, int x, int y) callback) {
+    for (var x = 0; x < width; x++) {
+      for (var y = 0; y < height; y++) {
+        callback(at(x, y), x, y);
+      }
+    }
+  }
+
+  Grid(this.width, this.height) {
+    create();
+  }
+
+  int tickCount = 0;
+
+  bool wrap = false;
+
+  Set<String> cells = {};
+
   Set<String> prepareTick() {
-    snowflake.clear();
     final types = <String>{};
     for (var bcell in brokenCells) {
       types.add(bcell.type);
@@ -566,19 +481,8 @@ class Grid {
     }
     brokenCells = [];
     final cells = <String>{};
-    //reloadChunks();
-
-    // for (var chunkRow in chunks) {
-    //   for (var chunk in chunkRow) {
-    //     for (var cell in chunk) {
-    //       cells.add(cell);
-    //     }
-    //   }
-    // }
 
     forEach(
-      // "all",
-      // GridAlignment.bottomright,
       (cell, x, y) {
         cell.updated = false;
         cell.lastvars = LastVars(cell.rot, x, y);
@@ -591,22 +495,8 @@ class Grid {
         if (tickCount % 100 == 0) {
           setChunk(x, y, cell.id);
         }
-
-        //newcells[x ~/ chunkSize][y ~/ chunkSize].add(cell.id);
-
-        //final cx = p1 ~/ chunkSize;
-        //final cy = p2 ~/ chunkSize;
-        //newcells[cx][cy].add(p0.id);
       },
-      // filter: (c, x, y) => true,
-      // fastChunk: false,
     );
-
-    // if (tickCount % 100 == 0) {
-    //   chunks = newcells;
-    // }
-
-    //chunks = newcells;
 
     return cells;
   }
@@ -622,164 +512,6 @@ class Grid {
     if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
-    if (id == "sync") {
-      doSync(x, y, -1, rot);
-    }
-  }
-
-  double get emptyPercantage {
-    var empty = 0;
-    var count = 0;
-
-    forEach(
-      (element, x, y) {
-        count++;
-        if (element.id == "empty") {
-          empty++;
-        }
-      },
-    );
-
-    return empty / count;
-  }
-
-  final snowflake = Snowflake();
-
-  List<List<bool>> renderChunks = [];
-  int renderChunkSize = storage.getInt('render_side') ?? 25;
-
-  bool inChunk(int x, int y, String chunkID) {
-    if (chunkID == "*") return true;
-
-    final cx = floor(x / chunkSize);
-    final cy = floor(y / chunkSize);
-
-    if (chunkID == "render") {
-      return renderChunks[x ~/ renderChunkSize][y ~/ renderChunkSize];
-    }
-    if (chunkID == "all") {
-      return (chunks[cx][cy].isNotEmpty);
-    }
-    return (chunks[cx][cy].contains(chunkID));
-  }
-
-  void loopChunks(String chunkID, GridAlignment loopMode, Function(Cell cell, int x, int y) forEach,
-      {bool Function(Cell cell, int x, int y)? filter, int minx = 0, int miny = 0, int? maxx, int? maxy, bool fastChunk = true}) {
-    filter ??= (Cell c, int x, int y) {
-      if (chunkID == "all") return true;
-      if (chunkID == "render") return c.id != "empty";
-      return (c.id == chunkID) && !c.updated;
-    };
-
-    maxx ??= width - 1;
-    maxy ??= height - 1;
-
-    if (loopMode == GridAlignment.topleft) {
-      var x = maxx;
-      var y = miny;
-      while (y < height) {
-        x = maxx;
-        var didChunk = false;
-        while (x >= 0) {
-          final c = at(x, y);
-          if (filter(c, x, y)) {
-            if (chunkID != "all" && chunkID != "*") c.updated = true;
-            //c.id = "ghost";
-            forEach(c, x, y);
-          }
-          if (inChunk(x, y, chunkID)) {
-            x--;
-            didChunk = fastChunk;
-          } else {
-            x -= chunkSize;
-          }
-        }
-        //print(hadChunk);
-        if (didChunk) {
-          y++;
-        } else {
-          y += chunkSize;
-        }
-      }
-    } else if (loopMode == GridAlignment.bottomright) {
-      var x = minx;
-      var y = miny;
-      while (y < height) {
-        var didChunk = false;
-        while (x < width) {
-          final c = at(x, y);
-          if (filter(c, x, y)) {
-            if (chunkID != "all") c.updated = true;
-            forEach(c, x, y);
-          }
-          //c.id = "ghost";
-          if (inChunk(x, y, chunkID)) {
-            x++;
-            didChunk = fastChunk;
-          } else {
-            x += chunkSize;
-          }
-        }
-        x = minx;
-        if (didChunk) {
-          y++;
-        } else {
-          y += chunkSize;
-        }
-      }
-    } else if (loopMode == GridAlignment.topright) {
-      var x = minx;
-      var y = maxy;
-      while (x < width) {
-        y = maxy;
-        var didChunk = false;
-        while (y >= 0) {
-          final c = at(x, y);
-          if (filter(c, x, y)) {
-            if (chunkID != "all") c.updated = true;
-            forEach(c, x, y);
-          }
-          //c.id = "ghost";
-          if (inChunk(x, y, chunkID)) {
-            y--;
-            didChunk = fastChunk;
-          } else {
-            y -= chunkSize;
-          }
-        }
-        if (didChunk) {
-          x++;
-        } else {
-          x += chunkSize;
-        }
-      }
-    } else if (loopMode == GridAlignment.bottomleft) {
-      var x = minx;
-      var y = miny;
-      while (x < width) {
-        y = minx;
-        var didChunk = false;
-        while (y < height) {
-          final c = at(x, y);
-          if (filter(c, x, y)) {
-            if (chunkID != "all") c.updated = true;
-            forEach(c, x, y);
-          }
-          //c.id = "ghost";
-          if (inChunk(x, y, chunkID)) {
-            y++;
-            didChunk = fastChunk;
-          } else {
-            y += chunkSize;
-          }
-        }
-        if (didChunk) {
-          x++;
-        } else {
-          x += chunkSize;
-        }
-      }
-    }
   }
 
   void update() {
@@ -814,7 +546,7 @@ enum GridAlignment {
   bottomleft,
 }
 
-GridAlignment fromRot(int rot) => GridAlignment.values[rot % 4];
+GridAlignment fromRot(int rot) => GridAlignment.values[fixRot(rot)];
 
 // Grid Clipboard
 class GridClip {

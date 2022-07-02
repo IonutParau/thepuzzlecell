@@ -19,6 +19,48 @@ int toSide(int dir, int rot) {
   return (dir - rot + 4) % 4;
 }
 
+bool canMoveInDir(int x, int y, int dir, MoveType mt, [bool single = false]) {
+  dir %= 4;
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+
+  if (!grid.inside(fx, fy)) return false;
+
+  if (single) {
+    return canMove(fx, fy, dir, 1, mt);
+  } else {
+    return canMoveAll(fx, fy, dir, 1, mt);
+  }
+}
+
+Cell? inFront(int x, int y, int dir) {
+  dir %= 4;
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+
+  if (!grid.inside(fx, fy)) return null;
+
+  return grid.at(fx, fy);
+}
+
+void moveFront(int x, int y, int dir) {
+  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+  if (!grid.inside(fx, fy)) return;
+
+  moveCell(x, y, fx, fy, dir);
+}
+
+int frontX(int x, int dir, [int amount = 1]) {
+  dir %= 4;
+  return x - (dir % 2 == 0 ? dir - 1 : 0) * amount;
+}
+
+int frontY(int y, int dir, [int amount = 1]) {
+  dir %= 4;
+  return y - (dir % 2 == 1 ? dir - 2 : 0) * amount;
+}
+
 enum DestinationType { DIRECTIONAL, FIXED }
 
 class DestinationInfo {

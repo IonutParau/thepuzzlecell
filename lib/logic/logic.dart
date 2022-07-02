@@ -66,13 +66,24 @@ part 'update/darty.dart';
 part 'update/mirror.dart';
 part 'update/quantum.dart';
 part 'update/antigen.dart';
-part 'update/rocket.dart';
 part 'update/heat.dart';
 part 'update/timetravel.dart';
 part 'update/biomes.dart';
 part 'update/plant.dart';
 part 'update/automata.dart';
 part 'update/memgen.dart';
+
+extension SetX on Set<String> {
+  bool containsAny(List<String> strings) {
+    for (var s in this) {
+      if (strings.contains(s)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
 
 String findAssetDirPath() {
   // print(path.absolute(

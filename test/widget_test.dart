@@ -6,10 +6,9 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_puzzle_cell/layout/tools/tools.dart' show P4, fancySplit;
+import 'package:the_puzzle_cell/layout/tools/tools.dart' show P4;
 
 void main() {
-  print(fancySplit("(thing)(thing)", ""));
   test('Test P4 decoding', () {
     expect(P4.decodeValue('0'), 0);
     expect(P4.decodeValue('Test'), 'Test');

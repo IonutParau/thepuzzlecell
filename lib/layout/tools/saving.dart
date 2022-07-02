@@ -51,7 +51,6 @@ String encodeNum(int n, String valueString) {
   var cellBase = 0;
 
   while (cellNum >= pow(valueString.length, cellBase)) {
-    //print('$cellBase');
     cellBase++;
   }
 
@@ -206,10 +205,6 @@ class P1 {
     }
 
     var i = 0;
-
-    grid.chunkSize = 25;
-
-    grid.reloadChunks();
 
     grid.forEach(
       (cell, x, y) {
@@ -686,7 +681,6 @@ class P3 {
       (cell, x, y) {
         if (validate(x, y, grid)) {
           cellDataList.add(encodeCell(x, y, grid));
-          //print(cellDataList.last);
         }
       },
     );
@@ -820,6 +814,24 @@ List<String> fancySplit(String thing, String sep) {
   }
 
   return things;
+}
+
+bool stringContainsAtRoot(String thing, String char) {
+  final chars = thing.split("");
+  var depth = 0;
+
+  for (var c in chars) {
+    if (c == "(") {
+      depth++;
+    } else if (c == ")") {
+      depth--;
+    }
+    if (depth == 0 && (c == char || char == "")) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 class P4 {
@@ -969,7 +981,7 @@ class P4 {
     if (value is List || value is Set) {
       return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
     } else if (value is Map<String, dynamic>) {
-      final keys = ["="];
+      final keys = value.isEmpty ? ["="] : [];
 
       value.forEach((key, value) {
         keys.add('$key=${encodeValue(value)}');
@@ -993,7 +1005,7 @@ class P4 {
     } else if (str.startsWith('(') && str.endsWith(')')) {
       final s = str.substring(1, str.length - 1);
 
-      if (s.contains('=')) {
+      if (stringContainsAtRoot(s, '=')) {
         // It is a map, decode it as a map
         final map = <String, dynamic>{};
 
