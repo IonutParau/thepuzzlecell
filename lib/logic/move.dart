@@ -671,6 +671,8 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   x = frontX(x, dir);
   y = frontY(y, dir);
 
+  print("$x $y $ox $oy");
+
   var c = grid.at(ox, oy);
 
   if (c.id == "empty") {

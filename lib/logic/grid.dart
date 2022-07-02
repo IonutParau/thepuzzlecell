@@ -288,21 +288,18 @@ class Grid {
     x = this.x(x);
     y = this.y(y);
     if (inside(x, y)) {
-      place[x][y] = "bg";
+      place[x][y] = id;
     }
   }
 
-  int cx(int x) => chunkXList[x];
-  int cy(int y) => chunkYList[y];
+  int cx(int x) => x ~/ chunkSize;
+  int cy(int y) => y ~/ chunkSize;
 
   int chunkToCellX(int x) => x * chunkSize;
   int chunkToCellY(int y) => y * chunkSize;
 
   void setChunk(int x, int y, String id) {
-    final cx = x ~/ chunkSize;
-    final cy = y ~/ chunkSize;
-
-    chunks[cx][cy].add(id);
+    chunks[cx(x)][cy(y)].add(id);
   }
 
   bool inChunk(int x, int y, String id) {
@@ -326,9 +323,9 @@ class Grid {
     grid.title = title;
     grid.desc = desc;
     forEach(
-      (p0, p1, p2) {
-        grid.setPlace(p1, p2, placeable(p1, p2));
-        grid.set(p1, p2, p0.copy);
+      (cell, x, y) {
+        grid.setPlace(x, y, placeable(x, y));
+        grid.set(x, y, cell.copy);
       },
     );
     return grid;
@@ -346,7 +343,7 @@ class Grid {
   }
 
   void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
-    if (!cells.contains(id)) return;
+    //if (!cells.contains(id)) return;
 
     if (rot == null) {
       // Update statically
@@ -356,17 +353,17 @@ class Grid {
         id,
         fromRot((rot + (invertOrder ? 2 : 0)) % 4),
         callback,
-        filter: (cell, x, y) => cell.id == id && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => ((cell.id == id) && (cell.rot == rot) && (!cell.updated)),
       );
     }
   }
 
   void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter}) {
-    filter ??= (Cell c, int x, int y) {
-      if (chunkID == "all") return true;
-      if (chunkID == "render") return c.id != "empty";
-      return (c.id == chunkID) && !c.updated;
-    };
+    if (filter == null) {
+      filter = (Cell c, int x, int y) {
+        return c.id == chunkID;
+      };
+    }
 
     // 0,0 to w,h
     if (alignment == fromRot(2)) {
@@ -380,9 +377,9 @@ class Grid {
               if (chunkID != "all") at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
-            x = chunkToCellX(cx(x) + 1);
-          } else {
             x++;
+          } else {
+            x = chunkToCellX(cx(x) + 1);
           }
         }
         y++;
@@ -396,14 +393,14 @@ class Grid {
 
       while (y >= 0) {
         while (x >= 0) {
+          if (filter(at(x, y), x, y) || chunkID == "all" || chunkID == "*" || chunkID == "mover") {
+            if (chunkID != "all") at(x, y).updated = true;
+            callback(at(x, y), x, y);
+          }
           if (this.inChunk(x, y, chunkID)) {
-            if (filter(at(x, y), x, y)) {
-              if (chunkID != "all") at(x, y).updated = true;
-              callback(at(x, y), x, y);
-            }
-            x = chunkToCellX(cx(x) - 1);
-          } else {
             x--;
+          } else {
+            x = chunkToCellX(cx(x) - 1);
           }
         }
         y--;
@@ -422,9 +419,9 @@ class Grid {
               if (chunkID != "all") at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
-            y = chunkToCellY(cy(y) - 1);
-          } else {
             y--;
+          } else {
+            y = chunkToCellY(cy(y) - 1);
           }
         }
         x++;
@@ -443,9 +440,9 @@ class Grid {
               if (chunkID != "all") at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
-            y = chunkToCellY(cy(y) + 1);
-          } else {
             y++;
+          } else {
+            y = chunkToCellY(cy(y) + 1);
           }
         }
         x--;
