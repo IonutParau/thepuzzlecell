@@ -3,9 +3,7 @@ part of logic;
 void mechs(Set<String> cells) {
   // Power
   for (var rot in rotOrder) {
-    grid.loopChunks(
-      "mech_gen",
-      fromRot(rot),
+    grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
         MechanicalManager.spread(
@@ -22,7 +20,8 @@ void mechs(Set<String> cells) {
           cell.rot,
         );
       },
-      filter: (c, x, y) => c.id == "mech_gen" && c.rot == rot && !c.updated,
+      rot,
+      "mech_gen",
     );
   }
 
@@ -59,56 +58,52 @@ void mechs(Set<String> cells) {
   }
 
   if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
-    grid.loopChunks(
-      "mech_keyup",
-      GridAlignment.bottomleft,
+    grid.updateCell(
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y, 0, false, 2);
         MechanicalManager.spread(x + 1, y, 0, false, 0);
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      filter: (cell, x, y) => cell.id == "mech_keyup" && !cell.updated,
+      0,
+      "mech_keyup",
     );
   }
 
   if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
-    grid.loopChunks(
-      "mech_keyleft",
-      GridAlignment.bottomleft,
+    grid.updateCell(
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y, 0, false, 2);
         MechanicalManager.spread(x + 1, y, 0, false, 0);
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      filter: (cell, x, y) => cell.id == "mech_keyleft" && !cell.updated,
+      0,
+      "mech_keyleft",
     );
   }
   if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
-    grid.loopChunks(
-      "mech_keyright",
-      GridAlignment.bottomleft,
+    grid.updateCell(
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y, 0, false, 2);
         MechanicalManager.spread(x + 1, y, 0, false, 0);
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      filter: (cell, x, y) => cell.id == "mech_keyright" && !cell.updated,
+      0,
+      "mech_keyright",
     );
   }
   if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
-    grid.loopChunks(
-      "mech_keydown",
-      GridAlignment.bottomleft,
+    grid.updateCell(
       (cell, x, y) {
         MechanicalManager.spread(x - 1, y, 0, false, 2);
         MechanicalManager.spread(x + 1, y, 0, false, 0);
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      filter: (cell, x, y) => cell.id == "mech_keydown" && !cell.updated,
+      0,
+      "mech_keydown",
     );
   }
 

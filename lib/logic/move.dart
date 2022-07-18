@@ -637,25 +637,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
 bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell, bool shifted = false}) {
   replaceCell ??= Cell(x, y);
   if (!grid.inside(x, y)) return false;
-  if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
-    final nc = nextCell(x, y, dir);
-    if (nc.broken) {
-      return false;
-    } else {
-      replaceCell.rot = (replaceCell.rot + nc.addedrot) % 4;
-      return push(
-        nc.x,
-        nc.y,
-        nc.dir,
-        force,
-        mt: mt,
-        depth: depth,
-        replaceCell: replaceCell,
-        shifted: true,
-      );
-    }
-  }
-  if ((dir % 2 == 0 && depth > grid.width) || (dir % 2 == 1 && depth > grid.height)) {
+  if (((dir % 2 == 0) && (depth > grid.width)) || ((dir % 2 == 1) && (depth > grid.height))) {
     return false;
   }
   dir %= 4;
@@ -670,8 +652,6 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   var addedRot = 0; //nc.addedrot;
   x = frontX(x, dir);
   y = frontY(y, dir);
-
-  print("$x $y $ox $oy");
 
   var c = grid.at(ox, oy);
 

@@ -1102,6 +1102,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       } else if (cmd == "setinit") {
         if (isinitial) {
           grid = loadStr(args.first);
+          timeGrid = null;
           initial = grid.copy;
           isinitial = true;
           running = false;
@@ -1230,6 +1231,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 (str) {
                   if (str is ClipboardData) {
                     grid = loadStr(str.text ?? "");
+                    timeGrid = null;
                     initial = grid.copy;
                     isinitial = true;
                     running = false;
@@ -1569,6 +1571,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                       sendToServer('setinit ${str.text}');
                     } else {
                       grid = loadStr(str.text ?? "");
+                      timeGrid = null;
                       initial = grid.copy;
                       buttonManager.buttons['play-btn']?.texture = 'mover.png';
                       buttonManager.buttons['play-btn']?.rotation = 0;

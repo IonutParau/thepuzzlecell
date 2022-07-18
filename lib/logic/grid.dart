@@ -31,8 +31,6 @@ final subticks = [
   axis,
   birds,
   fans,
-  //if (cells.contains("magnet")) magnets,
-  //if (cells.contains("digger")) diggers,
   ants,
   plants,
   karls,
@@ -353,7 +351,9 @@ class Grid {
         id,
         fromRot((rot + (invertOrder ? 2 : 0)) % 4),
         callback,
-        filter: (cell, x, y) => ((cell.id == id) && (cell.rot == rot) && (!cell.updated)),
+        filter: (cell, x, y) {
+          return ((cell.id == id) && (cell.rot == rot) && (!cell.updated));
+        },
       );
     }
   }
@@ -361,6 +361,7 @@ class Grid {
   void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter}) {
     if (filter == null) {
       filter = (Cell c, int x, int y) {
+        if (chunkID == "all") return true;
         return c.id == chunkID;
       };
     }
@@ -383,27 +384,29 @@ class Grid {
           }
         }
         y++;
+        x = 0;
       }
     }
 
     // w,h to 0,0
     if (alignment == fromRot(0)) {
-      var x = height - 1;
-      var y = width - 1;
+      var x = width - 1;
+      var y = height - 1;
 
       while (y >= 0) {
         while (x >= 0) {
-          if (filter(at(x, y), x, y) || chunkID == "all" || chunkID == "*" || chunkID == "mover") {
-            if (chunkID != "all") at(x, y).updated = true;
-            callback(at(x, y), x, y);
-          }
           if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all") at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
             x--;
           } else {
-            x = chunkToCellX(cx(x) - 1);
+            x = chunkToCellX(cx(x)) - 1;
           }
         }
         y--;
+        x = width - 1;
       }
     }
 
@@ -421,10 +424,11 @@ class Grid {
             }
             y--;
           } else {
-            y = chunkToCellY(cy(y) - 1);
+            y = chunkToCellY(cy(y)) - 1;
           }
         }
         x++;
+        y = height - 1;
       }
     }
 
@@ -446,6 +450,7 @@ class Grid {
           }
         }
         x--;
+        y = 0;
       }
     }
   }
@@ -483,9 +488,9 @@ class Grid {
       (cell, x, y) {
         cell.updated = false;
         cell.lastvars = LastVars(cell.rot, x, y);
-        cell.tags = {};
-        cell.cx = null;
-        cell.cy = null;
+        cell.tags.clear();
+        cell.cx = x;
+        cell.cy = y;
         cell.lifespan++;
         cells.add(cell.id);
         cells.add(place[x][y]);
