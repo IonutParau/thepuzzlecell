@@ -31,7 +31,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   }
   if (o.id == "key") {
     playerKeys++;
-    grid.addBroken(o, x, y, "silent");
+    grid.addBroken(o, ox, oy, "silent");
     grid.set(ox, oy, Cell(ox, oy));
   } else if (o.id == "lock") {
     if (playerKeys > 0) {
@@ -89,15 +89,16 @@ void doSandbox(Cell cell, int x, int y) {
 }
 
 void doRobot(Cell cell, int x, int y) {
+  var range = grid.width * grid.height ~/ 4;
   if (grid.cells.contains("key")) {
-    final dirToKey = pathFindToCell(x, y, ["key"], 10);
+    final dirToKey = pathFindToCell(x, y, ["key"], range);
     if (dirToKey != null) {
       return doPuzzleSide(x, y, dirToKey, grid.cells, "robot", 1);
     }
   }
 
-  if (grid.cells.contains("lock")) {
-    final dirToLock = pathFindToCell(x, y, ["lock"], 10);
+  if (grid.cells.contains("lock") && playerKeys > 0) {
+    final dirToLock = pathFindToCell(x, y, ["lock"], range);
     if (dirToLock != null) {
       final fx = frontX(x, dirToLock);
       final fy = frontY(y, dirToLock);
@@ -121,7 +122,7 @@ void doRobot(Cell cell, int x, int y) {
   }
 
   if (grid.cells.containsAny(enemies)) {
-    final dirToEnemy = pathFindToCell(x, y, enemies, 10);
+    final dirToEnemy = pathFindToCell(x, y, enemies, range);
     if (dirToEnemy != null) {
       push(x, y, dirToEnemy, 1);
       return;
@@ -129,10 +130,94 @@ void doRobot(Cell cell, int x, int y) {
   }
 
   if (grid.cells.contains("flag")) {
-    final dirToFlag = pathFindToCell(x, y, ["flag"], 10);
+    final dirToFlag = pathFindToCell(x, y, ["flag"], range);
     if (dirToFlag != null) {
       doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
       return;
+    }
+  }
+}
+
+void doAssistant(Cell cell, int x, int y) {
+  var range = grid.width * grid.height;
+  if (grid.cells.contains("key")) {
+    final dirToKey = pathFindToCell(x, y, ["key"], range);
+    if (dirToKey != null) {
+      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot", 1);
+    }
+  }
+
+  if (grid.cells.contains("lock") && playerKeys > 0) {
+    final dirToLock = pathFindToCell(x, y, ["lock"], range);
+    if (dirToLock != null) {
+      final fx = frontX(x, dirToLock);
+      final fy = frontY(y, dirToLock);
+      if (!grid.inside(fx, fy)) return;
+
+      final f = grid.at(fx, fy);
+      if (f.id == "lock") {
+        if (playerKeys > 0) {
+          playerKeys--;
+          grid.set(
+              fx,
+              fy,
+              Cell(fx, fy)
+                ..id = "unlock"
+                ..rot = f.rot);
+        }
+      } else {
+        push(x, y, dirToLock, 1, mt: MoveType.push);
+      }
+    }
+  }
+
+  if (grid.cells.contains("flag")) {
+    final dirToFlag = pathFindToCell(x, y, ["flag"], range);
+    if (dirToFlag != null) {
+      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
+      return;
+    }
+  }
+
+  if (grid.cells.contains("unlock")) {
+    final dirToLock = pathFindToCell(x, y, ["unlock"], range);
+    if (dirToLock != null) {
+      push(x, y, dirToLock, 1, mt: MoveType.push);
+    }
+  }
+
+  if (grid.cells.contains("push") && grid.cells.containsAny(enemies)) {
+    final pushPos = findCell(x, y, ["push"], range);
+    if (pushPos != null) {
+      final pushX = pushPos.dx.toInt();
+      final pushY = pushPos.dy.toInt();
+      final dirToEnemy = getPathFindingDirection(x, y, pushX, pushY, true, {});
+      if (dirToEnemy != null) {
+        final fx = frontX(x, dirToEnemy);
+        final fy = frontY(y, dirToEnemy);
+
+        if (grid.inside(fx, fy)) {
+          final f = grid.at(fx, fy);
+          if ((f.id == "push" && enemies.contains(grid.get(frontX(fx, dirToEnemy), frontY(fy, dirToEnemy))?.id))) {
+            push(x, y, dirToEnemy, 1, mt: MoveType.push);
+          } else if (f.id == "empty") {
+            if (enemies.contains(grid.get(pushX + 1, pushY)?.id)) {
+              final dir = getPathFindingDirection(x, y, pushX - 1, pushY, true, {});
+              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
+            } else if (enemies.contains(grid.get(pushX - 1, pushY)?.id)) {
+              final dir = getPathFindingDirection(x, y, pushX + 1, pushY, true, {});
+              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
+            } else if (enemies.contains(grid.get(pushX, pushY + 1)?.id)) {
+              final dir = getPathFindingDirection(x, y, pushX, pushY - 1, true, {});
+              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
+            } else if (enemies.contains(grid.get(pushX, pushY - 1)?.id)) {
+              final dir = getPathFindingDirection(x, y, pushX, pushY + 1, true, {});
+              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
+            }
+          }
+        }
+        return;
+      }
     }
   }
 }
@@ -150,6 +235,12 @@ void puzzles(Set<String> cells) {
     doRobot,
     null,
     "robot",
+  );
+
+  grid.updateCell(
+    doAssistant,
+    null,
+    "assistant",
   );
 
   for (var rot in rotOrder) {

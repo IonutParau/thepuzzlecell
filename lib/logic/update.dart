@@ -309,35 +309,82 @@ void doAnchor(int x, int y, int amount) {
   }
 }
 
-Offset? findCell(int x, int y, List<String> targets, Map<String, bool> visited, int maxDepth, [bool first = true]) {
+Offset? findCell(int x, int y, List<String> targets, int maxDepth) {
+  Map<String, bool> visited = {};
+  List<List<int>> toVisit = [
+    [x, y],
+  ];
+  bool first = true;
+  var d = maxDepth;
+
+  while (toVisit.isNotEmpty) {
+    final cur = toVisit.removeAt(0);
+    final cx = cur[0];
+    final cy = cur[1];
+    if (grid.inside(cx, cy)) {
+      final cell = grid.at(cx, cy);
+      if (targets.contains(cell.id)) {
+        return Offset(cx.toDouble(), cy.toDouble());
+      }
+      if (cell.id == "empty" || first) {
+        if (!visited.containsKey("$cx $cy")) {
+          visited["$cx $cy"] = true;
+          toVisit.add([cx + 1, cy]);
+          toVisit.add([cx - 1, cy]);
+          toVisit.add([cx, cy + 1]);
+          toVisit.add([cx, cy - 1]);
+          d += 4;
+        }
+      }
+    }
+    first = false;
+    d = d - 1;
+    if (d == 0) return null;
+  }
+
+  return null;
+}
+
+int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
   if (!grid.inside(x, y)) return null;
   if (visited["$x $y"] == true) return null;
-  if (targets.contains(grid.at(x, y).id)) return Offset(x.toDouble(), y.toDouble());
-  if (!first && grid.at(x, y).id != "empty") return null;
-  if (maxDepth == 0) return null;
-  visited[grid.at(x, y).id] = true;
-  var res = findCell(x + 1, y, targets, visited, maxDepth - 1, false);
-  if (res != null) return res;
-  res = findCell(x - 1, y, targets, visited, maxDepth - 1, false);
-  if (res != null) return res;
-  res = findCell(x, y + 1, targets, visited, maxDepth - 1, false);
-  if (res != null) return res;
-  res = findCell(x, y - 1, targets, visited, maxDepth - 1, false);
-  if (res != null) return res;
+  visited["$x $y"] = true;
+
+  if (!(first || grid.at(x, y).id == "empty")) {
+    return null;
+  }
+
+  var offs = [
+    [x + 1, y, 0],
+    [x, y + 1, 1],
+    [x - 1, y, 2],
+    [x, y - 1, 3]
+  ];
+
+  offs.sort((a, b) {
+    var dist = (a[0] - dx).abs() + (a[1] - dy).abs();
+    var dist2 = (b[0] - dx).abs() + (b[1] - dy).abs();
+
+    return dist.compareTo(dist2);
+  });
+
+  for (var off in offs) {
+    if (off[0] == dx && off[1] == dy) return off[2];
+    if (getPathFindingDirection(off[0], off[1], dx, dy, false, visited) != null) {
+      return off[2];
+    }
+  }
+
   return null;
 }
 
 int? pathFindToCell(int x, int y, List<String> targets, int maxDepth) {
-  final cell = findCell(x, y, targets, {}, maxDepth);
+  final cell = findCell(x, y, targets, maxDepth);
   if (cell == null) return null;
 
   final cx = cell.dx.toInt();
   final cy = cell.dy.toInt();
 
-  if (cx > x && [...targets, "empty"].contains(grid.get(x + 1, y)?.id)) return 0;
-  if (cx < x && [...targets, "empty"].contains(grid.get(x - 1, y)?.id)) return 2;
-  if (cy > y && [...targets, "empty"].contains(grid.get(x, y + 1)?.id)) return 1;
-  if (cy < y && [...targets, "empty"].contains(grid.get(x, y - 1)?.id)) return 3;
-
-  return null;
+  return getPathFindingDirection(x, y, cx, cy, true, {});
+  ;
 }

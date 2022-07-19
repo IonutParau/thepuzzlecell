@@ -77,11 +77,7 @@ void playSound(Player sound, [double? volume]) {
   if (inBruteForce) return;
   sound.setVolume(volume ?? (storage.getDouble("sfx_volume") ?? 1));
   sound.setPlaylistMode(PlaylistMode.single);
-  if (sound.playback.isPlaying) {
-    sound.seek(Duration.zero);
-  } else {
-    sound.play();
-  }
+  sound.play();
 }
 
 void playOnLoop(Player sound, double volume) {
