@@ -208,11 +208,17 @@ final cells = {
   "frozen_puzzle",
   "unstable_puzzle",
   "temporal_puzzle",
+  "robot",
+  "keylimit",
+  "assistant",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "robot.png": "puzzle/robot.png",
+  "keylimit.png": "puzzle/keylimit.png",
+  "assistant.png": "puzzle/assistant.png",
   "molten_puzzle.png": "puzzle/molten_puzzle.png",
   "frozen_puzzle.png": "puzzle/frozen_puzzle.png",
   "unstable_puzzle.png": "puzzle/unstable_puzzle.png",
@@ -886,7 +892,22 @@ final categories = [
       "lock",
       "key",
       "flag",
-      "auto_flag",
+      "autoflag",
+      CellCategory(
+        "Merged",
+        "Puzzle Cells with extra abilities",
+        [
+          "molten_puzzle",
+          "frozen_puzzle",
+          "unstable_puzzle",
+          "trash_puzzle",
+          "mover_puzzle",
+        ],
+        "molten_puzzle",
+      ),
+      "robot",
+      "keylimit",
+      "assistant",
     ],
     "puzzle",
   ),
@@ -1734,5 +1755,17 @@ final cellInfo = <String, CellProfile>{
   "trash_puzzle": CellProfile(
     "Trash Puzzle",
     "Puzzle cell but if it can't push the cell in front of it, it eats that cell",
+  ),
+  "robot": CellProfile(
+    "Robot",
+    "Will first try to get all available keys, unlock all doors, and then kill enemies by moving into them (which does kill it as well)",
+  ),
+  "keylimit": CellProfile(
+    "Key Limit",
+    "When powered, if you press the a key based on its rotation, it will make you lose the level",
+  ),
+  "assistant": CellProfile(
+    "Assistant",
+    "Will first try to get all available keys, unlock the first door they can get, and push it continuously",
   ),
 };

@@ -2542,6 +2542,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     // if (!overlays.isActive('Info')) {
     //   overlays.add('Info');
     // }
+    if (puzzleLost) {
+      if (!overlays.isActive("Lose") && edType == EditorType.loaded) {
+        overlays.add("Lose");
+        AchievementManager.complete("loser");
+      }
+      return;
+    }
     if (puzzleWin && (!overlays.isActive("Win")) && edType == EditorType.loaded) {
       overlays.add("Win");
       CoinManager.give(Random().nextInt(7) + 3);
@@ -2942,7 +2949,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         restoreInitial();
       }
       puzzleWin = false;
+      puzzleLost = false;
       overlays.remove("Win");
+      overlays.remove("Lose");
       buttonManager.buttons["play-btn"]!.texture = "mover.png";
       buttonManager.buttons["play-btn"]!.rotation = 0;
     }

@@ -6,6 +6,7 @@ final rotOrder = [0, 2, 3, 1];
 
 var playerKeys = 0;
 var puzzleWin = false;
+var puzzleLost = false;
 
 Offset fromDir(int dir) {
   dir += 4;
