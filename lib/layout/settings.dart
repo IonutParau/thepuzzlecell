@@ -286,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${(storage.getInt('chunk_size') ?? 1)}',
+                            label: '${(storage.getInt('chunk_size') ?? 25)}',
                           ),
                         ),
                       ],
