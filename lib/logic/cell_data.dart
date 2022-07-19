@@ -892,7 +892,7 @@ final categories = [
       "lock",
       "key",
       "flag",
-      "autoflag",
+      "auto_flag",
       CellCategory(
         "Merged",
         "Puzzle Cells with extra abilities",

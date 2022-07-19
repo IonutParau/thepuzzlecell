@@ -10,7 +10,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
-  if (o.id.endsWith("puzzle") && o.id != "antipuzzle") {
+  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot") {
     var nextType = "normal";
     if (o.rot == puzzle.rot) {
       if (o.id == "trash_puzzle") nextType = "trash";
@@ -31,6 +31,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   }
   if (o.id == "key") {
     playerKeys++;
+    grid.addBroken(o, x, y, "silent");
     grid.set(ox, oy, Cell(ox, oy));
   } else if (o.id == "lock") {
     if (playerKeys > 0) {
@@ -55,7 +56,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
     return;
   }
 
-  if (push(x, y, dir, 1, mt: MoveType.puzzle)) {
+  if (push(x, y, dir, 1, mt: type == "robot" ? MoveType.push : MoveType.puzzle)) {
     // DO stuff
   } else {
     if (type == "trash") {
@@ -87,6 +88,55 @@ void doSandbox(Cell cell, int x, int y) {
   );
 }
 
+void doRobot(Cell cell, int x, int y) {
+  if (grid.cells.contains("key")) {
+    final dirToKey = pathFindToCell(x, y, ["key"], 10);
+    if (dirToKey != null) {
+      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot", 1);
+    }
+  }
+
+  if (grid.cells.contains("lock")) {
+    final dirToLock = pathFindToCell(x, y, ["lock"], 10);
+    if (dirToLock != null) {
+      final fx = frontX(x, dirToLock);
+      final fy = frontY(y, dirToLock);
+      if (!grid.inside(fx, fy)) return;
+
+      final f = grid.at(fx, fy);
+      if (f.id == "lock") {
+        if (playerKeys > 0) {
+          playerKeys--;
+          grid.set(
+              fx,
+              fy,
+              Cell(fx, fy)
+                ..id = "unlock"
+                ..rot = f.rot);
+        }
+      } else {
+        push(x, y, dirToLock, 1, mt: MoveType.push);
+      }
+    }
+  }
+
+  if (grid.cells.containsAny(enemies)) {
+    final dirToEnemy = pathFindToCell(x, y, enemies, 10);
+    if (dirToEnemy != null) {
+      push(x, y, dirToEnemy, 1);
+      return;
+    }
+  }
+
+  if (grid.cells.contains("flag")) {
+    final dirToFlag = pathFindToCell(x, y, ["flag"], 10);
+    if (dirToFlag != null) {
+      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
+      return;
+    }
+  }
+}
+
 void puzzles(Set<String> cells) {
   grid.updateCell(
     doSandbox,
@@ -95,6 +145,12 @@ void puzzles(Set<String> cells) {
   );
 
   var removeTriggerKey = false;
+
+  grid.updateCell(
+    doRobot,
+    null,
+    "robot",
+  );
 
   for (var rot in rotOrder) {
     grid.updateCell(

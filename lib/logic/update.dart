@@ -145,6 +145,9 @@ class CellTypeManager {
     "puzzle",
     "trash_puzzle",
     "mover_puzzle",
+    "molten_puzzle",
+    "frozen_puzzle",
+    "unstable_puzzle",
   ];
 
   static List<String> mechanical = [
@@ -304,4 +307,37 @@ void doAnchor(int x, int y, int amount) {
       }
     }
   }
+}
+
+Offset? findCell(int x, int y, List<String> targets, Map<String, bool> visited, int maxDepth, [bool first = true]) {
+  if (!grid.inside(x, y)) return null;
+  if (visited["$x $y"] == true) return null;
+  if (targets.contains(grid.at(x, y).id)) return Offset(x.toDouble(), y.toDouble());
+  if (!first && grid.at(x, y).id != "empty") return null;
+  if (maxDepth == 0) return null;
+  visited[grid.at(x, y).id] = true;
+  var res = findCell(x + 1, y, targets, visited, maxDepth - 1, false);
+  if (res != null) return res;
+  res = findCell(x - 1, y, targets, visited, maxDepth - 1, false);
+  if (res != null) return res;
+  res = findCell(x, y + 1, targets, visited, maxDepth - 1, false);
+  if (res != null) return res;
+  res = findCell(x, y - 1, targets, visited, maxDepth - 1, false);
+  if (res != null) return res;
+  return null;
+}
+
+int? pathFindToCell(int x, int y, List<String> targets, int maxDepth) {
+  final cell = findCell(x, y, targets, {}, maxDepth);
+  if (cell == null) return null;
+
+  final cx = cell.dx.toInt();
+  final cy = cell.dy.toInt();
+
+  if (cx > x && [...targets, "empty"].contains(grid.get(x + 1, y)?.id)) return 0;
+  if (cx < x && [...targets, "empty"].contains(grid.get(x - 1, y)?.id)) return 2;
+  if (cy > y && [...targets, "empty"].contains(grid.get(x, y + 1)?.id)) return 1;
+  if (cy < y && [...targets, "empty"].contains(grid.get(x, y - 1)?.id)) return 3;
+
+  return null;
 }
