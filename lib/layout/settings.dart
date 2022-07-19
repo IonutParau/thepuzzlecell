@@ -316,7 +316,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(
                                     () => setLoopSoundVolume(
-                                      flightMusic,
+                                      music,
                                       storage.getDouble("music_volume")!,
                                     ),
                                   ),
@@ -373,6 +373,34 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     title: Text(device.name),
                                     leading: Icon(FluentIcons.speakers),
                                     onTap: () => setState(() => setSoundDevice(device)),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 60.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            lang('music_type', 'Music: '),
+                            style: textStyle,
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                            child: DropDownButton(
+                              leading: Icon(FluentIcons.music_note),
+                              title: Text(getCurrentMusicData().name),
+                              placement: FlyoutPlacement.start,
+                              items: [
+                                for (var music in musics)
+                                  // ignore: deprecated_member_use
+                                  DropDownButtonItem(
+                                    title: Text(music.name),
+                                    leading: Icon(FluentIcons.music_note),
+                                    onTap: () => setState(() => changeMusic(music.id)),
                                   ),
                               ],
                             ),

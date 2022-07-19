@@ -165,7 +165,7 @@ class _MyAppState extends State<MyApp> {
           if (!splashScreenOver) {
             splashScreenOver = true;
             setLoopSoundVolume(
-              flightMusic,
+              music,
               storage.getDouble('music_volume')!,
             );
             //playOnLoop(floatMusic, storage.getDouble('music_volume')!);

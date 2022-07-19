@@ -15,6 +15,13 @@ final List<String> changes = [
   "Added Memory Generators",
   "Added AutoDetect in texture packs",
   "Added YAML and TOML support to texture packs",
+  "Added more puzzle variants",
+  "Added KeyLimit, Robot and Assistant",
+  "Reworked the entire grid system to be less buggy",
+  "Added plant",
+  "Added lose conditions",
+  "Added a music switcher",
+  "Replaced Flight being the default to Drift",
 ];
 
 IconData getTrailing(String change) {

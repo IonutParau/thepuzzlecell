@@ -30,14 +30,14 @@ jobs:
         with:
           name: thepuzzlecell-linux
           path: build/linux/x64/release/bundle
-      - run: chmod +x ./build_appimage.sh
-      - run: chmod a+x ./appimage_builder.AppImage
-      - run: ./build_appimage.sh
-      - run: mv ./build/The\ Puzzle\ Cell.AppImage ./build/appimage/TPC.AppImage
-      - uses: actions/upload-artifact@v3
-        with:
-          name: thepuzzlecell-appimage
-          path: build/appimage
+      # - run: chmod +x ./build_appimage.sh
+      # - run: chmod a+x ./appimage_builder.AppImage
+      # - run: ./build_appimage.sh
+      # - run: mv ./build/The\ Puzzle\ Cell.AppImage ./build/appimage/TPC.AppImage
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: thepuzzlecell-appimage
+      #     path: build/appimage
   # build_macos:
   #   runs-on: macOS-latest
   #   steps:

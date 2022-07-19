@@ -272,7 +272,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                             child: Row(
                               children: [
                                 Text(
-                                  lang('music_volume', 'Music Volume') + ": ${flightMusic.playback.isPlaying ? (flightMusic.general.volume * 100 ~/ 1) : 0}% ",
+                                  lang('music_volume', 'Music Volume') + ": ${music.playback.isPlaying ? (music.general.volume * 100 ~/ 1) : 0}% ",
                                   style: TextStyle(
                                     fontSize: 10.sp,
                                   ),
@@ -294,12 +294,12 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                           disabledThumbColor: Colors.black,
                                           useThumbBall: true,
                                         ),
-                                        value: flightMusic.playback.isPlaying ? flightMusic.general.volume : 0.0,
+                                        value: music.playback.isPlaying ? music.general.volume : 0.0,
                                         min: 0,
                                         max: 1,
                                         onChanged: (newVal) {
                                           setLoopSoundVolume(
-                                            flightMusic,
+                                            music,
                                             newVal,
                                           );
                                           storage.setDouble(
