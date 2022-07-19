@@ -87,6 +87,7 @@ In the text, @variablename gets replaced with the variable.
 | lerp_speed              | The name of the Lerp Speed setting                                                                                                      |           |
 | chunk_size              | The name of the Chunk Size setting                                                                                                      |           |
 | middle_move             | The name of the Middle Click Move setting                                                                                               |           |
+| music_type              | The name of the Music setting                                                                                                           |           |
 
 ## Button IDs:
 
