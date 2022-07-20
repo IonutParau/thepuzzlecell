@@ -161,6 +161,9 @@ class MechanicalManager {
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
     if (cell.id.startsWith('mech_')) return true;
+    if (cell.id == "keylimit") return true;
+    if (cell.id == "keyforce") return true;
+    if (cell.id == "keyfake") return true;
     return CellTypeManager.mechanical.contains(cell.id);
   }
 
@@ -214,6 +217,28 @@ class MechanicalManager {
       final fy = frontY(y, cell.rot);
 
       push(fx, fy, cell.rot, 1);
+    } else if (cell.id == "keylimit") {
+      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+
+      if (keys[keysToCheck[cell.rot].keyLabel] == true) {
+        puzzleLost = true;
+      }
+    } else if (cell.id == "keyforce") {
+      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+
+      if (keys[keysToCheck[cell.rot].keyLabel] != true) {
+        puzzleLost = true;
+      }
+    } else if (cell.id == "keyfake") {
+      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+
+      final key = keysToCheck[cell.rot];
+
+      keys[key.keyLabel] = true;
+
+      QueueManager.add("newtick", () {
+        keys[key.keyLabel] = false;
+      });
     }
   }
 

@@ -978,6 +978,7 @@ class P4 {
   }
 
   static String encodeValue(dynamic value) {
+    if (value.toString() == "{}") return "()";
     if (value is List || value is Set) {
       return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
     } else if (value is Map<String, dynamic>) {

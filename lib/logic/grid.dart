@@ -523,20 +523,26 @@ class Grid {
 
     final subticking = storage.getBool('subtick') ?? false;
     if (subticking) {
+      if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
       var subtick = subticks[tickCount % subticks.length];
       if (subtick is void Function(Set<String>)) {
         subtick(cells);
       } else {
         subtick();
       }
+      if (tickCount % subticks.length == 0) {
+        QueueManager.runQueue("newtick");
+      }
     } else {
       for (var subtick in subticks) {
+        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
         if (subtick is void Function(Set<String>)) {
           subtick(cells);
         } else {
           subtick();
         }
       }
+      QueueManager.runQueue("newtick");
     }
   }
 }

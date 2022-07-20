@@ -211,6 +211,8 @@ final cells = {
   "robot",
   "keylimit",
   "assistant",
+  "keyforce",
+  "keyfake",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
@@ -218,6 +220,8 @@ final textureMapBackup = Map.from(textureMap);
 Map<String, String> textureMap = {
   "robot.png": "puzzle/robot.png",
   "keylimit.png": "puzzle/keylimit.png",
+  "keyforce.png": "puzzle/keyforce.png",
+  "keyfake.png": "puzzle/keyfake.png",
   "assistant.png": "puzzle/assistant.png",
   "molten_puzzle.png": "puzzle/molten_puzzle.png",
   "frozen_puzzle.png": "puzzle/frozen_puzzle.png",
@@ -860,6 +864,9 @@ final categories = [
           "mech_rotator_ccw",
           "pixel",
           "piston",
+          "keylimit",
+          "keyforce",
+          "keyfake",
         ],
         "mech_mover",
       ),
@@ -905,8 +912,17 @@ final categories = [
         ],
         "molten_puzzle",
       ),
+      CellCategory(
+        "Key Processors",
+        "They do stuff related to key-presses to make puzzles more difficult",
+        [
+          "keylimit",
+          "keyforce",
+          "keyfake",
+        ],
+        "keylimit",
+      ),
       "robot",
-      "keylimit",
       "assistant",
     ],
     "puzzle",
@@ -1762,10 +1778,18 @@ final cellInfo = <String, CellProfile>{
   ),
   "keylimit": CellProfile(
     "Key Limit",
-    "When powered, if you press the a key based on its rotation, it will make you lose the level",
+    "When powered, if you press the key based on its rotation, it will make you lose the level",
   ),
   "assistant": CellProfile(
     "Assistant",
     "Will first try to get all available keys, unlock the first door they can get, and push it continuously",
+  ),
+  "keyforce": CellProfile(
+    "Key Force",
+    "When powered, if you don't press the key based on its rotation, it will make you lose the level",
+  ),
+  "keyfake": CellProfile(
+    "Key Fake",
+    "When powered, it will force you to press the key based on its rotation",
   ),
 };

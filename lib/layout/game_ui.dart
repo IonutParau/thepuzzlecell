@@ -2542,8 +2542,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     // if (!overlays.isActive('Info')) {
     //   overlays.add('Info');
     // }
-    if (puzzleLost) {
-      if (!overlays.isActive("Lose") && edType == EditorType.loaded) {
+    if (puzzleLost && edType == EditorType.loaded) {
+      if (!overlays.isActive("Lose")) {
         overlays.add("Lose");
         AchievementManager.complete("loser");
       }

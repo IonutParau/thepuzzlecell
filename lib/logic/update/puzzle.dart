@@ -179,15 +179,8 @@ void doAssistant(Cell cell, int x, int y) {
     }
   }
 
-  if (grid.cells.contains("unlock")) {
-    final dirToLock = pathFindToCell(x, y, ["unlock"], range);
-    if (dirToLock != null) {
-      push(x, y, dirToLock, 1, mt: MoveType.push);
-    }
-  }
-
-  if (grid.cells.contains("push") && grid.cells.containsAny(enemies)) {
-    final pushPos = findCell(x, y, ["push"], range);
+  if (grid.cells.containsAny(["push", "unlock"]) && grid.cells.containsAny(enemies)) {
+    final pushPos = findCell(x, y, ["push", "unlock"], range);
     if (pushPos != null) {
       final pushX = pushPos.dx.toInt();
       final pushY = pushPos.dy.toInt();
@@ -196,24 +189,36 @@ void doAssistant(Cell cell, int x, int y) {
         final fx = frontX(x, dirToEnemy);
         final fy = frontY(y, dirToEnemy);
 
+        if (enemies.contains(grid.get(pushX + 1, pushY)?.id)) {
+          final dir = getPathFindingDirection(x, y, pushX - 1, pushY, true, {});
+          if (dir != null) {
+            push(x, y, dir, 1, mt: MoveType.push);
+            return;
+          }
+        } else if (enemies.contains(grid.get(pushX - 1, pushY)?.id)) {
+          final dir = getPathFindingDirection(x, y, pushX + 1, pushY, true, {});
+          if (dir != null) {
+            push(x, y, dir, 1, mt: MoveType.push);
+            return;
+          }
+        } else if (enemies.contains(grid.get(pushX, pushY + 1)?.id)) {
+          final dir = getPathFindingDirection(x, y, pushX, pushY - 1, true, {});
+          if (dir != null) {
+            push(x, y, dir, 1, mt: MoveType.push);
+            return;
+          }
+        } else if (enemies.contains(grid.get(pushX, pushY - 1)?.id)) {
+          final dir = getPathFindingDirection(x, y, pushX, pushY + 1, true, {});
+          if (dir != null) {
+            push(x, y, dir, 1, mt: MoveType.push);
+            return;
+          }
+        }
+
         if (grid.inside(fx, fy)) {
           final f = grid.at(fx, fy);
-          if ((f.id == "push" && enemies.contains(grid.get(frontX(fx, dirToEnemy), frontY(fy, dirToEnemy))?.id))) {
+          if (((f.id == "push" || f.id == "unlock") && enemies.contains(grid.get(frontX(fx, dirToEnemy), frontY(fy, dirToEnemy))?.id))) {
             push(x, y, dirToEnemy, 1, mt: MoveType.push);
-          } else if (f.id == "empty") {
-            if (enemies.contains(grid.get(pushX + 1, pushY)?.id)) {
-              final dir = getPathFindingDirection(x, y, pushX - 1, pushY, true, {});
-              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
-            } else if (enemies.contains(grid.get(pushX - 1, pushY)?.id)) {
-              final dir = getPathFindingDirection(x, y, pushX + 1, pushY, true, {});
-              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
-            } else if (enemies.contains(grid.get(pushX, pushY + 1)?.id)) {
-              final dir = getPathFindingDirection(x, y, pushX, pushY - 1, true, {});
-              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
-            } else if (enemies.contains(grid.get(pushX, pushY - 1)?.id)) {
-              final dir = getPathFindingDirection(x, y, pushX, pushY + 1, true, {});
-              if (dir != null) push(x, y, dir, 1, mt: MoveType.push);
-            }
           }
         }
         return;

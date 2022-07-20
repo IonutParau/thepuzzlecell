@@ -346,33 +346,75 @@ Offset? findCell(int x, int y, List<String> targets, int maxDepth) {
 }
 
 int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
+  if (x == dx && y == dy) return null;
   if (!grid.inside(x, y)) return null;
-  if (visited["$x $y"] == true) return null;
+  final Map<String, bool> visited = {};
   visited["$x $y"] = true;
-
-  if (!(first || grid.at(x, y).id == "empty")) {
-    return null;
-  }
-
-  var offs = [
-    [x + 1, y, 0],
-    [x, y + 1, 1],
-    [x - 1, y, 2],
-    [x, y - 1, 3]
+  final List<List> toVisit = [
+    [
+      x + 1,
+      y,
+      [0]
+    ],
+    [
+      x,
+      y + 1,
+      [1]
+    ],
+    [
+      x - 1,
+      y,
+      [2]
+    ],
+    [
+      x,
+      y - 1,
+      [3]
+    ],
   ];
 
-  offs.sort((a, b) {
-    var dist = (a[0] - dx).abs() + (a[1] - dy).abs();
-    var dist2 = (b[0] - dx).abs() + (b[1] - dy).abs();
+  var maxDepth = grid.width * grid.height;
+  var d = maxDepth;
 
-    return dist.compareTo(dist2);
-  });
-
-  for (var off in offs) {
-    if (off[0] == dx && off[1] == dy) return off[2];
-    if (getPathFindingDirection(off[0], off[1], dx, dy, false, visited) != null) {
-      return off[2];
+  while (toVisit.isNotEmpty) {
+    final cur = toVisit.removeAt(0);
+    final cx = cur[0];
+    final cy = cur[1];
+    final path = cur[2];
+    if (grid.inside(cx, cy)) {
+      final cell = grid.at(cx, cy);
+      if (cx == dx && cy == dy) {
+        return path[0];
+      }
+      if (cell.id == "empty") {
+        if (!visited.containsKey("$cx $cy")) {
+          visited["$cx $cy"] = true;
+          toVisit.add([
+            cx + 1,
+            cy,
+            [...path, 0]
+          ]);
+          toVisit.add([
+            cx,
+            cy + 1,
+            [...path, 1]
+          ]);
+          toVisit.add([
+            cx - 1,
+            cy,
+            [...path, 2]
+          ]);
+          toVisit.add([
+            cx,
+            cy - 1,
+            [...path, 3]
+          ]);
+          d += 4;
+        }
+      }
     }
+    d--;
+    if (d == 0) return null;
   }
 
   return null;
