@@ -95,6 +95,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
       // game.context = context;
       loadPuzzle(puzzleIndex!);
       puzzleWin = false;
+      puzzleLost = false;
       final mouseX = game.mouseX;
       final mouseY = game.mouseY;
       setState(() {
@@ -556,6 +557,8 @@ Future loadAllButtonTextures() {
     "interface/decrease_brush.png",
     "interface/inctab.png",
     "interface/dectab.png",
+    "interface/save_bp.png",
+    "interface/load_bp.png",
   ]);
 }
 
@@ -906,6 +909,51 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       increaseTab();
     } else if (newSelection == "dectab") {
       decreaseTab();
+    } else if (newSelection == "load_bp") {
+      try {
+        FlutterClipboard.paste().then((txt) {
+          print(txt);
+          try {
+            final blueprint = loadStr(txt);
+            gridClip.activate(blueprint.width, blueprint.height, blueprint.grid);
+            selecting = false;
+            setPos = false;
+            dragPos = false;
+            pasting = true;
+            buttonManager.buttons['paste-btn']?.texture = 'interface/paste_on.png';
+          } catch (e) {
+            print(e);
+            showDialog(
+              context: context,
+              builder: (context) => ContentDialog(
+                title: Text(lang("error", "Error")),
+                content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
+                actions: [
+                  Button(
+                    child: Text("OK"),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                ],
+              ),
+            );
+          }
+        });
+      } catch (e) {
+        print(e);
+        showDialog(
+          context: context,
+          builder: (context) => ContentDialog(
+            title: Text(lang("error", "Error")),
+            content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
+            actions: [
+              Button(
+                child: Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          ),
+        );
+      }
     } else {
       currentSelection = cells.indexOf(newSelection);
     }
@@ -1481,6 +1529,83 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
 
       buttonManager.setButton(
+        "save-blueprint-btn",
+        VirtualButton(
+          Vector2(
+            170,
+            230,
+          ),
+          Vector2.all(40),
+          "interface/save_bp.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            if (selW < 0) {
+              selW *= -1;
+              selX -= selW;
+            }
+            if (selH < 0) {
+              selH *= -1;
+              selY -= selH;
+            }
+
+            final g = <List<Cell>>[];
+
+            selW--;
+            selH--;
+
+            for (var x = 0; x <= selW; x++) {
+              g.add(<Cell>[]);
+              for (var y = 0; y <= selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  g.last.add(grid.at(cx, cy).copy);
+                }
+              }
+            }
+
+            final bp = Grid(g.length, g.isEmpty ? 0 : g.first.length);
+            final bpSave = P4.encodeGrid(bp, title: "Unnamed Blueprint", description: "This blueprint currently has no name");
+
+            FlutterClipboard.controlC(bpSave).then((v) {
+              if (v) {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return ContentDialog(
+                      title: Text('Saved Blueprint'),
+                      content: Text(
+                          'The blueprint has been saved to your clipboard. You can change \"Unnamed Blueprint\" and \"This blueprint currently has no name\" to change title and description. Then you can put it in your blueprints file to use it later.'),
+                      actions: [
+                        Button(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+            });
+
+            selecting = false;
+            setPos = false;
+            dragPos = false;
+
+            selW++;
+            selH++;
+
+            buttonManager.buttons['select-btn']!.texture = "interface/select.png";
+          },
+          () => selecting && !dragPos,
+          title: 'Save as Blueprint',
+          description: 'Saves selected area to clipboard as a blueprint',
+        ),
+      );
+
+      buttonManager.setButton(
         "paste-btn",
         VirtualButton(
           Vector2(
@@ -1902,6 +2027,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     cellSize = defaultCellSize.toDouble();
     keys = {};
     puzzleWin = false;
+    puzzleLost = false;
     delay = storage.getDouble("delay") ?? 0.15;
     realisticRendering = storage.getBool("realistic_render") ?? true;
 
@@ -2494,6 +2620,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     updates++;
     if (edType == EditorType.making) {
       puzzleWin = false;
+      puzzleLost = false;
     }
     redparticles.update(dt);
     blueparticles.update(dt);
@@ -2560,12 +2687,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
       return;
     }
-    if (puzzleWin && (!overlays.isActive("Win")) && edType == EditorType.loaded) {
-      overlays.add("Win");
-      CoinManager.give(Random().nextInt(7) + 3);
-      AchievementManager.complete("winner");
+    if (puzzleWin && edType == EditorType.loaded) {
+      if ((!overlays.isActive("Win"))) {
+        overlays.add("Win");
+        CoinManager.give(Random().nextInt(7) + 3);
+        AchievementManager.complete("winner");
+      }
+      return;
     }
-    if (puzzleWin) return;
     if (!overlays.isActive("EditorMenu")) {
       if ((running || onetick)) {
         itime += dt;
@@ -2834,7 +2963,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           }
           return;
         }
-        if (puzzleWin) mouseDown = false;
+        if (puzzleWin || puzzleLost) mouseDown = false;
         if (!mouseDown) return;
         if (selecting) {
           setPos = true;
@@ -2914,6 +3043,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     grid = initial.copy;
     isinitial = true;
     puzzleWin = false;
+    puzzleLost = false;
     overlays.remove('Win');
     running = false;
     buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");

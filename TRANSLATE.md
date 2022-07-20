@@ -88,6 +88,8 @@ In the text, @variablename gets replaced with the variable.
 | chunk_size              | The name of the Chunk Size setting                                                                                                      |           |
 | middle_move             | The name of the Middle Click Move setting                                                                                               |           |
 | music_type              | The name of the Music setting                                                                                                           |           |
+| error                   | The word to replace Error with                                                                                                          |           |
+| load_blueprint_error    | The description of the blueprint load error dialog                                                                                      | error     |
 
 ## Button IDs:
 

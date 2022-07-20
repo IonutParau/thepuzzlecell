@@ -31,6 +31,6 @@ void addBlueprints() {
       blueprints[i].split(';')[2],
     );
   }
-  blueprintsCat.max = floor(sqrt(blueprints.length) + 0.5);
+  blueprintsCat.max = ceil(sqrt(blueprints.length) + 0.5);
   //game.loadAllButtons();
 }
