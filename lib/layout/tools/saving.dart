@@ -965,11 +965,21 @@ class P4 {
 
     final props = decodeValue(segs[6]);
     if (props is Map<String, dynamic>) {
+      print("Props-ing");
       if (props['W'] != null) grid.wrap = props['W']!;
 
       if (props['update_delay'] is num) {
         QueueManager.add("post-game-init", () {
           game.delay = props['update_delay']!;
+        });
+      }
+      if (props['viewbox'] != null) {
+        print("Viewbox-ing");
+        QueueManager.add("post-game-init", () {
+          print("Running in Queue");
+          final vb = props['viewbox'] as Map<String, dynamic>;
+
+          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
         });
       }
     }
@@ -978,10 +988,12 @@ class P4 {
   }
 
   static String encodeValue(dynamic value) {
-    if (value.toString() == "{}") return "()";
-    if (value is List || value is Set) {
+    if (value is Set) {
+      value = value.toList();
+    }
+    if (value is List) {
       return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
-    } else if (value is Map<String, dynamic>) {
+    } else if (value is Map) {
       final keys = value.isEmpty ? ["="] : [];
 
       value.forEach((key, value) {

@@ -853,6 +853,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   final greenparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.green);
   final yellowparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.yellow);
 
+  Rect? viewbox = null;
+
   // Brush stuff
   var brushSize = 0;
   var brushTemp = 0;
@@ -1231,6 +1233,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 (str) {
                   if (str is ClipboardData) {
                     grid = loadStr(str.text ?? "");
+                    QueueManager.runQueue("post-game-init");
                     timeGrid = null;
                     initial = grid.copy;
                     isinitial = true;
@@ -1571,6 +1574,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                       sendToServer('setinit ${str.text}');
                     } else {
                       grid = loadStr(str.text ?? "");
+                      QueueManager.runQueue("post-game-init");
                       timeGrid = null;
                       initial = grid.copy;
                       buttonManager.buttons['play-btn']?.texture = 'mover.png';
@@ -1989,6 +1993,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     sy = max(sy, 0);
     ex = min(ex, grid.width);
     ey = min(ey, grid.height);
+
+    if (viewbox != null) {
+      sx = viewbox!.topLeft.dx.toInt();
+      sy = viewbox!.topLeft.dy.toInt();
+      ex = viewbox!.bottomRight.dx.toInt();
+      ey = viewbox!.bottomRight.dy.toInt();
+    }
 
     if (realisticRendering) {
       final extra = 5;

@@ -171,14 +171,6 @@ void doAssistant(Cell cell, int x, int y) {
     }
   }
 
-  if (grid.cells.contains("flag")) {
-    final dirToFlag = pathFindToCell(x, y, ["flag"], range);
-    if (dirToFlag != null) {
-      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
-      return;
-    }
-  }
-
   if (grid.cells.containsAny(["push", "unlock"]) && grid.cells.containsAny(enemies)) {
     final pushPos = findCell(x, y, ["push", "unlock"], range);
     if (pushPos != null) {
@@ -215,14 +207,17 @@ void doAssistant(Cell cell, int x, int y) {
           }
         }
 
-        if (grid.inside(fx, fy)) {
-          final f = grid.at(fx, fy);
-          if (((f.id == "push" || f.id == "unlock") && enemies.contains(grid.get(frontX(fx, dirToEnemy), frontY(fy, dirToEnemy))?.id))) {
-            push(x, y, dirToEnemy, 1, mt: MoveType.push);
-          }
-        }
+        push(x, y, dirToEnemy, 1, mt: MoveType.push);
         return;
       }
+    }
+  }
+
+  if (grid.cells.contains("flag")) {
+    final dirToFlag = pathFindToCell(x, y, ["flag"], range);
+    if (dirToFlag != null) {
+      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
+      return;
     }
   }
 }
