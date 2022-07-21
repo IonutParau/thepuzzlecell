@@ -11,7 +11,8 @@ final List<String> changes = [
   "Reworked the generator optimization",
   "Reworked the settings page",
   "Added setting to change chunk size",
-  "Added Water and Sand",
+  "Reworked some categories",
+  "Added Water, Sand, Gas, Filler, Fire, Plasma, Lava and Cancer",
   "Added Memory Generators",
   "Added AutoDetect in texture packs",
   "Added YAML and TOML support to texture packs",
@@ -21,7 +22,7 @@ final List<String> changes = [
   "Added plant",
   "Added lose conditions",
   "Added a music switcher",
-  "Replaced Flight being the default to Drift",
+  "Replaced the default background music from Flight to Drift",
 ];
 
 IconData getTrailing(String change) {

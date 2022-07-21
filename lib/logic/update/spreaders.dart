@@ -155,9 +155,20 @@ void doCancer(Cell cell, int x, int y) {
   }
 }
 
+void doFiller(Cell cell, int x, int y) {
+  final filler = cell.copy;
+  filler.updated = true;
+  if (safeAt(x + 1, y)?.id == "empty") grid.set(x + 1, y, filler.copy);
+  if (safeAt(x - 1, y)?.id == "empty") grid.set(x - 1, y, filler.copy);
+  if (safeAt(x, y + 1)?.id == "empty") grid.set(x, y + 1, filler.copy);
+  if (safeAt(x, y - 1)?.id == "empty") grid.set(x, y - 1, filler.copy);
+}
+
 void spreaders() {
   grid.updateCell(doCancer, null, "cancer");
   grid.updateCell(doFire, null, "fire");
   grid.loopChunks("lava", fromRot(1), doLava, filter: (c, x, y) => c.id == "lava" && !c.updated);
   grid.loopChunks("plasma", fromRot(3), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
+
+  grid.updateCell(doFiller, null, "filler");
 }
