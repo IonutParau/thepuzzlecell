@@ -178,37 +178,29 @@ void doAssistant(Cell cell, int x, int y) {
       final pushY = pushPos.dy.toInt();
       final dirToEnemy = getPathFindingDirection(x, y, pushX, pushY, true, {});
       if (dirToEnemy != null) {
-        final fx = frontX(x, dirToEnemy);
-        final fy = frontY(y, dirToEnemy);
-
         if (enemies.contains(grid.get(pushX + 1, pushY)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX - 1, pushY, true, {});
           if (dir != null) {
-            push(x, y, dir, 1, mt: MoveType.push);
-            return;
+            if (push(x, y, dir, 1, mt: MoveType.push)) return;
           }
         } else if (enemies.contains(grid.get(pushX - 1, pushY)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX + 1, pushY, true, {});
           if (dir != null) {
-            push(x, y, dir, 1, mt: MoveType.push);
-            return;
+            if (push(x, y, dir, 1, mt: MoveType.push)) return;
           }
         } else if (enemies.contains(grid.get(pushX, pushY + 1)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX, pushY - 1, true, {});
           if (dir != null) {
-            push(x, y, dir, 1, mt: MoveType.push);
-            return;
+            if (push(x, y, dir, 1, mt: MoveType.push)) return;
           }
         } else if (enemies.contains(grid.get(pushX, pushY - 1)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX, pushY + 1, true, {});
           if (dir != null) {
-            push(x, y, dir, 1, mt: MoveType.push);
-            return;
+            if (push(x, y, dir, 1, mt: MoveType.push)) return;
           }
         }
 
-        push(x, y, dirToEnemy, 1, mt: MoveType.push);
-        return;
+        if (push(x, y, dirToEnemy, 1, mt: MoveType.push)) return;
       }
     }
   }
