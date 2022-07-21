@@ -72,6 +72,7 @@ part 'update/biomes.dart';
 part 'update/plant.dart';
 part 'update/automata.dart';
 part 'update/memgen.dart';
+part 'update/spreaders.dart';
 
 extension SetX on Set<String> {
   bool containsAny(List<String> strings) {

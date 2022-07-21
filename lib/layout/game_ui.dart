@@ -368,7 +368,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       game.exit();
                                     },
                                     child: Image.asset(
-                                      'assets/images/' + 'back.png',
+                                      'assets/images/interface/back.png',
                                       fit: BoxFit.fill,
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,

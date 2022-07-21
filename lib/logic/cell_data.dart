@@ -213,11 +213,17 @@ final cells = {
   "assistant",
   "keyforce",
   "keyfake",
+  "fire",
+  "plasma",
+  "cancer",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "plasma.png": "destroyers/plasma.png",
+  "cancer.png": "destroyers/cancer.png",
+  "fire.png": "destroyers/fire.png",
   "darty.png": "unique/darty.png",
   "cursor.png": "interface/cursor.png",
   "karl.png": "unique/karl.png",
@@ -768,23 +774,27 @@ final categories = [
     "rotator_cw",
   ),
   CellCategory(
-    "Unique Cells",
-    "Special cells that don't fit any other category",
+    "Destroyers",
+    "They destroy or eat other cells",
     [
-      "stopper",
       CellCategory(
-        "Destroyers",
-        "They destroy or eat other cells",
+        "Enemy",
+        "When they kill, they also die",
         [
           "enemy",
           "semi_enemy",
+          "physical_enemy",
+        ],
+        "enemy",
+      ),
+      CellCategory(
+        "Trash",
+        "When they kill, they don't die",
+        [
           "trash",
           "silent_trash",
           "semi_trash",
-          "mobile_trash",
-          "hungry_trash",
           "physical_trash",
-          "physical_enemy",
           "push_trash",
           "pull_trash",
           "grab_trash",
@@ -792,11 +802,24 @@ final categories = [
           "gen_trash",
           "transform_trash",
           "puzzle_trash",
-          "wormhole",
-          "counter",
         ],
         "trash",
       ),
+      "mobile_trash",
+      "wormhole",
+      "counter",
+      "hungry_trash",
+      "fire",
+      "plasma",
+      "cancer",
+    ],
+    "trash",
+  ),
+  CellCategory(
+    "Unique Cells",
+    "Special cells that don't fit any other category",
+    [
+      "stopper",
       // CellCategory(
       //   "Curves",
       //   "Bend time and space",
@@ -1826,5 +1849,17 @@ final cellInfo = <String, CellProfile>{
   "load_bp": CellProfile(
     "Load Blueprint",
     "Load Blueprint from clipboard",
+  ),
+  "fire": CellProfile(
+    "Fire",
+    "Dies after 1 tick, but spreads onto burnable cells",
+  ),
+  "plasma": CellProfile(
+    "Plasma",
+    "Spreads onto burnable cells, but also behaves like Water",
+  ),
+  "cancer": CellProfile(
+    "Cancer",
+    "Spreads onto burnable cells. Doesn't die, doesn't behave like another cell, just spreads.",
   ),
 };

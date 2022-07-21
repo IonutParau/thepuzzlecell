@@ -54,10 +54,7 @@ void doTransformer(int x, int y, int dir, int outdir, int offX, int offY) {
   input.rot = (input.rot + (outdir - dir + 4)) % 4;
 
   if (input.id != "empty" && output.id != "empty") {
-    if (input.id == "untransformable" ||
-        output.id == "untransformable" ||
-        !breakable(input, bx, by, dir, BreakType.transform) ||
-        !breakable(output, ox, oy, dir, BreakType.transform)) return;
+    if (input.id == "untransformable" || output.id == "untransformable" || !breakable(input, bx, by, dir, BreakType.transform) || !breakable(output, ox, oy, dir, BreakType.transform)) return;
     output.id = input.id;
     output.rot = input.rot;
     output.data = input.data;
@@ -70,6 +67,7 @@ void doTransformer(int x, int y, int dir, int outdir, int offX, int offY) {
 enum BreakType {
   rotate,
   transform,
+  burn,
 }
 
 bool breakable(Cell c, int x, int y, int dir, BreakType bt) {

@@ -13,6 +13,7 @@ enum MoveType {
   sticky_pull,
   unkown_move,
   transform,
+  burn,
 }
 
 int toSide(int dir, int rot) {

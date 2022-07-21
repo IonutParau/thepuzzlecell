@@ -10,6 +10,7 @@ final subticks = [
   heat,
   mechs,
   automata,
+  spreaders,
   quantums,
   hungryTrashes,
   mirrors,
@@ -71,9 +72,15 @@ class BrokenCell {
     final sx = lerp(lv.lastPos.dx, x, t);
     final sy = lerp(lv.lastPos.dy, y, t);
 
-    final screenSize = Vector2(cellSize, cellSize);
+    var screenSize = Vector2(cellSize, cellSize);
 
     var screenPos = Vector2(sx, sy) * cellSize + screenSize / 2;
+
+    if (type == "silent_shrinking" || type == "shrinking") {
+      var off = lerp(1, 0, t);
+      screenSize *= off;
+      if (off == 0) screenSize = Vector2.zero();
+    }
 
     screenPos = rotateOff(screenPos.toOffset(), -screenRot).toVector2();
 
@@ -159,16 +166,7 @@ class Cell {
   }
 }
 
-Grid grid = Grid(100, 100);
-
-class GridUpdateConstraints {
-  int sx;
-  int sy;
-  int ex;
-  int ey;
-
-  GridUpdateConstraints(this.sx, this.sy, this.ex, this.ey);
-}
+var grid = Grid(100, 100);
 
 List<String> backgrounds = [
   "place",
@@ -463,6 +461,17 @@ class Grid {
     }
   }
 
+  void clearChunks() {
+    final cx = ceil(width / chunkSize);
+    final cy = ceil(width / chunkSize);
+
+    for (var x = 0; x < cx; x++) {
+      for (var y = 0; y < cy; y++) {
+        chunks[x][y].clear();
+      }
+    }
+  }
+
   Grid(this.width, this.height) {
     create();
   }
@@ -478,11 +487,13 @@ class Grid {
     for (var bcell in brokenCells) {
       types.add(bcell.type);
     }
-    if (types.contains("normal")) {
+    if (types.contains("normal") || types.contains("shrinking")) {
       playSound(destroySound);
     }
     brokenCells = [];
     final cells = <String>{};
+
+    if (tickCount % 100 == 0) clearChunks();
 
     forEach(
       (cell, x, y) {
@@ -512,6 +523,15 @@ class Grid {
       return;
     }
     if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
+    if (!breakable(
+      at(x, y),
+      x,
+      y,
+      rot,
+      BreakType.rotate,
+    )) {
+      return;
+    }
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
   }

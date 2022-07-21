@@ -36,6 +36,7 @@ bool checkPlantDeath(Cell cell, int x, int y) {
   if ((vars['energy'] ?? 0) <= 0) {
     vars['deathtime'] = (vars['deathtime'] ?? 0) + 1;
     if (vars['deathtime'] > 30) {
+      grid.addBroken(cell, x, y, "silent_shrinking");
       grid.set(x, y, Cell(x, y));
       return true;
     }
@@ -200,6 +201,7 @@ void doPlantBodyKill(int x, int y, int pid) {
       return;
     }
 
+    grid.addBroken(cell, x, y, "silent_shrinking");
     grid.set(x, y, Cell(x, y));
   }
 }
