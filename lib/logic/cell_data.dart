@@ -216,11 +216,13 @@ final cells = {
   "fire",
   "plasma",
   "cancer",
+  "gas",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "gas.png": "unique/gas.png",
   "plasma.png": "destroyers/plasma.png",
   "cancer.png": "destroyers/cancer.png",
   "fire.png": "destroyers/fire.png",
@@ -881,6 +883,7 @@ final categories = [
       "sandbox",
       "water",
       "sand",
+      "gas",
     ],
     "unstable_mover",
   ),
@@ -1861,5 +1864,9 @@ final cellInfo = <String, CellProfile>{
   "cancer": CellProfile(
     "Cancer",
     "Spreads onto burnable cells. Doesn't die, doesn't behave like another cell, just spreads.",
+  ),
+  "gas": CellProfile(
+    "Gas",
+    "Like water but goes up instead of down",
   ),
 };

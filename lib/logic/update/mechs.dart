@@ -65,7 +65,7 @@ void mechs(Set<String> cells) {
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      0,
+      null,
       "mech_keyup",
     );
   }
@@ -78,7 +78,7 @@ void mechs(Set<String> cells) {
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      0,
+      null,
       "mech_keyleft",
     );
   }
@@ -90,7 +90,7 @@ void mechs(Set<String> cells) {
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      0,
+      null,
       "mech_keyright",
     );
   }
@@ -102,7 +102,7 @@ void mechs(Set<String> cells) {
         MechanicalManager.spread(x, y - 1, 0, false, 3);
         MechanicalManager.spread(x, y + 1, 0, false, 1);
       },
-      0,
+      null,
       "mech_keydown",
     );
   }
@@ -128,7 +128,8 @@ void doDisplayer(int x, int y, int dir) {
     if (!grid.inside(ox, oy)) break;
 
     final o = grid.at(ox, oy);
-    if (grid.placeable(ox, oy) != "empty" && depthing) {
+    print(grid.placeable(ox, oy));
+    if ((grid.placeable(ox, oy) != "empty") && depthing) {
       depth++;
     } else {
       depthing = false;

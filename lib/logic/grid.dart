@@ -274,6 +274,11 @@ class Grid {
     x = this.x(x);
     y = this.y(y);
 
+    if (backgrounds.contains(cell.id)) {
+      setPlace(x, y, cell.id);
+      return;
+    }
+
     if (inside(x, y)) {
       grid[x][y] = cell;
       setChunk(x, y, cell.id);
