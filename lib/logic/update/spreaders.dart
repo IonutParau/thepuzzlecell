@@ -76,6 +76,45 @@ void doPlasma(Cell cell, int x, int y) {
     }
   }
 
+  doGas(cell, x, y);
+}
+
+void doLava(Cell cell, int x, int y) {
+  final lava = cell.copy;
+  lava.updated = true;
+
+  if (grid.inside(x + 1, y)) {
+    final cell = grid.at(x + 1, y);
+    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x + 1, y, 0, BreakType.burn)) {
+      grid.addBroken(cell, x + 1, y, "silent");
+      grid.set(x + 1, y, lava.copy);
+    }
+  }
+
+  if (grid.inside(x - 1, y)) {
+    final cell = grid.at(x - 1, y);
+    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x - 1, y, 2, BreakType.burn)) {
+      grid.addBroken(cell, x - 1, y, "silent");
+      grid.set(x - 1, y, lava.copy);
+    }
+  }
+
+  if (grid.inside(x, y + 1)) {
+    final cell = grid.at(x, y + 1);
+    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x, y + 1, 0, BreakType.burn)) {
+      grid.addBroken(cell, x, y + 1, "silent");
+      grid.set(x, y + 1, lava.copy);
+    }
+  }
+
+  if (grid.inside(x, y - 1)) {
+    final cell = grid.at(x, y - 1);
+    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x, y - 1, 0, BreakType.burn)) {
+      grid.addBroken(cell, x, y - 1, "silent");
+      grid.set(x, y - 1, lava.copy);
+    }
+  }
+
   doWater(cell, x, y);
 }
 
@@ -119,5 +158,6 @@ void doCancer(Cell cell, int x, int y) {
 void spreaders() {
   grid.updateCell(doCancer, null, "cancer");
   grid.updateCell(doFire, null, "fire");
-  grid.loopChunks("plasma", fromRot(1), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
+  grid.loopChunks("lava", fromRot(1), doLava, filter: (c, x, y) => c.id == "lava" && !c.updated);
+  grid.loopChunks("plasma", fromRot(3), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
 }
