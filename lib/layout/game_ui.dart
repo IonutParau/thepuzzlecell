@@ -537,7 +537,7 @@ Future loadSkinTextures() {
 
 Future loadAllButtonTextures() {
   return Flame.images.loadAll([
-    "back.png",
+    "interface/back.png",
     "interface/save.png",
     "interface/load.png",
     "interface/select.png",
@@ -1238,7 +1238,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       VirtualButton(
         Vector2.zero(),
         Vector2.all(80),
-        edType == EditorType.making ? "interface/menu.png" : "back.png",
+        edType == EditorType.making ? "interface/menu.png" : "interface/back.png",
         ButtonAlignment.TOPLEFT,
         back,
         () => true,
@@ -2019,7 +2019,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       cells.map((name) => textureMap["$name.png"] ?? "$name.png").toList(),
     );
 
-    await Flame.images.load('pixel_on.png');
+    await Flame.images.load('mechanical/pixel_on.png');
 
     loadAllButtons();
 

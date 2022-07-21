@@ -45,6 +45,8 @@ flutter:
     - assets/images/backgrounds/biomes/
     - assets/images/texture_packs/
     - assets/images/mechanical/
+    - assets/images/mechanical/gates/
+    - assets/images/mechanical/users/
     - assets/images/skins/
     - assets/images/unique/
     - assets/images/movers/
