@@ -35,6 +35,8 @@ void doGas(Cell cell, int x, int y) {
     moveCell(x, y, x - 1, y);
   } else if (safeAt(x + 1, y)?.id == "empty" && safeAt(x + 1, y - 1)?.id != "empty") {
     moveCell(x, y, x + 1, y);
+  } else if (safeAt(x, y + 1)?.id == "empty") {
+    moveCell(x, y, x, y + 1);
   }
 }
 
