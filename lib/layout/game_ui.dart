@@ -2357,9 +2357,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       final c = safeAt(mx, my);
 
       if (c != null) {
-        final id = c.id;
+        var id = c.id;
 
-        renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: ${c.id}" : ""));
+        if (id == "empty") {
+          id = grid.placeable(mx, my);
+        }
+
+        renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: $id" : ""));
       }
     }
 
