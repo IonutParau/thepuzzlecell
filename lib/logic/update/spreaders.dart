@@ -117,7 +117,7 @@ void doCancer(Cell cell, int x, int y) {
 }
 
 void spreaders() {
-  grid.loopChunks("plasma", GridAlignment.topleft, doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
-  grid.updateCell(doFire, null, "fire");
   grid.updateCell(doCancer, null, "cancer");
+  grid.updateCell(doFire, null, "fire");
+  grid.loopChunks("plasma", fromRot(1), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
 }
