@@ -909,51 +909,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       increaseTab();
     } else if (newSelection == "dectab") {
       decreaseTab();
-    } else if (newSelection == "load_bp") {
-      try {
-        FlutterClipboard.paste().then((txt) {
-          print(txt);
-          try {
-            final blueprint = loadStr(txt);
-            gridClip.activate(blueprint.width, blueprint.height, blueprint.grid);
-            selecting = false;
-            setPos = false;
-            dragPos = false;
-            pasting = true;
-            buttonManager.buttons['paste-btn']?.texture = 'interface/paste_on.png';
-          } catch (e) {
-            print(e);
-            showDialog(
-              context: context,
-              builder: (context) => ContentDialog(
-                title: Text(lang("error", "Error")),
-                content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
-                actions: [
-                  Button(
-                    child: Text("OK"),
-                    onPressed: () => Navigator.pop(context),
-                  )
-                ],
-              ),
-            );
-          }
-        });
-      } catch (e) {
-        print(e);
-        showDialog(
-          context: context,
-          builder: (context) => ContentDialog(
-            title: Text(lang("error", "Error")),
-            content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
-            actions: [
-              Button(
-                child: Text("OK"),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          ),
-        );
-      }
     } else {
       currentSelection = cells.indexOf(newSelection);
     }
@@ -1565,6 +1520,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
 
             final bp = Grid(g.length, g.isEmpty ? 0 : g.first.length);
+            bp.grid = g;
             final bpSave = P4.encodeGrid(bp, title: "Unnamed Blueprint", description: "This blueprint currently has no name");
 
             FlutterClipboard.controlC(bpSave).then((v) {
@@ -1602,6 +1558,66 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           () => selecting && !dragPos,
           title: 'Save as Blueprint',
           description: 'Saves selected area to clipboard as a blueprint',
+        ),
+      );
+
+      buttonManager.setButton(
+        "load-blueprint-btn",
+        VirtualButton(
+          Vector2(120, 180),
+          Vector2.all(40),
+          "interface/load_bp.png",
+          ButtonAlignment.TOPRIGHT,
+          () {
+            try {
+              FlutterClipboard.paste().then((txt) {
+                print(txt);
+                try {
+                  final blueprint = loadStr(txt);
+                  print(blueprint.grid.map((l) => l.map((c) => c.toMap.toString())));
+                  gridClip.activate(blueprint.width, blueprint.height, blueprint.grid);
+                  selecting = false;
+                  setPos = false;
+                  dragPos = false;
+                  pasting = true;
+                  buttonManager.buttons['paste-btn']?.texture = 'interface/paste_on.png';
+                } catch (e) {
+                  print(e);
+                  showDialog(
+                    context: context,
+                    builder: (context) => ContentDialog(
+                      title: Text(lang("error", "Error")),
+                      content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
+                      actions: [
+                        Button(
+                          child: Text("OK"),
+                          onPressed: () => Navigator.pop(context),
+                        )
+                      ],
+                    ),
+                  );
+                }
+              });
+            } catch (e) {
+              print(e);
+              showDialog(
+                context: context,
+                builder: (context) => ContentDialog(
+                  title: Text(lang("error", "Error")),
+                  content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
+                  actions: [
+                    Button(
+                      child: Text("OK"),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  ],
+                ),
+              );
+            }
+          },
+          () => true,
+          title: 'Load as Blueprint',
+          description: 'Loads a blueprint from your clipboard (using a P4 level code)',
         ),
       );
 

@@ -452,7 +452,6 @@ Map<String, String> textureMap = {
   'pelican.png': 'movers/grabbers/pelican.png',
   'hawk.png': 'movers/pullers/hawk.png',
   'mech_toggle.png': 'mechanical/mech_toggle.png',
-  'load_bp.png': 'interface/load_bp.png',
 };
 
 class CellProfile {
@@ -483,9 +482,7 @@ final categories = [
       CellCategory(
         "Blueprints",
         "These will override your pasteboard so you can paste them",
-        [
-          "load_bp",
-        ],
+        [],
         "blueprint",
       ),
       "inc_brush",

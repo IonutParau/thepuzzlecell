@@ -1,1 +1,4 @@
 P2;Magnet;A magnet;y;y;empty,anchor,push,rotator_cw;eJwrrNEpqdHJB5OFYDIFzEiBiRfCUD6GbCGKXgD5MRsi;;
+P4;Hydrogen (H);A hydrogen atom;2;2;ntejFqV!u_BjX)3P96rKYM-:N.78@iKmGv^-a/iG{P^p[=~$mB^0D2qA4d76nz6I{{3wBn_R%WE69r7j5:&utQ1}5uu!57}(5KbSZm'+8](o@dea6;(=)
+P4;Helium (He);2 neutrons to glue the 2 protons in its core holding the 2 electrons around said core;4;4;S/8FnF#89d[oO@+i$ll:WptyhJYPaQoC_GLHT:HFhbz4Ov2GpDEJHw$BCVC#VE^ueV)6Q]XlSL-OJq{,tu{8HM#{BZLU)D!9YKNk&l0DbPwTa|Uc#2^U5H!HJx#,|{vbkU1tw{7}ab;(=)
+P4;Fire Pattern;Turns into a beautiful pattern;3;3;PzBs.bIp&7M+Cy|8_Bw.[w37^{=7E_QnrS|)S$PM%zO10sYuh,^6Y32k9bkjh,T8xc3R!.1~w[mTGrWCg!+JCy.KUSuQtn2)!(&t0/=ckCC;(=)
