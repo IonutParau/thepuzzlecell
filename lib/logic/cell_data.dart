@@ -219,11 +219,15 @@ final cells = {
   "gas",
   "lava",
   "filler",
+  "mech_sensor",
+  "mech_comparator",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_sensor.png": "mechanical/mech_sensor.png",
+  "mech_comparator.png": "mechanical/mech_comparator.png",
   "filler.png": "recreators/filler.png",
   "lava.png": "destroyers/lava.png",
   "gas.png": "unique/gas.png",
@@ -908,6 +912,8 @@ final categories = [
           "mech_keyleft",
           "mech_keyright",
           "mech_keydown",
+          "mech_sensor",
+          "mech_comparator",
         ],
         "mech_gen",
       ),
@@ -1879,5 +1885,13 @@ final cellInfo = <String, CellProfile>{
   "filler": CellProfile(
     "Filler",
     "Spreads itself onto air in all 4 directions",
+  ),
+  "mech_sensor": CellProfile(
+    "Sensor",
+    "Gives power in the back when a cell is in front",
+  ),
+  "mech_comparator": CellProfile(
+    "Comparator",
+    "Gives power in the left and right if a cell is in front and its rotation and type is the same as the cell in the back",
   ),
 };

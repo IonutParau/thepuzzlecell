@@ -23,6 +23,70 @@ void mechs(Set<String> cells) {
       rot,
       "mech_gen",
     );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        final front = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+        if (front == null) return;
+        if (front.id != "empty") {
+          MechanicalManager.spread(
+            frontX(
+              x,
+              cell.rot,
+              -1,
+            ),
+            frontY(
+              y,
+              cell.rot,
+              -1,
+            ),
+            0,
+            false,
+            (cell.rot + 2) % 4,
+          );
+        }
+      },
+      rot,
+      "mech_sensor",
+    );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        final front = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+        final back = grid.get(frontX(x, cell.rot, -1), frontY(y, cell.rot, -1));
+        if (front == null || back == null) return;
+        if (front.id != "empty" && (front.id == back.id && front.rot == back.rot)) {
+          MechanicalManager.spread(
+            frontX(
+              x,
+              (cell.rot + 1) % 4,
+            ),
+            frontY(
+              y,
+              (cell.rot + 1) % 4,
+            ),
+            0,
+            false,
+            (cell.rot + 1) % 4,
+          );
+          MechanicalManager.spread(
+            frontX(
+              x,
+              (cell.rot - 1) % 4,
+            ),
+            frontY(
+              y,
+              (cell.rot - 1) % 4,
+            ),
+            0,
+            false,
+            (cell.rot - 1) % 4,
+          );
+        }
+      },
+      rot,
+      "mech_comparator",
+    );
   }
 
   for (var rot in rotOrder) {
@@ -244,7 +308,6 @@ class MechanicalManager {
   }
 
   static void spread(int x, int y, [int depth = 0, bool continueFirst = false, int? sentDir]) {
-    //print("e");
     AchievementManager.complete("circuitry");
     if (depth == 15) return;
     if (!grid.inside(x, y)) return;
@@ -270,8 +333,8 @@ class MechanicalManager {
         cell.tags.add("cross_sent 2");
       }
       return spread(
-        frontX(x, sentDir),
-        frontY(y, sentDir),
+        frontX(cell.cx!, sentDir),
+        frontY(cell.cy!, sentDir),
         depth + 1,
         continueFirst,
         sentDir,
@@ -279,23 +342,23 @@ class MechanicalManager {
     }
     cell.data['power'] = 2;
     if (!cell.updated) {
-      whenPowered(cell, x, y);
+      whenPowered(cell, cell.cx!, cell.cy!);
     }
     if (cell.id == "mech_gear" && depth < 14) grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
     if (cell.id == "mech_gear" || (depth == 0 && continueFirst)) {
       if (sentDir != 2) {
-        spread(x + 1, y, depth, continueFirst, 0);
+        spread(cell.cx! + 1, cell.cy!, depth, continueFirst, 0);
       }
       if (sentDir != 0) {
-        spread(x - 1, y, depth, continueFirst, 2);
+        spread(cell.cx! - 1, cell.cy!, depth, continueFirst, 2);
       }
       if (sentDir != 3) {
-        spread(x, y + 1, depth, continueFirst, 1);
+        spread(cell.cx!, cell.cy! + 1, depth, continueFirst, 1);
       }
       if (sentDir != 1) {
-        spread(x, y - 1, depth, continueFirst, 3);
+        spread(cell.cx!, cell.cy! - 1, depth, continueFirst, 3);
       }
     }
   }

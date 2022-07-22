@@ -281,6 +281,8 @@ class Grid {
 
     if (inside(x, y)) {
       grid[x][y] = cell;
+      cell.cx = x;
+      cell.cy = y;
       setChunk(x, y, cell.id);
     }
   }
