@@ -1905,7 +1905,7 @@ final cellInfo = <String, CellProfile>{
     "Takes 2 inputs and outputs the result of their IMPLY operation",
   ),
   "nimply_gate": CellProfile(
-    "IMPLY Gate",
+    "NIMPLY Gate",
     "Takes 2 inputs and outputs the result of their NIMPLY operation",
   ),
 };

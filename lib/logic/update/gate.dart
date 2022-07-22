@@ -117,5 +117,23 @@ void gates(Set<String> cells) {
         "xnor_gate",
       );
     }
+    if (cells.contains("imply_gate")) {
+      grid.updateCell(
+        (cell, x, y) {
+          doGate(x, y, cell.rot, GateType.IMPLY);
+        },
+        rot,
+        "imply_gate",
+      );
+    }
+    if (cells.contains("nimply_gate")) {
+      grid.updateCell(
+        (cell, x, y) {
+          doGate(x, y, cell.rot, GateType.NIMPLY);
+        },
+        rot,
+        "nimply_gate",
+      );
+    }
   }
 }
