@@ -4,32 +4,33 @@ part of logic;
 void biomes() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 1);
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "biome_cw");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_cw");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 3);
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "biome_ccw");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_ccw");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data['heat'] = (cell.data['heat'] ?? 0) + 1;
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "desert");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "desert");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data['heat'] = (cell.data['heat'] ?? 0) - 1;
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "snowy");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "snowy");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data.remove("heat");
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "forest");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "forest");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.updated = true;
     cell.tags.add("stopped");
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "freezing");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "freezing");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    grid.addBroken(cell, x, y, "shrinking");
     grid.set(x, y, Cell(x, y));
-  }, filter: (cell, x, y) => grid.placeable(x, y) == "trash_biome");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "trash_biome");
 
   final rng = Random();
 
