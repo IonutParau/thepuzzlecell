@@ -1,6 +1,6 @@
 part of logic;
 
-enum GateType { AND, OR, XOR, NOT, NAND, NOR, XNOR }
+enum GateType { AND, OR, XOR, NOT, NAND, NOR, XNOR, IMPLY, NIMPLY }
 
 void doGate(int x, int y, int rot, GateType gateType) {
   if (gateType == GateType.NOT) {
@@ -31,6 +31,9 @@ void doGate(int x, int y, int rot, GateType gateType) {
       case GateType.XOR:
         if (i1 != i2) activate();
         break;
+      case GateType.IMPLY:
+        if (!(i1 && !i2)) activate();
+        break;
       case GateType.NAND:
         if (!(i1 && i2)) activate();
         break;
@@ -39,6 +42,9 @@ void doGate(int x, int y, int rot, GateType gateType) {
         break;
       case GateType.XNOR:
         if (i1 == i2) activate();
+        break;
+      case GateType.NIMPLY:
+        if ((i1 && !i2)) activate();
         break;
       default:
         break;

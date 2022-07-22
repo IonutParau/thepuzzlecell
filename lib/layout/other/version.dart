@@ -23,6 +23,8 @@ final List<String> changes = [
   "Added lose conditions",
   "Added a music switcher",
   "Replaced the default background music from Flight to Drift",
+  "Added IMPLY and NIMPLY logic gates",
+  "Changed the NAND texture",
 ];
 
 IconData getTrailing(String change) {
