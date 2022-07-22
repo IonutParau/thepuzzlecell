@@ -221,11 +221,15 @@ final cells = {
   "filler",
   "mech_sensor",
   "mech_comparator",
+  "imply_gate",
+  "nimply_gate",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "imply_gate.png": "mechanical/gates/imply_gate.png",
+  "nimply_gate.png": "mechanical/gates/nimply_gate.png",
   "mech_sensor.png": "mechanical/mech_sensor.png",
   "mech_comparator.png": "mechanical/mech_comparator.png",
   "filler.png": "recreators/filler.png",
@@ -943,10 +947,12 @@ final categories = [
           "and_gate",
           "or_gate",
           "xor_gate",
-          "not_gate",
+          "imply_gate",
           "nand_gate",
           "nor_gate",
           "xnor_gate",
+          "nimply_gate",
+          "not_gate",
         ],
         "and_gate",
         max: 3,
@@ -1893,5 +1899,13 @@ final cellInfo = <String, CellProfile>{
   "mech_comparator": CellProfile(
     "Comparator",
     "Gives power in the left and right if a cell is in front and its rotation and type is the same as the cell in the back",
+  ),
+  "imply_gate": CellProfile(
+    "IMPLY Gate",
+    "Takes 2 inputs and outputs the result of their IMPLY operation",
+  ),
+  "nimply_gate": CellProfile(
+    "IMPLY Gate",
+    "Takes 2 inputs and outputs the result of their NIMPLY operation",
   ),
 };
