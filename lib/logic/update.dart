@@ -167,17 +167,12 @@ class CellTypeManager {
     "mech_keydown",
     "mech_rotator_cw",
     "mech_rotator_ccw",
+    "keylimit",
+    "keyforce",
+    "keyfake",
   ];
 
-  static List<String> gates = [
-    "and_gate",
-    "or_gate",
-    "xor_gate",
-    "not_gate",
-    "nand_gate",
-    "nor_gate",
-    "xnor_gate",
-  ];
+  static List<String> gates = ["and_gate", "or_gate", "xor_gate", "not_gate", "nand_gate", "nor_gate", "xnor_gate", "imply_gate", "nimply_gate"];
 
   static List<String> mirrors = [
     "mirror",
