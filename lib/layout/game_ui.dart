@@ -2018,7 +2018,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             "clientID": clientID,
           })}');
 
-      Flame.images.load('cursor.png');
+      Flame.images.load('interface/cursor.png');
 
       overlays.add('loading');
     }
@@ -2277,7 +2277,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       (id, pos) {
         if (id != clientID) {
           final p = (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
-          var c = 'cursor.png';
+          var c = 'interface/cursor.png';
           // Haha cool
           if (id == "Monitor" || id == "MonitorDev" || id == "AMonitor" || id == "AMonitor#1595") {
             c = 'puzzle/puzzle.png';
