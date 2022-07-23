@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flame/flame.dart';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show AppBar, Scaffold;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
@@ -100,6 +101,27 @@ class _MyAppState extends State<MyApp> {
         tp.load(false);
       },
     ); // How to make people with 50,000 random texture packs they never use but keep installed mad
+
+    ErrorWidget.builder = (details) {
+      return Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Spacer(),
+                Text('Error: ${details.exception.toString()}'),
+                Spacer(),
+              ],
+            ),
+            automaticallyImplyLeading: false,
+          ),
+          body: Text(
+            details.stack != null ? "Stack Trace:\n${details.stack.toString()}" : "No stack trace available",
+            textAlign: TextAlign.left,
+          ),
+        );
+      });
+    };
     super.initState();
   }
 

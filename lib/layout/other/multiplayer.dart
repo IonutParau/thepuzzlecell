@@ -20,12 +20,6 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
     final ip = server.split(";")[1];
 
-    final uri = Uri.parse(ip);
-
-    print(
-      "Host: ${uri.host != "" ? uri.host : uri.path} Port: ${uri.hasPort ? uri.port : 3000}",
-    );
-
     var pingIp = ip.replaceAll('wss', 'https').replaceAll('ws', 'http');
 
     if (!pingIp.startsWith('http://') && !pingIp.startsWith('https://')) {
@@ -331,13 +325,7 @@ void connectMultiplayer(BuildContext context, String ip) {
 }
 
 class EditServerPage extends StatefulWidget {
-  EditServerPage(
-      {Key? key,
-      required this.title,
-      required this.ip,
-      required this.index,
-      this.refresh})
-      : super(key: key);
+  EditServerPage({Key? key, required this.title, required this.ip, required this.index, this.refresh}) : super(key: key);
 
   final String title;
   final String ip;
@@ -458,8 +446,7 @@ class _EditServerPageState extends State<EditServerPage> {
                         onPressed: () async {
                           final strList = storage.getStringList("servers")!;
 
-                          strList[widget.index] =
-                              "${titleController.text};${ipController.text}";
+                          strList[widget.index] = "${titleController.text};${ipController.text}";
 
                           storage.setStringList('servers', strList);
 
