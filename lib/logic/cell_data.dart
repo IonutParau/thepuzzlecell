@@ -223,11 +223,15 @@ final cells = {
   "mech_comparator",
   "imply_gate",
   "nimply_gate",
+  "airflow",
+  "superfan",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "airflow.png": "movers/movers/airflow.png",
+  "superfan.png": "movers/movers/superfan.png",
   "imply_gate.png": "mechanical/gates/imply_gate.png",
   "nimply_gate.png": "mechanical/gates/nimply_gate.png",
   "mech_sensor.png": "mechanical/mech_sensor.png",
@@ -649,6 +653,8 @@ final categories = [
     "Cells that move other cells but don't move themselves",
     [
       "fan",
+      "superfan",
+      "airflow",
       "vacuum",
       "conveyor",
       "swapper",
@@ -1907,5 +1913,13 @@ final cellInfo = <String, CellProfile>{
   "nimply_gate": CellProfile(
     "NIMPLY Gate",
     "Takes 2 inputs and outputs the result of their NIMPLY operation",
+  ),
+  "airflow": CellProfile(
+    "Airflow",
+    "Like a Super Fan, but it goes through other Airflows",
+  ),
+  "superfan": CellProfile(
+    "Super Fan",
+    "Like a fan, but infinite range",
   ),
 };

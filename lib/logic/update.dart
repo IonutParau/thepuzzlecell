@@ -72,7 +72,15 @@ class CellTypeManager {
     "thief",
   ];
 
-  static List<String> fans = ["fan", "vacuum", "conveyor", "swapper", "nudger"];
+  static List<String> fans = [
+    "fan",
+    "vacuum",
+    "conveyor",
+    "swapper",
+    "nudger",
+    "superfan",
+    "airflow",
+  ];
 
   static List<String> ants = ["ant_cw", "ant_ccw"];
 
