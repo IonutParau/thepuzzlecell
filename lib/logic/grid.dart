@@ -5,7 +5,7 @@ var inBruteForce = false;
 final useSnowflake = false;
 
 final subticks = [
-  biomes,
+  biome,
   stoppers,
   heat,
   mechs,

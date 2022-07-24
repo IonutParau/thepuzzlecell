@@ -2849,6 +2849,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         );
         return;
       }
+      if (biomes.contains(grid.placeable(cx, cy))) return;
       if (cells[id] == "empty" && grid.at(cx, cy).id != "empty") {
         currentSelection = cells.indexOf(grid.at(cx, cy).id);
         currentRotation = grid.at(cx, cy).rot;

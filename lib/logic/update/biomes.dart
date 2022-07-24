@@ -1,7 +1,18 @@
 part of logic;
 
+final biomes = [
+  "biome_cw",
+  "biome_ccw",
+  "desert",
+  "snowy",
+  "forest",
+  "freezing",
+  "trash_biome",
+  "quantum_biome",
+];
+
 // Biomes
-void biomes() {
+void biome() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 1);
   }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_cw");
