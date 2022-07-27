@@ -292,6 +292,7 @@ class Grid {
     y = this.y(y);
     if (inside(x, y)) {
       place[x][y] = id;
+      setChunk(x, y, id);
     }
   }
 
@@ -510,7 +511,9 @@ class Grid {
         cell.cx = x;
         cell.cy = y;
         cell.lifespan++;
-        cells.add(cell.id);
+        if (cell.id != "empty") {
+          cells.add(cell.id);
+        }
         cells.add(place[x][y]);
         if (tickCount % 100 == 0) {
           setChunk(x, y, cell.id);

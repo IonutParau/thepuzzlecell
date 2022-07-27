@@ -159,16 +159,19 @@ void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
   c.data['vel_y'] = vy;
 
   // Fix forces
-  if (vx < 0) vx = -1;
-  if (vx > 0) vx = 1;
 
-  if (vy < 0) vy = -1;
-  if (vy > 0) vy = 1;
+  var mx = vx;
+  var my = vy;
+  if (mx < 0) mx = -1;
+  if (mx > 0) mx = 1;
+
+  if (my < 0) my = -1;
+  if (my > 0) my = 1;
 
   // Move
   if (vx != 0 || vy != 0) {
-    var cx = vx == 0 ? x : x + vx ~/ 1;
-    var cy = vy == 0 ? y : y + vy ~/ 1;
+    var cx = vx == 0 ? x : x + mx ~/ 1;
+    var cy = vy == 0 ? y : y + my ~/ 1;
 
     if (grid.inside(cx, cy) && grid.at(cx, cy).id == "empty") {
       moveCell(x, y, cx, cy);
