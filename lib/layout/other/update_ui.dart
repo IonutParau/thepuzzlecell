@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors;
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../logic/logic.dart'
-    show getVersion, higherVersion, lang, versionToCheck;
+import '../../logic/logic.dart' show getVersion, higherVersion, lang, versionToCheck;
 import '../../utils/ScaleAssist.dart';
 
 class UpdateUI extends StatefulWidget {
