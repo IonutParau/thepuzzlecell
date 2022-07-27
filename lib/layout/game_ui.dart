@@ -405,7 +405,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       game.itime = 0;
                                       if (game.isMultiplayer) {
                                         game.sendToServer(
-                                          'setinit ${P4.encodeGrid(grid)}',
+                                          'setinit ${P4.encodeGrid(Grid(grid.width, grid.height))}',
                                         );
                                       } else {
                                         grid = Grid(grid.width, grid.height);
