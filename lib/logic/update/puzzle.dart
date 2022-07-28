@@ -22,7 +22,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       o.updated = true;
     } else if (o.rot == ((puzzle.rot + 2) % 4)) {
       force--;
-      o.updated = true;
+      //o.updated = true;
     }
     if (force == 0) return;
     if ((o.rot == puzzle.rot) || (o.rot == (puzzle.rot + 2) % 4)) {

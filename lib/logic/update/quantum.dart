@@ -124,7 +124,15 @@ const particleForce = 10;
 const particleForcePower = 5;
 const particleMaxDist = 10;
 
-void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
+class QuantumInteraction {
+  num scale;
+  bool flipWhenClose;
+  num? flipDist;
+
+  QuantumInteraction(this.scale, this.flipWhenClose, [this.flipDist]);
+}
+
+void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
   final c = grid.at(x, y);
 
   // Forces
@@ -142,13 +150,16 @@ void physicsCell(int x, int y, List<String> attracted, List<String> repelled) {
 
     if (cell.successful) {
       if (cell.distance <= particleMaxDist) {
-        if (attracted.contains(cell.hitCell.id)) {
-          vx += ox / (pow(cell.distance, particleForcePower)) * particleForce;
-          vy += oy / (pow(cell.distance, particleForcePower)) * particleForce;
-        }
-        if (repelled.contains(cell.hitCell.id)) {
-          vx -= ox / (pow(cell.distance, particleForcePower)) * particleForce;
-          vy -= oy / (pow(cell.distance, particleForcePower)) * particleForce;
+        if (interactions[cell.hitCell.id] != null) {
+          var i = interactions[cell.hitCell.id];
+          var f = particleForce * i!.scale / (pow(cell.distance, particleForcePower));
+          if (i.flipWhenClose) {
+            if (cell.distance < i.flipDist!.toDouble()) {
+              f *= -1;
+            }
+          }
+          vx += ox * f;
+          vy += oy * f;
         }
       }
     }
@@ -217,31 +228,48 @@ void quantums() {
 
   grid.loopChunks("field", GridAlignment.topleft, doField);
 
+  final justAttract = QuantumInteraction(1, false);
+  final justRepell = QuantumInteraction(-1, false);
+
   // My brain hurts
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["proton", "graviton"], ["electron"]);
+      physicsCell(x, y, {
+        "proton": justAttract,
+        "graviton": justAttract,
+        "electron": justRepell,
+      });
     },
     null,
     "electron",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["neutron", "graviton"], ["proton"]);
+      physicsCell(x, y, {
+        "neutron": QuantumInteraction(5, false),
+        "graviton": justAttract,
+        "electron": justAttract,
+        "proton": justRepell,
+      });
     },
     null,
     "proton",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["proton", "graviton"], []);
+      physicsCell(x, y, {
+        "proton": justAttract,
+        "graviton": justAttract,
+      });
     },
     null,
     "neutron",
   );
   grid.updateCell(
     (cell, x, y) {
-      physicsCell(x, y, ["graviton"], []);
+      physicsCell(x, y, {
+        "graviton": justAttract,
+      });
     },
     null,
     "graviton",
