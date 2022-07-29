@@ -225,11 +225,13 @@ final cells = {
   "nimply_gate",
   "airflow",
   "superfan",
+  "strangelet",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "strangelet.png": "quantum/strangelet.png",
   "airflow.png": "movers/movers/airflow.png",
   "superfan.png": "movers/movers/superfan.png",
   "imply_gate.png": "mechanical/gates/imply_gate.png",
@@ -831,6 +833,7 @@ final categories = [
       "lava",
       "plasma",
       "cancer",
+      "strangelet",
     ],
     "trash",
   ),
@@ -861,6 +864,7 @@ final categories = [
           "neutron",
           "electron",
           "graviton",
+          "strangelet",
         ],
         "unstable_mover",
       ),
@@ -1921,5 +1925,9 @@ final cellInfo = <String, CellProfile>{
   "superfan": CellProfile(
     "Super Fan",
     "Like a fan, but infinite range",
+  ),
+  "strangelet": CellProfile(
+    "Stangelet",
+    "A destructive monster. Attracted a lot to Gravitons, Protons and Neutrons, and much weaker to Electrons and other Strangelets.",
   ),
 };

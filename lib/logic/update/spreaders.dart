@@ -118,6 +118,48 @@ void doLava(Cell cell, int x, int y) {
   doWater(cell, x, y);
 }
 
+bool spread(int x, int y, Cell spreader) {
+  bool hasSpread = false;
+
+  if (grid.inside(x + 1, y)) {
+    final cell = grid.at(x + 1, y);
+    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x + 1, y, 0, BreakType.burn)) {
+      grid.addBroken(cell, x + 1, y, "silent");
+      grid.set(x + 1, y, spreader.copy);
+      hasSpread = true;
+    }
+  }
+
+  if (grid.inside(x - 1, y)) {
+    final cell = grid.at(x - 1, y);
+    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x - 1, y, 2, BreakType.burn)) {
+      grid.addBroken(cell, x - 1, y, "silent");
+      grid.set(x - 1, y, spreader.copy);
+      hasSpread = true;
+    }
+  }
+
+  if (grid.inside(x, y + 1)) {
+    final cell = grid.at(x, y + 1);
+    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x, y + 1, 0, BreakType.burn)) {
+      grid.addBroken(cell, x, y + 1, "silent");
+      grid.set(x, y + 1, spreader.copy);
+      hasSpread = true;
+    }
+  }
+
+  if (grid.inside(x, y - 1)) {
+    final cell = grid.at(x, y - 1);
+    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x, y - 1, 0, BreakType.burn)) {
+      grid.addBroken(cell, x, y - 1, "silent");
+      grid.set(x, y - 1, spreader.copy);
+      hasSpread = true;
+    }
+  }
+
+  return hasSpread;
+}
+
 void doCancer(Cell cell, int x, int y) {
   final cancer = cell.copy;
   cancer.updated = true;

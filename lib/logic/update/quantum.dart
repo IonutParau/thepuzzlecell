@@ -274,4 +274,22 @@ void quantums() {
     null,
     "graviton",
   );
+
+  final strangeAttract = QuantumInteraction(5, false);
+  final strangeToElectron = QuantumInteraction(1, false);
+
+  grid.updateCell(
+    (cell, x, y) {
+      spread(x, y, cell);
+      physicsCell(x, y, {
+        "graviton": strangeAttract,
+        "proton": strangeAttract,
+        "neutron": strangeAttract,
+        "electron": strangeToElectron,
+        "strangelet": strangeToElectron,
+      });
+    },
+    null,
+    "strangelet",
+  );
 }
