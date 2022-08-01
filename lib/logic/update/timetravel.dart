@@ -122,7 +122,7 @@ void timetravel() {
       filter: (c, x, y) => c.id == "time_machine",
     );
 
-    if (grid.cells.contains("consistency")) {
+    if (grid.cells.contains("consistency") || grid.cells.contains("consistency_biome")) {
       grid.loopChunks(
         "all",
         GridAlignment.bottomright,

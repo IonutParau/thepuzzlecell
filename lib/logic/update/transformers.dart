@@ -71,6 +71,10 @@ enum BreakType {
 }
 
 bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
+  if (bt == BreakType.burn && grid.placeable(x, y) == "no_burn_biome") {
+    return false;
+  }
+
   if (c.id == "wall" || c.id == "ghost") return false;
 
   if (c.id == "untransformable" && bt == BreakType.transform) return false;

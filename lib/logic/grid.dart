@@ -174,15 +174,7 @@ List<String> backgrounds = [
   "blue_place",
   "yellow_place",
   "rotatable",
-  "biome_cw",
-  "biome_ccw",
-  "desert",
-  "snowy",
-  "forest",
-  "freezing",
-  "trash_biome",
-  "mechanical_halting",
-  "quantum_biome",
+  ...biomes,
 ];
 
 class Grid {
@@ -501,7 +493,7 @@ class Grid {
     brokenCells = [];
     final cells = <String>{};
 
-    if (tickCount % 100 == 0) clearChunks();
+    //if (tickCount % 100 == 0) clearChunks();
 
     forEach(
       (cell, x, y) {

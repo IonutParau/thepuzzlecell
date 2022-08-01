@@ -9,6 +9,8 @@ final biomes = [
   "freezing",
   "trash_biome",
   "quantum_biome",
+  "no_burn_biome",
+  "consistency_biome",
 ];
 
 // Biomes
@@ -54,4 +56,8 @@ void biome() {
       cell.updated = false;
     }
   }, filter: (cell, x, y) => grid.placeable(x, y) == "quantum_biome");
+
+  grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    cell.tags.add("consistent");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "consistency_biome");
 }

@@ -226,11 +226,15 @@ final cells = {
   "airflow",
   "superfan",
   "strangelet",
+  "no_burn_biome",
+  "consistency_biome",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "no_burn_biome.png": "backgrounds/biomes/no_burn_biome.png",
+  "consistency_biome.png": "backgrounds/biomes/consistency_biome.png",
   "strangelet.png": "quantum/strangelet.png",
   "airflow.png": "movers/movers/airflow.png",
   "superfan.png": "movers/movers/superfan.png",
@@ -585,6 +589,8 @@ final categories = [
           "trash_biome",
           "mechanical_halting",
           "quantum_biome",
+          "no_burn_biome",
+          "consistency_biome",
         ],
         "biome_cw",
       ),
@@ -1929,5 +1935,13 @@ final cellInfo = <String, CellProfile>{
   "strangelet": CellProfile(
     "Stangelet",
     "A destructive monster. Attracted a lot to Gravitons, Protons and Neutrons, and much weaker to Electrons and other Strangelets.",
+  ),
+  "no_burn_biome": CellProfile(
+    "Fire Extinguisher Biome",
+    "Fire can't burn this. Cancer can't spread on this. Lava can't melt this. Plasma can't vaporize this. Strangelet can't strangelet this.",
+  ),
+  "consistency_biome": CellProfile(
+    "Consistency Biome",
+    "The cell on top won't be reset by time travel using the power of science (fiction)",
   ),
 };
