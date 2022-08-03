@@ -11,6 +11,7 @@ final biomes = [
   "quantum_biome",
   "no_burn_biome",
   "consistency_biome",
+  "mechanical_halting",
 ];
 
 // Biomes
