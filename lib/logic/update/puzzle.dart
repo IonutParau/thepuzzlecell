@@ -1,5 +1,11 @@
 part of logic;
 
+final puzzleMovementKeys = [LogicalKeyboardKey.arrowRight.keyLabel, LogicalKeyboardKey.arrowDown.keyLabel, LogicalKeyboardKey.arrowLeft.keyLabel, LogicalKeyboardKey.arrowUp.keyLabel];
+
+bool isPuzzleKeyDown(int d) {
+  return keys[puzzleMovementKeys[d]] == true;
+}
+
 void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "normal", int force = 1]) {
   AchievementManager.complete("incontrol");
   dir += 4;
@@ -10,7 +16,8 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
-  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot") {
+  var od = (o.rot + dir - 2) % 4;
+  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot" && isPuzzleKeyDown(od)) {
     var nextType = "normal";
     if (o.rot == puzzle.rot) {
       if (o.id == "trash_puzzle") nextType = "trash";
