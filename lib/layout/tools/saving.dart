@@ -914,7 +914,7 @@ class P4 {
 
     if (grid.wrap) props['W'] = true;
 
-    str += '${encodeValue(props)}';
+    str += '${encodeValue(props)};';
 
     return str;
   }

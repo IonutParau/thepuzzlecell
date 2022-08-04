@@ -3,26 +3,10 @@ part of logic;
 void doMirror(int x, int y, int dir) {
   if (dir == 0) {
     if (canMove(x + 1, y, 2, 1, MoveType.mirror) && canMove(x - 1, y, 0, 1, MoveType.mirror)) {
-      // if (grid.at(x + 1, y).tags.contains("mirrored")) return;
-      // if (grid.at(x - 1, y).tags.contains("mirrored")) return;
-      // if ((grid.at(x + 1, y).id.contains("mirror") &&
-      //         grid.at(x + 1, y).rot % 2 == 0) ||
-      //     (grid.at(x - 1, y).id.contains("mirror") &&
-      //         grid.at(x - 1, y).rot % 2 == 0)) {
-      //   return;
-      // }
       swapCells(x + 1, y, x - 1, y);
     }
   } else {
     if (canMove(x, y + 1, 3, 1, MoveType.mirror) && canMove(x, y - 1, 1, 1, MoveType.mirror)) {
-      // if (grid.at(x, y + 1).tags.contains("mirrored")) return;
-      // if (grid.at(x, y - 1).tags.contains("mirrored")) return;
-      // if ((grid.at(x, y + 1).id.contains("mirror") &&
-      //         grid.at(x, y + 1).rot % 2 == 1) ||
-      //     (grid.at(x, y - 1).id.contains("mirror") &&
-      //         grid.at(x, y - 1).rot % 2 == 1)) {
-      //   return;
-      // }
       swapCells(x, y - 1, x, y + 1);
     }
   }
@@ -65,7 +49,7 @@ void mirrors() {
         //print("e");
         doMirror(x, y, i);
       },
-      filter: (c, x, y) => c.id == "mirror" && c.rot % 2 == i,
+      filter: (c, x, y) => c.id == "mirror" && c.rot % 2 == i && !c.updated,
     );
     grid.loopChunks(
       "super_mirror",
@@ -73,7 +57,7 @@ void mirrors() {
       (cell, x, y) {
         if (cell.rot % 2 == i) doSuperMirror(x, y, i);
       },
-      filter: (c, x, y) => c.id == "super_mirror" && c.rot % 2 == i,
+      filter: (c, x, y) => c.id == "super_mirror" && c.rot % 2 == i && !c.updated,
     );
   }
 }
