@@ -7,6 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart' show P4;
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 void main() {
   test('Test P4 decoding', () {
@@ -47,5 +48,14 @@ void main() {
       }),
       '(someList=(help:(test=thing):(hlep:test)):someMap=(key=value))',
     );
+  });
+
+  test('Version checking', () {
+    expect(higherVersion('2.1', '2.2'), false);
+    expect(higherVersion('2.1', '2.1'), false);
+    expect(higherVersion('2.1.0.0', '2.1.0.0'), false);
+    expect(higherVersion('2.2.0.0', '2.2.0.0'), false);
+    expect(higherVersion('2.1.0.1', '2.1.0.1'), false);
+    expect(higherVersion('2.2', '2.1'), true);
   });
 }
