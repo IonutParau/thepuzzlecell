@@ -228,11 +228,15 @@ final cells = {
   "strangelet",
   "no_burn_biome",
   "consistency_biome",
+  "muon",
+  "tau"
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "muon.png": "quantum/muon.png",
+  "tau.png": "quantum/tau.png",
   "no_burn_biome.png": "backgrounds/biomes/no_burn_biome.png",
   "consistency_biome.png": "backgrounds/biomes/consistency_biome.png",
   "strangelet.png": "quantum/strangelet.png",
@@ -869,6 +873,8 @@ final categories = [
           "proton",
           "neutron",
           "electron",
+          "muon",
+          "tau",
           "graviton",
           "strangelet",
         ],
@@ -1943,5 +1949,13 @@ final cellInfo = <String, CellProfile>{
   "consistency_biome": CellProfile(
     "Consistency Biome",
     "The cell on top won't be reset by time travel using the power of science (fiction)",
+  ),
+  "muon": CellProfile(
+    "Muon",
+    "Electron but twice the force",
+  ),
+  "tau": CellProfile(
+    "Tau",
+    "Electron but 4 times the force",
   ),
 };

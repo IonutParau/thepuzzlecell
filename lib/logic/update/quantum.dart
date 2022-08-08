@@ -120,9 +120,8 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
 
 int clamp(int n, int minn, int maxn) => max(minn, min(n, maxn));
 
-const particleForce = 10;
-const particleForcePower = 5;
-const particleMaxDist = 10;
+const particleForcePower = 2;
+const particleMaxDist = 50;
 
 class QuantumInteraction {
   num scale;
@@ -130,6 +129,10 @@ class QuantumInteraction {
   num? flipDist;
 
   QuantumInteraction(this.scale, this.flipWhenClose, [this.flipDist]);
+
+  QuantumInteraction operator *(num other) {
+    return QuantumInteraction(scale * other, flipWhenClose, flipDist);
+  }
 }
 
 void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
@@ -152,7 +155,7 @@ void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
       if (cell.distance <= particleMaxDist) {
         if (interactions[cell.hitCell.id] != null) {
           var i = interactions[cell.hitCell.id];
-          var f = particleForce * i!.scale / (pow(cell.distance, particleForcePower));
+          var f = i!.scale / (pow(cell.distance, particleForcePower));
           if (i.flipWhenClose) {
             if (cell.distance < i.flipDist!.toDouble()) {
               f *= -1;
@@ -230,14 +233,19 @@ void quantums() {
 
   final justAttract = QuantumInteraction(1, false);
   final justRepell = QuantumInteraction(-1, false);
+  final gravitonAttract = QuantumInteraction(64, false);
+  final muonMass = 2;
+  final tauMass = 4;
 
   // My brain hurts
   grid.updateCell(
     (cell, x, y) {
       physicsCell(x, y, {
         "proton": justAttract,
-        "graviton": justAttract,
+        "graviton": gravitonAttract,
         "electron": justRepell,
+        "muon": justRepell * muonMass,
+        "tau": justRepell * tauMass,
       });
     },
     null,
@@ -246,9 +254,37 @@ void quantums() {
   grid.updateCell(
     (cell, x, y) {
       physicsCell(x, y, {
+        "proton": justAttract,
+        "graviton": gravitonAttract,
+        "electron": justRepell,
+        "muon": justRepell * muonMass,
+        "tau": justRepell * tauMass,
+      });
+    },
+    null,
+    "muon",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, {
+        "proton": justAttract,
+        "graviton": gravitonAttract,
+        "electron": justRepell,
+        "muon": justRepell * muonMass,
+        "tau": justRepell * tauMass,
+      });
+    },
+    null,
+    "tau",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, {
         "neutron": QuantumInteraction(5, false),
-        "graviton": justAttract,
+        "graviton": gravitonAttract,
         "electron": justAttract,
+        "muon": justAttract * muonMass,
+        "tauMass": justAttract * tauMass,
         "proton": justRepell,
       });
     },
@@ -259,7 +295,7 @@ void quantums() {
     (cell, x, y) {
       physicsCell(x, y, {
         "proton": justAttract,
-        "graviton": justAttract,
+        "graviton": gravitonAttract,
       });
     },
     null,
@@ -268,7 +304,7 @@ void quantums() {
   grid.updateCell(
     (cell, x, y) {
       physicsCell(x, y, {
-        "graviton": justAttract,
+        "graviton": gravitonAttract,
       });
     },
     null,
@@ -286,6 +322,8 @@ void quantums() {
         "proton": strangeAttract,
         "neutron": strangeAttract,
         "electron": strangeToElectron,
+        "muon": strangeToElectron * muonMass,
+        "tau": strangeToElectron * tauMass,
         "strangelet": strangeToElectron,
       });
     },
