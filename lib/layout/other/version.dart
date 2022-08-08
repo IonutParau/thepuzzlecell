@@ -11,6 +11,7 @@ final List<String> changes = [
   "Made the Unstable Generator only generate ungeneratables",
   "Added Muon (electron with twice the mass) and Tau (electron with 4 times the mass)",
   "Reworked physics system (distance exponent is 2 instead of 5, the particle force constant has been removed for being useless, the maximum distance is 50 instead of 10)",
+  "Made background darker",
 ];
 
 IconData getTrailing(String change) {
