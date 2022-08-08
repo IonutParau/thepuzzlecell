@@ -27,6 +27,7 @@ void unstableMove(int x, int y, int dir) {
 }
 
 void unstableGen(int x, int y, int dir, Cell self) {
+  if (ungennable.contains(self.id)) return;
   var cx = x;
   var cy = y;
 
