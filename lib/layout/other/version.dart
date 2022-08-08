@@ -2,29 +2,11 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.1.0.0 The Biomes Update';
+String currentVersion = '2.1.1.0 The Biomes Update Content Update 1';
 
 final List<String> changes = [
-  "Added ability to change audio device",
-  "Added biomes",
-  "Added Fullscreen toggle",
-  "Reworked the generator optimization",
-  "Reworked the settings page",
-  "Added setting to change chunk size",
-  "Reworked some categories",
-  "Added Water, Sand, Gas, Filler, Fire, Plasma, Lava and Cancer",
-  "Added Memory Generators",
-  "Added AutoDetect in texture packs",
-  "Added YAML and TOML support to texture packs",
-  "Added more puzzle variants",
-  "Added KeyLimit, Robot and Assistant",
-  "Reworked the entire grid system to be less buggy",
-  "Added plant",
-  "Added lose conditions",
-  "Added a music switcher",
-  "Replaced the default background music from Flight to Drift",
-  "Added IMPLY and NIMPLY logic gates",
-  "Changed the NAND texture",
+  "Added Clear Storage button",
+  "Added Portal A and Portal B",
 ];
 
 IconData getTrailing(String change) {

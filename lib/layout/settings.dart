@@ -493,6 +493,48 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
           ),
         ),
       ),
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Button(
+            child: Text(
+              lang(
+                'clear_storage',
+                'Clear Storage',
+              ),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return ContentDialog(
+                    title: Text(lang('warning_storage_del', 'Warning: This will delete all save files!')),
+                    content: Text(lang('warning_del_msg',
+                        'This will erase your save files. This means your settings will reset, your worlds will be deleted, the server list will be erased. This will also apply to all installations since they share the save files')),
+                    actions: [
+                      Button(
+                        child: Text(lang('erase', 'Erase')),
+                        onPressed: () {
+                          storage.clear().then((v) {
+                            fixStorage().then((v) => setState(() {}));
+                          });
+                          Navigator.of(ctx).pop();
+                        },
+                      ),
+                      Button(
+                        child: Text(lang('cancel', 'Cancel')),
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

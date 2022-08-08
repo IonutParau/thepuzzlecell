@@ -90,6 +90,10 @@ In the text, @variablename gets replaced with the variable.
 | music_type              | The name of the Music setting                                                                                                           |           |
 | error                   | The word to replace Error with                                                                                                          |           |
 | load_blueprint_error    | The description of the blueprint load error dialog                                                                                      | error     |
+| download_lang           | The name of the Download Languages button                                                                                               |           |
+| clear_storage           | The name of the Clear Storage button                                                                                                    |           |
+| erase                   | The word to use when displaying Erase                                                                                                   |           |
+| cancel                  | The word to use when displaying Cancel                                                                                                  |           |
 
 ## Button IDs:
 

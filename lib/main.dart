@@ -10,7 +10,6 @@ import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:dart_vlc/dart_vlc.dart';
-import 'package:window_manager/window_manager.dart';
 
 import 'logic/logic.dart';
 
@@ -38,43 +37,7 @@ void main() async {
 
   storage = await SharedPreferences.getInstance();
 
-  if (storage.getString("lang") != null) {
-    loadLangByName(storage.getString("lang")!);
-  }
-
-  worldManager.loadWorldsFromSettings();
-
-  if (storage.getDouble('ui_scale') == null) {
-    await storage.setDouble('ui_scale', 1);
-  }
-
-  if (storage.getDouble('music_volume') == null) {
-    await storage.setDouble('music_volume', 0.5);
-  }
-
-  if (storage.getStringList('servers') == null) {
-    await storage.setStringList('servers', []);
-  }
-
-  if (storage.getInt('coins') == null) {
-    await storage.setInt('coins', 0);
-  }
-
-  if (storage.getStringList('skins') == null) {
-    await storage.setStringList('skins', <String>[]);
-  }
-
-  if (storage.getStringList('usedSkins') == null) {
-    await storage.setStringList('usedSkins', <String>[]);
-  }
-
-  if (storage.getBool("invert_zoom_scroll") == null) {
-    await storage.setBool("invert_zoom_scroll", true);
-  }
-
-  if (storage.getBool("fullscreen") != null) {
-    await windowManager.setFullScreen(storage.getBool("fullscreen")!);
-  }
+  await fixStorage();
 
   runApp(const MyApp());
 }

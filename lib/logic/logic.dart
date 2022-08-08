@@ -11,13 +11,14 @@ import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:http/http.dart' as http show get;
 import 'package:yaml/yaml.dart' show loadYaml;
 import '../layout/tools/tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:toml/toml.dart';
+import 'package:window_manager/window_manager.dart';
 
 // Stuffz
 part 'grid.dart';
@@ -145,3 +146,43 @@ String findAssetDirPath() {
 late SharedPreferences storage;
 
 final String assetsPath = findAssetDirPath();
+
+Future<void> fixStorage() async {
+  if (storage.getString("lang") != null) {
+    loadLangByName(storage.getString("lang")!);
+  }
+
+  worldManager.loadWorldsFromSettings();
+
+  if (storage.getDouble('ui_scale') == null) {
+    await storage.setDouble('ui_scale', 1);
+  }
+
+  if (storage.getDouble('music_volume') == null) {
+    await storage.setDouble('music_volume', 0.5);
+  }
+
+  if (storage.getStringList('servers') == null) {
+    await storage.setStringList('servers', []);
+  }
+
+  if (storage.getInt('coins') == null) {
+    await storage.setInt('coins', 0);
+  }
+
+  if (storage.getStringList('skins') == null) {
+    await storage.setStringList('skins', <String>[]);
+  }
+
+  if (storage.getStringList('usedSkins') == null) {
+    await storage.setStringList('usedSkins', <String>[]);
+  }
+
+  if (storage.getBool("invert_zoom_scroll") == null) {
+    await storage.setBool("invert_zoom_scroll", true);
+  }
+
+  if (storage.getBool("fullscreen") != null) {
+    await windowManager.setFullScreen(storage.getBool("fullscreen")!);
+  }
+}

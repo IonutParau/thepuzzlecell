@@ -80,7 +80,7 @@ class LangsUI extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(0.3.w),
               child: Text(
-                'Download Languages',
+                lang('download_lang', 'Download Languages'),
                 style: TextStyle(
                   fontSize: 8.sp,
                 ),
@@ -124,9 +124,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
           Spacer(),
           MaterialButton(
             child: Text(
-              locallyExists
-                  ? lang('update', 'Update')
-                  : lang('install', 'Install'),
+              locallyExists ? lang('update', 'Update') : lang('install', 'Install'),
               style: TextStyle(
                 fontSize: 5.sp,
                 color: Colors.white,
@@ -143,8 +141,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
                     return ContentDialog(
                       title: Text(
                         locallyExists
-                            ? lang("local_update", "Locally updated $name",
-                                {"name": name})
+                            ? lang("local_update", "Locally updated $name", {"name": name})
                             : lang("local_install", "Locally installed $name", {
                                 "name": name,
                               }),
@@ -260,9 +257,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
       builder: (ctx, snap) {
         if (snap.hasData) {
           return ListView(
-            children: (snap.data as List<String>)
-                .map((str) => versionTile(str))
-                .toList(),
+            children: (snap.data as List<String>).map((str) => versionTile(str)).toList(),
             itemExtent: 8.h,
           );
         } else if (snap.hasError) {
