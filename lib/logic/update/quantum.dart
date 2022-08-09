@@ -91,8 +91,10 @@ class RaycastInfo {
   late Cell hitCell;
   bool successful;
   late int distance;
+  late int x;
+  late int y;
 
-  RaycastInfo.successful(Cell cell, this.distance) : successful = true {
+  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y) : successful = true {
     hitCell = cell.copy;
   }
 
@@ -114,7 +116,7 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
     final cell = grid.at(x, y);
 
     if (cell.id != "empty") {
-      return RaycastInfo.successful(cell, d);
+      return RaycastInfo.successful(cell, d, x, y);
     }
   }
 }
@@ -128,11 +130,12 @@ class QuantumInteraction {
   num scale;
   bool flipWhenClose;
   num? flipDist;
+  int? distOff;
 
-  QuantumInteraction(this.scale, this.flipWhenClose, [this.flipDist]);
+  QuantumInteraction(this.scale, this.flipWhenClose, {this.flipDist, this.distOff});
 
   QuantumInteraction operator *(num other) {
-    return QuantumInteraction(scale * other, flipWhenClose, flipDist);
+    return QuantumInteraction(scale * other, flipWhenClose, flipDist: flipDist, distOff: distOff);
   }
 }
 
@@ -162,8 +165,43 @@ void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
               f *= -1;
             }
           }
-          vx += ox * f;
-          vy += oy * f;
+          if (i.distOff == 0 || i.distOff == null) {
+            vx += ox * f;
+            vy += oy * f;
+          } else {
+            // Basically does Force += Normalize(vec2-vec1)
+            // Grab delta
+            var dx = cell.x.toDouble() - x;
+            var dy = cell.y.toDouble() - y;
+
+            // No distance of 0 BS
+            if (dx != 0 || dy != 0) {
+              // Get length of delta vector
+              var dmag = sqrt(dx * dx + dy * dy);
+
+              // Normalize delta vector
+              dx /= dmag;
+              dy /= dmag;
+
+              // Scale normalized delta vector by difference between old length and the distance offset
+              dx *= (dmag - i.distOff!.toDouble());
+              dy *= (dmag - i.distOff!.toDouble());
+
+              // Grab new length
+              dmag = abs(dmag - i.distOff!).toDouble();
+
+              // No distance of 0 BS
+              if (dmag != 0) {
+                // Normalize it again
+                dx /= dmag;
+                dy /= dmag;
+
+                // Apply force
+                vx += dx;
+                vy += dy;
+              }
+            }
+          }
         }
       }
     }
@@ -235,6 +273,7 @@ void quantums() {
   final justAttract = QuantumInteraction(1, false);
   final justRepell = QuantumInteraction(-1, false);
   final gravitonAttract = QuantumInteraction(64, false);
+  final orbitalAttract = QuantumInteraction(1, false, distOff: 5);
   final muonMass = 2;
   final tauMass = 4;
 
@@ -247,6 +286,7 @@ void quantums() {
         "electron": justRepell,
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
+        "inverse_graviton": gravitonAttract * -1,
       });
     },
     null,
@@ -260,6 +300,7 @@ void quantums() {
         "electron": justRepell,
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
+        "inverse_graviton": gravitonAttract * -1,
       });
     },
     null,
@@ -273,6 +314,7 @@ void quantums() {
         "electron": justRepell,
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
+        "inverse_graviton": gravitonAttract * -1,
       });
     },
     null,
@@ -287,6 +329,8 @@ void quantums() {
         "muon": justAttract * muonMass,
         "tauMass": justAttract * tauMass,
         "proton": justRepell,
+        "inverse_graviton": gravitonAttract * -1,
+        "orbital": justAttract * 0.1,
       });
     },
     null,
@@ -297,6 +341,8 @@ void quantums() {
       physicsCell(x, y, {
         "proton": justAttract,
         "graviton": gravitonAttract,
+        "inverse_graviton": gravitonAttract * -1,
+        "orbital": justAttract * 0.1,
       });
     },
     null,
@@ -306,10 +352,33 @@ void quantums() {
     (cell, x, y) {
       physicsCell(x, y, {
         "graviton": gravitonAttract,
+        "inverse_graviton": gravitonAttract * -1,
       });
     },
     null,
     "graviton",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, {
+        "graviton": orbitalAttract * gravitonAttract.scale,
+        "inverse_graviton": orbitalAttract * -gravitonAttract.scale,
+        "proton": orbitalAttract,
+        "neutron": orbitalAttract,
+      });
+    },
+    null,
+    "orbital",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, {
+        "graviton": gravitonAttract * -1,
+        "inverse_graviton": gravitonAttract,
+      });
+    },
+    null,
+    "inverse_graviton",
   );
 
   final strangeAttract = QuantumInteraction(5, false);
@@ -326,6 +395,7 @@ void quantums() {
         "muon": strangeToElectron * muonMass,
         "tau": strangeToElectron * tauMass,
         "strangelet": strangeToElectron,
+        "inverse_graviton": gravitonAttract * -1,
       });
     },
     null,

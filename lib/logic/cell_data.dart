@@ -233,11 +233,15 @@ final cells = {
   "crystal",
   "floppy",
   "mech_stopper",
+  "orbital",
+  "inverse_graviton",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "orbital.png": "quantum/orbital.png",
+  "inverse_graviton.png": "quantum/inverse_graviton.png",
   "mech_stopper.png": "mechanical/users/mech_stopper.png",
   "floppy.png": "unique/floppy.png",
   "crystal.png": "unique/crystal.png",
@@ -883,6 +887,8 @@ final categories = [
           "tau",
           "graviton",
           "strangelet",
+          "orbital",
+          "inverse_graviton",
         ],
         "unstable_mover",
       ),
@@ -1978,5 +1984,13 @@ final cellInfo = <String, CellProfile>{
   "mech_stopper": CellProfile(
     "Mechanically Powered Stopper",
     "Stopper but only stops when powered with a mechanical signal",
+  ),
+  "inverse_graviton": CellProfile(
+    "Inverse Graviton",
+    "Like a gravtion but negative mass",
+  ),
+  "orbital": CellProfile(
+    "Orbital",
+    "Only attracts neutrons, protons and orbitals 1/5 of the normal force, but is attracted by neutrons, protons, orbitals, gravitons and inverse gravitons at normal force and tries to stay 5 blocks away",
   ),
 };
