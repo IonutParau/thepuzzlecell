@@ -225,7 +225,7 @@ class MechanicalManager {
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
-    if (cell.id.startsWith('mech_')) return true;
+    if (cell.id.startsWith('mech_') && cell.id != "mech_gen") return true;
     if (cell.id == "keylimit") return true;
     if (cell.id == "keyforce") return true;
     if (cell.id == "keyfake") return true;
@@ -304,6 +304,17 @@ class MechanicalManager {
       QueueManager.add("newtick", () {
         keys[key.keyLabel] = false;
       });
+    } else if (cell.id == "mech_stopper") {
+      final fx = frontX(x, cell.rot);
+      final fy = frontY(y, cell.rot);
+
+      if (grid.inside(fx, fy)) {
+        final cell = grid.at(fx, fy);
+        if (!cell.id.contains("puzzle")) {
+          cell.updated = true;
+          cell.tags.add("stopped");
+        }
+      }
     }
   }
 

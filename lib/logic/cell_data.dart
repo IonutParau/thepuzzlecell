@@ -232,11 +232,13 @@ final cells = {
   "tau",
   "crystal",
   "floppy",
+  "mech_stopper",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_stopper.png": "mechanical/users/mech_stopper.png",
   "floppy.png": "unique/floppy.png",
   "crystal.png": "unique/crystal.png",
   "muon.png": "quantum/muon.png",
@@ -965,6 +967,7 @@ final categories = [
           "keylimit",
           "keyforce",
           "keyfake",
+          "mech_stopper",
         ],
         "mech_mover",
       ),
@@ -1971,5 +1974,9 @@ final cellInfo = <String, CellProfile>{
   "floppy": CellProfile(
     "Floppy",
     "A programmable mover. At the start, put a cell behind, to the left and to the right of it's bottom (the direction it moves in) and when it sees that cell it will turn towards that direction",
+  ),
+  "mech_stopper": CellProfile(
+    "Mechanically Powered Stopper",
+    "Stopper but only stops when powered with a mechanical signal",
   ),
 };

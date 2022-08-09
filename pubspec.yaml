@@ -47,6 +47,7 @@ flutter:
     - assets/images/mechanical/
     - assets/images/mechanical/gates/
     - assets/images/mechanical/users/
+    - assets/images/math/
     - assets/images/skins/
     - assets/images/unique/
     - assets/images/movers/
