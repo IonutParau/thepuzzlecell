@@ -533,6 +533,17 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     return -1;
   }
   final odir = (dir + 2) % 4; // Opposite direction
+
+  if (cell.id == "floppy") {
+    if (dir == (cell.rot + 1) % 4) {
+      return 1;
+    } else if (odir == (cell.rot + 1) % 4) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
   if (["mech_mover", "mech_puller"].contains(cell.id)) {
     if (MechanicalManager.on(cell, true)) {
       if (cell.rot == dir) {

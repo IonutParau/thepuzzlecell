@@ -36,6 +36,7 @@ final subticks = [
   plants,
   karls,
   dartys,
+  floppys,
   puzzles,
   pmerges,
   gates,

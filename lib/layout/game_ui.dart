@@ -2596,8 +2596,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
     }
 
+    final effects = <String>{};
+
     if (cell.tags.contains("consistent")) {
-      Sprite(Flame.images.fromCache("effects/consistent.png"))
+      effects.add("consistent");
+    }
+    if (cell.tags.contains("stopped")) {
+      effects.add("stopped");
+    }
+
+    for (var effect in effects) {
+      Sprite(Flame.images.fromCache("effects/$effect.png"))
         ..paint = paint ?? Paint()
         ..render(
           canvas,

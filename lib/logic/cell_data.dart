@@ -229,12 +229,16 @@ final cells = {
   "no_burn_biome",
   "consistency_biome",
   "muon",
-  "tau"
+  "tau",
+  "crystal",
+  "floppy",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "floppy.png": "unique/floppy.png",
+  "crystal.png": "unique/crystal.png",
   "muon.png": "quantum/muon.png",
   "tau.png": "quantum/tau.png",
   "no_burn_biome.png": "backgrounds/biomes/no_burn_biome.png",
@@ -917,6 +921,8 @@ final categories = [
       "water",
       "sand",
       "gas",
+      "crystal",
+      "floppy",
     ],
     "unstable_mover",
   ),
@@ -1957,5 +1963,13 @@ final cellInfo = <String, CellProfile>{
   "tau": CellProfile(
     "Tau",
     "Electron but 4 times the force",
+  ),
+  "crystal": CellProfile(
+    "Crystal",
+    "Moves in random directions until it touches another Crystal cell",
+  ),
+  "floppy": CellProfile(
+    "Floppy",
+    "A programmable mover. At the start, put a cell behind, to the left and to the right of it's bottom (the direction it moves in) and when it sees that cell it will turn towards that direction",
   ),
 };

@@ -11,6 +11,7 @@ void stoppers() {
           final cell = grid.at(fx, fy);
           if (!cell.id.contains("puzzle")) {
             cell.updated = true;
+            cell.tags.add("stopped");
           }
         }
       },
