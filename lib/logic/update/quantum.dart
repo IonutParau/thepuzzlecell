@@ -287,6 +287,7 @@ void quantums() {
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
         "inverse_graviton": gravitonAttract * -1,
+        "quantum_destroyer": justRepell * 10,
       });
     },
     null,
@@ -301,6 +302,7 @@ void quantums() {
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
         "inverse_graviton": gravitonAttract * -1,
+        "quantum_destroyer": justRepell * muonMass * 10,
       });
     },
     null,
@@ -315,6 +317,7 @@ void quantums() {
         "muon": justRepell * muonMass,
         "tau": justRepell * tauMass,
         "inverse_graviton": gravitonAttract * -1,
+        "quantum_destroyer": justRepell * tauMass * 10,
       });
     },
     null,
@@ -331,6 +334,7 @@ void quantums() {
         "proton": justRepell,
         "inverse_graviton": gravitonAttract * -1,
         "orbital": justAttract * 0.1,
+        "quantum_destroyer": justRepell * 10,
       });
     },
     null,
@@ -348,6 +352,11 @@ void quantums() {
     null,
     "neutron",
   );
+  grid.updateCell((cell, x, y) {
+    physicsCell(x, y, {
+      "neutron": justAttract,
+    });
+  }, null, "quantum_destroyer");
   grid.updateCell(
     (cell, x, y) {
       physicsCell(x, y, {

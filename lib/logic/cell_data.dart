@@ -235,11 +235,13 @@ final cells = {
   "mech_stopper",
   "orbital",
   "inverse_graviton",
+  "quantum_destroyer",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "quantum_destroyer.png": "quantum/quantum_destroyer.png",
   "orbital.png": "quantum/orbital.png",
   "inverse_graviton.png": "quantum/inverse_graviton.png",
   "mech_stopper.png": "mechanical/users/mech_stopper.png",
@@ -889,6 +891,7 @@ final categories = [
           "strangelet",
           "orbital",
           "inverse_graviton",
+          "quantum_destroyer",
         ],
         "unstable_mover",
       ),
@@ -1992,5 +1995,9 @@ final cellInfo = <String, CellProfile>{
   "orbital": CellProfile(
     "Orbital",
     "Only attracts neutrons, protons and orbitals 1/5 of the normal force, but is attracted by neutrons, protons, orbitals, gravitons and inverse gravitons at normal force and tries to stay 5 blocks away",
+  ),
+  "quantum_destroyer": CellProfile(
+    "Quantum Destroyer",
+    "Attracted to neutrons, repells electrons, muons and taus with a force 10 times their mass",
   ),
 };
