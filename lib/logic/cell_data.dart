@@ -1021,6 +1021,7 @@ final categories = [
           "unstable_puzzle",
           "trash_puzzle",
           "mover_puzzle",
+          "temporal_puzzle",
         ],
         "molten_puzzle",
       ),

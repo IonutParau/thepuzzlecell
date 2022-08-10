@@ -13,6 +13,9 @@ final List<String> changes = [
   "Reworked physics system (distance exponent is 2 instead of 5, the particle force constant has been removed for being useless, the maximum distance is 50 instead of 10)",
   "Made background darker",
   "Added visual indicator for stopped cells",
+  "Fixed a mistake in a blueprint and added another one",
+  "Made Temporal Puzzle visible and also fixed its bug",
+  "Fixed bug with puzzle bias",
 ];
 
 IconData getTrailing(String change) {

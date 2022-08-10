@@ -1,9 +1,20 @@
 part of logic;
 
-final puzzleMovementKeys = [LogicalKeyboardKey.arrowRight.keyLabel, LogicalKeyboardKey.arrowDown.keyLabel, LogicalKeyboardKey.arrowLeft.keyLabel, LogicalKeyboardKey.arrowUp.keyLabel];
-
 bool isPuzzleKeyDown(int d) {
-  return keys[puzzleMovementKeys[d]] == true;
+  d %= 4;
+  if (d == 0) {
+    return keys[LogicalKeyboardKey.arrowRight.keyLabel] == true;
+  }
+  if (d == 2) {
+    return keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true;
+  }
+  if (d == 1) {
+    return keys[LogicalKeyboardKey.arrowDown.keyLabel] == true;
+  }
+  if (d == 3) {
+    return keys[LogicalKeyboardKey.arrowUp.keyLabel] == true;
+  }
+  return false;
 }
 
 void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "normal", int force = 1]) {
@@ -16,10 +27,10 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
-  var od = (o.rot + dir - 2) % 4;
-  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot" && isPuzzleKeyDown(od)) {
+  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot") {
     var nextType = "normal";
-    if (o.rot == puzzle.rot) {
+    if (o.rot == puzzle.rot && isPuzzleKeyDown((dir - o.rot) % 4)) {
+      print("Test");
       if (o.id == "trash_puzzle") nextType = "trash";
       if (o.id == "temporal_puzzle") nextType = "temporal";
       if (o.id == "unstable_puzzle") nextType = "unstable";
@@ -27,9 +38,8 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       if (o.id == "frozen_puzzle") nextType = "frozen";
       force++;
       o.updated = true;
-    } else if (o.rot == ((puzzle.rot + 2) % 4)) {
+    } else if (o.rot == ((puzzle.rot + 2) % 4) && isPuzzleKeyDown((dir - puzzle.rot) % 4)) {
       force--;
-      //o.updated = true;
     }
     if (force == 0) return;
     if ((o.rot == puzzle.rot) || (o.rot == (puzzle.rot + 2) % 4)) {
