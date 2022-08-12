@@ -1,9 +1,17 @@
 part of layout;
 
-late Player destroySound;
-late Player flightMusic;
-late Player floatMusic;
-late Player driftMusic;
+late Source destroySound;
+late Source flightMusic;
+late Source floatMusic;
+late Source driftMusic;
+
+// This will play multiple sounds concurrently
+final sfxPlayer = AudioPlayer();
+
+// This should ONLY play one
+final musicPlayer = AudioPlayer();
+var _isMusicPlaying = false;
+var _musicPlayerVolume = 0.0;
 
 class Music {
   String name, id;
@@ -26,7 +34,7 @@ Music getCurrentMusicData() {
   return musics.first;
 }
 
-Player get music {
+Source get music {
   final m = storage.getString("music") ?? (musics.first.id);
 
   if (m == "flight") return flightMusic;
@@ -37,50 +45,52 @@ Player get music {
 }
 
 void changeMusic(String newMusic) {
-  final old = music;
-  storage.setString("music", newMusic);
-  old.stop();
-  setLoopSoundVolume(music, old.general.volume);
+  final volume = getMusicVolume();
+  storage.setString("music", newMusic).then((v) => musicPlayer.stop().then((v) => _isMusicPlaying = false).then((v) => setLoopSoundVolume(music, volume))); // Callback hell
 }
 
 double getMusicVolume() {
-  if (music.playback.isPlaying) {
-    return music.general.volume;
+  if (_isMusicPlaying) {
+    return _musicPlayerVolume;
   } else {
     return 0;
   }
 }
 
 void initSound() {
-  flightMusic = Player(id: 69420, commandlineArguments: ['--no-video'])..add(Media.asset('assets/audio/Flight.ogg'));
-  destroySound = Player(id: 69421, commandlineArguments: ['--no-video'])..add(Media.asset('assets/audio/destroy.wav'));
-  floatMusic = Player(id: 69422, commandlineArguments: ['--no-video'])..add(Media.asset('assets/audio/Float.ogg'));
-  driftMusic = Player(id: 69423, commandlineArguments: ['--no-video'])..add(Media.asset('assets/audio/Drift.ogg'));
+  flightMusic = AssetSource("assets/audio/Flight.ogg");
+  destroySound = AssetSource("assets/audio/destroy.wav");
+  floatMusic = AssetSource("assets/audio/Float.ogg");
+  driftMusic = AssetSource("assets/audio/Drift.ogg");
+
+  musicPlayer.onPlayerComplete.listen((v) {
+    if (_musicPlayerVolume > 0) {
+      musicPlayer.resume();
+    }
+  });
 }
 
-void playSound(Player sound, [double? volume]) {
+void playSound(Source sound, [double? volume]) {
   if (inBruteForce) return;
-  sound.setVolume(volume ?? (storage.getDouble("sfx_volume") ?? 1));
-  sound.setPlaylistMode(PlaylistMode.single);
-  sound.play();
+  if (volume == 0) return;
+  sfxPlayer.setVolume(volume ?? (storage.getDouble("sfx_volume") ?? 1));
+  sfxPlayer.play(sound);
 }
 
-void playOnLoop(Player sound, double volume) {
-  sound.setPlaylistMode(PlaylistMode.loop);
-  if (sound.playback.isPlaying) {
-    sound.seek(Duration.zero);
-  } else {
-    sound.play();
+void playOnLoop(Source sound, double volume) {
+  musicPlayer.stop().then((v) => _isMusicPlaying = false);
+  if (volume > 0) {
+    musicPlayer.setVolume(volume).then((v) => _musicPlayerVolume = volume);
+    musicPlayer.play(sound).then((v) => _isMusicPlaying = true);
   }
-  sound.setVolume(volume);
 }
 
-void setLoopSoundVolume(Player sound, double volume) {
+void setLoopSoundVolume(Source sound, double volume) {
   if (volume == 0) {
-    sound.stop();
+    musicPlayer.stop().then((v) => _isMusicPlaying = false);
   } else {
-    if (sound.playback.isPlaying) {
-      sound.setVolume(volume);
+    if (_isMusicPlaying) {
+      musicPlayer.setVolume(volume).then((v) => _musicPlayerVolume = volume);
     } else {
       playOnLoop(sound, volume);
     }
