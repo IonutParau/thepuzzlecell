@@ -265,6 +265,18 @@ void quantums() {
         rot,
         "unstable_gen",
       );
+      grid.updateCell(
+        (cell, x, y) {
+          final fx = frontX(x, rot);
+          final fy = frontY(y, rot);
+
+          if (grid.inside(fx, fy) && grid.get(fx, fy)?.id == "empty") {
+            unstableMove(x, y, cell.rot);
+          }
+        },
+        rot,
+        "unstable_zypper",
+      );
     }
   }
 

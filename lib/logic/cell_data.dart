@@ -236,11 +236,13 @@ final cells = {
   "orbital",
   "inverse_graviton",
   "quantum_destroyer",
+  "quantum_zypper",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "quantum_zypper.png": "quantum/quantum_zypper.png",
   "quantum_destroyer.png": "quantum/quantum_destroyer.png",
   "orbital.png": "quantum/orbital.png",
   "inverse_graviton.png": "quantum/inverse_graviton.png",
@@ -882,6 +884,7 @@ final categories = [
           "unstable_mover",
           "unstable_gen",
           "field",
+          "quantum_zypper",
           "proton",
           "neutron",
           "electron",
@@ -1995,10 +1998,14 @@ final cellInfo = <String, CellProfile>{
   ),
   "orbital": CellProfile(
     "Orbital",
-    "Only attracts neutrons, protons and orbitals 1/5 of the normal force, but is attracted by neutrons, protons, orbitals, gravitons and inverse gravitons at normal force and tries to stay 5 blocks away",
+    "Only attracts neutrons and protons 1/5 of the normal force, but is attracted by neutrons, protons, orbitals, gravitons and inverse gravitons at normal force and tries to stay 5 blocks away",
   ),
   "quantum_destroyer": CellProfile(
     "Quantum Destroyer",
     "Attracted to neutrons, repells electrons, muons and taus with a force 10 times their mass",
+  ),
+  "quantum_zypper": CellProfile(
+    "Quantum Zypper",
+    "The quantum zupper",
   ),
 };
