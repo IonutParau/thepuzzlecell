@@ -357,34 +357,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       child: Row(
                         children: [
                           Text(
-                            lang('audio_device', 'Audio Device: '),
-                            style: textStyle,
-                          ),
-                          SizedBox(
-                            height: 5.h,
-                            child: DropDownButton(
-                              leading: Icon(FluentIcons.speakers),
-                              title: Text(getAudioDevice().name),
-                              placement: FlyoutPlacement.start,
-                              items: [
-                                for (var device in Devices.all)
-                                  // ignore: deprecated_member_use
-                                  DropDownButtonItem(
-                                    title: Text(device.name),
-                                    leading: Icon(FluentIcons.speakers),
-                                    onTap: () => setState(() => setSoundDevice(device)),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 60.w,
-                      child: Row(
-                        children: [
-                          Text(
                             lang('music_type', 'Music: '),
                             style: textStyle,
                           ),

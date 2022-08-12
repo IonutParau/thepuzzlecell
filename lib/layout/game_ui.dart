@@ -273,7 +273,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                             child: Row(
                               children: [
                                 Text(
-                                  lang('music_volume', 'Music Volume') + ": ${music.playback.isPlaying ? (music.general.volume * 100 ~/ 1) : 0}% ",
+                                  lang('music_volume', 'Music Volume') + ": ${getMusicVolume() * 100}% ",
                                   style: TextStyle(
                                     fontSize: 10.sp,
                                   ),
@@ -295,7 +295,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                           disabledThumbColor: Colors.black,
                                           useThumbBall: true,
                                         ),
-                                        value: music.playback.isPlaying ? music.general.volume : 0.0,
+                                        value: getMusicVolume(),
                                         min: 0,
                                         max: 1,
                                         onChanged: (newVal) {
@@ -317,46 +317,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                             ),
                           ),
                           Spacer(),
-                          // Padding(
-                          //   padding: EdgeInsets.all(1.w),
-                          //   child: Row(
-                          //     children: [
-                          //       //Spacer(flex: 2),
-                          //       Text(
-                          //         "Border: ${(cellInfo[borders[borderMode]] ?? defaultProfile).title}",
-                          //         style: TextStyle(
-                          //           fontSize: 12.sp,
-                          //         ),
-                          //       ),
-                          //       Spacer(),
-                          //       Container(
-                          //         width: 25.w,
-                          //         height: 10.h,
-                          //         padding: EdgeInsets.all(2.w),
-                          //         child: Slider(
-                          //           style: SliderThemeData(
-                          //             thumbColor: Colors.black,
-                          //             activeColor: Colors.blue,
-                          //             inactiveColor: Colors.black,
-                          //             disabledActiveColor: Colors.black,
-                          //             disabledInactiveColor: Colors.black,
-                          //             disabledThumbColor: Colors.black,
-                          //             useThumbBall: true,
-                          //           ),
-                          //           value: borderMode.toDouble(),
-                          //           min: 0,
-                          //           max: borders.length - 1,
-                          //           divisions: borders.length - 1,
-                          //           onChanged: (newVal) {
-                          //             borderMode = newVal.toInt();
-                          //             refreshMenu();
-                          //           },
-                          //         ),
-                          //       ),
-                          //       //Spacer(flex: 2),
-                          //     ],
-                          //   ),
-                          // ),
                           Spacer(),
                           Row(
                             children: [

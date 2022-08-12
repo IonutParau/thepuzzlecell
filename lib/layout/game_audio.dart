@@ -43,27 +43,12 @@ void changeMusic(String newMusic) {
   setLoopSoundVolume(music, old.general.volume);
 }
 
-Device? _audioDevice;
-
-void setSoundDevice(Device device) {
-  _audioDevice = device;
-  destroySound.setDevice(device);
-  music.setDevice(device);
-  storage.setString("audioDevice", device.id);
-}
-
-Device getAudioDevice() {
-  if (_audioDevice != null) return _audioDevice!;
-  if (storage.getString("audioDevice") != null) {
-    final audioDevice = storage.getString("audioDevice")!;
-
-    for (var device in Devices.all) {
-      if (device.id == audioDevice) {
-        return device;
-      }
-    }
+double getMusicVolume() {
+  if (music.playback.isPlaying) {
+    return music.general.volume;
+  } else {
+    return 0;
   }
-  return Devices.all.last; // Typically first is speakers and last is headphones, so headphones users can have a decent-ish experience
 }
 
 void initSound() {

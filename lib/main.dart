@@ -58,7 +58,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     initSound();
-    setSoundDevice(getAudioDevice());
     texturePacks.forEach(
       (tp) {
         tp.load(false);
