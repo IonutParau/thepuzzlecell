@@ -308,19 +308,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             value: storage.getDouble("music_volume")!,
                             min: 0,
                             max: 1,
-                            onChanged: (v) => storage
-                                .setDouble(
-                                  "music_volume",
-                                  (v * 100 ~/ 1) / 100,
-                                )
-                                .then(
-                                  (v) => setState(
-                                    () => setLoopSoundVolume(
-                                      music,
-                                      storage.getDouble("music_volume")!,
-                                    ),
-                                  ),
-                                ),
+                            onChanged: (v) async {
+                              await storage.setDouble("music_volume", (v * 100 ~/ 1) / 100);
+                              await setLoopSoundVolume(music, storage.getDouble("music_volume")!);
+                              setState(() {});
+                            },
                             label: '${storage.getDouble('music_volume')! * 100}%',
                           ),
                         ),
@@ -372,7 +364,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   DropDownButtonItem(
                                     title: Text(music.name),
                                     leading: Icon(FluentIcons.music_note),
-                                    onTap: () => setState(() => changeMusic(music.id)),
+                                    onTap: () => setState(() async => await changeMusic(music.id)),
                                   ),
                               ],
                             ),
@@ -474,6 +466,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                 'clear_storage',
                 'Clear Storage',
               ),
+              style: fontSize(7.sp),
             ),
             onPressed: () {
               showDialog(

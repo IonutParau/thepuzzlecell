@@ -1878,7 +1878,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "temporal_puzzle": CellProfile(
     "Temporal Puzzle",
-    "Puzzle cell but you can time travel by pressing F",
+    "Puzzle cell but you can time travel by pressing T",
   ),
   "mover_puzzle": CellProfile(
     "Mover Puzzle",

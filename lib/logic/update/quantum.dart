@@ -275,7 +275,7 @@ void quantums() {
           }
         },
         rot,
-        "unstable_zypper",
+        "quantum_zypper",
       );
     }
   }

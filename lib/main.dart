@@ -9,7 +9,6 @@ import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:dart_vlc/dart_vlc.dart';
 
 import 'logic/logic.dart';
 
@@ -20,7 +19,6 @@ final deflate = ZLibCodec(level: ZLibOption.maxLevel);
 void main() async {
   //await Flame.device.setLandscape();
 
-  DartVLC.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.fullScreen();
 

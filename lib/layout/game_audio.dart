@@ -1,14 +1,14 @@
 part of layout;
 
-late Source destroySound;
-late Source flightMusic;
-late Source floatMusic;
-late Source driftMusic;
+final flightMusic = AssetSource("audio/Flight.ogg");
+final destroySound = AssetSource("audio/destroy.wav");
+final floatMusic = AssetSource("audio/Float.ogg");
+final driftMusic = AssetSource("audio/Drift.ogg");
 
-// This will play multiple sounds concurrently
+// This will play only one sound at once via the power of magic
 final sfxPlayer = AudioPlayer();
 
-// This should ONLY play one
+// This is moozik
 final musicPlayer = AudioPlayer();
 var _isMusicPlaying = false;
 var _musicPlayerVolume = 0.0;
@@ -44,9 +44,15 @@ Source get music {
   return flightMusic;
 }
 
-void changeMusic(String newMusic) {
+Future changeMusic(String newMusic) async {
   final volume = getMusicVolume();
-  storage.setString("music", newMusic).then((v) => musicPlayer.stop().then((v) => _isMusicPlaying = false).then((v) => setLoopSoundVolume(music, volume))); // Callback hell
+  await storage.setString("music", newMusic);
+  if (_isMusicPlaying) await musicPlayer.stop();
+  _isMusicPlaying = false;
+  await setLoopSoundVolume(
+    music,
+    volume,
+  );
 }
 
 double getMusicVolume() {
@@ -58,41 +64,37 @@ double getMusicVolume() {
 }
 
 void initSound() {
-  flightMusic = AssetSource("assets/audio/Flight.ogg");
-  destroySound = AssetSource("assets/audio/destroy.wav");
-  floatMusic = AssetSource("assets/audio/Float.ogg");
-  driftMusic = AssetSource("assets/audio/Drift.ogg");
-
-  musicPlayer.onPlayerComplete.listen((v) {
-    if (_musicPlayerVolume > 0) {
-      musicPlayer.resume();
-    }
-  });
+  musicPlayer.setReleaseMode(ReleaseMode.loop);
 }
 
-void playSound(Source sound, [double? volume]) {
+Future playSound(Source sound, [double? volume]) async {
   if (inBruteForce) return;
   if (volume == 0) return;
-  sfxPlayer.setVolume(volume ?? (storage.getDouble("sfx_volume") ?? 1));
-  sfxPlayer.play(sound);
+  await sfxPlayer.play(sound, volume: (volume ?? (storage.getDouble("sfx_volume") ?? 1)));
 }
 
-void playOnLoop(Source sound, double volume) {
-  musicPlayer.stop().then((v) => _isMusicPlaying = false);
+Future playOnLoop(Source sound, double volume) async {
+  if (_isMusicPlaying) musicPlayer.stop();
+  _isMusicPlaying = false;
   if (volume > 0) {
-    musicPlayer.setVolume(volume).then((v) => _musicPlayerVolume = volume);
-    musicPlayer.play(sound).then((v) => _isMusicPlaying = true);
+    await musicPlayer.play(sound, volume: volume, mode: PlayerMode.lowLatency);
+    _isMusicPlaying = true;
+    _musicPlayerVolume = volume;
   }
 }
 
-void setLoopSoundVolume(Source sound, double volume) {
+Future setLoopSoundVolume(Source sound, double volume) async {
   if (volume == 0) {
-    musicPlayer.stop().then((v) => _isMusicPlaying = false);
+    if (_isMusicPlaying) {
+      await musicPlayer.stop();
+      _isMusicPlaying = false;
+    }
   } else {
     if (_isMusicPlaying) {
-      musicPlayer.setVolume(volume).then((v) => _musicPlayerVolume = volume);
+      await musicPlayer.setVolume(volume);
+      _musicPlayerVolume = volume;
     } else {
-      playOnLoop(sound, volume);
+      await playOnLoop(sound, volume);
     }
   }
 }

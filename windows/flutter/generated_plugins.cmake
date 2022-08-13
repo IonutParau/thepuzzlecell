@@ -4,8 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
-  dart_vlc
-  flutter_native_view
+  screen_retriever
   url_launcher_windows
   window_manager
 )
