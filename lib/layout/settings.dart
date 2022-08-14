@@ -364,7 +364,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   DropDownButtonItem(
                                     title: Text(music.name),
                                     leading: Icon(FluentIcons.music_note),
-                                    onTap: () => setState(() async => await changeMusic(music.id)),
+                                    onTap: () async {
+                                      await changeMusic(music.id);
+                                      setState(() {});
+                                    },
                                   ),
                               ],
                             ),
