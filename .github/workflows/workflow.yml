@@ -38,20 +38,20 @@ jobs:
       #   with:
       #     name: thepuzzlecell-appimage
       #     path: build/appimage
-  # build_macos:
-  #   runs-on: macOS-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         channel: "stable"
-  #     - run: brew install cmake
-  #     - run: gem install cocoapods
-  #     - run: flutter pub get
-  #     - run: flutter config --enable-macos-desktop
-  #     - run: brew install xcode
-  #     - run: flutter build macos -v
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: thepuzzlecell-macos
-  #         path: build/macos/Build/Products/Release
+  build_macos:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - run: brew install cmake
+      - run: gem install cocoapods
+      - run: flutter pub get
+      - run: flutter config --enable-macos-desktop
+      - run: brew install xcode
+      - run: flutter build macos -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: thepuzzlecell-macos
+          path: build/macos/Build/Products/Release
