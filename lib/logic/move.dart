@@ -152,6 +152,8 @@ final justMoveInsideOf = [
   "hungry_trash",
   "time_trash",
   "time_reset",
+  "portal_a",
+  "portal_b",
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
@@ -327,6 +329,80 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     } else {
       grid.addBroken(moving, x, y);
     }
+  }
+
+  if (destroyer.id == "portal_a") {
+    var foundOutput = false;
+    var outputX = 0;
+    var outputY = 0;
+    var closestDist = double.infinity;
+    var extraRot = 0;
+
+    grid.loopChunks("portal_b", GridAlignment.bottomright, (cell, cx, cy) {
+      var dx = cx - x;
+      var dy = cy - y;
+      var d = dx * dx + dy * dy;
+
+      if (closestDist > d) {
+        closestDist = d.toDouble();
+        outputX = cx;
+        outputY = cy;
+        foundOutput = true;
+
+        extraRot = (cell.rot - destroyer.rot + 2) % 4;
+      }
+    }, shouldUpdate: false, filter: (cell, x, y) => cell.id == "portal_b");
+
+    if (foundOutput) {
+      final odir = (dir + extraRot) % 4;
+      final fx = frontX(outputX, odir);
+      final fy = frontY(outputY, odir);
+      final sending = moving.copy;
+      sending.rot += extraRot;
+      sending.rot %= 4;
+
+      if (grid.inside(fx, fy)) {
+        push(fx, fy, odir, 1, replaceCell: sending);
+      }
+    }
+    return;
+  }
+
+  if (destroyer.id == "portal_b") {
+    var foundOutput = false;
+    var outputX = 0;
+    var outputY = 0;
+    var closestDist = double.infinity;
+    var extraRot = 0;
+
+    grid.loopChunks("portal_a", GridAlignment.bottomright, (cell, cx, cy) {
+      var dx = cx - x;
+      var dy = cy - y;
+      var d = dx * dx + dy * dy;
+
+      if (closestDist > d) {
+        closestDist = d.toDouble();
+        outputX = cx;
+        outputY = cy;
+        foundOutput = true;
+
+        extraRot = (cell.rot - destroyer.rot + 2) % 4;
+      }
+    }, shouldUpdate: false, filter: (cell, x, y) => cell.id == "portal_a");
+
+    if (foundOutput) {
+      final odir = (dir + extraRot) % 4;
+      final fx = frontX(outputX, odir);
+      final fy = frontY(outputY, odir);
+      final sending = moving.copy;
+      sending.rot += extraRot;
+      sending.rot %= 4;
+
+      if (grid.inside(fx, fy)) {
+        push(fx, fy, odir, 1, replaceCell: sending);
+      }
+    }
+    return;
   }
 
   if (destroyer.id == "forker") {

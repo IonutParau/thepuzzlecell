@@ -237,11 +237,15 @@ final cells = {
   "inverse_graviton",
   "quantum_destroyer",
   "quantum_zypper",
+  "portal_a",
+  "portal_b",
 }.toList();
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "portal_a.png": "unique/portal/portal_a.png",
+  "portal_b.png": "unique/portal/portal_b.png",
   "quantum_zypper.png": "quantum/quantum_zypper.png",
   "quantum_destroyer.png": "quantum/quantum_destroyer.png",
   "orbital.png": "quantum/orbital.png",
@@ -849,8 +853,17 @@ final categories = [
         ],
         "trash",
       ),
+      CellCategory(
+        "Portals",
+        "These are trash cells, but they'll try to send a copy of the incoming cell somewhere else",
+        [
+          "portal_a",
+          "portal_b",
+          "wormhole",
+        ],
+        "wormhole",
+      ),
       "mobile_trash",
-      "wormhole",
       "counter",
       "hungry_trash",
       "fire",
@@ -866,17 +879,6 @@ final categories = [
     "Special cells that don't fit any other category",
     [
       "stopper",
-      // CellCategory(
-      //   "Curves",
-      //   "Bend time and space",
-      //   [
-      //     "curve",
-      //     "straight_curve",
-      //     "cross_curve",
-      //     "cross_straight_curve",
-      //   ],
-      //   "curve",
-      // ),
       CellCategory(
         "Quantum Cells",
         "A whole new type of physics lies in this category",
@@ -2007,5 +2009,13 @@ final cellInfo = <String, CellProfile>{
   "quantum_zypper": CellProfile(
     "Quantum Zypper",
     "The quantum zupper",
+  ),
+  "portal_a": CellProfile(
+    "Portal A",
+    "A trash cell, but when something goes in, it will try to push it out of the closest Portal B",
+  ),
+  "portal_b": CellProfile(
+    "Portal B",
+    "A trash cell, but when something goes in, it will try to push it out of the closest Portal A",
   ),
 };

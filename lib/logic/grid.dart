@@ -357,7 +357,7 @@ class Grid {
     }
   }
 
-  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter}) {
+  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter, bool shouldUpdate = true}) {
     if (filter == null) {
       filter = (Cell c, int x, int y) {
         if (chunkID == "all") return true;
@@ -374,7 +374,7 @@ class Grid {
         while (x < width) {
           if (this.inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
-              if (chunkID != "all") at(x, y).updated = true;
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
             x++;
@@ -396,7 +396,7 @@ class Grid {
         while (x >= 0) {
           if (this.inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
-              if (chunkID != "all") at(x, y).updated = true;
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
             x--;
@@ -418,7 +418,7 @@ class Grid {
         while (y >= 0) {
           if (this.inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
-              if (chunkID != "all") at(x, y).updated = true;
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
             y--;
@@ -440,7 +440,7 @@ class Grid {
         while (y < height) {
           if (this.inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
-              if (chunkID != "all") at(x, y).updated = true;
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
             }
             y++;

@@ -48,7 +48,6 @@ flutter:
     - assets/images/mechanical/users/
     - assets/images/math/
     - assets/images/skins/
-    - assets/images/unique/
     - assets/images/movers/
     - assets/images/movers/combos/
     - assets/images/movers/movers/
@@ -80,6 +79,8 @@ flutter:
     - assets/images/quantum/
     - assets/images/effects/
     - assets/images/heat/
+    - assets/images/unique/
+    - assets/images/unique/portal/
     - assets/images/unique/time_travel/
     - assets/images/unique/plant/
     - assets/audio/
