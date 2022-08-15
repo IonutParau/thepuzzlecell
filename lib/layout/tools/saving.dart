@@ -854,6 +854,7 @@ class P4 {
       "tags": c.tags,
       "bg": bg,
       "lifespan": c.lifespan,
+      "invisible": c.invisible,
     };
 
     return encodeValue(m);
@@ -869,6 +870,7 @@ class P4 {
     c.tags = m['tags'];
     c.id = m['id'];
     c.lifespan = m['lifespan'];
+    c.invisible = m['invisible'] ?? false;
     final bg = m['bg'];
 
     grid.set(x, y, c);

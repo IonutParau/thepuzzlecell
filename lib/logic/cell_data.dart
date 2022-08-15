@@ -492,6 +492,7 @@ Map<String, String> textureMap = {
   'pelican.png': 'movers/grabbers/pelican.png',
   'hawk.png': 'movers/pullers/hawk.png',
   'mech_toggle.png': 'mechanical/mech_toggle.png',
+  "invis_tool.png": "interface/invis.png",
 };
 
 class CellProfile {
@@ -531,6 +532,7 @@ final categories = [
       "zoomout",
       "inctab",
       "dectab",
+      "invis_tool",
     ],
     "tool",
   ),
@@ -2017,5 +2019,9 @@ final cellInfo = <String, CellProfile>{
   "portal_b": CellProfile(
     "Portal B",
     "A trash cell, but when something goes in, it will try to push it out of the closest Portal A",
+  ),
+  "invis_tool": CellProfile(
+    "Invisibility Tool",
+    "Toggle if a cell is invisible or not by clicking on it with this tool",
   ),
 };

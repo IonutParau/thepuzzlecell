@@ -519,6 +519,7 @@ Future loadAllButtonTextures() {
     "interface/dectab.png",
     "interface/save_bp.png",
     "interface/load_bp.png",
+    "interface/invis.png",
   ]);
 }
 
@@ -762,7 +763,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   // ignore: cancel_subscriptions
   late StreamSubscription multiplayerListener;
 
-  int currentSelection = 0;
+  String currentSelection = "empty";
 
   int currentRotation = 0;
 
@@ -870,7 +871,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     } else if (newSelection == "dectab") {
       decreaseTab();
     } else {
-      currentSelection = cells.indexOf(newSelection);
+      currentSelection = newSelection;
     }
   }
 
@@ -1116,7 +1117,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       } else if (cmd == "drop-hover") {
         hovers.remove(args.first);
         if (args.first == clientID) {
-          currentSelection = 0;
+          currentSelection = "empty";
           currentRotation = 0;
         }
       } else if (cmd == "set-cursor") {
@@ -2169,7 +2170,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
             renderCell(
               Cell(cx, cy)
-                ..id = cells[currentSelection]
+                ..id = currentSelection
                 ..rot = currentRotation
                 ..lastvars.lastRot = currentRotation,
               cx,
@@ -2183,14 +2184,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    if (edType == EditorType.loaded && cells[currentSelection] != "empty" && mouseInside && !running) {
+    if (edType == EditorType.loaded && currentSelection != "empty" && mouseInside && !running) {
       final c = Cell(0, 0);
       c.lastvars = LastVars(currentRotation, 0, 0);
       c.lastvars.lastPos = Offset(
         (mouseX - offX) / cellSize,
         (mouseY - offY) / cellSize,
       );
-      c.id = cells[currentSelection];
+      c.id = currentSelection;
       c.rot = currentRotation;
       renderCell(
         c,
@@ -2427,12 +2428,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     } // Help
 
     if (cell.id == "empty") return;
+    if (cell.invisible) {
+      if (edType == EditorType.making) {
+        paint ??= Paint()..color = Colors.white.withOpacity(0.1);
+      } else {
+        return;
+      }
+    }
     var file = cell.id;
 
     var ignoreSafety = false;
 
     if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
       file = 'pixel_on';
+      ignoreSafety = true;
+    }
+    if (cell.id == "invis_tool") {
+      file = "interface/invis";
       ignoreSafety = true;
     }
     if (!ignoreSafety && !cells.contains(file)) {
@@ -2466,23 +2478,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     var off = ((running || onetick) && interpolation) ? interpolate(past, current, itime / delay) : current;
 
     canvas.rotate(rot);
-
-    // if (realisticRendering && paint == null) {
-    //   var shadowOff = rotateOff(off + center, -rot) - center * 1.8;
-
-    //   sprite
-    //     ..paint = ((paint ?? Paint())
-    //       ..color = Colors.black
-    //       ..blendMode = BlendMode.multiply)
-    //     ..render(
-    //       canvas,
-    //       position: shadowOff.toVector2(),
-    //       size: Vector2(
-    //         cellSize.toDouble() * scaleX,
-    //         cellSize.toDouble() * scaleY,
-    //       ),
-    //     );
-    // }
 
     off = rotateOff(off, -rot) - center;
 
@@ -2734,7 +2729,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 if (mouseButton == kPrimaryMouseButton) {
                   placeCell(currentSelection, currentRotation, cx, cy);
                 } else if (mouseButton == kSecondaryMouseButton) {
-                  placeCell(0, 0, cx, cy);
+                  placeCell("empty", 0, cx, cy);
                 }
               }
             }
@@ -2746,9 +2741,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
               if (edType == EditorType.making) {
                 if (cells.contains(id)) {
-                  currentSelection = cells.indexOf(id);
+                  currentSelection = id;
                   if (id == "empty" && cells.contains(p)) {
-                    currentSelection = cells.indexOf(p);
+                    currentSelection = p;
                   }
                 }
               }
@@ -2781,7 +2776,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     return l.join(':');
   }
 
-  void placeCell(int id, int rot, int cx, int cy) {
+  void placeCell(String id, int rot, int cx, int cy) {
+    if (id == "invis_tool") {
+      mouseDown = false;
+      if (grid.inside(cx, cy)) {
+        grid.at(cx, cy).invisible = !grid.at(cx, cy).invisible;
+        sendToServer("toggle-invis $cx $cy");
+      }
+      return;
+    }
     if (!grid.inside(cx, cy)) return;
     if (edType == EditorType.making) {
       //if (grid.at(cx, cy).id == id && grid.at(cx, cy).rot == rot) return;
@@ -2790,24 +2793,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           cx,
           cy,
           Cell(cx, cy)
-            ..id = cells[id]
+            ..id = id
             ..rot = rot
             ..lastvars.lastRot = rot,
         );
       if (brushTemp != 0) {
         if (!isMultiplayer) grid.at(cx, cy).data['heat'] = brushTemp;
       }
-      if (cells[id] == "empty" && backgrounds.contains(cells[currentSelection])) {
+      if (id == "empty" && backgrounds.contains(currentSelection)) {
         if (!isMultiplayer) grid.setPlace(cx, cy, "empty");
         sendToServer("bg $cx $cy empty");
       } else {
-        if (backgrounds.contains(cells[id])) {
+        if (backgrounds.contains(id)) {
           sendToServer(
-            "bg $cx $cy ${cells[id]}",
+            "bg $cx $cy $id",
           );
         } else {
           sendToServer(
-            "place $cx $cy ${cells[id]} $rot heat=$brushTemp",
+            "place $cx $cy $id $rot heat=$brushTemp",
           );
         }
       }
@@ -2823,14 +2826,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         return;
       }
       if (biomes.contains(grid.placeable(cx, cy))) return;
-      if (cells[id] == "empty" && grid.at(cx, cy).id != "empty") {
-        currentSelection = cells.indexOf(grid.at(cx, cy).id);
+      if (id == "empty" && grid.at(cx, cy).id != "empty") {
+        currentSelection = grid.at(cx, cy).id;
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
         if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
         sendToServer('place $cx $cy empty 0 0');
         sendToServer(
-          'new-hover $clientID $cx $cy ${cells[currentSelection]} $currentRotation',
+          'new-hover $clientID $cx $cy $currentSelection $currentRotation',
         );
       } else if (grid.at(cx, cy).id == "empty" && grid.placeable(cx, cy) == originalPlace) {
         if (!isMultiplayer) {
@@ -2838,14 +2841,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             cx,
             cy,
             Cell(cx, cy)
-              ..id = cells[id]
+              ..id = id
               ..rot = rot
               ..lastvars.lastRot = rot,
           );
         }
-        currentSelection = cells.indexOf("empty");
+        currentSelection = "empty";
         sendToServer(
-          'place $cx $cy ${cells[id]} $rot 0',
+          'place $cx $cy $id $rot 0',
         );
         sendToServer('drop-hover $clientID');
       }
@@ -2927,7 +2930,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           final gmx = globalMouseX;
           final gmy = globalMouseY;
           String hijackedHover = "";
-          if (currentSelection == 0) {
+          if (currentSelection == "empty") {
             hovers.forEach(
               (id, hover) {
                 if (gmx >= hover.x - 0.5 && gmx <= hover.x + 0.5 && gmy >= hover.y - 0.5 && gmy < hover.y + 0.5) {
@@ -2935,7 +2938,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   sendToServer(
                     'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot}',
                   );
-                  currentSelection = cells.indexOf(hover.id);
+                  currentSelection = hover.id;
                   currentRotation = hover.rot;
                   originalPlace = backgrounds.first;
                   hijackedHover = id;

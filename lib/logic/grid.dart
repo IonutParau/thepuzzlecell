@@ -107,6 +107,7 @@ class Cell {
   Map<String, dynamic> data = {};
   Set<String> tags = {};
   int lifespan = 0;
+  bool invisible = false;
   int? cx;
   int? cy;
 
@@ -122,17 +123,19 @@ class Cell {
       "data": data,
       "tags": tags,
       "lifespan": lifespan,
+      "invisible": invisible,
     };
   }
 
   static Cell fromMap(Map<String, dynamic> map, int x, int y) {
     final cell = Cell(x, y, map["rot"]);
 
-    cell.id = map["id"];
-    cell.rot = map["rot"];
+    cell.id = map["id"] ?? "empty";
+    cell.rot = map["rot"] ?? 0;
     cell.data = map["data"] as Map<String, dynamic>;
-    cell.tags = map["tags"];
-    cell.lifespan = map["lifespan"];
+    cell.tags = map["tags"] ?? {};
+    cell.lifespan = map["lifespan"] ?? 0;
+    cell.invisible = map["invisible"] ?? false;
     cell.lastvars = LastVars(cell.rot, x, y);
     cell.cx = x;
     cell.cy = y;
@@ -148,6 +151,7 @@ class Cell {
     c.updated = updated;
     c.lastvars.lastRot = lastvars.lastRot;
     c.lifespan = lifespan;
+    c.invisible = invisible;
 
     data.forEach((key, value) => c.data[key] = value);
     for (var tag in tags) {
@@ -157,7 +161,7 @@ class Cell {
     return c;
   }
 
-  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags";
+  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible";
 
   void rotate(int amount) {
     lastvars.lastRot = rot;
