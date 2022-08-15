@@ -19,6 +19,8 @@ final List<String> changes = [
   "Fixed a typo in Temporal Puzzle",
   "Reworked the whole entire audio system to use another library for MacOS support",
   "Removed ability to change audio output device because not supported by new library",
+  "Added 2 more levels (both hard)",
+  "Added a tool that can make cells literally invisible",
 ];
 
 IconData getTrailing(String change) {
