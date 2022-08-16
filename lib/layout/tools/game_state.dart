@@ -10,6 +10,7 @@ class CellHover {
   double y;
   String id;
   int rot;
+  Map<String, dynamic> data;
 
-  CellHover(this.x, this.y, this.id, this.rot);
+  CellHover(this.x, this.y, this.id, this.rot, this.data);
 }

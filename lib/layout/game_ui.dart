@@ -767,6 +767,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   int currentRotation = 0;
 
+  Map<String, dynamic> currentData = {};
+
   double mouseX = 0;
   double mouseY = 0;
   var mouseButton = -1;
@@ -1110,6 +1112,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           int.parse(
             args[4],
           ),
+          P4.decodeValue(args.sublist(5).join(" ")),
         );
       } else if (cmd == "set-hover") {
         hovers[args.first]!.x = double.parse(args[1]);
@@ -1132,6 +1135,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } // I will try to avoid reinstantiation of classes
       } else if (cmd == "remove-cursor") {
         cursors.remove(args.first);
+      } else if (cmd == "toggle-invis") {
+        final x = int.parse(args[0]);
+        final y = int.parse(args[1]);
+
+        grid.at(x, y).invisible = !grid.at(x, y).invisible;
       }
     }
   }
@@ -2780,8 +2788,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (id == "invis_tool") {
       mouseDown = false;
       if (grid.inside(cx, cy)) {
-        grid.at(cx, cy).invisible = !grid.at(cx, cy).invisible;
-        sendToServer("toggle-invis $cx $cy");
+        if (isinitial && isMultiplayer) {
+          sendToServer("toggle-invis $cx $cy");
+        } else {
+          grid.at(cx, cy).invisible = !grid.at(cx, cy).invisible;
+        }
       }
       return;
     }
@@ -2830,10 +2841,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         currentSelection = grid.at(cx, cy).id;
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
+        currentData = grid.at(cx, cy).data;
         if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
         sendToServer('place $cx $cy empty 0 0');
         sendToServer(
-          'new-hover $clientID $cx $cy $currentSelection $currentRotation',
+          'new-hover $clientID $cx $cy $currentSelection $currentRotation ${P4.encodeValue(currentData)}',
         );
       } else if (grid.at(cx, cy).id == "empty" && grid.placeable(cx, cy) == originalPlace) {
         if (!isMultiplayer) {
@@ -2843,10 +2855,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             Cell(cx, cy)
               ..id = id
               ..rot = rot
-              ..lastvars.lastRot = rot,
+              ..lastvars.lastRot = rot
+              ..data = currentData,
           );
         }
         currentSelection = "empty";
+        currentRotation = 0;
+        currentData = {};
         sendToServer(
           'place $cx $cy $id $rot 0',
         );
@@ -2936,11 +2951,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 if (gmx >= hover.x - 0.5 && gmx <= hover.x + 0.5 && gmy >= hover.y - 0.5 && gmy < hover.y + 0.5) {
                   hijacked = true;
                   sendToServer(
-                    'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot}',
+                    'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot} ${P4.encodeValue(hover.data)}',
                   );
                   currentSelection = hover.id;
                   currentRotation = hover.rot;
                   originalPlace = backgrounds.first;
+                  currentData = Map.from(hover.data);
                   hijackedHover = id;
                 }
               },
@@ -3071,6 +3087,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     running = !running;
     if (edType == EditorType.loaded) {
       isinitial = true;
+      if (currentSelection != "empty") return;
     }
     if (running) {
       if (isinitial) {
