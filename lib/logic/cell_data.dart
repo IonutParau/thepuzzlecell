@@ -1554,7 +1554,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "unstable_mover": CellProfile(
     "Unstable Mover",
-    "Moves forward but when a cell is in front of it, it will jump over it",
+    "Moves forward but when there's a cell in front of it, it will jump over it",
   ),
   "field": CellProfile(
     "Field",
@@ -2010,7 +2010,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "quantum_zypper": CellProfile(
     "Quantum Zypper",
-    "The quantum zupper",
+    "The quantum zupper\nWhen there's a cell in front of it, it will jump over it. Otherwise it will not move.",
   ),
   "portal_a": CellProfile(
     "Portal A",
