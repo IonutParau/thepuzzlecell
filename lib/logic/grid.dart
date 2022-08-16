@@ -193,6 +193,8 @@ class Grid {
   List<BrokenCell> brokenCells = [];
 
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
+    if (cell.invisible) return;
+
     final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type);
 
     b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
