@@ -2180,7 +2180,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               Cell(cx, cy)
                 ..id = currentSelection
                 ..rot = currentRotation
-                ..lastvars.lastRot = currentRotation,
+                ..lastvars.lastRot = currentRotation
+                ..data = currentData,
               cx,
               cy,
               Paint()..color = Colors.white.withOpacity(0.5),
@@ -2201,6 +2202,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
       c.id = currentSelection;
       c.rot = currentRotation;
+      c.data = currentData;
       renderCell(
         c,
         (mouseX - offX) / cellSize - 0.5,
@@ -2214,7 +2216,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             renderCell(
               Cell(0, 0)
                 ..id = hover.id
-                ..rot = hover.rot,
+                ..rot = hover.rot
+                ..data = hover.data,
               hover.x,
               hover.y,
             );
