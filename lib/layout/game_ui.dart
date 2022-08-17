@@ -1188,6 +1188,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } else {
           cursors[args.first]!.x = double.parse(args[1]);
           cursors[args.first]!.y = double.parse(args[2]);
+          cursors[args.first]!.selection = args[3];
+          cursors[args.first]!.rotation = int.parse(args[4]);
+          //cursors[args.first]!.texture = args[5];
         } // I will try to avoid reinstantiation of classes
       } else if (cmd == "remove-cursor") {
         cursors.remove(args.first);
@@ -2318,28 +2321,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     cursors.forEach(
       (id, cursor) {
         if (id != clientID) {
+          if (cursor.selection != "empty" && edType == EditorType.making) {
+            renderCell(
+              Cell(0, 0)
+                ..id = cursor.selection
+                ..rot = cursor.rotation,
+              cursor.x + offX / cellSize,
+              cursor.y + offY / cellSize,
+            );
+          }
+
           final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+
           var c = 'interface/cursor.png';
           // Haha cool
           if (cursor.texture != "cursor") {
             c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
           }
-          if (!Flame.images.containsKey("${cursor.texture}.png") || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
+          if (!Flame.images.containsKey(c) || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
           // Haha cooln't
           Sprite(Flame.images.fromCache(c)).render(
             canvas,
             position: p,
             size: Vector2.all(cellSize / 2),
           );
-
-          if (cursor.selection != "empty" && edType == EditorType.making) {
-            renderCell(
-                Cell(cursor.x.toInt(), cursor.y.toInt())
-                  ..id = cursor.selection
-                  ..rot = cursor.rotation,
-                cursor.x,
-                cursor.y);
-          }
 
           if (debugMode) {
             final tp = TextPainter(
@@ -2561,7 +2566,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
       spriteCache['$file.png'] = sprite;
     }
-    final rot = ((running || onetick) && interpolation ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay) : cell.rot) * halfPi;
+    final rot =
+        (((running || onetick) && interpolation ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay) : cell.rot) + (edType == EditorType.loaded ? cell.data["trick_rot"] ?? 0 : 0) % 4) *
+            halfPi;
     final center = Offset(cellSize.toDouble(), cellSize.toDouble()) / 2;
 
     const scaleX = 1;
@@ -2597,16 +2604,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if (edType == EditorType.making && cell.data["trick_as"] != null) {
       final texture = textureMap[cell.data["trick_as"] + '.png'] ?? "${cell.data["trick_as"]}.png";
+      final rotoff = (cell.data["trick_rot"] ?? 0) * halfPi;
+      var trick_off = rotateOff(Offset(off.dx + cellSize / 2, off.dy + cellSize / 2), -rotoff);
+
+      canvas.rotate(rotoff);
 
       Sprite(Flame.images.fromCache(texture))
         ..paint = paint ?? Paint()
-        ..render(canvas,
-            position: Vector2(off.dx * scaleX + cellSize / 2, off.dy * scaleY + cellSize / 2),
-            size: Vector2(
-              cellSize.toDouble() * scaleX / 2,
-              cellSize.toDouble() * scaleY / 2,
-            ),
-            anchor: Anchor.center);
+        ..render(
+          canvas,
+          position: Vector2(trick_off.dx * scaleX, trick_off.dy * scaleY),
+          size: Vector2(
+            cellSize.toDouble() * scaleX / 2,
+            cellSize.toDouble() * scaleY / 2,
+          ),
+          anchor: Anchor.center,
+        );
+
+      canvas.rotate(-rotoff);
     }
 
     if (edType == EditorType.making && cell.id.startsWith('totrick_')) {
@@ -2926,12 +2941,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       mouseDown = false;
       if (grid.inside(cx, cy)) {
         final trickAs = id.substring(8);
+        final trickRotOff = (rot - grid.at(cx, cy).rot) % 4;
         if (isinitial && isMultiplayer) {
           final d = Map.from(grid.at(cx, cy).data);
           d["trick_as"] = trickAs;
+          d["trick_rot"] = trickRotOff;
           sendToServer("place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${P4.encodeValue(trickAs)}");
         } else {
           grid.at(cx, cy).data["trick_as"] = trickAs;
+          grid.at(cx, cy).data["trick_rot"] = trickRotOff;
         }
       }
       return;
