@@ -1178,9 +1178,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
       } else if (cmd == "set-cursor") {
         if (cursors[args.first] == null) {
-          cursors[args.first] = Vector2(
+          cursors[args.first] = CellCursor(
             double.parse(args[1]),
             double.parse(args[2]),
+            args[3],
+            int.parse(args[4]),
+            args[5],
           );
         } else {
           cursors[args.first]!.x = double.parse(args[1]);
@@ -1204,6 +1207,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void sendToServer(String packet) {
     if (isMultiplayer && isinitial) {
       channel.sink.add(packet);
+      if (proxyMirror) multiplayerCallback(packet);
     }
   }
 
@@ -1944,6 +1948,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var cellbar = false;
   var altRender = false;
   var middleMove = false;
+  var cursorTexture = "cursor";
+  var proxyMirror = false;
 
   @override
   Future<void>? onLoad() async {
@@ -1952,6 +1958,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     cellbar = storage.getBool("cellbar") ?? false;
     altRender = storage.getBool("alt_render") ?? false;
     middleMove = storage.getBool("middle_move") ?? false;
+    cursorTexture = storage.getString("cursor_texture") ?? "cursor";
+    proxyMirror = storage.getBool("local_packet_mirror") ?? false;
 
     await loadAllButtonTextures();
 
@@ -2077,7 +2085,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   int get cellMouseX => (mouseX - offX) ~/ cellSize;
   int get cellMouseY => (mouseY - offY) ~/ cellSize;
 
-  Map<String, Vector2> cursors = {};
+  Map<String, CellCursor> cursors = {};
 
   void fancyRender(Canvas canvas) {
     if (realisticRendering && (running || onetick)) {
@@ -2303,26 +2311,30 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.restore();
 
     cursors.forEach(
-      (id, pos) {
+      (id, cursor) {
         if (id != clientID) {
-          final p = (pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+          final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
           var c = 'interface/cursor.png';
           // Haha cool
-          if (id == "Monitor" || id == "MonitorDev" || id == "AMonitor" || id == "AMonitor#1595") {
-            c = 'puzzle/puzzle.png';
-          } else if (id == "Blendi" || id == "BlendiDev" || id == "Blendi Goose") {
-            c = 'movers/movers/bird.png';
-          } else if (id == "k." || id == "kthebest") {
-            c = textureMap['grabber.png']!;
-          } else if (id == "eclips_e#0001") {
-            c = 'sandbox.png';
+          if (cursor.texture != "cursor") {
+            c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
           }
+          if (!Flame.images.containsKey("${cursor.texture}.png")) c = 'base.png'; // No crashing rendering
           // Haha cooln't
           Sprite(Flame.images.fromCache(c)).render(
             canvas,
             position: p,
             size: Vector2.all(cellSize / 2),
           );
+
+          if (cursor.selection != "empty" && edType == EditorType.making) {
+            renderCell(
+                Cell(cursor.x.toInt(), cursor.y.toInt())
+                  ..id = cursor.selection
+                  ..rot = cursor.rotation,
+                cursor.x,
+                cursor.y);
+          }
 
           if (debugMode) {
             final tp = TextPainter(
@@ -2754,11 +2766,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         shouldCursor = true;
       } else {
         final c = cursors[clientID]!;
-        shouldCursor = (c.x != mx || c.y != my);
+        shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture);
       }
       if (shouldCursor) {
         sendToServer(
-          'set-cursor $clientID $mx $my',
+          'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture',
         );
       }
     }

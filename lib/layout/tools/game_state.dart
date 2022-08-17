@@ -14,3 +14,15 @@ class CellHover {
 
   CellHover(this.x, this.y, this.id, this.rot, this.data);
 }
+
+class CellCursor {
+  double x;
+  double y;
+  String selection;
+  int rotation;
+  String texture;
+
+  CellCursor(this.x, this.y, this.selection, this.rotation, this.texture);
+
+  Vector2 get pos => Vector2(x, y);
+}

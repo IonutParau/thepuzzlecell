@@ -5,16 +5,20 @@ import '../../utils/ScaleAssist.dart';
 String currentVersion = '2.1.2.0 The Biomes Update Content Update 2';
 
 final List<String> changes = [
-  "Added the Tricker Tool :trell:",
+  "Added the Trickster Tool :trell:",
   "Added a new level",
   "Fixed a bug in the editor menu",
   "Made the editor menu also have an SFX slider",
   "Made locks no longer lose their data when unlocked",
+  "Put Multiplayer settings into a new tab",
+  "Made cursors in multiplayer sandbox mode show their current selection (works with tools)",
+  "Made cursor icon configurable",
+  "Added a setting to process sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable)",
 ];
 
 IconData getTrailing(String change) {
   change = change.toLowerCase();
-  if (change.startsWith('fixed') || change.startsWith('patched') || change.startsWith('moved') || change.startsWith('reworked') || change.startsWith('changed')) {
+  if (change.startsWith('fixed') || change.startsWith('patched') || change.startsWith('moved') || change.startsWith('reworked') || change.startsWith('changed') || change.startsWith("made")) {
     return FluentIcons.change_entitlements;
   } else if (change.startsWith('added')) {
     return FluentIcons.insert;

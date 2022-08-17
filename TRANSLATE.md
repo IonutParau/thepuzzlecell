@@ -94,6 +94,7 @@ In the text, @variablename gets replaced with the variable.
 | clear_storage           | The name of the Clear Storage button                                                                                                    |           |
 | erase                   | The word to use when displaying Erase                                                                                                   |           |
 | cancel                  | The word to use when displaying Cancel                                                                                                  |           |
+| preprocess_packets      | The name of the Preprocess Sent Packets setting                                                                                         |           |
 
 ## Button IDs:
 

@@ -151,7 +151,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         ),
       ),
       content: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: TabBar(
             indicatorColor: Colors.grey[100],
@@ -165,6 +165,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               ),
               Tab(
                 text: 'Graphics',
+              ),
+              Tab(
+                text: 'Multiplayer',
               ),
             ],
           ),
@@ -224,34 +227,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       (v) {
                         windowManager.setFullScreen(v);
                       },
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '${lang('constant_clientID', 'Client ID')}: ',
-                          style: textStyle,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                          height: 5.h,
-                          child: TextBox(
-                            style: textBoxStyle,
-                            controller: _clientIDController,
-                            onChanged: (str) {
-                              storage
-                                  .setString(
-                                    "clientID",
-                                    str.replaceAll(' ', ''),
-                                  )
-                                  .then(
-                                    (e) => setState(
-                                      () {},
-                                    ),
-                                  );
-                            },
-                          ),
-                        ),
-                      ],
                     ),
                     checkboxSetting(
                       'invert_zoom_scroll',
@@ -452,6 +427,73 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'cellbar',
                       'Cell Bar',
                       false,
+                    ),
+                  ],
+                ),
+                ListView(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${lang('constant_clientID', 'Client ID')}: ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: TextBox(
+                            style: textBoxStyle,
+                            controller: _clientIDController,
+                            onChanged: (str) {
+                              storage
+                                  .setString(
+                                    "clientID",
+                                    str.replaceAll(' ', ''),
+                                  )
+                                  .then(
+                                    (e) => setState(
+                                      () {},
+                                    ),
+                                  );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    checkboxSetting('local_packet_mirror', 'preprocess_packets', 'Preprocess Sent Packets', false),
+                    SizedBox(
+                      width: 60.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            lang('cursor_texture', 'Cursor Texture: '),
+                            style: textStyle,
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                            child: DropDownButton(
+                              leading: Image.asset("assets/images/" +
+                                  ((storage.getString("cursor_texture") ?? "cursor") == "cursor"
+                                      ? "interface/cursor.png"
+                                      : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png"))),
+                              title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (cellInfo[storage.getString("cursor_texture")!] ?? defaultProfile).title),
+                              placement: FlyoutPlacement.start,
+                              items: [
+                                for (var texture in ["cursor", ...cells])
+                                  // ignore: deprecated_member_use
+                                  DropDownButtonItem(
+                                    title: Text(texture == "cursor" ? "Default" : (cellInfo[texture] ?? defaultProfile).title),
+                                    leading: Image.asset("assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png"))),
+                                    onTap: () async {
+                                      await storage.setString("cursor_texture", texture);
+                                      setState(() {});
+                                    },
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

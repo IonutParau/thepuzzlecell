@@ -6,6 +6,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:base_x/base_x.dart';
+import 'package:flame/input.dart';
 import 'package:flutter/rendering.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
