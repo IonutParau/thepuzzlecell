@@ -479,7 +479,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                               title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (cellInfo[storage.getString("cursor_texture")!] ?? defaultProfile).title),
                               placement: FlyoutPlacement.start,
                               items: [
-                                for (var texture in ["cursor", ...cells])
+                                for (var texture in cursorTextures)
                                   // ignore: deprecated_member_use
                                   DropDownButtonItem(
                                     title: Text(texture == "cursor" ? "Default" : (cellInfo[texture] ?? defaultProfile).title),

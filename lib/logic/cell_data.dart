@@ -241,6 +241,8 @@ final cells = {
   "portal_b",
 }.toList();
 
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
+
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {

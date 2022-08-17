@@ -2324,7 +2324,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (cursor.texture != "cursor") {
             c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
           }
-          if (!Flame.images.containsKey("${cursor.texture}.png")) c = 'base.png'; // No crashing rendering
+          if (!Flame.images.containsKey("${cursor.texture}.png") || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
           // Haha cooln't
           Sprite(Flame.images.fromCache(c)).render(
             canvas,
