@@ -65,8 +65,9 @@ class BrokenCell {
   int y;
   LastVars lv;
   String type;
+  Map<String, dynamic> data;
 
-  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type);
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data);
 
   void render(Canvas canvas, double t) {
     final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
@@ -92,8 +93,16 @@ class BrokenCell {
     canvas.rotate(screenRot);
 
     if (!cells.contains(id)) id = "base";
+    final trickAs = data["trick_as"];
+    if (trickAs != null && game.edType == EditorType.loaded) {
+      id = trickAs;
+    }
 
     Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize);
+
+    if (trickAs != null && game.edType == EditorType.making) {
+      Sprite(Flame.images.fromCache(textureMap['$trickAs.png'] ?? '$trickAs.png')).render(canvas, position: screenPos, size: screenSize / 2);
+    }
 
     canvas.restore();
   }
@@ -195,7 +204,7 @@ class Grid {
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
     if (cell.invisible) return;
 
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type);
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data);
 
     b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
 

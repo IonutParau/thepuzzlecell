@@ -2,25 +2,14 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.1.1.0 The Biomes Update Content Update 1';
+String currentVersion = '2.1.2.0 The Biomes Update Content Update 2';
 
 final List<String> changes = [
-  "Added Clear Storage button",
-  "Added Portal A and Portal B",
-  "Made the Graviton 64 times heavier",
-  "Made the Unstable Generator not generate ungeneratables",
-  "Added Muon (electron with twice the mass) and Tau (electron with 4 times the mass)",
-  "Reworked physics system (distance exponent is 2 instead of 5, the particle force constant has been removed for being useless, the maximum distance is 50 instead of 10)",
-  "Made background darker",
-  "Added visual indicator for stopped cells",
-  "Fixed a mistake in a blueprint and added another one",
-  "Made Temporal Puzzle visible and also fixed its bug",
-  "Fixed bug with puzzle bias",
-  "Fixed a typo in Temporal Puzzle",
-  "Reworked the whole entire audio system to use another library for MacOS support",
-  "Removed ability to change audio output device because not supported by new library",
-  "Added 2 more levels (both hard)",
-  "Added a tool that can make cells literally invisible",
+  "Added the Tricker Tool :trell:",
+  "Added a new level",
+  "Fixed a bug in the editor menu",
+  "Made the editor menu also have an SFX slider",
+  "Made locks no longer lose their data when unlocked",
 ];
 
 IconData getTrailing(String change) {

@@ -76,6 +76,7 @@ flutter:
     - assets/images/curves/
     - assets/images/puzzle/
     - assets/images/interface/
+    - assets/images/interface/tools/
     - assets/images/quantum/
     - assets/images/effects/
     - assets/images/heat/

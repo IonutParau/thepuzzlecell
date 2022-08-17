@@ -224,8 +224,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                         color: Colors.grey.withOpacity(0.7),
                         borderRadius: BorderRadius.circular(2.w),
                       ),
-                      width: 60.w,
-                      height: 60.h,
+                      width: 70.w,
+                      height: 70.h,
                       child: Column(
                         children: [
                           Spacer(),
@@ -298,14 +298,59 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                         value: getMusicVolume(),
                                         min: 0,
                                         max: 1,
-                                        onChanged: (newVal) {
-                                          setLoopSoundVolume(
+                                        onChanged: (newVal) async {
+                                          await setLoopSoundVolume(
                                             music,
-                                            newVal,
+                                            floor(newVal * 100) / 100,
                                           );
-                                          storage.setDouble(
+                                          await storage.setDouble(
                                             'music_volume',
-                                            newVal,
+                                            floor(newVal * 100) / 100,
+                                          );
+                                          refreshMenu();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Spacer(),
+                          Padding(
+                            padding: EdgeInsets.all(1.w),
+                            child: Row(
+                              children: [
+                                Text(
+                                  lang('sfx_volume', 'SFX Volume') + ": ${(storage.getDouble("sfx_volume") ?? 1) * 100}% ",
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                                Spacer(),
+                                LayoutBuilder(
+                                  builder: (context, cons) {
+                                    return Container(
+                                      width: min(20.w, cons.maxWidth),
+                                      height: 10.h,
+                                      padding: EdgeInsets.all(2.w),
+                                      child: Slider(
+                                        style: SliderThemeData(
+                                          thumbColor: Colors.black,
+                                          activeColor: Colors.blue,
+                                          inactiveColor: Colors.black,
+                                          disabledActiveColor: Colors.black,
+                                          disabledInactiveColor: Colors.black,
+                                          disabledThumbColor: Colors.black,
+                                          useThumbBall: true,
+                                        ),
+                                        value: storage.getDouble("sfx_volume") ?? 1,
+                                        min: 0,
+                                        max: 1,
+                                        onChanged: (newVal) async {
+                                          await storage.setDouble(
+                                            'sfx_volume',
+                                            floor(newVal * 100) / 100,
                                           );
                                           refreshMenu();
                                         },
@@ -519,7 +564,8 @@ Future loadAllButtonTextures() {
     "interface/dectab.png",
     "interface/save_bp.png",
     "interface/load_bp.png",
-    "interface/invis.png",
+    "interface/tools/invis_tool.png",
+    "interface/tools/trick_tool.png",
   ]);
 }
 
@@ -872,6 +918,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       increaseTab();
     } else if (newSelection == "dectab") {
       decreaseTab();
+    } else if (newSelection.startsWith("trick_tool")) {
+      if (currentSelection.startsWith("totrick_")) {
+        return;
+      } else if (cells.contains(currentSelection) && currentSelection != "empty") {
+        currentSelection = "totrick_$currentSelection";
+      }
     } else {
       currentSelection = newSelection;
     }
@@ -1049,6 +1101,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             grid.grid[int.parse(args[0])][int.parse(args[1])].data = parseCellDataStr(args[4]);
           }
           grid.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
+          grid.at(int.parse(args[0]), int.parse(args[1])).invisible = false;
         } else {
           initial.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
           initial.grid[int.parse(args[0])][int.parse(args[1])].rot = int.parse(args[3]);
@@ -2355,6 +2408,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           id = grid.placeable(mx, my);
         }
 
+        if (c.data["trick_as"] != null && edType == EditorType.loaded) {
+          id = c.data["trick_as"];
+        }
+
         renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: $id" : ""));
       }
     }
@@ -2454,10 +2511,28 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       file = 'pixel_on';
       ignoreSafety = true;
     }
+
     if (cell.id == "invis_tool") {
-      file = "interface/invis";
+      file = "interface/tools/invis_tool";
       ignoreSafety = true;
     }
+
+    if (file.startsWith('totrick_')) {
+      file = "interface/tools/trick_tool";
+      ignoreSafety = true;
+    }
+
+    if (cell.data["trick_as"] != null) {
+      if (edType == EditorType.loaded) {
+        file = cell.data["trick_as"]!;
+      }
+    }
+
+    if (cell.id == "trick_tool") {
+      file = "interface/tools/trick_tool";
+      ignoreSafety = true;
+    }
+
     if (!ignoreSafety && !cells.contains(file)) {
       file = "base";
     }
@@ -2502,6 +2577,37 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           cellSize.toDouble() * scaleY,
         ),
       );
+
+    if (edType == EditorType.making && cell.data["trick_as"] != null) {
+      final texture = textureMap[cell.data["trick_as"] + '.png'] ?? "${cell.data["trick_as"]}.png";
+
+      Sprite(Flame.images.fromCache(texture))
+        ..paint = paint ?? Paint()
+        ..render(canvas,
+            position: Vector2(off.dx * scaleX + cellSize / 2, off.dy * scaleY + cellSize / 2),
+            size: Vector2(
+              cellSize.toDouble() * scaleX / 2,
+              cellSize.toDouble() * scaleY / 2,
+            ),
+            anchor: Anchor.center);
+    }
+
+    if (edType == EditorType.making && cell.id.startsWith('totrick_')) {
+      final trickAs = cell.id.substring(8);
+      final texture = textureMap['$trickAs.png'] ?? "$trickAs.png";
+
+      Sprite(Flame.images.fromCache(texture))
+        ..paint = paint ?? Paint()
+        ..render(
+          canvas,
+          position: Vector2(off.dx * scaleX + cellSize / 2, off.dy * scaleY + cellSize / 2),
+          size: Vector2(
+            cellSize.toDouble() * scaleX / 2,
+            cellSize.toDouble() * scaleY / 2,
+          ),
+          anchor: Anchor.center,
+        );
+    }
 
     // Skins
     if (cell.id == "puzzle") {
@@ -2790,11 +2896,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void placeCell(String id, int rot, int cx, int cy) {
     if (id == "invis_tool") {
       mouseDown = false;
-      if (grid.inside(cx, cy)) {
+      if (grid.inside(cx, cy) && grid.at(cx, cy).id != "empty") {
         if (isinitial && isMultiplayer) {
           sendToServer("toggle-invis $cx $cy");
         } else {
           grid.at(cx, cy).invisible = !grid.at(cx, cy).invisible;
+        }
+      }
+      return;
+    }
+    if (id.startsWith('totrick_')) {
+      mouseDown = false;
+      if (grid.inside(cx, cy)) {
+        final trickAs = id.substring(8);
+        if (isinitial && isMultiplayer) {
+          final d = Map.from(grid.at(cx, cy).data);
+          d["trick_as"] = trickAs;
+          sendToServer("place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${P4.encodeValue(trickAs)}");
+        } else {
+          grid.at(cx, cy).data["trick_as"] = trickAs;
         }
       }
       return;

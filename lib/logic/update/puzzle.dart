@@ -48,17 +48,12 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   }
   if (o.id == "key") {
     playerKeys++;
-    grid.addBroken(o, ox, oy, "silent");
+    grid.addBroken(o.copy, ox, oy, "silent");
     grid.set(ox, oy, Cell(ox, oy));
   } else if (o.id == "lock") {
     if (playerKeys > 0) {
       playerKeys--;
-      grid.set(
-          ox,
-          oy,
-          Cell(ox, oy)
-            ..id = "unlock"
-            ..rot = o.rot);
+      o.id = "unlock";
     }
   } else if (o.id == "flag") {
     if (!cells.containsAny(enemies)) {

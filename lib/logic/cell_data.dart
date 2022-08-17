@@ -492,7 +492,8 @@ Map<String, String> textureMap = {
   'pelican.png': 'movers/grabbers/pelican.png',
   'hawk.png': 'movers/pullers/hawk.png',
   'mech_toggle.png': 'mechanical/mech_toggle.png',
-  "invis_tool.png": "interface/invis.png",
+  "invis_tool.png": "interface/tools/invis_tool.png",
+  "trick_tool.png": "interface/tools/trick_tool.png",
 };
 
 class CellProfile {
@@ -533,6 +534,7 @@ final categories = [
       "inctab",
       "dectab",
       "invis_tool",
+      "trick_tool",
     ],
     "tool",
   ),
@@ -2023,5 +2025,9 @@ final cellInfo = <String, CellProfile>{
   "invis_tool": CellProfile(
     "Invisibility Tool",
     "Toggle if a cell is invisible or not by clicking on it with this tool",
+  ),
+  "trick_tool": CellProfile(
+    "Trickster Tool",
+    "Will disguise the cell you click on into your previously currently cell",
   ),
 };
