@@ -1207,7 +1207,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void sendToServer(String packet) {
     if (isMultiplayer && isinitial) {
       channel.sink.add(packet);
-      if (proxyMirror) multiplayerCallback(packet);
+      if (proxyMirror) {
+        if (packet.startsWith('toggle-invis') || packet.startsWith('wrap')) {
+          return;
+        }
+        multiplayerCallback(packet);
+      }
     }
   }
 
