@@ -9,6 +9,7 @@ final subticks = [
   stoppers,
   heat,
   mechs,
+  gates,
   automata,
   spreaders,
   quantums,
@@ -39,7 +40,6 @@ final subticks = [
   floppys,
   puzzles,
   pmerges,
-  gates,
   autoflag,
   timetravel,
 ];
