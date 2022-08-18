@@ -329,7 +329,7 @@ class MechanicalManager {
       if (sentDir % 2 == 0) {
         if (cell.tags.contains("cross_sent 1")) return;
       } else {
-        if (cell.tags.contains("cross sent 2")) return;
+        if (cell.tags.contains("cross_sent 2")) return;
       }
     }
     if (grid.placeable(x, y) == "mechanical_halting") {
