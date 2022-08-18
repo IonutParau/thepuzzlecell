@@ -95,6 +95,7 @@ In the text, @variablename gets replaced with the variable.
 | erase                   | The word to use when displaying Erase                                                                                                   |           |
 | cancel                  | The word to use when displaying Cancel                                                                                                  |           |
 | preprocess_packets      | The name of the Preprocess Sent Packets setting                                                                                         |           |
+| resize_and_clear        | The name of the Resize & Clear dialog                                                                                                   |           |
 
 ## Button IDs:
 

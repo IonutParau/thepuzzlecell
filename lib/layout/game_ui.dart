@@ -395,26 +395,10 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                               Column(
                                 children: [
                                   MaterialButton(
-                                    onPressed: () {
-                                      if (game.running) {
-                                        game.playPause();
-                                        game.running = false;
-                                        game.buttonManager.buttons['play-btn']!.texture = "mover.png";
-                                        game.buttonManager.buttons['play-btn']!.rotation = 0;
-                                      }
-                                      if (game.onetick) {
-                                        game.onetick = false;
-                                      }
-                                      game.isinitial = true;
-                                      game.initial = grid.copy;
-                                      game.itime = 0;
-                                      if (game.isMultiplayer) {
-                                        game.sendToServer(
-                                          'setinit ${P4.encodeGrid(Grid(grid.width, grid.height))}',
-                                        );
-                                      } else {
-                                        grid = Grid(grid.width, grid.height);
-                                      }
+                                    onPressed: () async {
+                                      await showDialog(context: context, builder: (ctx) => ResizePopup());
+                                      await game.buildEmpty();
+                                      game.overlays.remove("EditorMenu");
                                     },
                                     child: Image.asset(
                                       'assets/images/' + textureMap['trash.png']!,
@@ -2501,6 +2485,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void drawSkin(String skin, Offset off, Paint? paint) {
+    if (SkinManager.skinEnabled(skin)) {
+      Sprite(Flame.images.fromCache('skins/$skin.png'))
+        ..paint = paint ?? Paint()
+        ..render(
+          canvas,
+          position: Vector2(off.dx, off.dy),
+          size: Vector2.all(cellSize.toDouble()),
+        );
+    }
+  }
+
   void renderCell(Cell cell, num x, num y, [Paint? paint]) {
     if ((paint?.color.opacity ?? 0) < 1 && cell.id == "empty") {
       final p = Offset(x.toDouble(), y.toDouble()) * cellSize;
@@ -2643,25 +2639,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     // Skins
     if (cell.id == "puzzle") {
-      // Ooooh boy
-      void drawSkin(String skin) {
-        if (SkinManager.skinEnabled(skin)) {
-          Sprite(Flame.images.fromCache('skins/$skin.png'))
-            ..paint = paint ?? Paint()
-            ..render(
-              canvas,
-              position: Vector2(off.dx * scaleX, off.dy * scaleY),
-              size: Vector2(
-                cellSize.toDouble() * scaleX,
-                cellSize.toDouble() * scaleY,
-              ),
-            );
-        }
-      }
-
-      drawSkin('computer');
-      drawSkin('hands');
-      drawSkin('christmas');
+      drawSkin('computer', off, paint);
+      drawSkin('hands', off, paint);
+      drawSkin('christmas', off, paint);
     }
 
     // Effects
@@ -2753,6 +2733,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void update(double dt) {
     if (overlays.isActive("loading")) {
       return;
+    }
+    if (rerenderOverlays) {
+      rerenderOverlays = false;
+      final openOverlays = Set.from(overlays.value);
+      for (var open in openOverlays) {
+        // Force a rerender
+        overlays.remove(open);
+        overlays.add(open);
+      }
     }
     updates++;
     if (edType == EditorType.making) {
@@ -3157,18 +3146,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  var rerenderOverlays = false;
+
   @override
   void onGameResize(Vector2 screenSize) {
     super.onGameResize(screenSize);
-    if (canvasSize.x != screenSize.x || canvasSize.y != screenSize.y) {
-      final sX = screenSize.x / canvasSize.x;
-      final sY = screenSize.y / canvasSize.y;
-
-      storedOffX *= sX;
-      storedOffY *= sY;
-      wantedCellSize = (wantedCellSize * sX);
-      cellSize *= sX;
-    }
+    ScaleAssist.setNewSize(screenSize.toOffset());
+    rerenderOverlays = true;
   }
 
   void zoomout() {

@@ -2014,7 +2014,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "quantum_zypper": CellProfile(
     "Quantum Zypper",
-    "The quantum zupper\nWhen there's a cell in front of it, it will jump over it. Otherwise it will not move.",
+    "The Quantum Zypper\nWhen there's a cell in front of it, it will jump over it. Otherwise it will not move.",
   ),
   "portal_a": CellProfile(
     "Portal A",

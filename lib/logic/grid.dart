@@ -101,7 +101,21 @@ class BrokenCell {
     Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize);
 
     if (trickAs != null && game.edType == EditorType.making) {
-      Sprite(Flame.images.fromCache(textureMap['$trickAs.png'] ?? '$trickAs.png')).render(canvas, position: screenPos, size: screenSize / 2);
+      final texture = textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
+      final rotoff = (data["trick_rot"] ?? 0) * halfPi;
+      var trick_off = rotateOff(Offset(screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2), -rotoff);
+
+      canvas.rotate(rotoff);
+
+      Sprite(Flame.images.fromCache(texture))
+        ..render(
+          canvas,
+          position: Vector2(trick_off.dx, trick_off.dy),
+          size: screenSize / 2,
+          anchor: Anchor.center,
+        );
+
+      canvas.rotate(-rotoff);
     }
 
     canvas.restore();
@@ -177,6 +191,14 @@ class Cell {
     rot += amount;
     while (rot < 0) rot += 4;
     rot %= 4;
+  }
+
+  bool operator ==(Object other) {
+    if (other is Cell) {
+      return (mapEquals(toMap, other.toMap));
+    }
+
+    return false;
   }
 }
 
@@ -277,7 +299,8 @@ class Grid {
   }
 
   void set(int x, int y, Cell cell) {
-    genOptimizer.remove(x, y);
+    if (cell == get(x, y)) genOptimizer.remove(x, y);
+    cells.add(cell.id);
 
     x = this.x(x);
     y = this.y(y);
@@ -519,10 +542,8 @@ class Grid {
         cell.cx = x;
         cell.cy = y;
         cell.lifespan++;
-        if (cell.id != "empty") {
-          cells.add(cell.id);
-        }
-        cells.add(place[x][y]);
+        cells.add(cell.id);
+        if (place[x][y] != "empty") cells.add(place[x][y]);
         if (tickCount % 100 == 0) {
           setChunk(x, y, cell.id);
         }

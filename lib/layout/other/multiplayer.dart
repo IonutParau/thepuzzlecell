@@ -34,8 +34,6 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       pingIp += '/';
     }
 
-    print(pingIp);
-
     return Container(
       padding: EdgeInsets.all(0.5.w),
       decoration: BoxDecoration(

@@ -13,12 +13,19 @@ final List<String> changes = [
   "Put Multiplayer settings into a new tab",
   "Made cursors in multiplayer sandbox mode show their current selection (works with tools)",
   "Made cursor icon configurable",
-  "Added a setting to process sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable)",
+  "Added a setting to process most sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable, does not do anything to wrap toggling or invisibility tool packets due to them ebing a toggle which would cause issues)",
+  "Added the ability to resize the grid when clearing",
 ];
 
 IconData getTrailing(String change) {
   change = change.toLowerCase();
-  if (change.startsWith('fixed') || change.startsWith('patched') || change.startsWith('moved') || change.startsWith('reworked') || change.startsWith('changed') || change.startsWith("made")) {
+  if (change.startsWith('fixed') ||
+      change.startsWith('patched') ||
+      change.startsWith('moved') ||
+      change.startsWith('reworked') ||
+      change.startsWith('changed') ||
+      change.startsWith("made") ||
+      change.startsWith("put")) {
     return FluentIcons.change_entitlements;
   } else if (change.startsWith('added')) {
     return FluentIcons.insert;
