@@ -66,13 +66,17 @@ class BrokenCell {
   LastVars lv;
   String type;
   Map<String, dynamic> data;
+  bool invisible;
 
-  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data);
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data, this.invisible);
 
   void render(Canvas canvas, double t) {
     final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
     final sx = lerp(lv.lastPos.dx, x, t);
     final sy = lerp(lv.lastPos.dy, y, t);
+    var paint = Paint();
+
+    if (invisible) paint.color = Colors.white.withOpacity(0.1);
 
     var screenSize = Vector2(cellSize, cellSize);
 
@@ -98,7 +102,7 @@ class BrokenCell {
       id = trickAs;
     }
 
-    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize);
+    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize, overridePaint: paint);
 
     if (trickAs != null && game.edType == EditorType.making) {
       final texture = textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
@@ -113,6 +117,7 @@ class BrokenCell {
           position: Vector2(trick_off.dx, trick_off.dy),
           size: screenSize / 2,
           anchor: Anchor.center,
+          overridePaint: paint,
         );
 
       canvas.rotate(-rotoff);
@@ -224,9 +229,10 @@ class Grid {
   List<BrokenCell> brokenCells = [];
 
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
-    if (cell.invisible) return;
+    if (cell.invisible && game.edType == EditorType.loaded) return;
+    if (cell.id == "empty") return;
 
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data);
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data, cell.invisible);
 
     b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
 
