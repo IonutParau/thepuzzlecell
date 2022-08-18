@@ -852,28 +852,32 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var brushTemp = 0;
 
   final gridTab = <int, Grid>{0: grid};
+  final cachedGridEmpties = <int, Sprite?>{};
   var gridTabIndex = 0;
 
-  void increaseTab() {
-    gridTab[gridTabIndex] = grid;
+  void changeTab(int newTabIndex) {
     if (edType != EditorType.making || isMultiplayer || worldIndex != null) return;
     if (!isinitial) return;
-    gridTabIndex++;
-    if (gridTab[gridTabIndex] == null) {
-      gridTab[gridTabIndex] = Grid(grid.width, grid.height);
+    gridTab[gridTabIndex] = grid;
+    cachedGridEmpties[gridTabIndex] = emptyImage;
+    if (gridTab[newTabIndex] == null) {
+      gridTab[newTabIndex] = Grid(grid.width, grid.height);
+      if (cachedGridEmpties[newTabIndex] == null) {
+        buildEmpty();
+      } else {
+        emptyImage = cachedGridEmpties[newTabIndex];
+      }
     }
-    grid = gridTab[gridTabIndex]!;
+    grid = gridTab[newTabIndex]!;
+    gridTabIndex = newTabIndex;
+  }
+
+  void increaseTab() {
+    changeTab(gridTabIndex + 1);
   }
 
   void decreaseTab() {
-    gridTab[gridTabIndex] = grid;
-    if (edType != EditorType.making || isMultiplayer || worldIndex != null) return;
-    if (!isinitial) return;
-    gridTabIndex--;
-    if (gridTab[gridTabIndex] == null) {
-      gridTab[gridTabIndex] = Grid(grid.width, grid.height);
-    }
-    grid = gridTab[gridTabIndex]!;
+    changeTab(gridTabIndex - 1);
   }
 
   void increaseBrush() => brushSize++;

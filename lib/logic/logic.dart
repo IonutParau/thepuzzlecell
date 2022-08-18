@@ -26,7 +26,6 @@ part 'grid.dart';
 part 'update.dart';
 part 'move.dart';
 part 'cell_data.dart';
-part 'snowflake.dart';
 part 'world.dart';
 part 'blueprints.dart';
 part 'lang.dart';
