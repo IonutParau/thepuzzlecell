@@ -396,9 +396,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 children: [
                                   MaterialButton(
                                     onPressed: () async {
-                                      await showDialog(context: context, builder: (ctx) => ResizePopup());
-                                      await game.buildEmpty();
-                                      game.overlays.remove("EditorMenu");
+                                      await showDialog(context: context, builder: (ctx) => ClearDialog());
                                     },
                                     child: Image.asset(
                                       'assets/images/' + textureMap['trash.png']!,
@@ -708,13 +706,11 @@ class ButtonManager {
     button.translate();
   }
 
-  void forEach(void Function(String key, VirtualButton button) callback) {
-    buttons.forEach(callback);
-  }
+  void forEach(void Function(String key, VirtualButton button) callback) => buttons.forEach(callback);
 
-  void removeButton(String key) {
-    buttons.remove(key);
-  }
+  void removeButton(String key) => buttons.remove(key);
+
+  void clear() => buttons.clear();
 }
 
 void renderInfoBox(Canvas canvas, String title, String description) {
@@ -1557,6 +1553,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                             Navigator.pop(ctx);
                           },
                         ),
+                        Button(
+                          child: Text('Add to built-in'),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            showDialog(context: ctx, builder: (ctx) => AddBlueprintDialog(bpSave));
+                          },
+                        ),
                       ],
                     );
                   },
@@ -1591,8 +1594,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               FlutterClipboard.paste().then((txt) {
                 print(txt);
                 try {
-                  final blueprint = loadStr(txt);
-                  print(blueprint.grid.map((l) => l.map((c) => c.toMap.toString())));
+                  final blueprint = loadStr(txt, false);
                   gridClip.activate(blueprint.width, blueprint.height, blueprint.grid);
                   selecting = false;
                   setPos = false;

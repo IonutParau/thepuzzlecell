@@ -15,6 +15,7 @@ final List<String> changes = [
   "Made cursor icon configurable",
   "Added a setting to process most sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable, does not do anything to wrap toggling or invisibility tool packets due to them ebing a toggle which would cause issues)",
   "Added the ability to resize the grid when clearing",
+  "Fixed some bugs with trashes, enemies and swappers",
 ];
 
 IconData getTrailing(String change) {

@@ -76,14 +76,14 @@ int decodeNum(String n, String valueString) {
   return numb;
 }
 
-Grid loadStr(String str) {
+Grid loadStr(String str, [bool allowGameStateChanges = true]) {
   if (str.startsWith('P1;')) return P1.decode(str);
   if (str.startsWith('P1+;')) return P1Plus.decodeGrid(str);
   if (str.startsWith('P2;')) return P2.decodeGrid(str);
   if (str.startsWith('V1;')) return MysticCodes.decodeV1(str);
   if (str.startsWith('V3;')) return MysticCodes.decodeV3(str);
   if (str.startsWith('P3;')) return P3.decodeString(str);
-  if (str.startsWith('P4;')) return P4.decodeString(str);
+  if (str.startsWith('P4;')) return P4.decodeString(str, allowGameStateChanges);
 
   throw "Unsupported saving format";
 }
@@ -921,7 +921,7 @@ class P4 {
     return str;
   }
 
-  static Grid decodeString(String str) {
+  static Grid decodeString(String str, [bool handleCustomProps = true]) {
     str.replaceAll('\n', '');
     final segs = str.split(';');
 
@@ -967,22 +967,21 @@ class P4 {
 
     final props = decodeValue(segs[6]);
     if (props is Map<String, dynamic>) {
-      print("Props-ing");
       if (props['W'] != null) grid.wrap = props['W']!;
 
-      if (props['update_delay'] is num) {
-        QueueManager.add("post-game-init", () {
-          game.delay = props['update_delay']!;
-        });
-      }
-      if (props['viewbox'] != null) {
-        print("Viewbox-ing");
-        QueueManager.add("post-game-init", () {
-          print("Running in Queue");
-          final vb = props['viewbox'] as Map<String, dynamic>;
+      if (handleCustomProps) {
+        if (props['update_delay'] is num) {
+          QueueManager.add("post-game-init", () {
+            game.delay = props['update_delay']!;
+          });
+        }
+        if (props['viewbox'] != null) {
+          QueueManager.add("post-game-init", () {
+            final vb = props['viewbox'] as Map<String, dynamic>;
 
-          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
-        });
+            game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
+          });
+        }
       }
     }
 

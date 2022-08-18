@@ -118,7 +118,6 @@ final tpDir = Directory(
 ); // This is totally the teleporation directory. What is a texture pack
 
 List<TexturePack> get texturePacks {
-  print(tpDir.path);
   if (tpDir.existsSync()) {
     final l = tpDir.listSync();
     l.removeWhere((e) => e is File);

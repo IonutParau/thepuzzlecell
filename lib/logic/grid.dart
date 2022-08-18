@@ -244,9 +244,6 @@ class Grid {
   int width;
   int height;
 
-  List<int> chunkXList = [];
-  List<int> chunkYList = [];
-
   void create() {
     grid = [];
     place = [];
@@ -268,17 +265,6 @@ class Grid {
       chunks.add([]);
       for (var y = 0; y < cy; y++) {
         chunks.last.add({});
-      }
-    }
-
-    for (var i = 0; i < cx; i++) {
-      for (var j = 0; j < chunkSize; j++) {
-        chunkXList.add(i);
-      }
-    }
-    for (var i = 0; i < cy; i++) {
-      for (var j = 0; j < chunkSize; j++) {
-        chunkYList.add(i);
       }
     }
   }

@@ -293,12 +293,6 @@ final enemies = [
   "physical_enemy",
 ];
 
-String enemyColor(Cell destroyer) {
-  if (destroyer.id == "physical_enemy") return "physical_enemy_particles";
-
-  return "enemy_particles";
-}
-
 T debug<T>(T value) {
   print(value);
   return value;
@@ -307,10 +301,7 @@ T debug<T>(T value) {
 final int enemyParticleCounts = 50;
 
 void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
-  void selfDestruct() {
-    grid.set(x, y, Cell(x, y));
-  }
-
+  if (moving.id == "empty") return;
   final destroyer = grid.at(x, y);
 
   if (!moveInsideOf(destroyer, x, y, dir, mt)) return;
@@ -516,7 +507,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     }
   } else if (enemies.contains(destroyer.id)) {
     // Enenmies
-    selfDestruct();
+    grid.set(x, y, Cell(x, y));
     playSound(destroySound);
     if (destroyer.id == "physical_enemy") {
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);

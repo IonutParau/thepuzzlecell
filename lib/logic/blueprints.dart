@@ -7,7 +7,7 @@ Future loadBlueprints() async {
 }
 
 void loadBlueprint(int i) {
-  final g = loadStr(blueprints[i]);
+  final g = loadStr(blueprints[i], false);
   final gc = GridClip();
   gc.activate(g.width, g.height, g.grid);
 
@@ -33,4 +33,17 @@ void addBlueprints() {
   }
   blueprintsCat.max = ceil(sqrt(blueprints.length) + 0.5);
   //game.loadAllButtons();
+}
+
+Future addBlueprint(String blueprint) async {
+  blueprints.add(blueprint);
+  final file = File(path.join(assetsPath, 'assets', 'blueprints.txt'));
+  if (file.existsSync()) {
+    await file.writeAsString(blueprints.join("\n"));
+  }
+  // Grab category, grab subcategory, clear contents
+  categories.first.items.first.items.clear();
+  addBlueprints();
+  game.buttonManager.clear();
+  game.loadAllButtons();
 }
