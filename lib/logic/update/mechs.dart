@@ -320,7 +320,7 @@ class MechanicalManager {
 
   static void spread(int x, int y, [int depth = 0, bool continueFirst = false, int? sentDir]) {
     AchievementManager.complete("circuitry");
-    if (depth == 15) return;
+    if (depth == 99) return;
     if (!grid.inside(x, y)) return;
     if (!connectable(sentDir, grid.at(x, y))) return;
     final cell = grid.at(x, y);
