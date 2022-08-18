@@ -862,11 +862,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     cachedGridEmpties[gridTabIndex] = emptyImage;
     if (gridTab[newTabIndex] == null) {
       gridTab[newTabIndex] = Grid(grid.width, grid.height);
-      if (cachedGridEmpties[newTabIndex] == null) {
-        buildEmpty();
-      } else {
-        emptyImage = cachedGridEmpties[newTabIndex];
-      }
+    }
+    if (cachedGridEmpties[newTabIndex] == null) {
+      buildEmpty();
+    } else {
+      emptyImage = cachedGridEmpties[newTabIndex];
     }
     grid = gridTab[newTabIndex]!;
     gridTabIndex = newTabIndex;
