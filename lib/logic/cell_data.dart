@@ -2030,6 +2030,6 @@ final cellInfo = <String, CellProfile>{
   ),
   "trick_tool": CellProfile(
     "Trickster Tool",
-    "Will disguise the cell you click on into your previously currently cell",
+    "Will disguise the cell you click on into your currently selected cell",
   ),
 };
