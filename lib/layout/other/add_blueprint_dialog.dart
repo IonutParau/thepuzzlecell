@@ -73,6 +73,12 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
             Navigator.of(context).pop();
           },
         ),
+        Button(
+          child: Text(lang("cancel", "Cancel")),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
+        ),
       ],
     );
   }

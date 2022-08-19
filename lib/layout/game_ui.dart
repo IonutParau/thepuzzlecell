@@ -1554,12 +1554,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                       ),
                       actions: [
                         Button(
-                          child: Text('Ok'),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                          },
-                        ),
-                        Button(
                           child: Text('Add to\nbuilt-in'),
                           onPressed: () {
                             Navigator.pop(ctx);
@@ -1571,6 +1565,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                           onPressed: () {
                             Navigator.pop(ctx);
                             showDialog(context: ctx, builder: (ctx) => RenameBlueprintDialog(bpSave));
+                          },
+                        ),
+                        Button(
+                          child: Text('Ok'),
+                          onPressed: () {
+                            Navigator.pop(ctx);
                           },
                         ),
                       ],

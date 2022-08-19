@@ -55,6 +55,12 @@ class _StateDeleteBlueprintDialog extends State<DeleteBlueprintDialog> {
             Navigator.pop(context);
           },
         ),
+        Button(
+          child: Text(lang("cancel", "Cancel")),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ],
     );
   }
