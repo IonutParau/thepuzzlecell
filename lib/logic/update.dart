@@ -234,10 +234,25 @@ class CellStructure {
 }
 
 int dirFromOff(int ox, int oy) {
-  if (ox > 0) return 0;
-  if (ox < 0) return 2;
-  if (oy > 0) return 1;
-  if (oy < 0) return 3;
+  var dir = (atan2(oy, ox) / halfPi);
+
+  while (dir < 0) dir += 4;
+
+  bool within(double a, double b) => (dir >= a && dir <= b);
+
+  // Why am I trying to be accurate here
+  if (within(3.5, 4) || within(0, 0.5)) {
+    return 0;
+  }
+  if (within(0.5, 1.5)) {
+    return 1;
+  }
+  if (within(1.5, 2.5)) {
+    return 2;
+  }
+  if (within(2.5, 3.5)) {
+    return 3;
+  }
 
   return -1;
 }
