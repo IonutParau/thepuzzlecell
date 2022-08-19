@@ -2933,6 +2933,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   String originalPlace = "empty";
 
   String cellDataStr(Map<String, dynamic> cellData) {
+    if (cellData.isEmpty) return "0";
+
     final l = [];
 
     cellData.forEach((key, value) {
