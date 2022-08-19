@@ -3,16 +3,16 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-class AddBlueprintDialog extends StatefulWidget {
+class RenameBlueprintDialog extends StatefulWidget {
   final String bpCode;
 
-  AddBlueprintDialog(this.bpCode);
+  RenameBlueprintDialog(this.bpCode);
 
   @override
-  _AddBlueprintDialogState createState() => _AddBlueprintDialogState();
+  _RenameBlueprintDialogState createState() => _RenameBlueprintDialogState();
 }
 
-class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
+class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
 
@@ -59,7 +59,7 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
       ),
       actions: [
         Button(
-          child: Text(lang("add", "Add")),
+          child: Text(lang("rename", "Rename")),
           onPressed: () async {
             final title = _titleController.text;
             final desc = _descController.text;
@@ -67,8 +67,6 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
             final bpCode = widget.bpCode.replaceFirst("Unnamed Blueprint", title).replaceFirst("This blueprint currently has no name", desc);
 
             await FlutterClipboard.copy(bpCode);
-
-            await addBlueprint(bpCode);
 
             Navigator.of(context).pop();
           },

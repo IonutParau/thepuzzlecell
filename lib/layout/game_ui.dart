@@ -1550,7 +1550,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     return ContentDialog(
                       title: Text('Saved Blueprint'),
                       content: Text(
-                          'The blueprint has been saved to your clipboard. You can change \"Unnamed Blueprint\" and \"This blueprint currently has no name\" to change title and description. Then you can put it in your blueprints file to use it later.'),
+                        'The blueprint has been saved to your clipboard. You can change \"Unnamed Blueprint\" and \"This blueprint currently has no name\" to change title and description. Then you can put it in your blueprints file to use it later.',
+                      ),
                       actions: [
                         Button(
                           child: Text('Ok'),
@@ -1563,6 +1564,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                           onPressed: () {
                             Navigator.pop(ctx);
                             showDialog(context: ctx, builder: (ctx) => AddBlueprintDialog(bpSave));
+                          },
+                        ),
+                        Button(
+                          child: Text('Change name & title'),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            showDialog(context: ctx, builder: (ctx) => RenameBlueprintDialog(bpSave));
                           },
                         ),
                       ],
