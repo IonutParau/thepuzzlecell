@@ -16,6 +16,11 @@ final List<String> changes = [
   "Added a setting to process most sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable, does not do anything to wrap toggling or invisibility tool packets due to them ebing a toggle which would cause issues)",
   "Added the ability to resize the grid when clearing",
   "Fixed some bugs with trashes, enemies and swappers",
+  "Made the Clear button allow you to resize the grid",
+  "Added the ability to add blueprints as built-in when saving them",
+  "Added a button to delete a built-in blueprint",
+  "Added shortcuts for copying (Ctrl + C), cutting (Ctrl + X), resetting (Ctrl + R), setting initial (Ctrl + I), mvoing selected area (arrow keys), moving where the selected area is (Shift + arrow keys), changing size of selected area (Ctrl + arrow keys)",
+  "Made Anchor no longer capable of deleting cells or moving immovable cells",
 ];
 
 IconData getTrailing(String change) {

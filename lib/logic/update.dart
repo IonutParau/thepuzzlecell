@@ -255,10 +255,9 @@ void doAnchor(int x, int y, int amount) {
     final nv = Vector2.all(0);
     final dx = v.x.toInt() - x;
     final dy = v.y.toInt() - y;
-    // if (!canMove(nv.x.toInt(), nv.y.toInt(), (dirFromOff(dx, dy) + amount) % 4,
-    //     1, MoveType.unkown_move)) {
-    //   return;
-    // }
+    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1, MoveType.unkown_move)) {
+      return;
+    }
     if (amount == 1) {
       nv.x = x - dy.toDouble();
       nv.y = y + dx.toDouble();
@@ -270,6 +269,13 @@ void doAnchor(int x, int y, int amount) {
       nv.y = y - dy.toDouble();
     }
     if (!grid.inside(nv.x.toInt(), nv.y.toInt())) return;
+    if (nv != v) {
+      if (!structure.inStructure(nv.x.toInt(), nv.y.toInt())) {
+        if (grid.at(nv.x.toInt(), nv.y.toInt()).id != "empty") {
+          return;
+        }
+      }
+    }
   }
 
   for (var i = 0; i < structure.coords.length; i++) {
