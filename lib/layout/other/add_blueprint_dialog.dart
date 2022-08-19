@@ -35,7 +35,7 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
               children: [
                 Spacer(),
                 SizedBox(
-                  width: constraints.maxWidth / 2,
+                  width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
                     header: 'Title',
@@ -44,7 +44,7 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
                 ),
                 SizedBox(width: constraints.maxWidth / 10),
                 SizedBox(
-                  width: constraints.maxWidth / 2,
+                  width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
                     header: 'Description',

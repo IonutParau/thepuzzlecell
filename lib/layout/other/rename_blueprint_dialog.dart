@@ -35,7 +35,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
               children: [
                 Spacer(),
                 SizedBox(
-                  width: constraints.maxWidth / 2,
+                  width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
                     header: 'Title',
@@ -44,7 +44,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
                 ),
                 SizedBox(width: constraints.maxWidth / 10),
                 SizedBox(
-                  width: constraints.maxWidth / 2,
+                  width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
                     header: 'Description',
@@ -69,6 +69,12 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
             await FlutterClipboard.copy(bpCode);
 
             Navigator.of(context).pop();
+          },
+        ),
+        Button(
+          child: Text(lang("cancel", "Cancel")),
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ],

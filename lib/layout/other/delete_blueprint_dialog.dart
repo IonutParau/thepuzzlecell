@@ -23,7 +23,7 @@ class _StateDeleteBlueprintDialog extends State<DeleteBlueprintDialog> {
             final bpSegs = blueprints[i].split(";");
 
             return SizedBox(
-              width: 30.w,
+              width: 35.w,
               height: 5.h,
               child: Center(
                 child: ListTile(
