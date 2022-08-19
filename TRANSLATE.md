@@ -5,7 +5,7 @@ This markdown file is to help people make their own translations. It explains wh
 ## How do I get cell and button IDs?
 
 Cell, Category and Subcategory IDs are revealed by enabling debug mode in the game's settings.
-The button IDs can be found in the code, and this markdown file will also slow them
+The button IDs can be found in the code, and this markdown file will also show them
 
 ## Translation variables
 
