@@ -96,6 +96,7 @@ In the text, @variablename gets replaced with the variable.
 | cancel                  | The word to use when displaying Cancel                                                                                                  |           |
 | preprocess_packets      | The name of the Preprocess Sent Packets setting                                                                                         |           |
 | resize_and_clear        | The name of the Resize & Clear dialog                                                                                                   |           |
+| select_blueprints       | The name of the Select Blueprints name in the delete blueprints dialog                                                                  |           |
 
 ## Button IDs:
 

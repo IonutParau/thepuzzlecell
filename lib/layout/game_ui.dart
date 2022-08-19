@@ -548,6 +548,7 @@ Future loadAllButtonTextures() {
     "interface/load_bp.png",
     "interface/tools/invis_tool.png",
     "interface/tools/trick_tool.png",
+    "interface/del_bp.png",
   ]);
 }
 
@@ -1642,6 +1643,27 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           () => true,
           title: 'Load as Blueprint',
           description: 'Loads a blueprint from your clipboard (using a P4 level code)',
+        ),
+      );
+
+      buttonManager.setButton(
+        "del-blueprint-btn",
+        VirtualButton(
+          Vector2(120, 230),
+          Vector2.all(40),
+          "interface/del_bp.png",
+          ButtonAlignment.TOPRIGHT,
+          () async {
+            await showDialog(
+              context: context,
+              builder: (ctx) {
+                return DeleteBlueprintDialog();
+              },
+            );
+          },
+          () => true,
+          title: 'Delete Blueprints',
+          description: 'Will reveal a popup where you can select which blueprints you want to delete',
         ),
       );
 

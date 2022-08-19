@@ -47,3 +47,16 @@ Future addBlueprint(String blueprint) async {
   game.buttonManager.clear();
   game.loadAllButtons();
 }
+
+Future removeBlueprint(String blueprint) async {
+  blueprints.remove(blueprint);
+  final file = File(path.join(assetsPath, 'assets', 'blueprints.txt'));
+  if (file.existsSync()) {
+    await file.writeAsString(blueprints.join("\n"));
+  }
+  // Grab category, grab subcategory, clear contents
+  categories.first.items.first.items.clear();
+  addBlueprints();
+  game.buttonManager.clear();
+  game.loadAllButtons();
+}
