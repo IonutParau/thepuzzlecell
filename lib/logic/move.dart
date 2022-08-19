@@ -668,7 +668,7 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     }
   }
 
-  if ((cell.id == "fan" || (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) && cell.rot == odir && mt == MoveType.push) {
+  if ((cell.id == "fan" || cell.id == "super_fan" || cell.id == "airflow" || (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) && cell.rot == odir && mt == MoveType.push) {
     return -1;
   }
 
