@@ -2429,7 +2429,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       );
     }
 
-    if (keys[LogicalKeyboardKey.shiftLeft.keyLabel] == true) {
+    if (keys[LogicalKeyboardKey.shiftLeft.keyLabel] == true && !selecting) {
       final mx = cellMouseX;
       final my = cellMouseY;
 
@@ -3363,7 +3363,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is RawKeyDownEvent) {
-      final keysDown = keysPressed.map<String>((e) => e.keyLabel);
+      final keysDown = keysPressed.map<String>((e) => e.keyLabel).toSet();
       if (keysPressed.contains(LogicalKeyboardKey.altLeft)) {
         // Alternative stuffz
       } else {
@@ -3398,9 +3398,123 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         } else if (keysDown.contains(LogicalKeyboardKey.keyZ.keyLabel)) {
           delay /= 2;
           delay = max(delay, 0.01);
-        } else if (keysDown.contains(LogicalKeyboardKey.keyX.keyLabel)) {
+        } else if (keysDown.contains(LogicalKeyboardKey.keyX.keyLabel) && !keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
           delay *= 2;
           delay = min(delay, 1);
+        } else if (keysDown.contains(LogicalKeyboardKey.keyI.keyLabel) && keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+          if (edType == EditorType.making) setInitial();
+        } else if (keysDown.contains(LogicalKeyboardKey.keyR.keyLabel) && keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+          if (edType == EditorType.making) restoreInitial();
+        } else if (keysDown.contains(LogicalKeyboardKey.keyV.keyLabel) && keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+          game.pasting = !game.pasting;
+
+          buttonManager.buttons['paste-btn']?.texture = game.pasting ? 'interface/paste_on.png' : 'interface/paste.png';
+
+          buttonManager.buttons['select-btn']?.texture = "interface/select.png";
+        } else if (keysDown.contains(LogicalKeyboardKey.keyC.keyLabel) && keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+          if (selecting) copy();
+        } else if (keysDown.contains(LogicalKeyboardKey.keyX.keyLabel) && keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+          if (selecting) {
+            copy();
+            for (var x = 0; x < selW; x++) {
+              for (var y = 0; y < selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
+                  sendToServer('place $cx $cy empty 0 0');
+                }
+              }
+            }
+          }
+        }
+
+        final arrowKeys = [
+          LogicalKeyboardKey.arrowUp.keyLabel,
+          LogicalKeyboardKey.arrowDown.keyLabel,
+          LogicalKeyboardKey.arrowLeft.keyLabel,
+          LogicalKeyboardKey.arrowRight.keyLabel,
+        ];
+
+        if (keysDown.containsAny(arrowKeys) && selecting) {
+          if (keysDown.contains(LogicalKeyboardKey.shiftLeft.keyLabel)) {
+            if (keysDown.contains(arrowKeys[0])) {
+              selY--;
+            }
+            if (keysDown.contains(arrowKeys[1])) {
+              selY++;
+            }
+            if (keysDown.contains(arrowKeys[2])) {
+              selX--;
+            }
+            if (keysDown.contains(arrowKeys[3])) {
+              selX++;
+            }
+          } else if (keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+            if (keysDown.contains(arrowKeys[0])) {
+              selH--;
+            }
+            if (keysDown.contains(arrowKeys[1])) {
+              selH++;
+            }
+            if (keysDown.contains(arrowKeys[2])) {
+              selW--;
+            }
+            if (keysDown.contains(arrowKeys[3])) {
+              selW++;
+            }
+          } else {
+            if (selW < 0) {
+              selW *= -1;
+              selX -= selW;
+            }
+            if (selH < 0) {
+              selH *= -1;
+              selY -= selH;
+            }
+
+            final s = [];
+
+            for (var x = 0; x < selW; x++) {
+              for (var y = 0; y < selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  s.add(grid.at(cx, cy).copy);
+                  if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
+                  sendToServer('place $cx $cy empty 0 0');
+                }
+              }
+            }
+
+            if (keysDown.contains(arrowKeys[0])) {
+              selY--;
+            }
+            if (keysDown.contains(arrowKeys[1])) {
+              selY++;
+            }
+            if (keysDown.contains(arrowKeys[2])) {
+              selX--;
+            }
+            if (keysDown.contains(arrowKeys[3])) {
+              selX++;
+            }
+
+            var i = 0;
+            for (var x = 0; x < selW; x++) {
+              for (var y = 0; y < selH; y++) {
+                final cx = selX + x;
+                final cy = selY + y;
+                if (grid.inside(cx, cy)) {
+                  final c = s[i];
+                  i++;
+                  if (!isMultiplayer) grid.set(cx, cy, c);
+                  sendToServer('place $cx $cy ${c.id} ${c.rot} ${cellDataStr(c.data)}');
+                  if (c.invisible) sendToServer('toggle-invis $cx $cy');
+                }
+              }
+            }
+          }
         }
       }
       for (var key in keysPressed) {

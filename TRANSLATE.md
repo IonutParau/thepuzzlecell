@@ -116,6 +116,9 @@ In the text, @variablename gets replaced with the variable.
 - One Tick button - `onetick-btn`
 - Restore button - `restore-btn`
 - Set Initial button - `setinitial-btn`
+- Save as Blueprint button - `save-blueprint-btn`
+- Load as Blueprint button - `load-blueprint-btn`
+- Delete Blueprints button - `del-blueprint-btn`
 
 ## Example of JSON
 
