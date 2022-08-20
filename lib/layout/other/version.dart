@@ -6,7 +6,7 @@ String currentVersion = '2.1.2.1 The Biomes Update Content Update 2 QuickFix 1';
 
 final List<String> changes = [
   "QuickFix 1: P4 decoder now properly loads grid properties",
-  "QuickFix 1: Fixed a bug with deleting blueprints messing up some textures",
+  "QuickFix 1: Fixed a bug with reloading only the cellbar messing up some textures. Also accidentally added an animation to it, but, its good",
   "QuickFix 1: Disabled cursor rendering in Multiplayer when running because it was bugged",
 ];
 
