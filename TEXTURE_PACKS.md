@@ -31,7 +31,7 @@ There are 2 ways, the simple way and advanced way.
 
 "I don't want it to be hard, I wanna do the simple way"
 
-Ok, remeber that `images` folder? Copy it.
+Ok, remember that `images` folder? Copy it.
 Then, paste it somewhere. We're gonna turn it into a texture pack.
 
 Inside of it, we're gonna make a `pack.json` file.
