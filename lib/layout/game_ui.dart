@@ -2976,10 +2976,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         final trickAs = id.substring(8);
         final trickRotOff = (rot - grid.at(cx, cy).rot) % 4;
         if (isinitial && isMultiplayer) {
-          final d = Map.from(grid.at(cx, cy).data);
+          final d = Map<String, dynamic>.from(grid.at(cx, cy).data);
           d["trick_as"] = trickAs;
           d["trick_rot"] = trickRotOff;
-          sendToServer("place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${P4.encodeValue(trickAs)}");
+          sendToServer("place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${cellDataStr(d)}");
         } else {
           grid.at(cx, cy).data["trick_as"] = trickAs;
           grid.at(cx, cy).data["trick_rot"] = trickRotOff;
