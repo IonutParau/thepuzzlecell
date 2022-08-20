@@ -2,25 +2,12 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.1.2.0 The Biomes Update Content Update 2';
+String currentVersion = '2.1.2.1 The Biomes Update Content Update 2 QuickFix 1';
 
 final List<String> changes = [
-  "Added the Trickster Tool :trell:",
-  "Added a new level",
-  "Fixed a bug in the editor menu",
-  "Made the editor menu also have an SFX slider",
-  "Made locks no longer lose their data when unlocked",
-  "Put Multiplayer settings into a new tab",
-  "Made cursors in multiplayer sandbox mode show their current selection (works with tools)",
-  "Made cursor icon configurable",
-  "Added a setting to process most sent packets client-side as if they were from the server for less visual latency (can cause out-of-sync issues if your internet is unreliable, does not do anything to wrap toggling or invisibility tool packets due to them ebing a toggle which would cause issues)",
-  "Added the ability to resize the grid when clearing",
-  "Fixed some bugs with trashes, enemies and swappers",
-  "Made the Clear button allow you to resize the grid",
-  "Added the ability to add blueprints as built-in when saving them",
-  "Added a button to delete a built-in blueprint",
-  "Added shortcuts for copying (Ctrl + C), cutting (Ctrl + X), resetting (Ctrl + R), setting initial (Ctrl + I), mvoing selected area (arrow keys), moving where the selected area is (Shift + arrow keys), changing size of selected area (Ctrl + arrow keys)",
-  "Made Anchor no longer capable of deleting cells or moving immovable cells",
+  "QuickFix 1: P4 decoder now properly loads grid properties",
+  "QuickFix 1: Fixed a bug with deleting blueprints messing up some textures",
+  "QuickFix 1: Disabled cursor rendering in Multiplayer when running because it was bugged",
 ];
 
 IconData getTrailing(String change) {

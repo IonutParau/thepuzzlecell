@@ -44,8 +44,10 @@ Future addBlueprint(String blueprint) async {
   // Grab category, grab subcategory, clear contents
   categories.first.items.first.items.clear();
   addBlueprints();
-  game.buttonManager.clear();
-  game.loadAllButtons();
+  game.buttonManager.buttons.removeWhere((id, btn) {
+    return id.startsWith('cat');
+  });
+  game.loadCellButtons();
 }
 
 Future removeBlueprint(String blueprint) async {
@@ -57,6 +59,8 @@ Future removeBlueprint(String blueprint) async {
   // Grab category, grab subcategory, clear contents
   categories.first.items.first.items.clear();
   addBlueprints();
-  game.buttonManager.clear();
-  game.loadAllButtons();
+  game.buttonManager.buttons.removeWhere((id, btn) {
+    return id.startsWith('cat');
+  });
+  game.loadCellButtons();
 }

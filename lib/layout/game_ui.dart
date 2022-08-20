@@ -1827,127 +1827,131 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ),
       );
 
-      var catOff = 80.0;
-      var leftCatOff = 80.0;
-      var catSize = 60.0;
+      loadCellButtons();
 
-      var cellSize = 40.0;
+      buttonManager.buttons.forEach((id, btn) {
+        btn.time = 500;
+      });
+    }
+  }
 
-      for (var i = 0; i < categories.length; i++) {
+  void loadCellButtons() {
+    var catOff = 80.0;
+    var leftCatOff = 80.0;
+    var catSize = 60.0;
+
+    var cellSize = 40.0;
+
+    for (var i = 0; i < categories.length; i++) {
+      buttonManager.setButton(
+        'cat$i',
+        VirtualButton(
+          Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff),
+          Vector2(catSize, catSize),
+          categories[i].look + '.png',
+          ButtonAlignment.BOTTOMLEFT,
+          () {
+            final cat = categories[i]; // Kitty
+            resetAllCategories(cat);
+
+            cat.opened = !cat.opened;
+
+            AchievementManager.complete("overload");
+
+            for (var j = 0; j < cat.items.length; j++) {
+              buttonManager.buttons['cat${i}cell$j']?.time = 0;
+              buttonManager.buttons['cat${i}cell$j']?.startPos = (Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff) + Vector2.all((catSize - cellSize) / 2)) * uiScale;
+            }
+          },
+          () => true,
+          title: lang("${categories[i]}.title", categories[i].title),
+          description: lang(
+                "${categories[i]}.desc",
+                categories[i].description,
+              ) +
+              (debugMode ? "\nID: ${categories[i]}" : ""),
+        ),
+      );
+      for (var j = 0; j < categories[i].items.length; j++) {
+        final isCategory = (categories[i].items[j] is CellCategory);
         buttonManager.setButton(
-          'cat$i',
+          'cat${i}cell$j',
           VirtualButton(
-            Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff),
-            Vector2(catSize, catSize),
-            categories[i].look + '.png',
+            Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1)),
+            Vector2(cellSize, cellSize),
+            isCategory ? '${categories[i].items[j].look}.png' : '${categories[i].items[j]}.png',
             ButtonAlignment.BOTTOMLEFT,
             () {
-              final cat = categories[i]; // Kitty
-              resetAllCategories(cat);
+              if (isCategory) {
+                categories[i].items[j].opened = !(categories[i].items[j].opened);
 
-              cat.opened = !cat.opened;
+                final isOpen = categories[i].items[j].opened;
 
-              AchievementManager.complete("overload");
+                AchievementManager.complete("subcells");
 
-              for (var j = 0; j < cat.items.length; j++) {
-                buttonManager.buttons['cat${i}cell$j']?.time = 0;
-                buttonManager.buttons['cat${i}cell$j']?.startPos = (Vector2((leftCatOff - catSize) / 2 + i * catOff, catOff) + Vector2.all((catSize - cellSize) / 2)) * uiScale;
+                resetAllCategories(categories[i]);
+
+                categories[i].items[j].opened = isOpen;
+
+                for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                  buttonManager.buttons['cat${i}cell${j}sub$k']?.time = 0;
+                  buttonManager.buttons['cat${i}cell${j}sub$k']?.startPos = Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1)) * uiScale;
+                }
+              } else {
+                whenSelected(categories[i].items[j]);
               }
             },
-            () => true,
-            title: lang("${categories[i]}.title", categories[i].title),
-            description: lang(
-                  "${categories[i]}.desc",
-                  categories[i].description,
-                ) +
-                (debugMode ? "\nID: ${categories[i]}" : ""),
-          ),
+            () {
+              return categories[i].opened;
+            },
+            title: isCategory
+                ? lang("${categories[i]}.${categories[i].items[j]}.title", categories[i].items[j].title)
+                : lang("${categories[i].items[j]}.title", (cellInfo[categories[i].items[j]] ?? defaultProfile).title),
+            description: isCategory
+                ? lang('${categories[i]}.${categories[i].items[j]}.desc', categories[i].items[j].description) +
+                    (debugMode ? "\nID: ${categories[i].toString()}.${categories[i].items[j].toString()}" : "")
+                : lang("${categories[i].items[j].toString()}.desc", (cellInfo[categories[i].items[j]] ?? defaultProfile).description) + (debugMode ? "\nID: ${categories[i].items[j]}" : ""),
+          )..time = 50,
         );
-        for (var j = 0; j < categories[i].items.length; j++) {
-          final isCategory = (categories[i].items[j] is CellCategory);
-          buttonManager.setButton(
-            'cat${i}cell$j',
-            VirtualButton(
-              Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1)),
-              Vector2(cellSize, cellSize),
-              isCategory ? '${categories[i].items[j].look}.png' : '${categories[i].items[j]}.png',
-              ButtonAlignment.BOTTOMLEFT,
-              () {
-                if (isCategory) {
-                  categories[i].items[j].opened = !(categories[i].items[j].opened);
 
-                  final isOpen = categories[i].items[j].opened;
+        buttonManager.buttons['cat${i}cell$j']?.duration += 0.005 * j;
 
-                  AchievementManager.complete("subcells");
+        if (isCategory) {
+          final cat = categories[i].items[j] as CellCategory;
+          final catPos = Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1));
+          for (var k = 0; k < cat.items.length; k++) {
+            final cell = cat.items[k] as String;
 
-                  resetAllCategories(categories[i]);
+            final xOff = cellSize + (k % cat.max) * cellSize;
+            final yOff = (k ~/ cat.max) * cellSize;
 
-                  categories[i].items[j].opened = isOpen;
+            final off = Vector2(xOff, yOff);
 
-                  for (var k = 0; k < categories[i].items[j].items.length; k++) {
-                    buttonManager.buttons['cat${i}cell${j}sub$k']?.time = 0;
-                    buttonManager.buttons['cat${i}cell${j}sub$k']?.startPos = Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1)) * uiScale;
-                  }
-                } else {
-                  whenSelected(categories[i].items[j]);
-                }
-              },
-              () {
-                return categories[i].opened;
-              },
-              title: isCategory
-                  ? lang("${categories[i]}.${categories[i].items[j]}.title", categories[i].items[j].title)
-                  : lang("${categories[i].items[j]}.title", (cellInfo[categories[i].items[j]] ?? defaultProfile).title),
-              description: isCategory
-                  ? lang('${categories[i]}.${categories[i].items[j]}.desc', categories[i].items[j].description) +
-                      (debugMode ? "\nID: ${categories[i].toString()}.${categories[i].items[j].toString()}" : "")
-                  : lang("${categories[i].items[j].toString()}.desc", (cellInfo[categories[i].items[j]] ?? defaultProfile).description) + (debugMode ? "\nID: ${categories[i].items[j]}" : ""),
-            )..time = 50,
-          );
-
-          buttonManager.buttons['cat${i}cell$j']?.duration += 0.005 * j;
-
-          if (isCategory) {
-            final cat = categories[i].items[j] as CellCategory;
-            final catPos = Vector2((leftCatOff - catSize) / 2 + i * catOff + (catSize - cellSize) / 2, catOff + cellSize * (j + 1));
-            for (var k = 0; k < cat.items.length; k++) {
-              final cell = cat.items[k] as String;
-
-              final xOff = cellSize + (k % cat.max) * cellSize;
-              final yOff = (k ~/ cat.max) * cellSize;
-
-              final off = Vector2(xOff, yOff);
-
-              buttonManager.setButton(
-                'cat${i}cell${j}sub$k',
-                VirtualButton(
-                  catPos + off,
-                  Vector2.all(cellSize),
-                  "$cell.png",
-                  ButtonAlignment.BOTTOMLEFT,
-                  () => whenSelected(cell),
-                  () => cat.opened,
-                  title: lang(
-                    "$cell.title",
-                    (cellInfo[cell] ?? defaultProfile).title,
-                  ),
-                  description: lang(
-                    "$cell.desc",
-                    (cellInfo[cell] ?? defaultProfile).description + (debugMode ? "\nID: $cell" : ""),
-                  ),
-                )
-                  ..time = 50
-                  ..duration += k * 0.005,
-              );
-            }
+            buttonManager.setButton(
+              'cat${i}cell${j}sub$k',
+              VirtualButton(
+                catPos + off,
+                Vector2.all(cellSize),
+                "$cell.png",
+                ButtonAlignment.BOTTOMLEFT,
+                () => whenSelected(cell),
+                () => cat.opened,
+                title: lang(
+                  "$cell.title",
+                  (cellInfo[cell] ?? defaultProfile).title,
+                ),
+                description: lang(
+                  "$cell.desc",
+                  (cellInfo[cell] ?? defaultProfile).description + (debugMode ? "\nID: $cell" : ""),
+                ),
+              )
+                ..time = 50
+                ..duration += k * 0.005,
+            );
           }
         }
       }
     }
-
-    buttonManager.buttons.forEach((id, btn) {
-      btn.time = 500;
-    });
   }
 
   Sprite? emptyImage;
@@ -2338,51 +2342,53 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     canvas.restore();
 
-    cursors.forEach(
-      (id, cursor) {
-        if (id != clientID) {
-          if (cursor.selection != "empty" && edType == EditorType.making) {
-            renderCell(
-              Cell(0, 0)
-                ..id = cursor.selection
-                ..rot = cursor.rotation,
-              cursor.x + offX / cellSize,
-              cursor.y + offY / cellSize,
+    if (!running) {
+      cursors.forEach(
+        (id, cursor) {
+          if (id != clientID) {
+            if (cursor.selection != "empty" && edType == EditorType.making) {
+              renderCell(
+                Cell(0, 0)
+                  ..id = cursor.selection
+                  ..rot = cursor.rotation,
+                cursor.x + offX / cellSize,
+                cursor.y + offY / cellSize,
+              );
+            }
+
+            final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+
+            var c = 'interface/cursor.png';
+            // Haha cool
+            if (cursor.texture != "cursor") {
+              c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
+            }
+            if (!Flame.images.containsKey(c) || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
+            // Haha cooln't
+            Sprite(Flame.images.fromCache(c)).render(
+              canvas,
+              position: p,
+              size: Vector2.all(cellSize / 2),
             );
-          }
 
-          final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
-
-          var c = 'interface/cursor.png';
-          // Haha cool
-          if (cursor.texture != "cursor") {
-            c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
-          }
-          if (!Flame.images.containsKey(c) || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
-          // Haha cooln't
-          Sprite(Flame.images.fromCache(c)).render(
-            canvas,
-            position: p,
-            size: Vector2.all(cellSize / 2),
-          );
-
-          if (debugMode) {
-            final tp = TextPainter(
-              textDirection: TextDirection.ltr,
-              text: TextSpan(
-                text: id,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: cellSize / 3,
+            if (debugMode) {
+              final tp = TextPainter(
+                textDirection: TextDirection.ltr,
+                text: TextSpan(
+                  text: id,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: cellSize / 3,
+                  ),
                 ),
-              ),
-            );
-            tp.layout();
-            tp.paint(canvas, p.toOffset());
+              );
+              tp.layout();
+              tp.paint(canvas, p.toOffset());
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    }
 
     if (cellbar && edType == EditorType.making) {
       canvas.drawRect(

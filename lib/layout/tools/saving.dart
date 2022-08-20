@@ -966,22 +966,20 @@ class P4 {
     );
 
     final props = decodeValue(segs[6]);
-    if (props is Map<String, dynamic>) {
-      if (props['W'] != null) grid.wrap = props['W']!;
+    g.wrap = props['W'] ?? false;
 
-      if (handleCustomProps) {
-        if (props['update_delay'] is num) {
-          QueueManager.add("post-game-init", () {
-            game.delay = props['update_delay']!;
-          });
-        }
-        if (props['viewbox'] != null) {
-          QueueManager.add("post-game-init", () {
-            final vb = props['viewbox'] as Map<String, dynamic>;
+    if (handleCustomProps) {
+      if (props['update_delay'] is num) {
+        QueueManager.add("post-game-init", () {
+          game.delay = props['update_delay']!;
+        });
+      }
+      if (props['viewbox'] != null) {
+        QueueManager.add("post-game-init", () {
+          final vb = props['viewbox'] as Map<String, dynamic>;
 
-            game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
-          });
-        }
+          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
+        });
       }
     }
 
