@@ -2,7 +2,7 @@ part of logic;
 
 void addHeat(int x, int y, [int amount = 1]) {
   if (grid.inside(x, y)) {
-    if (grid.at(x + 1, y).id != "empty") grid.at(x, y).data['heat'] = (grid.at(x, y).data['heat'] ?? 0) + amount;
+    if (grid.at(x, y).id != "empty") grid.at(x, y).data['heat'] = (grid.at(x, y).data['heat'] ?? 0) + amount;
   }
 }
 

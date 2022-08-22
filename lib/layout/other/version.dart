@@ -13,6 +13,7 @@ final List<String> changes = [
   "Added a button to resize the grid without clearing in the editor menu",
   "Fixed replicator nukes breaking",
   "Fixed mechanical-based duplication glitches",
+  "Fixed the P4 Tags decoder",
 ];
 
 IconData getTrailing(String change) {

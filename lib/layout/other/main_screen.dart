@@ -154,6 +154,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                 grid = loadStr(str.text ?? "");
                                 Navigator.pushNamed(context, '/game-loaded').then((v) => setState(() {}));
                               } catch (e) {
+                                print(e);
                                 showDialog(
                                   context: context,
                                   builder: (ctx) {

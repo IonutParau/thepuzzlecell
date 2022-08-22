@@ -69,7 +69,7 @@ class _UpdateUIState extends State<UpdateUI> {
                         child: Text(
                           lang(
                             'version_out_of_date',
-                            'Your current version is out of date',
+                            'Your current version is out of date\nClick to go to download page',
                           ),
                           style: TextStyle(
                             fontSize: 5.sp,

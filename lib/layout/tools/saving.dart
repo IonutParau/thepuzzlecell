@@ -866,8 +866,9 @@ class P4 {
     final c = Cell(x, y);
     c.lastvars.lastRot = m['rot'];
     c.rot = m['rot'];
-    if (m['data'] is Map<String, dynamic>) c.data = m['data']; // If it was empty, it would default to list lmao
-    c.tags = m['tags'];
+    c.data = m['data']; // If it was empty, it would default to list lmao
+    c.tags = {};
+    m['tags'].forEach((v) => c.tags.add(v.toString()));
     c.id = m['id'];
     c.lifespan = m['lifespan'];
     c.invisible = m['invisible'] ?? false;
