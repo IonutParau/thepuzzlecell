@@ -1234,7 +1234,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         playPause,
         () => true,
         title: lang('playPause.title', 'Play / Pause'),
-        description: lang('playPause.desc', 'Play or Pause the simulation'),
+        description: lang('playPause.desc', 'Play or Pause the simulation\n(Space key)'),
       ),
     );
 
@@ -1359,7 +1359,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           title: lang('rotate_cw.title', 'Rotate CW'),
           description: lang(
             'rotate_cw.desc',
-            'Rotates the cells in the UI or what you are about to paste clockwise',
+            'Rotates the cells in the UI or what you are about to paste clockwise\n(E key)',
           ),
         ),
       );
@@ -1379,7 +1379,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           title: lang('rotate_ccw.title', 'Rotate CCW'),
           description: lang(
             'rotate_ccw.desc',
-            'Rotates the cells in the UI or what you are about to paste counter-clockwise',
+            'Rotates the cells in the UI or what you are about to paste counter-clockwise\n(Q key)',
           ),
         ),
       );
@@ -1409,7 +1409,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           },
           () => true,
           title: 'Toggle Select Mode',
-          description: 'In Select Mode you drag an area and can copy, cut, or paste it',
+          description: 'In Select Mode you drag an area and can copy, cut, or paste it\nArrow keys move the selected area\nCtrl+arrow keys resize the selection area\nShift + arrow keys move the selection area',
         ),
       );
 
@@ -1426,7 +1426,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           copy,
           () => selecting && !dragPos,
           title: 'Copy',
-          description: 'Copy selected area',
+          description: 'Copy selected area\n(Ctrl + C)',
         ),
       );
 
@@ -1455,7 +1455,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           },
           () => selecting && !dragPos,
           title: 'Cut',
-          description: 'Copy and delete selected area',
+          description: 'Copy and delete selected area\n(Ctrl + X)',
         ),
       );
 
@@ -1694,7 +1694,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           },
           () => gridClip.active,
           title: 'Paste',
-          description: 'Paste what you have copied',
+          description: 'Paste what you have copied\n(Ctrl + V)',
         ),
       );
 
@@ -1711,7 +1711,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           oneTick,
           () => true,
           title: 'Advance one tick',
-          description: 'Steps the simulation forward by 1 tick',
+          description: 'Steps the simulation forward by 1 tick\n(F key)',
         ),
       );
 
@@ -1728,7 +1728,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           restoreInitial,
           () => !isinitial,
           title: 'Restore to initial state',
-          description: 'Restores the simulation to the initial state',
+          description: 'Restores the simulation to the initial state\n(Ctrl + R)',
         ),
       );
       buttonManager.setButton(
@@ -1744,7 +1744,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           setInitial,
           () => !isinitial,
           title: 'Set Initial',
-          description: 'Sets the simulation\'s current state as the initial state',
+          description: 'Sets the simulation\'s current state as the initial state\n(Ctrl + I)',
         ),
       );
       buttonManager.setButton(
