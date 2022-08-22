@@ -157,29 +157,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                 showDialog(
                                   context: context,
                                   builder: (ctx) {
-                                    return ContentDialog(
-                                      title: Text(
-                                        lang(
-                                          'saveError',
-                                          'Invalid save code',
-                                        ),
-                                      ),
-                                      content: Text(
-                                        '${lang(
-                                          'saveErrorDesc',
-                                          'You are trying to load a corrupted, invalid or unsupported level code.\nError: $e',
-                                          {"error": e.toString()},
-                                        )}',
-                                      ),
-                                      actions: [
-                                        Button(
-                                          child: Text('Ok'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
+                                    return LoadSaveErrorDialog(e.toString());
                                   },
                                 );
                               }
@@ -187,29 +165,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                               showDialog(
                                 context: context,
                                 builder: (ctx) {
-                                  return ContentDialog(
-                                    title: Text(
-                                      lang(
-                                        'noStringLoad',
-                                        'Invalid clipboard format',
-                                      ),
-                                    ),
-                                    content: Text(
-                                      '${lang(
-                                        'noStringLoadDesc',
-                                        'The clipboard data you have in your clipboard is not text.\nError: Clipboard is not text',
-                                        {"error": "Clipboard is not text"},
-                                      )}',
-                                    ),
-                                    actions: [
-                                      Button(
-                                        child: Text('Ok'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
+                                  return LoadBlueprintErrorDialog("Clipboard does not contain text");
                                 },
                               );
                             }
@@ -220,29 +176,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                         showDialog(
                           context: context,
                           builder: (ctx) {
-                            return ContentDialog(
-                              title: Text(
-                                lang(
-                                  'saveError',
-                                  'Invalid save code',
-                                ),
-                              ),
-                              content: Text(
-                                '${lang(
-                                  'saveErrorDesc',
-                                  'You are trying to load a corrupted, invalid or unsupported level code. Error: $e',
-                                  {"error": e.toString()},
-                                )}',
-                              ),
-                              actions: [
-                                Button(
-                                  child: Text('Ok'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
+                            return LoadBlueprintErrorDialog(e.toString());
                           },
                         );
                       }

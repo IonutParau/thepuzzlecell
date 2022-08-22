@@ -4,7 +4,4 @@ export 'version.dart';
 export 'multiplayer.dart' show MultiplayerPage;
 export 'worldui.dart' show WorldUI;
 export 'update_ui.dart' show UpdateUI;
-export 'clear_dialog.dart' show ClearDialog;
-export 'add_blueprint_dialog.dart' show AddBlueprintDialog;
-export 'delete_blueprint_dialog.dart' show DeleteBlueprintDialog;
-export 'rename_blueprint_dialog.dart' show RenameBlueprintDialog;
+export '../dialogs/dialogs.dart';

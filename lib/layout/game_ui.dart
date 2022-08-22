@@ -1281,29 +1281,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               showDialog(
                 context: context,
                 builder: (ctx) {
-                  return ContentDialog(
-                    title: Text(
-                      lang(
-                        'saveError',
-                        'Invalid save code',
-                      ),
-                    ),
-                    content: Text(
-                      '${lang(
-                        'saveErrorDesc',
-                        'You are trying to load a corrupted, invalid or unsupported level code.',
-                        {"error": e.toString()},
-                      )}',
-                    ),
-                    actions: [
-                      Button(
-                        child: Text('Ok'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
+                  return LoadSaveErrorDialog(e.toString());
                 },
               );
             }
@@ -1409,7 +1387,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           },
           () => true,
           title: 'Toggle Select Mode',
-          description: 'In Select Mode you drag an area and can copy, cut, or paste it\nArrow keys move the selected area\nCtrl+arrow keys resize the selection area\nShift + arrow keys move the selection area',
+          description:
+              'In Select Mode you drag an area and can copy, cut, or paste it\nArrow keys move the selected area\nCtrl+arrow keys resize the selection area\nShift + arrow keys move the selection area',
         ),
       );
 
@@ -1547,34 +1526,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 showDialog(
                   context: context,
                   builder: (ctx) {
-                    return ContentDialog(
-                      title: Text('Saved Blueprint'),
-                      content: Text(
-                        'The blueprint has been saved to your clipboard. You can change \"Unnamed Blueprint\" and \"This blueprint currently has no name\" to change title and description. Then you can put it in your blueprints file to use it later.',
-                      ),
-                      actions: [
-                        Button(
-                          child: Text('Add to\nbuilt-in'),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            showDialog(context: ctx, builder: (ctx) => AddBlueprintDialog(bpSave));
-                          },
-                        ),
-                        Button(
-                          child: Text('Change name & title'),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            showDialog(context: ctx, builder: (ctx) => RenameBlueprintDialog(bpSave));
-                          },
-                        ),
-                        Button(
-                          child: Text('Ok'),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                          },
-                        ),
-                      ],
-                    );
+                    return SaveBlueprintDialog(bpSave);
                   },
                 );
               }
@@ -1605,7 +1557,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           () {
             try {
               FlutterClipboard.paste().then((txt) {
-                print(txt);
                 try {
                   final blueprint = loadStr(txt, false);
                   gridClip.activate(blueprint.width, blueprint.height, blueprint.grid);
@@ -1618,16 +1569,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   print(e);
                   showDialog(
                     context: context,
-                    builder: (context) => ContentDialog(
-                      title: Text(lang("error", "Error")),
-                      content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
-                      actions: [
-                        Button(
-                          child: Text("OK"),
-                          onPressed: () => Navigator.pop(context),
-                        )
-                      ],
-                    ),
+                    builder: (context) => LoadBlueprintErrorDialog(e.toString()),
                   );
                 }
               });
@@ -1635,16 +1577,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               print(e);
               showDialog(
                 context: context,
-                builder: (context) => ContentDialog(
-                  title: Text(lang("error", "Error")),
-                  content: Text(lang("load_blueprint_eror", "Could not load blueprint: $e", {"error": e.toString()})),
-                  actions: [
-                    Button(
-                      child: Text("OK"),
-                      onPressed: () => Navigator.pop(context),
-                    )
-                  ],
-                ),
+                builder: (context) => LoadBlueprintErrorDialog(e.toString()),
               );
             }
           },
@@ -1768,13 +1701,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     if (isMultiplayer) {
                       sendToServer('setinit ${str.text}');
                     } else {
-                      grid = loadStr(str.text ?? "");
-                      QueueManager.runQueue("post-game-init");
-                      timeGrid = null;
-                      initial = grid.copy;
-                      buttonManager.buttons['play-btn']?.texture = 'mover.png';
-                      buttonManager.buttons['play-btn']?.rotation = 0;
-                      buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+                      try {
+                        grid = loadStr(str.text ?? "");
+                        QueueManager.runQueue("post-game-init");
+                        timeGrid = null;
+                        initial = grid.copy;
+                        buttonManager.buttons['play-btn']?.texture = 'mover.png';
+                        buttonManager.buttons['play-btn']?.rotation = 0;
+                        buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+                      } catch (e) {
+                        showDialog(context: context, builder: (ctx) => LoadSaveErrorDialog(e.toString()));
+                      }
                     }
 
                     buildEmpty();
@@ -1786,14 +1723,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               showDialog(
                 context: context,
                 builder: (ctx) {
-                  return AlertDialog(
-                    title: Text(
-                      'Invalid save code',
-                    ),
-                    content: Text(
-                      'You are trying to load a corrupted, invalid or unsupported level code.',
-                    ),
-                  );
+                  return LoadSaveErrorDialog(e.toString());
                 },
               );
             }
@@ -2032,18 +1962,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           showDialog(
             context: context,
             builder: (ctx) {
-              return ContentDialog(
-                title: Text('You have been kicked'),
-                content: Text(
-                  'You have been kicked from the game. This means your connection timed out or the server closed.',
-                ),
-                actions: [
-                  Button(
-                    child: Text('Ok'),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ],
-              );
+              return DisconnectionDialog();
             },
           );
         },
@@ -2052,18 +1971,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           showDialog(
             context: context,
             builder: (ctx) {
-              return AlertDialog(
-                title: Text('An error has occured'),
-                content: Text(
-                  'An error has occured in the game. Error: $e',
-                ),
-                actions: [
-                  Button(
-                    child: Text('Ok'),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ],
-              );
+              return BasicErrorDialog(e.toString());
             },
           );
         },
@@ -3489,46 +3397,68 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               selY -= selH;
             }
 
-            final s = [];
-
-            for (var x = 0; x < selW; x++) {
-              for (var y = 0; y < selH; y++) {
-                final cx = selX + x;
-                final cy = selY + y;
-                if (grid.inside(cx, cy)) {
-                  s.add(grid.at(cx, cy).copy);
-                  if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0 0');
-                }
-              }
-            }
+            var nsx = selX;
+            var nsy = selY;
 
             if (keysDown.contains(arrowKeys[0])) {
-              selY--;
+              nsy--;
             }
             if (keysDown.contains(arrowKeys[1])) {
-              selY++;
+              nsy++;
             }
             if (keysDown.contains(arrowKeys[2])) {
-              selX--;
+              nsx--;
             }
             if (keysDown.contains(arrowKeys[3])) {
-              selX++;
+              nsx++;
+            }
+            var shouldMove = true;
+
+            if (nsx < 0) {
+              shouldMove = false;
+            }
+            if (nsy < 0) {
+              shouldMove = false;
+            }
+            if (nsx > grid.width - selW) {
+              shouldMove = false;
+            }
+            if (nsy > grid.height - selH) {
+              shouldMove = false;
             }
 
-            var i = 0;
-            for (var x = 0; x < selW; x++) {
-              for (var y = 0; y < selH; y++) {
-                final cx = selX + x;
-                final cy = selY + y;
-                if (grid.inside(cx, cy)) {
-                  final c = s[i];
-                  i++;
-                  if (!isMultiplayer) grid.set(cx, cy, c);
-                  sendToServer('place $cx $cy ${c.id} ${c.rot} ${cellDataStr(c.data)}');
-                  if (c.invisible) sendToServer('toggle-invis $cx $cy');
+            if (shouldMove) {
+              final s = [];
+
+              for (var x = 0; x < selW; x++) {
+                for (var y = 0; y < selH; y++) {
+                  final cx = selX + x;
+                  final cy = selY + y;
+                  if (grid.inside(cx, cy)) {
+                    s.add(grid.at(cx, cy).copy);
+                    if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
+                    sendToServer('place $cx $cy empty 0 0');
+                  }
                 }
               }
+
+              var i = 0;
+              for (var x = 0; x < selW; x++) {
+                for (var y = 0; y < selH; y++) {
+                  final cx = nsx + x;
+                  final cy = nsy + y;
+                  if (grid.inside(cx, cy)) {
+                    final c = s[i];
+                    i++;
+                    if (!isMultiplayer) grid.set(cx, cy, c);
+                    sendToServer('place $cx $cy ${c.id} ${c.rot} ${cellDataStr(c.data)}');
+                    if (c.invisible) sendToServer('toggle-invis $cx $cy');
+                  }
+                }
+              }
+
+              selX = nsx;
+              selY = nsy;
             }
           }
         }

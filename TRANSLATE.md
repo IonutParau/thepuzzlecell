@@ -35,7 +35,6 @@ In the text, @variablename gets replaced with the variable.
 | credits                        | The name of the credits screen                                                                                                          |           |
 | version                        | The name of the version screen                                                                                                          |           |
 | loadLevel                      | The name of the load level button                                                                                                       |           |
-| saveError                      | The title of the Invalid Save error message                                                                                             |           |
 | saveErrorDesc                  | The description of the Invalid Save error message                                                                                       | error     |
 | yes                            | For every confirmation prompt, this is what would get shown instead of Yes                                                              |           |
 | no                             | For every confirmation prompt, this is what would get shown instead of No                                                               |           |
@@ -98,6 +97,12 @@ In the text, @variablename gets replaced with the variable.
 | resize_and_clear               | The name of the Resize & Clear dialog                                                                                                   |           |
 | select_blueprints              | The name of the Select Blueprints name in the delete blueprints dialog                                                                  |           |
 | blueprint_name_and_description | The name of the dialogs with the title of Blueprint Name & Description                                                                  |           |
+| change_name_and_description    | The name of the Change Name & Description button when saving in editor                                                                  |           |
+| disconnected                   | The name of the Disconnected dialog                                                                                                     |           |
+| disconnected_desc              | The contents of the Disconnected dialog                                                                                                 |           |
+| saved_blueprint                | The name of the Saved Blueprint dialog                                                                                                  |           |
+| saved_blueprint_desc           | The description of the Saved Blueprint dialog                                                                                           |           |
+| add_to_builtin                 | The name of the Add to Built-in button                                                                                                  |           |
 
 ## Button IDs:
 

@@ -2,13 +2,11 @@ import 'package:flutter/material.dart' hide Colors;
 import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.1.2.2 The Biomes Update Content Update 2 QuickFix 2';
+String currentVersion = '2.2.0.0 Mathematically Complete';
 
 final List<String> changes = [
-  "QuickFix 1: P4 decoder now properly loads grid properties",
-  "QuickFix 1: Fixed a bug with reloading only the cellbar messing up some textures. Also accidentally added an animation to it, but, its good",
-  "QuickFix 1: Disabled cursor rendering in Multiplayer when running because it was bugged",
-  "QuickFix 2: Fixed Trickster Tool not working",
+  "Fixed several bugs with moving selection",
+  "Reworked the entire dialog system to be more consistent",
 ];
 
 IconData getTrailing(String change) {

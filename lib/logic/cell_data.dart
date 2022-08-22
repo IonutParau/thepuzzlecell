@@ -1622,15 +1622,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "proton": CellProfile(
     "Wannabe-Proton",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Towards\nProton: Away\nNeutron: Towards\nGravtion: Towards",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Towards\nProton: Away\nNeutron: Towards\nGraviton: Towards",
   ),
   "electron": CellProfile(
     "Wannabe-Electron",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Away\nProton: Towards\nNeutron: Ignores\nGravtion: Towards",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Away\nProton: Towards\nNeutron: Ignores\nGraviton: Towards",
   ),
   "neutron": CellProfile(
     "Wannabe-Neutron",
-    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Ignores\nProton: Towards\nNeutron: Ignores\nGravtion: Towards",
+    "Raycasts in 8 directions and based off of the first particle it sees it will go towards it.\nElectron: Ignores\nProton: Towards\nNeutron: Ignores\nGraviton: Towards",
   ),
   "sandbox": CellProfile(
     "The Sandbox Cell",
@@ -1686,7 +1686,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "transform_trash": CellProfile(
     "Transformer Trash",
-    "Trash that can't be transform",
+    "Trash that can't be transformed",
   ),
   "puzzle_trash": CellProfile(
     "Puzzle Trash",
@@ -2002,7 +2002,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "inverse_graviton": CellProfile(
     "Inverse Graviton",
-    "Like a gravtion but negative mass",
+    "Like a graviton but negative mass",
   ),
   "orbital": CellProfile(
     "Orbital",
