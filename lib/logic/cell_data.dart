@@ -1758,7 +1758,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "forker_ccw": CellProfile(
     "Forker CCW",
-    "Forker bet counter-clockise",
+    "Forker bent counter-clockwise",
   ),
   "triple_forker": CellProfile(
     "Triple Forker",
