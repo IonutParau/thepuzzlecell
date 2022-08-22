@@ -1307,9 +1307,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          FlutterClipboard.copy(P4.encodeGrid(grid));
+          final c = P4.encodeGrid(grid);
+          FlutterClipboard.copy(c);
           if (worldIndex != null) {
             worldManager.saveWorld(worldIndex!);
+          } else {
+            showDialog(context: context, builder: (ctx) => SaveLevelDialog(c));
           }
         },
         () => true,
@@ -2372,7 +2375,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
 
-    if (grid.title != "" && edType == EditorType.loaded) {
+    if (grid.title != "") {
       // Render title and description
 
       final titletp = TextPainter(
@@ -2396,24 +2399,26 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ),
       );
 
-      final descriptiontp = TextPainter(
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          text: grid.desc,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30 * uiScale,
+      if (grid.desc != "") {
+        final descriptiontp = TextPainter(
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: grid.desc,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30 * uiScale,
+            ),
           ),
-        ),
-      );
+        );
 
-      descriptiontp.layout(maxWidth: 50.w);
+        descriptiontp.layout(maxWidth: 50.w);
 
-      descriptiontp.paint(
-        canvas,
-        Offset((canvasSize.x - descriptiontp.width) / 2, 70 * uiScale + titletp.height),
-      );
+        descriptiontp.paint(
+          canvas,
+          Offset((canvasSize.x - descriptiontp.width) / 2, 70 * uiScale + titletp.height),
+        );
+      }
     }
 
     canvas.translate(offX, offY);
