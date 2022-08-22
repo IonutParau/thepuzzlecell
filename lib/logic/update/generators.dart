@@ -48,7 +48,7 @@ class GenOptimizer {
 
 final GenOptimizer genOptimizer = GenOptimizer();
 
-void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preaddedRot = 0, bool physical = false, int lvxo = 0, int lvyo = 0]) {
+void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preaddedRot = 0, bool physical = false, int lvxo = 0, int lvyo = 0, bool ignoreOptimization = false]) {
   offX ??= 0;
   offY ??= 0;
   dir %= 4;
@@ -58,7 +58,7 @@ void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preadde
   var ox = x + outputOff.dx ~/ 1 + offX;
   var oy = y + outputOff.dy ~/ 1 + offY;
 
-  if (genOptimizer.shouldSkip(ox, oy, dir) && !physical) {
+  if (genOptimizer.shouldSkip(ox, oy, dir) && !physical && !ignoreOptimization) {
     genOptimizer.skip(x, y, dir);
     //print("skip");
     return;

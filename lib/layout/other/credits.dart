@@ -7,8 +7,10 @@ final credits = [
   "Me, A Monitor#1595, for making this remake",
   "k.#0086 for making all the OSTs",
   "The Generator Cell#7431 for helping me remake all of the textures",
-  "Everyone who has suggested the addition of features and cells",
   "Qwerty.R#9850 for making the sound effects",
+  "Resizing and clearing are based on CelLua's resizing and clearing buttons",
+  "Blueprints are heavily inspired by schematics from Cell Machine Mystic Mod V4",
+  "Everyone who has suggested the addition of features and cells",
 ];
 
 class CreditsPage extends StatelessWidget {

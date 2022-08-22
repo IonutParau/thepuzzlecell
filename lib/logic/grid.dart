@@ -326,6 +326,7 @@ class Grid {
   int chunkToCellY(int y) => y * chunkSize;
 
   void setChunk(int x, int y, String id) {
+    cells.add(id);
     chunks[cx(x)][cy(y)].add(id);
   }
 
@@ -365,7 +366,6 @@ class Grid {
     }
     if (cells.containsAny(trashes)) return true;
     if (cells.containsAny(enemies)) return true;
-    if (cells.contains("semi_enemy") || cells.contains("semi_trash")) return true;
     return false;
   }
 

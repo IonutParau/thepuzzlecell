@@ -11,6 +11,7 @@ final List<String> changes = [
   "Added a new dialog for saving that allows you to change the title and description of a level very quickly",
   "Made grid tabs also cycling through worlds",
   "Added a button to resize the grid without clearing in the editor menu",
+  "Fixed replicator nukes breaking",
 ];
 
 IconData getTrailing(String change) {

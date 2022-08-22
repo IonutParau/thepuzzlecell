@@ -1614,11 +1614,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "inctab": CellProfile(
     "Increase Tab",
-    "Disabled in Multiplayer. In a world will allow you to cycle through the worlds. In the normal editor, it will send you one grid tab higher.",
+    "Disabled in Multiplayer. In a world it will cycle through the worlds. In the normal editor, it will send you one grid tab higher.",
   ),
   "dectab": CellProfile(
     "Decrease Tab",
-    "Disabled in Multiplayer. In a world will allow you to cycle through the worlds. In the normal editor, it will send you one grid tab lower.",
+    "Disabled in Multiplayer. In a world it will cycle through the worlds. In the normal editor, it will send you one grid tab lower.",
   ),
   "proton": CellProfile(
     "Wannabe-Proton",
