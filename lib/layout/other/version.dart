@@ -12,6 +12,7 @@ final List<String> changes = [
   "Made grid tabs also cycling through worlds",
   "Added a button to resize the grid without clearing in the editor menu",
   "Fixed replicator nukes breaking",
+  "Fixed mechanical-based duplication glitches",
 ];
 
 IconData getTrailing(String change) {

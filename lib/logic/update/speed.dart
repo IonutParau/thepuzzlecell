@@ -36,16 +36,3 @@ void speeds() {
     );
   }
 }
-
-bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
-  if (!canMove(x, y, rot, 0, mt)) return false;
-  final fx = frontX(x, rot);
-  final fy = frontY(y, rot);
-  if (grid.inside(fx, fy)) {
-    if (moveInsideOf(grid.at(fx, fy), fx, fy, rot, mt)) {
-      moveCell(x, y, fx, fy, rot, null, mt);
-      return true;
-    }
-  }
-  return false;
-}

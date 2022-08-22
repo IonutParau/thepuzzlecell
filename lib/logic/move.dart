@@ -490,10 +490,12 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       mustTimeTravel = true;
     } else if (destroyer.id == "mech_trash") {
       grid.addBroken(moving, x, y);
-      MechanicalManager.spread(x + 1, y, 0, false, 0);
-      MechanicalManager.spread(x - 1, y, 0, false, 2);
-      MechanicalManager.spread(x, y + 1, 0, false, 1);
-      MechanicalManager.spread(x, y - 1, 0, false, 3);
+      QueueManager.add("post-move", () {
+        MechanicalManager.spread(x + 1, y, 0, false, 0);
+        MechanicalManager.spread(x - 1, y, 0, false, 2);
+        MechanicalManager.spread(x, y + 1, 0, false, 1);
+        MechanicalManager.spread(x, y - 1, 0, false, 3);
+      });
     } else if (destroyer.id == "physical_trash") {
       grid.addBroken(moving, x, y);
       if (mt == MoveType.push) {
@@ -558,7 +560,7 @@ bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveTyp
   if (ox != nx || oy != ny) {
     grid.set(ox, oy, Cell(ox, oy));
   }
-  //grid.grid[nx][ny].lastvars = grid.grid[ox][oy].lastvars.toVector2().toOffset();
+  QueueManager.runQueue("post-move");
   return true;
 }
 
@@ -721,6 +723,7 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   }
   if (moveInsideOf(c, ox, oy, dir, mt)) {
     handleInside(ox, oy, dir, replaceCell, mt);
+    if (depth == 0) QueueManager.runQueue("post-move");
     return force > 0;
   }
   if (!grid.inside(x, y)) return false;
@@ -747,8 +750,10 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
       grid.set(ox, oy, replaceCell);
       postmove(c, ox, oy, dir, force, mt);
     }
+    if (depth == 0) QueueManager.runQueue("post-move");
     return mightMove;
   } else {
+    if (depth == 0) QueueManager.runQueue("post-move");
     return false;
   }
 }
@@ -868,6 +873,20 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
   }
 
   return true;
+}
+
+bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
+  if (!canMove(x, y, rot, 0, mt)) return false;
+  final fx = frontX(x, rot);
+  final fy = frontY(y, rot);
+  if (grid.inside(fx, fy)) {
+    if (moveInsideOf(grid.at(fx, fy), fx, fy, rot, mt)) {
+      moveCell(x, y, fx, fy, rot, null, mt);
+      return true;
+    }
+  }
+  QueueManager.runQueue("post-move");
+  return false;
 }
 
 void doSpeedMover(int x, int y, int dir, int force, int speed) {
