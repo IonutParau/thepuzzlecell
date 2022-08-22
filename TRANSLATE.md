@@ -105,6 +105,7 @@ In the text, @variablename gets replaced with the variable.
 | add_to_builtin                 | The name of the Add to Built-in button                                                                                                  |           |
 | save_level                     | The name of the Saved Level dialog                                                                                                      |           |
 | save_level_desc                | The content of the Saved Level dialog                                                                                                   |           |
+| resize                         | The name of the Resize button and dialog                                                                                                |           |
 
 ## Button IDs:
 

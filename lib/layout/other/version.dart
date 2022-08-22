@@ -7,6 +7,10 @@ String currentVersion = '2.2.0.0 Mathematically Complete';
 final List<String> changes = [
   "Fixed several bugs with moving selection",
   "Reworked the entire dialog system to be more consistent",
+  "Reordered some tools",
+  "Added a new dialog for saving that allows you to change the title and description of a level very quickly",
+  "Made grid tabs also cycling through worlds",
+  "Added a button to resize the grid without clearing in the editor menu",
 ];
 
 IconData getTrailing(String change) {

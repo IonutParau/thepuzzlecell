@@ -31,9 +31,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
 
   int page = 0;
 
-  final editorMenuWidthController = TextEditingController();
-  final editorMenuHeightController = TextEditingController();
-
   // late final AnimationController _rotcontroller = AnimationController(
   //   duration: const Duration(seconds: 5),
   //   vsync: this,
@@ -45,8 +42,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
     // _rotcontroller.stop();
     // _rotcontroller.dispose();
     scrollController.dispose();
-    editorMenuWidthController.dispose();
-    editorMenuHeightController.dispose();
 
     if (game.isMultiplayer) {
       game.channel.sink.close();
@@ -61,9 +56,6 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
     game = PuzzleGame();
     game.edType = widget.editorType;
     game.ip = widget.ip;
-    editorMenuWidthController.text = "${grid.width}";
-    editorMenuHeightController.text = "${grid.height}";
-
     // editorMenuWidthController.addListener(
     //   () {
     //     print(editorMenuWidthController.text);
@@ -361,11 +353,10 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-                          Spacer(),
-                          Spacer(),
+                          Spacer(flex: 2),
                           Row(
                             children: [
-                              Spacer(flex: 2),
+                              Spacer(flex: 5),
                               Column(
                                 children: [
                                   MaterialButton(
@@ -417,7 +408,33 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
-                              Spacer(flex: 2),
+                              Spacer(),
+                              Column(
+                                children: [
+                                  MaterialButton(
+                                    onPressed: () async {
+                                      await showDialog(context: context, builder: (ctx) => ResizeDialog());
+                                    },
+                                    child: Image.asset(
+                                      'assets/images/' + textureMap['cancer.png']!,
+                                      fit: BoxFit.fill,
+                                      colorBlendMode: BlendMode.clear,
+                                      filterQuality: FilterQuality.none,
+                                      isAntiAlias: true,
+                                      cacheWidth: 10.w.toInt(),
+                                      cacheHeight: 10.w.toInt(),
+                                      scale: 32 / 5.w,
+                                    ),
+                                  ),
+                                  Text(
+                                    lang('resize', 'Resize'),
+                                    style: TextStyle(
+                                      fontSize: 7.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Spacer(flex: 5),
                             ],
                           ),
                           Spacer(),
@@ -857,7 +874,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var gridTabIndex = 0;
 
   void changeTab(int newTabIndex) {
-    if (edType != EditorType.making || isMultiplayer || worldIndex != null) return;
+    if (edType != EditorType.making || isMultiplayer) return;
+    if (worldIndex != null) {
+      worldManager.saveWorld(worldIndex!);
+      worldIndex = newTabIndex % worldManager.worldLength;
+      gridTabIndex = worldIndex!;
+      grid = loadStr(worldManager.worldAt(worldIndex!));
+      buildEmpty();
+      return;
+    }
     if (!isinitial) return;
     gridTab[gridTabIndex] = grid;
     cachedGridEmpties[gridTabIndex] = emptyImage;
@@ -1054,20 +1079,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (num.tryParse(str) != null) {
       return {"heat": num.parse(str)};
     }
-    final pairs = str.split(':');
+    final pairs = fancySplit(str, ':');
     final m = <String, dynamic>{};
 
     for (var pair in pairs) {
-      final segs = pair.split('=');
-      final key = segs[0];
-
-      if (num.tryParse(segs[1]) != null) {
-        m[key] = num.parse(segs[1]);
-      } else if (segs[1] == "true" || segs[1] == "false") {
-        m[key] = (segs[1] == "true");
-      } else {
-        m[key] = segs[1];
-      }
+      final segs = fancySplit(pair, '=');
+      m[segs[0]] = P4.decodeValue(segs[1]);
     }
 
     return m;
@@ -1925,6 +1942,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     middleMove = storage.getBool("middle_move") ?? false;
     cursorTexture = storage.getString("cursor_texture") ?? "cursor";
     proxyMirror = storage.getBool("local_packet_mirror") ?? false;
+
+    if (worldIndex != null) gridTabIndex = worldIndex!;
 
     await loadAllButtonTextures();
 
@@ -2865,7 +2884,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     final l = [];
 
     cellData.forEach((key, value) {
-      l.add("$key=$value");
+      l.add("$key=${P4.encodeValue(value)}");
     });
 
     return l.join(':');

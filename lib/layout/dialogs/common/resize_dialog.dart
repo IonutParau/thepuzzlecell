@@ -3,52 +3,57 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-class AddBlueprintDialog extends StatefulWidget {
-  final String bpCode;
+import '../../layout.dart';
+import '../../tools/tools.dart';
 
-  AddBlueprintDialog(this.bpCode);
-
+class ResizeDialog extends StatefulWidget {
   @override
-  _AddBlueprintDialogState createState() => _AddBlueprintDialogState();
+  _ResizeDialogState createState() => _ResizeDialogState();
 }
 
-class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
-  final _titleController = TextEditingController();
-  final _descController = TextEditingController();
+class _ResizeDialogState extends State<ResizeDialog> {
+  final _widthController = TextEditingController();
+  final _heightController = TextEditingController();
+
+  void dispose() {
+    _widthController.dispose();
+    _heightController.dispose();
+    super.dispose();
+  }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _descController.dispose();
-    super.dispose();
+  void initState() {
+    _widthController.text = grid.width.toString();
+    _heightController.text = grid.height.toString();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(lang("blueprint_name_and_description", "Blueprint Name & Description")),
+      title: Text(lang("resize", "Resize")),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
           return Center(
-            child: Column(
+            child: Row(
               children: [
                 Spacer(),
                 SizedBox(
-                  width: constraints.maxWidth * 0.7,
+                  width: constraints.maxWidth / 3,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Title',
-                    controller: _titleController,
+                    header: 'Width',
+                    controller: _widthController,
                   ),
                 ),
                 SizedBox(width: constraints.maxWidth / 10),
                 SizedBox(
-                  width: constraints.maxWidth * 0.7,
+                  width: constraints.maxWidth / 3,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Description',
-                    controller: _descController,
+                    header: 'Height',
+                    controller: _heightController,
                   ),
                 ),
                 Spacer(),
@@ -59,23 +64,53 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
       ),
       actions: [
         Button(
-          child: Text(lang("add", "Add")),
-          onPressed: () async {
-            final title = _titleController.text;
-            final desc = _descController.text;
+          child: Text(lang("resize", "Resize")),
+          onPressed: () {
+            final w = int.tryParse(_widthController.text) ?? grid.width;
+            final h = int.tryParse(_heightController.text) ?? grid.height;
+            if (game.running) {
+              game.playPause();
+              game.running = false;
+              game.buttonManager.buttons['play-btn']!.texture = "mover.png";
+              game.buttonManager.buttons['play-btn']!.rotation = 0;
+            }
+            if (game.onetick) {
+              game.onetick = false;
+            }
+            game.isinitial = true;
+            game.initial = grid.copy;
+            game.itime = 0;
+            final g = Grid(w, h);
+            final area = w * h;
 
-            final bpCode = widget.bpCode.replaceFirst("Unnamed Blueprint", title).replaceFirst("This blueprint currently has no name", desc);
+            // Insane optimization
+            if (area < grid.width * grid.height) {
+              g.forEach(
+                (_, x, y) {
+                  if (grid.inside(x, y)) {
+                    g.set(x, y, grid.at(x, y));
+                  }
+                },
+              );
+            } else {
+              grid.forEach(
+                (cell, x, y) {
+                  if (g.inside(x, y)) {
+                    g.set(x, y, cell);
+                  }
+                },
+              );
+            }
 
-            await FlutterClipboard.copy(bpCode);
-
-            await addBlueprint(bpCode);
-
-            Navigator.of(context).pop();
-          },
-        ),
-        Button(
-          child: Text(lang("cancel", "Cancel")),
-          onPressed: () async {
+            if (game.isMultiplayer) {
+              game.sendToServer(
+                'setinit ${P4.encodeGrid(g)}',
+              );
+            } else {
+              grid = g;
+            }
+            game.buildEmpty();
+            game.overlays.remove("EditorMenu");
             Navigator.of(context).pop();
           },
         ),

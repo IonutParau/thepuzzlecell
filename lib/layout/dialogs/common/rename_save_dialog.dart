@@ -64,6 +64,10 @@ class _RenameSaveDialogState extends State<RenameSaveDialog> {
             final title = _titleController.text;
             final desc = _descController.text;
 
+            // So you don't have to keep renaming it lmao
+            grid.title = title;
+            grid.desc = desc;
+
             final segs = widget.saveCode.split(";");
 
             segs[1] = title;

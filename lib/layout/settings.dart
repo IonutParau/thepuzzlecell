@@ -360,6 +360,32 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Realistic Rendering',
                       true,
                     ),
+                    if (storage.getBool('realistic_render') == true)
+                      Row(
+                        children: [
+                          Text(
+                            lang('lerp_speed', 'Lerp Speed') + ': ',
+                            style: textStyle,
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                            height: 5.h,
+                            child: Slider(
+                              value: storage.getDouble("lerp_speed") ?? 10.0,
+                              min: 0.1,
+                              max: 50,
+                              divisions: 500,
+                              onChanged: (v) => storage
+                                  .setDouble(
+                                    "lerp_speed",
+                                    (v * 10 ~/ 1) / 10,
+                                  )
+                                  .then((v) => setState(() {})),
+                              label: '${storage.getDouble('lerp_speed') ?? 10.0}x',
+                            ),
+                          ),
+                        ],
+                      ),
                     checkboxSetting(
                       'show_titles',
                       'titles_descriptions',
@@ -396,32 +422,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Interpolation',
                       true,
                     ),
-                    if (storage.getBool('interpolation') == true)
-                      Row(
-                        children: [
-                          Text(
-                            lang('lerp_speed', 'Lerp Speed') + ': ',
-                            style: textStyle,
-                          ),
-                          SizedBox(
-                            width: 20.w,
-                            height: 5.h,
-                            child: Slider(
-                              value: storage.getDouble("lerp_speed") ?? 10.0,
-                              min: 0.1,
-                              max: 50,
-                              divisions: 500,
-                              onChanged: (v) => storage
-                                  .setDouble(
-                                    "lerp_speed",
-                                    (v * 10 ~/ 1) / 10,
-                                  )
-                                  .then((v) => setState(() {})),
-                              label: '${storage.getDouble('lerp_speed') ?? 10.0}x',
-                            ),
-                          ),
-                        ],
-                      ),
                     checkboxSetting(
                       'cellbar',
                       'cellbar',
