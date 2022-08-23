@@ -242,6 +242,38 @@ final cells = {
   "inverse_airflow",
   "supervacuum",
   "transform_puzzle",
+  "math_number",
+  "math_plus",
+  "math_minus",
+  "math_mult",
+  "math_div",
+  "math_exp",
+  "math_sqrt",
+  "math_abs",
+  "math_floor",
+  "math_ceil",
+  "math_log",
+  "math_logn",
+  "math_min",
+  "math_max",
+  "math_rng",
+  "math_prng",
+  "math_sin",
+  "math_cos",
+  "math_tan",
+  "math_pi",
+  "math_e",
+  "math_phi",
+  "math_infinity",
+  "math_tick",
+  "math_time",
+  "math_memget",
+  "math_memset",
+  "math_memreader",
+  "math_memwriter",
+  "math_tunnel",
+  "math_tunnel_cw",
+  "math_cross_tunnel",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -249,6 +281,38 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_number.png": "math/math_number.png",
+  "math_plus.png": "math/core/math_plus.png",
+  "math_minus.png": "math/core/math_minus.png",
+  "math_mult.png": "math/core/math_mult.png",
+  "math_div.png": "math/core/math_div.png",
+  "math_exp.png": "math/core/math_exp.png",
+  "math_sqrt.png": "math/core/math_sqrt.png",
+  "math_abs.png": "math/functions/math_abs.png",
+  "math_floor.png": "math/functions/math_floor.png",
+  "math_ceil.png": "math/functions/math_ceil.png",
+  "math_log.png": "math/functions/math_log.png",
+  "math_logn.png": "math/functions/math_logn.png",
+  "math_min.png": "math/functions/math_min.png",
+  "math_max.png": "math/functions/math_max.png",
+  "math_rng.png": "math/functions/math_rng.png",
+  "math_prng.png": "math/functions/math_prng.png",
+  "math_sin.png": "math/functions/tri/math_sin.png",
+  "math_cos.png": "math/functions/tri/math_cos.png",
+  "math_tan.png": "math/functions/tri/math_tan.png",
+  "math_pi.png": "math/data/math_pi.png",
+  "math_e.png": "math/data/math_e.png",
+  "math_phi.png": "math/data/math_phi.png",
+  "math_infinity.png": "math/data/math_infinity.png",
+  "math_tick.png": "math/data/math_tick.png",
+  "math_time.png": "math/data/math_time.png",
+  "math_memget.png": "math/memory/math_memget.png",
+  "math_memset.png": "math/memory/math_memset.png",
+  "math_memreader.png": "math/memory/math_memreader.png",
+  "math_memwriter.png": "math/memory/math_memwriter.png",
+  "math_tunnel.png": "math/tunnels/math_tunnel.png",
+  "math_tunnel_cw.png": "math/tunnels/math_tunnel_cw.png",
+  "math_cross_tunnel.png": "math/tunnels/math_cross_tunnel.png",
   "transform_puzzle.png": "puzzle/transform_puzzle.png",
   "inverse_airflow.png": "movers/pullers/inverse_airflow.png",
   "supervacuum.png": "movers/pullers/supervacuum.png",
@@ -955,6 +1019,82 @@ final categories = [
       "floppy",
     ],
     "unstable_mover",
+  ),
+  CellCategory(
+    "Mathematical Cells",
+    "Cells designed to do math",
+    [
+      "counter",
+      "math_number",
+      CellCategory(
+        "Core",
+        "The minimum you expect from a mathematical system",
+        [
+          "math_plus",
+          "math_minus",
+          "math_mult",
+          "math_div",
+          "math_exp",
+          "math_sqrt",
+        ],
+        "math_plus",
+      ),
+      CellCategory(
+        "Functions",
+        "Operations a bit more complex than the Core ones",
+        [
+          "math_abs",
+          "math_floor",
+          "math_ceil",
+          "math_log",
+          "math_logn",
+          "math_min",
+          "math_max",
+          "math_rng",
+          "math_prng",
+          "math_sin",
+          "math_cos",
+          "math_tan",
+        ],
+        "math_abs",
+        max: 4,
+      ),
+      CellCategory(
+        "Variables",
+        "Cells designed to carry their own numbers. Not all are constants",
+        [
+          "math_pi",
+          "math_e",
+          "math_phi",
+          "math_infinity",
+          "math_tick",
+          "math_time",
+        ],
+        "math_pi",
+      ),
+      CellCategory(
+        "Numerical Memory",
+        "Designed to store numbers in global space",
+        [
+          "math_memreader",
+          "math_memwriter",
+          "math_memget",
+          "math_memset",
+        ],
+        "math_memreader",
+        max: 2,
+      ),
+      CellCategory(
+          "Math Tunnels",
+          "Designed to link distant inputs and outputs with wires",
+          [
+            "math_tunnel",
+            "math_tunnel_cw",
+            "math_cross_tunnel",
+          ],
+          "math_cross_tunnel")
+    ],
+    "math/math_block",
   ),
   CellCategory(
     "Mechanical Cells",
@@ -2052,6 +2192,134 @@ final cellInfo = <String, CellProfile>{
   "transform_puzzle": CellProfile(
     "Transform Puzzle",
     "Puzzle cell but you can hold T and press arrow keys to act like transformer for that direction.",
+  ),
+  "math_number": CellProfile(
+    "Number",
+    "It stores a number",
+  ),
+  "math_plus": CellProfile(
+    "Add",
+    "Outputs the sum of the 2 inputs",
+  ),
+  "math_minus": CellProfile(
+    "Subtract",
+    "Outputs the difference between the first input and second input",
+  ),
+  "math_mult": CellProfile(
+    "Multiply",
+    "Outputs the multiplication of the 2 inputs",
+  ),
+  "math_div": CellProfile(
+    "Multiply",
+    "Outputs the first input divided by the 2nd one",
+  ),
+  "math_exp": CellProfile(
+    "Exponent",
+    "Outputs the first input raised to the second input",
+  ),
+  "math_sqrt": CellProfile(
+    "Square Root",
+    "Outputs the square root of the input",
+  ),
+  "math_abs": CellProfile(
+    "Absolute",
+    "Outputs the absolute of the input",
+  ),
+  "math_floor": CellProfile(
+    "Floor",
+    "Outputs the input rounded down",
+  ),
+  "math_ceil": CellProfile(
+    "Ceil",
+    "Outputs the input rounded up",
+  ),
+  "math_log": CellProfile(
+    "Log",
+    "Outputs the logarithm of the input",
+  ),
+  "math_logn": CellProfile(
+    "LogN",
+    "Outputs the logarithm of order 2nd input of the 1st input",
+  ),
+  "math_min": CellProfile(
+    "Minimum",
+    "Outputs the lowest value out of the 2 inputs",
+  ),
+  "math_max": CellProfile(
+    "Maximum",
+    "Outputs the highest value out of the 2 inputs",
+  ),
+  "math_rng": CellProfile(
+    "Randomizer",
+    "Outputs a random number between the first and second input",
+  ),
+  "math_prng": CellProfile(
+    "Pseudo-Randomizer",
+    "Outputs a pseudo-random number between the first and second input. It will always be the same sequence given the same grid size and position of the cell.",
+  ),
+  "math_sin": CellProfile(
+    "Sine",
+    "Outputs the sine of the input",
+  ),
+  "math_cos": CellProfile(
+    "Cosine",
+    "Outputs the cosine of the input",
+  ),
+  "math_tan": CellProfile(
+    "Tan",
+    "Outputs the tangent of the input",
+  ),
+  "math_pi": CellProfile(
+    "π (PI)",
+    "It is a constant roughly equal to $pi",
+  ),
+  "math_e": CellProfile(
+    "E (Euler's Number)",
+    "It is a constant roughly equal to $e",
+  ),
+  "math_phi": CellProfile(
+    "Φ (The Golden Ratio)",
+    "It is a constant roughly equal to ${(1 + sqrt(5)) / 2}",
+  ),
+  "math_infinity": CellProfile(
+    "∞ (Infinity)",
+    "A countable infinity. Not the biggest infinitely, but its as big as computers can handle",
+  ),
+  "math_tick": CellProfile(
+    "Tick Count",
+    "It holds the tick count",
+  ),
+  "math_time": CellProfile(
+    "Grid Time",
+    "It holds the tick count times the update delay.",
+  ),
+  "math_memreader": CellProfile(
+    "Global Memory Reader",
+    "It has the channel and index properties. It will output the value stored in the global math store in the specified channel at the specified index",
+  ),
+  "math_memwriter": CellProfile(
+    "Global Memory Writer",
+    "It has the channel and index properties. It will output the value you wrote, and modify the value in the global math store in the specified channel at the specified index to be equal to the input.",
+  ),
+  "math_memget": CellProfile(
+    "Global Memory Getter",
+    "Like a Global Memory Reader, except the channel and index aren't properties and instead are specified as the side parameters",
+  ),
+  "math_memset": CellProfile(
+    "Global Memory Setter",
+    "Like a Global Memory Writer, except the channel and index aren't properties and instead are specified as the side parameters",
+  ),
+  "math_tunnel": CellProfile(
+    "Numerical Tunnel",
+    "Used as a wire to connect an output and input. Is 2-way",
+  ),
+  "math_tunnel_cw": CellProfile(
+    "Bent Numerical Tunnel",
+    "A Numerical Tunnel but bent clockwise, still is 2-way",
+  ),
+  "math_cross_tunnel": CellProfile(
+    "Numerical Cross Tunnel",
+    "2 perpendicular Numerical Tunnels stacked on top of eachother",
   ),
 };
 

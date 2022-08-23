@@ -567,6 +567,7 @@ Future loadAllButtonTextures() {
     "interface/tools/trick_tool.png",
     "interface/del_bp.png",
     "interface/property_editor.png",
+    "math/math_block.png",
   ]);
 }
 
@@ -2717,7 +2718,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           text: "${cell.data['count'] ?? 0}",
           style: TextStyle(
             fontSize: cellSize * 0.25,
-            color: Colors.grey[100],
+            color: paint?.color,
             fontWeight: FontWeight.bold,
           ),
         ),
