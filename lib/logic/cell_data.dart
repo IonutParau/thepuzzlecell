@@ -2346,4 +2346,15 @@ Map<String, List<CellProperty>> props = {
   "counter": [
     CellProperty("Count", "count", CellPropertyType.number, 0),
   ],
+  "mech_trash": [
+    CellProperty("Countdown", "countdown", CellPropertyType.integer, 0),
+  ],
+  "math_memwriter": [
+    CellProperty("Channel", "channel", CellPropertyType.integer, 0),
+    CellProperty("Index", "index", CellPropertyType.integer, 0),
+  ],
+  "math_memreader": [
+    CellProperty("Channel", "channel", CellPropertyType.integer, 0),
+    CellProperty("Index", "index", CellPropertyType.integer, 0),
+  ],
 };

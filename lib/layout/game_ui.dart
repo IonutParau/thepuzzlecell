@@ -2712,10 +2712,26 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     // Custom cell stuff
+
+    var text = "";
+
     if (cell.id == "counter" || cell.id == "math_number") {
+      text = "${cell.data['count'] ?? 0}";
+    }
+
+    if (cell.id == "mech_trash") {
+      text = "${cell.data['countdown'] ?? 0}";
+      if (text == "0") text = "";
+    }
+
+    if (cell.id == "math_memwriter" || cell.id == "math_memreader") {
+      text = "${cell.data['channel'] ?? 0}\n\n${cell.data['index'] ?? 0}";
+    }
+
+    if (text != "") {
       final tp = TextPainter(
         text: TextSpan(
-          text: "${cell.data['count'] ?? 0}",
+          text: text,
           style: TextStyle(
             fontSize: cellSize * 0.25,
             color: paint?.color,

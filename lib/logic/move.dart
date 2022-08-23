@@ -490,12 +490,16 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       mustTimeTravel = true;
     } else if (destroyer.id == "mech_trash") {
       grid.addBroken(moving, x, y);
-      QueueManager.add("post-move", () {
-        MechanicalManager.spread(x + 1, y, 0, false, 0);
-        MechanicalManager.spread(x - 1, y, 0, false, 2);
-        MechanicalManager.spread(x, y + 1, 0, false, 1);
-        MechanicalManager.spread(x, y - 1, 0, false, 3);
-      });
+      if ((destroyer.data['countdown'] ?? 0) > 0) {
+        destroyer.data['countdown']--;
+      } else {
+        QueueManager.add("post-move", () {
+          MechanicalManager.spread(x + 1, y, 0, false, 0);
+          MechanicalManager.spread(x - 1, y, 0, false, 2);
+          MechanicalManager.spread(x, y + 1, 0, false, 1);
+          MechanicalManager.spread(x, y - 1, 0, false, 3);
+        });
+      }
     } else if (destroyer.id == "physical_trash") {
       grid.addBroken(moving, x, y);
       if (mt == MoveType.push) {

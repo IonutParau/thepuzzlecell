@@ -197,7 +197,7 @@ void doDisplayer(int x, int y, int dir) {
 }
 
 void drawPower(Cell cell) {
-  if (cell.data['power'] is int) {
+  if (cell.data['power'] is num) {
     cell.data['power']--;
     if (cell.data['power'] == 0) {
       cell.data.remove('power');
