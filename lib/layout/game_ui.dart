@@ -2854,6 +2854,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           itime -= delay;
           if (onetick) {
             onetick = false;
+            itime = 0;
           } else {
             grid.update(); // Update the cells boizz
           }

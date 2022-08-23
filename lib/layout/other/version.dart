@@ -18,6 +18,10 @@ final List<String> changes = [
   "Added Inverse Airflow and Super Vacuum",
   "Made the mechanical keys also work with logic gates",
   "Added the property editor",
+  "Added a Countdown property to Trash-Based Mechanical Generator",
+  "Added the math category (OMG unexpected)",
+  "Fixed a bug with onetick sometimes skipping ticks when lagging",
+  "Made settings make more sense",
 ];
 
 IconData getTrailing(String change) {
