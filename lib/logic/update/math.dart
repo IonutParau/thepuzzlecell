@@ -108,6 +108,8 @@ class MathManager {
     // Function outputs
     if (["math_abs", "math_ceil", "math_floor", "math_log", "math_logn", "math_max", "math_min", "math_prng", "math_rng", "math_sin", "math_cos", "math_tan"].contains(cell.id) && dir == cell.rot)
       return true;
+    // Logic outputs
+    if (["math_equal", "math_notequal", "math_greater", "math_less"].contains(cell.id) && dir == cell.rot) return true;
 
     return false;
   }

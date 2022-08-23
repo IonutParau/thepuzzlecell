@@ -274,6 +274,10 @@ final cells = {
   "math_tunnel",
   "math_tunnel_cw",
   "math_cross_tunnel",
+  "math_equal",
+  "math_notequal",
+  "math_greater",
+  "math_less",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -281,6 +285,10 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_equal.png": "math/logic/math_equal.png",
+  "math_notequal": "math/logic/math_notequal.png",
+  "math_greater": "math/logic/math_greater.png",
+  "math_less": "math/logic/math_less.png",
   "math_number.png": "math/math_number.png",
   "math_plus.png": "math/core/math_plus.png",
   "math_minus.png": "math/core/math_minus.png",
@@ -1058,6 +1066,18 @@ final categories = [
         ],
         "math_abs",
         max: 4,
+      ),
+      CellCategory(
+        "Logic",
+        "If the condition is true they output a one, otherwise, a zero",
+        [
+          "math_equal",
+          "math_greater",
+          "math_notequal",
+          "math_less",
+        ],
+        "math_greater",
+        max: 2,
       ),
       CellCategory(
         "Variables",
@@ -2320,6 +2340,22 @@ final cellInfo = <String, CellProfile>{
   "math_cross_tunnel": CellProfile(
     "Numerical Cross Tunnel",
     "2 perpendicular Numerical Tunnels stacked on top of eachother",
+  ),
+  "math_equal": CellProfile(
+    "Equal",
+    "Checks if the 2 inputs are equal",
+  ),
+  "math_greater": CellProfile(
+    "Greater",
+    "Checks if the first input is greater than the second",
+  ),
+  "math_notequal": CellProfile(
+    "Not Equal",
+    "Checks if the 2 inputs aren't equal",
+  ),
+  "math_less": CellProfile(
+    "Less",
+    "Checks if the first input is less than the second",
   ),
 };
 

@@ -507,7 +507,9 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       }
     } else if (destroyer.id == "counter") {
       grid.addBroken(moving, x, y);
-      destroyer.data['count'] = (destroyer.data['count'] ?? 0) + 1;
+      var amount = 1;
+      if (moving.id == "counter" || moving.id == "math_number") amount = (moving.data['count'] ?? 0);
+      destroyer.data['count'] = (destroyer.data['count'] ?? 0) + amount;
     } else {
       grid.addBroken(moving, x, y);
     }

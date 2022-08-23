@@ -54,6 +54,7 @@ flutter:
     - assets/images/math/functions/
     - assets/images/math/functions/tri/
     - assets/images/math/tunnels/
+    - assets/images/math/logic/
     - assets/images/skins/
     - assets/images/movers/
     - assets/images/movers/combos/
