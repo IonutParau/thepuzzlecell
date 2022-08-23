@@ -1002,12 +1002,25 @@ class P4 {
       return '(${keys.join(':')})';
     }
 
+    if (value == double.infinity) {
+      return "inf";
+    }
+    if (value == double.nan) {
+      return "nan";
+    }
+    if (value == double.negativeInfinity) {
+      return "-inf";
+    }
+
     return value.toString();
   }
 
   static dynamic decodeValue(String str) {
     if (str == '{}') return <String>{};
     if (str == '()') return <String>{};
+    if (str == "inf") return double.infinity;
+    if (str == "nan") return double.nan;
+    if (str == "-inf") return double.negativeInfinity;
     if (int.tryParse(str) != null) {
       return int.parse(str);
     } else if (double.tryParse(str) != null) {
