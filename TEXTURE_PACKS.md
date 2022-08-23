@@ -46,6 +46,8 @@ Inside of that `pack.json` file, add this code:
 
 This tells it to automatically match it.
 
+Please note: Not all cells work with this method. Sometimes, you have to rename some of the images to match the ID of the cell.
+
 ### What are the issues with this method?
 
 Well, unless if you delete the files you didn't change, they might undo the changes of other texture packs due to conflicts and restore the vanilla look.

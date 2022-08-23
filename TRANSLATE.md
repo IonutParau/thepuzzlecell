@@ -128,6 +128,7 @@ In the text, @variablename gets replaced with the variable.
 - Save as Blueprint button - `save-blueprint-btn`
 - Load as Blueprint button - `load-blueprint-btn`
 - Delete Blueprints button - `del-blueprint-btn`
+- Property Editor button - `prop-edit-btn`
 
 ## Example of JSON
 

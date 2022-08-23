@@ -566,6 +566,7 @@ Future loadAllButtonTextures() {
     "interface/tools/invis_tool.png",
     "interface/tools/trick_tool.png",
     "interface/del_bp.png",
+    "interface/property_editor.png",
   ]);
 }
 
@@ -599,6 +600,7 @@ class VirtualButton {
   String description;
 
   bool hasRendered = true;
+  bool isRendering = false;
 
   String? id;
 
@@ -643,7 +645,8 @@ class VirtualButton {
 
     bool hovered = isHovered(game.mouseX.toInt(), game.mouseY.toInt());
 
-    if (shouldRender()) {
+    isRendering = shouldRender();
+    if (isRendering) {
       hasRendered = true;
     } else if (hasRendered) {
       if (time / duration > 1) return;
@@ -933,9 +936,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         return;
       } else if (cells.contains(currentSelection) && currentSelection != "empty") {
         currentSelection = "totrick_$currentSelection";
+        currentData = {};
+        animatePropertyEditor();
       }
     } else {
+      currentData = {};
       currentSelection = newSelection;
+      animatePropertyEditor();
+    }
+  }
+
+  void animatePropertyEditor() {
+    final btn = buttonManager.buttons['prop-edit-btn']!;
+    if (btn.isRendering != btn.shouldRender()) {
+      btn.time = 0;
+      btn.duration = 0.25;
     }
   }
 
@@ -1177,6 +1192,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (args.first == clientID) {
           currentSelection = "empty";
           currentRotation = 0;
+          currentData = {};
         }
       } else if (cmd == "set-cursor") {
         if (cursors[args.first] == null) {
@@ -1237,6 +1253,24 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         description: edType == EditorType.making ? lang('editor_menu_desc', 'Opens the Editor Menu') : lang('exit_desc', 'Exits the editor'),
       ),
     );
+
+    if (edType == EditorType.making) {
+      buttonManager.setButton(
+        "prop-edit-btn",
+        VirtualButton(
+          Vector2(0, 90),
+          Vector2.all(80),
+          "interface/property_editor.png",
+          ButtonAlignment.TOPLEFT,
+          () {
+            showDialog(context: context, builder: (ctx) => PropertyEditorDialog());
+          },
+          () => props[currentSelection] != null,
+          title: 'Property Editor',
+          description: 'It looks like you have selected a cell with adjustable properties.\nClick on this button to edit them',
+        )..startPos = Vector2(-90, 90),
+      );
+    }
 
     buttonManager.setButton(
       "play-btn",
@@ -2677,7 +2711,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     // Custom cell stuff
-    if (cell.id == "counter") {
+    if (cell.id == "counter" || cell.id == "math_number") {
       final tp = TextPainter(
         text: TextSpan(
           text: "${cell.data['count'] ?? 0}",
@@ -2854,8 +2888,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               if (edType == EditorType.making) {
                 if (cells.contains(id)) {
                   currentSelection = id;
+                  animatePropertyEditor();
                   if (id == "empty" && cells.contains(p)) {
                     currentSelection = p;
+                  } else {
+                    currentRotation = grid.at(mx, my).rot;
+                    currentData = {...grid.at(mx, my).data};
                   }
                 }
               }
@@ -2929,7 +2967,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           Cell(cx, cy)
             ..id = id
             ..rot = rot
-            ..lastvars.lastRot = rot,
+            ..lastvars.lastRot = rot
+            ..data = {...currentData},
         );
       if (brushTemp != 0) {
         if (!isMultiplayer) grid.at(cx, cy).data['heat'] = brushTemp;
@@ -2944,7 +2983,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           );
         } else {
           sendToServer(
-            "place $cx $cy $id $rot heat=$brushTemp",
+            "place $cx $cy $id $rot ${cellDataStr({...currentData, "heat": brushTemp})}",
           );
         }
       }
@@ -2962,6 +3001,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if (biomes.contains(grid.placeable(cx, cy))) return;
       if (id == "empty" && grid.at(cx, cy).id != "empty") {
         currentSelection = grid.at(cx, cy).id;
+        animatePropertyEditor();
         currentRotation = grid.at(cx, cy).rot;
         originalPlace = grid.placeable(cx, cy);
         currentData = grid.at(cx, cy).data;
@@ -2979,15 +3019,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               ..id = id
               ..rot = rot
               ..lastvars.lastRot = rot
-              ..data = currentData,
+              ..data = {...currentData},
           );
         }
         currentSelection = "empty";
+        animatePropertyEditor();
         currentRotation = 0;
-        currentData = {};
         sendToServer(
-          'place $cx $cy $id $rot 0',
+          'place $cx $cy $id $rot ${cellDataStr(currentData)}',
         );
+        currentData = {};
         sendToServer('drop-hover $clientID');
       }
     }

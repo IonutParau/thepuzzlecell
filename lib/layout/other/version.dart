@@ -16,6 +16,8 @@ final List<String> changes = [
   "Fixed the P4 Tags decoder",
   "FIXED HEAT!!!",
   "Added Inverse Airflow and Super Vacuum",
+  "Made the mechanical keys also work with logic gates",
+  "Added the property editor",
 ];
 
 IconData getTrailing(String change) {

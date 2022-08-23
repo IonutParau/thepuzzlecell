@@ -2054,3 +2054,28 @@ final cellInfo = <String, CellProfile>{
     "Puzzle cell but you can hold T and press arrow keys to act like transformer for that direction.",
   ),
 };
+
+enum CellPropertyType {
+  number,
+  integer,
+  text,
+  boolean,
+}
+
+class CellProperty {
+  String name;
+  String key;
+  CellPropertyType type;
+  dynamic def;
+
+  CellProperty(this.name, this.key, this.type, [this.def]);
+}
+
+Map<String, List<CellProperty>> props = {
+  "math_number": [
+    CellProperty("Count", "count", CellPropertyType.number, 0),
+  ],
+  "counter": [
+    CellProperty("Count", "count", CellPropertyType.number, 0),
+  ],
+};

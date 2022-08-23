@@ -124,10 +124,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
     grid.updateCell(
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y, 0, false, 2);
-        MechanicalManager.spread(x + 1, y, 0, false, 0);
-        MechanicalManager.spread(x, y - 1, 0, false, 3);
-        MechanicalManager.spread(x, y + 1, 0, false, 1);
+        MechanicalManager.spread(x, y, -1, true);
       },
       null,
       "mech_keyup",
@@ -137,10 +134,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
     grid.updateCell(
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y, 0, false, 2);
-        MechanicalManager.spread(x + 1, y, 0, false, 0);
-        MechanicalManager.spread(x, y - 1, 0, false, 3);
-        MechanicalManager.spread(x, y + 1, 0, false, 1);
+        MechanicalManager.spread(x, y, -1, true);
       },
       null,
       "mech_keyleft",
@@ -149,10 +143,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
     grid.updateCell(
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y, 0, false, 2);
-        MechanicalManager.spread(x + 1, y, 0, false, 0);
-        MechanicalManager.spread(x, y - 1, 0, false, 3);
-        MechanicalManager.spread(x, y + 1, 0, false, 1);
+        MechanicalManager.spread(x, y, -1, true);
       },
       null,
       "mech_keyright",
@@ -161,10 +152,7 @@ void mechs(Set<String> cells) {
   if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
     grid.updateCell(
       (cell, x, y) {
-        MechanicalManager.spread(x - 1, y, 0, false, 2);
-        MechanicalManager.spread(x + 1, y, 0, false, 0);
-        MechanicalManager.spread(x, y - 1, 0, false, 3);
-        MechanicalManager.spread(x, y + 1, 0, false, 1);
+        MechanicalManager.spread(x, y, -1, true);
       },
       null,
       "mech_keydown",
@@ -358,7 +346,7 @@ class MechanicalManager {
     if (cell.id == "mech_gear" && depth < 14) grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
-    if (cell.id == "mech_gear" || (depth == 0 && continueFirst)) {
+    if (cell.id == "mech_gear" || (depth <= 0 && continueFirst)) {
       if (sentDir != 2) {
         spread(cell.cx! + 1, cell.cy!, depth, continueFirst, 0);
       }
