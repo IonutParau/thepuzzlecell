@@ -2207,15 +2207,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_mult": CellProfile(
     "Multiply",
-    "Outputs the multiplication of the 2 inputs",
+    "Outputs the product of the 2 inputs",
   ),
   "math_div": CellProfile(
     "Multiply",
-    "Outputs the first input divided by the 2nd one",
+    "Outputs the first input divided by the 2nd input",
   ),
   "math_exp": CellProfile(
     "Exponent",
-    "Outputs the first input raised to the second input",
+    "Outputs the first input raised to the power of second input",
   ),
   "math_sqrt": CellProfile(
     "Square Root",
@@ -2223,7 +2223,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_abs": CellProfile(
     "Absolute",
-    "Outputs the absolute of the input",
+    "Outputs the absolute value of the input",
   ),
   "math_floor": CellProfile(
     "Floor",
@@ -2239,15 +2239,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_logn": CellProfile(
     "LogN",
-    "Outputs the logarithm of order 2nd input of the 1st input",
+    "Outputs the logarithm base 2nd input of the 1st input",
   ),
   "math_min": CellProfile(
     "Minimum",
-    "Outputs the lowest value out of the 2 inputs",
+    "Outputs the lower value of the 2 inputs",
   ),
   "math_max": CellProfile(
     "Maximum",
-    "Outputs the highest value out of the 2 inputs",
+    "Outputs the higher value of the 2 inputs",
   ),
   "math_rng": CellProfile(
     "Randomizer",
