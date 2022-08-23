@@ -48,6 +48,11 @@ flutter:
     - assets/images/mechanical/gates/
     - assets/images/mechanical/users/
     - assets/images/math/
+    - assets/images/math/core/
+    - assets/images/math/data/
+    - assets/images/math/memory/
+    - assets/images/math/functions/
+    - assets/images/math/functions/tri/
     - assets/images/skins/
     - assets/images/movers/
     - assets/images/movers/combos/

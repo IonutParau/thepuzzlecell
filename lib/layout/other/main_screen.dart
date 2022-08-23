@@ -78,25 +78,28 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 displayMode: PaneDisplayMode.auto,
                 header: Padding(
                   padding: EdgeInsets.all(0.1.w),
-                  child: Row(
-                    children: [
-                      Spacer(flex: 10),
-                      Image.asset(
-                        'assets/images/logo.png',
-                        filterQuality: FilterQuality.none,
-                        width: 2.w,
-                        height: 2.w,
-                        fit: BoxFit.fill,
-                      ),
-                      Spacer(),
-                      Text(
-                        "The Puzzle Cell",
-                        style: fontSize(
-                          6.sp,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Row(
+                      children: [
+                        Spacer(flex: 10),
+                        Image.asset(
+                          'assets/images/logo.png',
+                          filterQuality: FilterQuality.none,
+                          width: 2.w,
+                          height: 2.w,
+                          fit: BoxFit.fill,
                         ),
-                      ),
-                      Spacer(flex: 10),
-                    ],
+                        Spacer(),
+                        Text(
+                          "The Puzzle Cell",
+                          style: fontSize(
+                            6.sp,
+                          ),
+                        ),
+                        Spacer(flex: 10),
+                      ],
+                    ),
                   ),
                 ),
                 items: [
