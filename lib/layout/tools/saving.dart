@@ -861,16 +861,16 @@ class P4 {
   }
 
   static void setCell(String str, int x, int y, Grid grid) {
-    final m = decodeValue(str) as Map<String, dynamic>;
+    final m = decodeValue(str);
 
     final c = Cell(x, y);
-    c.lastvars.lastRot = m['rot'];
-    c.rot = m['rot'];
-    c.data = m['data']; // If it was empty, it would default to list lmao
+    c.lastvars.lastRot = m['rot'].toInt();
+    c.rot = m['rot'].toInt();
+    c.data = m['data'];
     c.tags = {};
     m['tags'].forEach((v) => c.tags.add(v.toString()));
     c.id = m['id'];
-    c.lifespan = m['lifespan'];
+    c.lifespan = m['lifespan'].toInt();
     c.invisible = m['invisible'] ?? false;
     final bg = m['bg'];
 
@@ -923,7 +923,6 @@ class P4 {
   }
 
   static Grid decodeString(String str, [bool handleCustomProps = true]) {
-    str.replaceAll('\n', '');
     final segs = str.split(';');
 
     final width = decodeNum(segs[3], valueString);

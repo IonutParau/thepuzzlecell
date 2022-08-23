@@ -2234,8 +2234,8 @@ final cellInfo = <String, CellProfile>{
     "Outputs the input rounded up",
   ),
   "math_log": CellProfile(
-    "Log",
-    "Outputs the logarithm of the input",
+    "Natural Log",
+    "Outputs the natural logarithm of the input",
   ),
   "math_logn": CellProfile(
     "LogN",
