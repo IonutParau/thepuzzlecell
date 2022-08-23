@@ -7,7 +7,7 @@ void doRep(int x, int y, int dir, int gendir, [int offX = 0, int offY = 0, bool 
 }
 
 void reps() {
-  if (!debug(grid.movable)) return;
+  if (!grid.movable) return;
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {

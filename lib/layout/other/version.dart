@@ -14,6 +14,8 @@ final List<String> changes = [
   "Fixed replicator nukes breaking",
   "Fixed mechanical-based duplication glitches",
   "Fixed the P4 Tags decoder",
+  "FIXED HEAT!!!",
+  "Added Inverse Airflow and Super Vacuum",
 ];
 
 IconData getTrailing(String change) {

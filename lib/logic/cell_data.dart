@@ -239,6 +239,9 @@ final cells = {
   "quantum_zypper",
   "portal_a",
   "portal_b",
+  "inverse_airflow",
+  "supervacuum",
+  "transform_puzzle",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -246,6 +249,9 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "transform_puzzle.png": "puzzle/transform_puzzle.png",
+  "inverse_airflow.png": "movers/pullers/inverse_airflow.png",
+  "supervacuum.png": "movers/pullers/supervacuum.png",
   "portal_a.png": "unique/portal/portal_a.png",
   "portal_b.png": "unique/portal/portal_b.png",
   "quantum_zypper.png": "quantum/quantum_zypper.png",
@@ -692,6 +698,8 @@ final categories = [
       "superfan",
       "airflow",
       "vacuum",
+      "supervacuum",
+      "inverse_airflow",
       "conveyor",
       "swapper",
       "nudger",
@@ -1033,6 +1041,7 @@ final categories = [
           "trash_puzzle",
           "mover_puzzle",
           "temporal_puzzle",
+          "transform_puzzle",
         ],
         "molten_puzzle",
       ),
@@ -2031,5 +2040,17 @@ final cellInfo = <String, CellProfile>{
   "trick_tool": CellProfile(
     "Trickster Tool",
     "Will disguise the cell you click on into your currently selected cell",
+  ),
+  "inverse_airflow": CellProfile(
+    "Inverse Airflow",
+    "Super Vacuum but ignores Inverse Airflows",
+  ),
+  "supervacuum": CellProfile(
+    "Super Vacuum",
+    "Vacuum with infinite range",
+  ),
+  "transform_puzzle": CellProfile(
+    "Transform Puzzle",
+    "Puzzle cell but you can hold T and press arrow keys to act like transformer for that direction.",
   ),
 };

@@ -80,6 +80,8 @@ class CellTypeManager {
     "nudger",
     "superfan",
     "airflow",
+    "supervacuum",
+    "inverse_airflow",
   ];
 
   static List<String> ants = ["ant_cw", "ant_ccw"];
@@ -156,6 +158,7 @@ class CellTypeManager {
     "molten_puzzle",
     "frozen_puzzle",
     "unstable_puzzle",
+    "transform_puzzle",
   ];
 
   static List<String> mechanical = [
