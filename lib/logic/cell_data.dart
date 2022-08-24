@@ -286,9 +286,9 @@ final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
   "math_equal.png": "math/logic/math_equal.png",
-  "math_notequal": "math/logic/math_notequal.png",
-  "math_greater": "math/logic/math_greater.png",
-  "math_less": "math/logic/math_less.png",
+  "math_notequal.png": "math/logic/math_notequal.png",
+  "math_greater.png": "math/logic/math_greater.png",
+  "math_less.png": "math/logic/math_less.png",
   "math_number.png": "math/math_number.png",
   "math_plus.png": "math/core/math_plus.png",
   "math_minus.png": "math/core/math_minus.png",
