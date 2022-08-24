@@ -2101,389 +2101,396 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   @override
   // Main game rendering
   void render(Canvas canvas) {
-    this.canvas = canvas;
+    try {
+      this.canvas = canvas;
 
-    if (overlays.isActive("loading")) {
+      if (overlays.isActive("loading")) {
+        canvas.drawRect(
+          Offset.zero & Size(canvasSize.x, canvasSize.y),
+          Paint()..color = Colors.black,
+        );
+        return;
+      }
+
+      if (emptyImage == null) {
+        canvas.drawRect(
+          Offset.zero & Size(canvasSize.x, canvasSize.y),
+          Paint()..color = Colors.black,
+        );
+        final tp = TextPainter(
+          textDirection: TextDirection.ltr,
+          text: TextSpan(
+            text: 'Building Empty Image composition',
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.white,
+            ),
+          ),
+        );
+        tp.layout();
+
+        final pos = (canvasSize - tp.size.toVector2()) / 2;
+
+        tp.paint(
+          canvas,
+          pos.toOffset(),
+        );
+        return;
+      }
+
       canvas.drawRect(
         Offset.zero & Size(canvasSize.x, canvasSize.y),
         Paint()..color = Colors.black,
       );
-      return;
-    }
 
-    if (emptyImage == null) {
-      canvas.drawRect(
-        Offset.zero & Size(canvasSize.x, canvasSize.y),
-        Paint()..color = Colors.black,
-      );
-      final tp = TextPainter(
-        textDirection: TextDirection.ltr,
-        text: TextSpan(
-          text: 'Building Empty Image composition',
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: Colors.white,
+      //canvas.save();
+
+      canvas.translate(offX, offY);
+
+      if (!firstRender) {
+        emptyImage!.render(
+          canvas,
+          position: Vector2.zero(),
+          size: Vector2(
+            grid.width * cellSize,
+            grid.height * cellSize,
+          ),
+        );
+      }
+
+      firstRender = false;
+
+      var sx = floor((-offX - cellSize) / cellSize);
+      var sy = floor((-offY - cellSize) / cellSize);
+      var ex = ceil((canvasSize.x - offX) / cellSize);
+      var ey = ceil((canvasSize.y - offY) / cellSize);
+
+      sx = max(sx, 0);
+      sy = max(sy, 0);
+      ex = min(ex, grid.width);
+      ey = min(ey, grid.height);
+
+      if (viewbox != null) {
+        sx = viewbox!.topLeft.dx.toInt();
+        sy = viewbox!.topLeft.dy.toInt();
+        ex = viewbox!.bottomRight.dx.toInt();
+        ey = viewbox!.bottomRight.dy.toInt();
+      }
+
+      if (realisticRendering) {
+        final extra = 5;
+        sx = max(sx - extra, 0);
+        sy = max(sy - extra, 0);
+        ex = min(ex + extra, grid.width);
+        ey = min(ey + extra, grid.height);
+      }
+
+      final renderMap = <int, List<int>>{};
+
+      for (var x = sx; x < ex; x++) {
+        for (var y = sy; y < ey; y++) {
+          if (!grid.inChunk(x, y, "*")) {
+            x = grid.chunkToCellX(grid.cx(x) + 1); // Skip chunk
+          } else {
+            if (grid.inside(x, y)) {
+              if (grid.at(x, y).id != "empty") {
+                renderMap[x] ??= [];
+                renderMap[x]!.add(y);
+              }
+              renderEmpty(grid.at(x, y), x, y);
+            }
+          }
+        }
+      }
+
+      fancyRender(canvas);
+
+      renderMap.forEach(
+        (x, ys) => ys.forEach(
+          (y) => renderCell(
+            grid.at(x, y),
+            x,
+            y,
           ),
         ),
       );
-      tp.layout();
 
-      final pos = (canvasSize - tp.size.toVector2()) / 2;
+      // grid.loopChunks(
+      //   "all",
+      //   GridAlignment.BOTTOMLEFT,
+      //   renderCell,
+      //   // minx: sx,
+      //   // miny: sy,
+      //   // maxx: ex,
+      //   // maxy: ey,
+      //   fastChunk: false, // Fast chunk has some problems
+      //   filter: (cell, x, y) => cell.id != "empty",
+      // );
 
-      tp.paint(
-        canvas,
-        pos.toOffset(),
-      );
-      return;
-    }
-
-    canvas.drawRect(
-      Offset.zero & Size(canvasSize.x, canvasSize.y),
-      Paint()..color = Colors.black,
-    );
-
-    //canvas.save();
-
-    canvas.translate(offX, offY);
-
-    if (!firstRender) {
-      emptyImage!.render(
-        canvas,
-        position: Vector2.zero(),
-        size: Vector2(
-          grid.width * cellSize,
-          grid.height * cellSize,
-        ),
-      );
-    }
-
-    firstRender = false;
-
-    var sx = floor((-offX - cellSize) / cellSize);
-    var sy = floor((-offY - cellSize) / cellSize);
-    var ex = ceil((canvasSize.x - offX) / cellSize);
-    var ey = ceil((canvasSize.y - offY) / cellSize);
-
-    sx = max(sx, 0);
-    sy = max(sy, 0);
-    ex = min(ex, grid.width);
-    ey = min(ey, grid.height);
-
-    if (viewbox != null) {
-      sx = viewbox!.topLeft.dx.toInt();
-      sy = viewbox!.topLeft.dy.toInt();
-      ex = viewbox!.bottomRight.dx.toInt();
-      ey = viewbox!.bottomRight.dy.toInt();
-    }
-
-    if (realisticRendering) {
-      final extra = 5;
-      sx = max(sx - extra, 0);
-      sy = max(sy - extra, 0);
-      ex = min(ex + extra, grid.width);
-      ey = min(ey + extra, grid.height);
-    }
-
-    final renderMap = <int, List<int>>{};
-
-    for (var x = sx; x < ex; x++) {
-      for (var y = sy; y < ey; y++) {
-        if (!grid.inChunk(x, y, "*")) {
-          x = grid.chunkToCellX(grid.cx(x) + 1); // Skip chunk
-        } else {
-          if (grid.inside(x, y)) {
-            if (grid.at(x, y).id != "empty") {
-              renderMap[x] ??= [];
-              renderMap[x]!.add(y);
+      if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
+        var mx = cellMouseX; // shorter names
+        var my = cellMouseY; // shorter names
+        for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+          for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
+            if (grid.inside(cx, cy)) {
+              final ocx = cx;
+              final ocy = cy;
+              if (grid.wrap) {
+                cx += grid.width;
+                cx %= grid.width;
+                cy += grid.height;
+                cy %= grid.height;
+              }
+              renderCell(
+                Cell(cx, cy)
+                  ..id = currentSelection
+                  ..rot = currentRotation
+                  ..lastvars.lastRot = currentRotation
+                  ..data = currentData,
+                cx,
+                cy,
+                Paint()..color = Colors.white.withOpacity(0.5),
+              );
+              cx = ocx;
+              cy = ocy;
             }
-            renderEmpty(grid.at(x, y), x, y);
           }
         }
       }
-    }
 
-    fancyRender(canvas);
-
-    renderMap.forEach(
-      (x, ys) => ys.forEach(
-        (y) => renderCell(
-          grid.at(x, y),
-          x,
-          y,
-        ),
-      ),
-    );
-
-    // grid.loopChunks(
-    //   "all",
-    //   GridAlignment.BOTTOMLEFT,
-    //   renderCell,
-    //   // minx: sx,
-    //   // miny: sy,
-    //   // maxx: ex,
-    //   // maxy: ey,
-    //   fastChunk: false, // Fast chunk has some problems
-    //   filter: (cell, x, y) => cell.id != "empty",
-    // );
-
-    if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
-      var mx = cellMouseX; // shorter names
-      var my = cellMouseY; // shorter names
-      for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
-        for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
-          if (grid.inside(cx, cy)) {
-            final ocx = cx;
-            final ocy = cy;
-            if (grid.wrap) {
-              cx += grid.width;
-              cx %= grid.width;
-              cy += grid.height;
-              cy %= grid.height;
-            }
-            renderCell(
-              Cell(cx, cy)
-                ..id = currentSelection
-                ..rot = currentRotation
-                ..lastvars.lastRot = currentRotation
-                ..data = currentData,
-              cx,
-              cy,
-              Paint()..color = Colors.white.withOpacity(0.5),
-            );
-            cx = ocx;
-            cy = ocy;
-          }
-        }
+      if (edType == EditorType.loaded && currentSelection != "empty" && mouseInside && !running) {
+        final c = Cell(0, 0);
+        c.lastvars = LastVars(currentRotation, 0, 0);
+        c.lastvars.lastPos = Offset(
+          (mouseX - offX) / cellSize,
+          (mouseY - offY) / cellSize,
+        );
+        c.id = currentSelection;
+        c.rot = currentRotation;
+        c.data = currentData;
+        renderCell(
+          c,
+          (mouseX - offX) / cellSize - 0.5,
+          (mouseY - offY) / cellSize - 0.5,
+        );
       }
-    }
-
-    if (edType == EditorType.loaded && currentSelection != "empty" && mouseInside && !running) {
-      final c = Cell(0, 0);
-      c.lastvars = LastVars(currentRotation, 0, 0);
-      c.lastvars.lastPos = Offset(
-        (mouseX - offX) / cellSize,
-        (mouseY - offY) / cellSize,
-      );
-      c.id = currentSelection;
-      c.rot = currentRotation;
-      c.data = currentData;
-      renderCell(
-        c,
-        (mouseX - offX) / cellSize - 0.5,
-        (mouseY - offY) / cellSize - 0.5,
-      );
-    }
-    if (isMultiplayer && !running) {
-      hovers.forEach(
-        (id, hover) {
-          if (id != clientID) {
-            renderCell(
-              Cell(0, 0)
-                ..id = hover.id
-                ..rot = hover.rot
-                ..data = hover.data,
-              hover.x,
-              hover.y,
-            );
-          }
-        },
-      );
-    }
-
-    if (pasting) {
-      final mx = grid.wrap ? (cellMouseX + grid.width) % grid.width : cellMouseX;
-
-      final my = grid.wrap ? (cellMouseY + grid.height) % grid.height : cellMouseY;
-      gridClip.render(canvas, mx, my);
-    } else if (selecting && setPos) {
-      final selScreenX = (selX * cellSize);
-      final selScreenY = (selY * cellSize);
-      canvas.drawRect(
-        Offset(selScreenX, selScreenY) & Size(selW * cellSize, selH * cellSize),
-        Paint()..color = (Colors.grey[100].withOpacity(0.4)),
-      );
-    }
-
-    redparticles.render(canvas);
-    blueparticles.render(canvas);
-    greenparticles.render(canvas);
-    yellowparticles.render(canvas);
-
-    //grid.forEach(renderCell);
-
-    canvas.restore();
-
-    if (!running) {
-      cursors.forEach(
-        (id, cursor) {
-          if (id != clientID) {
-            if (cursor.selection != "empty" && edType == EditorType.making) {
+      if (isMultiplayer && !running) {
+        hovers.forEach(
+          (id, hover) {
+            if (id != clientID) {
               renderCell(
                 Cell(0, 0)
-                  ..id = cursor.selection
-                  ..rot = cursor.rotation,
-                cursor.x + offX / cellSize,
-                cursor.y + offY / cellSize,
+                  ..id = hover.id
+                  ..rot = hover.rot
+                  ..data = hover.data,
+                hover.x,
+                hover.y,
               );
             }
+          },
+        );
+      }
 
-            final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+      if (pasting) {
+        final mx = grid.wrap ? (cellMouseX + grid.width) % grid.width : cellMouseX;
 
-            var c = 'interface/cursor.png';
-            // Haha cool
-            if (cursor.texture != "cursor") {
-              c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
-            }
-            if (!Flame.images.containsKey(c) || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
-            // Haha cooln't
-            Sprite(Flame.images.fromCache(c)).render(
-              canvas,
-              position: p,
-              size: Vector2.all(cellSize / 2),
-            );
+        final my = grid.wrap ? (cellMouseY + grid.height) % grid.height : cellMouseY;
+        gridClip.render(canvas, mx, my);
+      } else if (selecting && setPos) {
+        final selScreenX = (selX * cellSize);
+        final selScreenY = (selY * cellSize);
+        canvas.drawRect(
+          Offset(selScreenX, selScreenY) & Size(selW * cellSize, selH * cellSize),
+          Paint()..color = (Colors.grey[100].withOpacity(0.4)),
+        );
+      }
 
-            if (debugMode) {
-              final tp = TextPainter(
-                textDirection: TextDirection.ltr,
-                text: TextSpan(
-                  text: id,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: cellSize / 3,
+      redparticles.render(canvas);
+      blueparticles.render(canvas);
+      greenparticles.render(canvas);
+      yellowparticles.render(canvas);
+
+      //grid.forEach(renderCell);
+
+      canvas.restore();
+
+      if (!running) {
+        cursors.forEach(
+          (id, cursor) {
+            if (id != clientID) {
+              if (cursor.selection != "empty" && edType == EditorType.making) {
+                renderCell(
+                  Cell(0, 0)
+                    ..id = cursor.selection
+                    ..rot = cursor.rotation,
+                  cursor.x + offX / cellSize,
+                  cursor.y + offY / cellSize,
+                );
+              }
+
+              final p = (cursor.pos + Vector2.all(0.5)) * cellSize + Vector2(offX, offY);
+
+              var c = 'interface/cursor.png';
+              // Haha cool
+              if (cursor.texture != "cursor") {
+                c = textureMap["${cursor.texture}.png"] ?? "${cursor.texture}.png";
+              }
+              if (!Flame.images.containsKey(c) || !cursorTextures.contains(cursor.texture)) c = 'base.png'; // No crashing rendering or setting stuff to other things :trell:
+              // Haha cooln't
+              Sprite(Flame.images.fromCache(c)).render(
+                canvas,
+                position: p,
+                size: Vector2.all(cellSize / 2),
+              );
+
+              if (debugMode) {
+                final tp = TextPainter(
+                  textDirection: TextDirection.ltr,
+                  text: TextSpan(
+                    text: id,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: cellSize / 3,
+                    ),
                   ),
-                ),
-              );
-              tp.layout();
-              tp.paint(canvas, p.toOffset());
+                );
+                tp.layout();
+                tp.paint(canvas, p.toOffset());
+              }
             }
-          }
-        },
-      );
-    }
+          },
+        );
+      }
 
-    if (cellbar && edType == EditorType.making) {
-      canvas.drawRect(
-        Offset(0, canvasSize.y - 110 * uiScale) & Size(canvasSize.x, 110 * uiScale),
-        Paint()..color = Colors.grey[180],
-      );
+      if (cellbar && edType == EditorType.making) {
+        canvas.drawRect(
+          Offset(0, canvasSize.y - 110 * uiScale) & Size(canvasSize.x, 110 * uiScale),
+          Paint()..color = Colors.grey[180],
+        );
 
-      final w = 5.0 * uiScale;
+        final w = 5.0 * uiScale;
 
-      canvas.drawRect(
-        Offset(w, canvasSize.y - 110 * uiScale + w) & Size(canvasSize.x - w, 110 * uiScale - w),
-        Paint()
-          ..color = Colors.grey[60]
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = w,
-      );
-    }
+        canvas.drawRect(
+          Offset(w, canvasSize.y - 110 * uiScale + w) & Size(canvasSize.x - w, 110 * uiScale - w),
+          Paint()
+            ..color = Colors.grey[60]
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = w,
+        );
+      }
 
-    AchievementRenderer.draw(canvas, canvasSize);
+      AchievementRenderer.draw(canvas, canvasSize);
 
-    buttonManager.forEach(
-      (key, button) {
-        button.canvasSize = canvasSize;
-        button.render(canvas, canvasSize);
-      },
-    );
-
-    if (debugMode && !isinitial) {
-      final tp = TextPainter(
-        textDirection: TextDirection.ltr,
-        text: TextSpan(
-          text: 'Tick Count: ${grid.tickCount}',
-          style: TextStyle(
-            fontSize: 10.sp,
-          ),
-        ),
-      );
-
-      tp.layout();
-
-      tp.paint(canvas, Offset(10 * uiScale, 70 * uiScale));
-    }
-    if (storage.getBool('show_titles') ?? true) {
-      var hasShown = false;
       buttonManager.forEach(
         (key, button) {
-          if (button.isHovered(mouseX.toInt(), mouseY.toInt()) && button.shouldRender() && mouseInside && !key.startsWith('hidden-') && !hasShown) {
-            hasShown = true;
-            renderInfoBox(canvas, button.title, button.description);
-          }
+          button.canvasSize = canvasSize;
+          button.render(canvas, canvasSize);
         },
       );
-    }
 
-    if (keys[LogicalKeyboardKey.shiftLeft.keyLabel] == true && !selecting) {
-      final mx = cellMouseX;
-      final my = cellMouseY;
-
-      final c = safeAt(mx, my);
-
-      if (c != null) {
-        var id = c.id;
-
-        if (id == "empty") {
-          id = grid.placeable(mx, my);
-        }
-
-        if (c.data["trick_as"] != null && edType == EditorType.loaded) {
-          id = c.data["trick_as"];
-        }
-
-        renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: $id" : ""));
-      }
-    }
-
-    if (grid.title != "") {
-      // Render title and description
-
-      final titletp = TextPainter(
-        textDirection: TextDirection.ltr,
-        text: TextSpan(
-          text: grid.title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 40 * uiScale,
-          ),
-        ),
-      );
-
-      titletp.layout();
-
-      titletp.paint(
-        canvas,
-        Offset(
-          (canvasSize.x - titletp.width) / 2,
-          50 * uiScale,
-        ),
-      );
-
-      if (grid.desc != "") {
-        final descriptiontp = TextPainter(
+      if (debugMode && !isinitial) {
+        final tp = TextPainter(
           textDirection: TextDirection.ltr,
-          textAlign: TextAlign.center,
           text: TextSpan(
-            text: grid.desc,
+            text: 'Tick Count: ${grid.tickCount}',
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 30 * uiScale,
+              fontSize: 10.sp,
             ),
           ),
         );
 
-        descriptiontp.layout(maxWidth: 50.w);
+        tp.layout();
 
-        descriptiontp.paint(
-          canvas,
-          Offset((canvasSize.x - descriptiontp.width) / 2, 70 * uiScale + titletp.height),
+        tp.paint(canvas, Offset(10 * uiScale, 70 * uiScale));
+      }
+      if (storage.getBool('show_titles') ?? true) {
+        var hasShown = false;
+        buttonManager.forEach(
+          (key, button) {
+            if (button.isHovered(mouseX.toInt(), mouseY.toInt()) && button.shouldRender() && mouseInside && !key.startsWith('hidden-') && !hasShown) {
+              hasShown = true;
+              renderInfoBox(canvas, button.title, button.description);
+            }
+          },
         );
       }
+
+      if (keys[LogicalKeyboardKey.shiftLeft.keyLabel] == true && !selecting) {
+        final mx = cellMouseX;
+        final my = cellMouseY;
+
+        final c = safeAt(mx, my);
+
+        if (c != null) {
+          var id = c.id;
+
+          if (id == "empty") {
+            id = grid.placeable(mx, my);
+          }
+
+          if (c.data["trick_as"] != null && edType == EditorType.loaded) {
+            id = c.data["trick_as"];
+          }
+
+          renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: $id" : ""));
+        }
+      }
+
+      if (grid.title != "") {
+        // Render title and description
+
+        final titletp = TextPainter(
+          textDirection: TextDirection.ltr,
+          text: TextSpan(
+            text: grid.title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 40 * uiScale,
+            ),
+          ),
+        );
+
+        titletp.layout();
+
+        titletp.paint(
+          canvas,
+          Offset(
+            (canvasSize.x - titletp.width) / 2,
+            50 * uiScale,
+          ),
+        );
+
+        if (grid.desc != "") {
+          final descriptiontp = TextPainter(
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: grid.desc,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30 * uiScale,
+              ),
+            ),
+          );
+
+          descriptiontp.layout(maxWidth: 50.w);
+
+          descriptiontp.paint(
+            canvas,
+            Offset((canvasSize.x - descriptiontp.width) / 2, 70 * uiScale + titletp.height),
+          );
+        }
+      }
+
+      canvas.translate(offX, offY);
+
+      super.render(canvas);
+    } catch (e) {
+      print(e);
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (ctx) => ErrorWidget(e),
+      ));
     }
-
-    canvas.translate(offX, offY);
-
-    super.render(canvas);
   }
 
   void renderEmpty(Cell cell, int x, int y) {
@@ -2770,162 +2777,164 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   // Main game update
   @override
   void update(double dt) {
-    if (overlays.isActive("loading")) {
-      return;
-    }
-    if (rerenderOverlays) {
-      rerenderOverlays = false;
-      final openOverlays = Set.from(overlays.value);
-      for (var open in openOverlays) {
-        // Force a rerender
-        overlays.remove(open);
-        overlays.add(open);
+    try {
+      if (overlays.isActive("loading")) {
+        return;
       }
-    }
-    updates++;
-    if (edType == EditorType.making) {
-      puzzleWin = false;
-      puzzleLost = false;
-    }
-    redparticles.update(dt);
-    blueparticles.update(dt);
-    greenparticles.update(dt);
-    yellowparticles.update(dt);
+      if (rerenderOverlays) {
+        rerenderOverlays = false;
+        final openOverlays = Set.from(overlays.value);
+        for (var open in openOverlays) {
+          // Force a rerender
+          overlays.remove(open);
+          overlays.add(open);
+        }
+      }
+      updates++;
+      if (edType == EditorType.making) {
+        puzzleWin = false;
+        puzzleLost = false;
+      }
+      redparticles.update(dt);
+      blueparticles.update(dt);
+      greenparticles.update(dt);
+      yellowparticles.update(dt);
 
-    AchievementRenderer.update(dt);
-    buttonManager.forEach(
-      (key, button) {
-        button.time += dt;
-        button.timeRot += dt;
-      },
-    );
-    if (isMultiplayer && mouseInside) {
-      final mx = (mouseX - offX) / cellSize - 0.5;
-      final my = (mouseY - offY) / cellSize - 0.5;
-      if (hovers[clientID] != null) {
-        if (hovers[clientID]!.x != mx || hovers[clientID]!.y != my) {
+      AchievementRenderer.update(dt);
+      buttonManager.forEach(
+        (key, button) {
+          button.time += dt;
+          button.timeRot += dt;
+        },
+      );
+      if (isMultiplayer && mouseInside) {
+        final mx = (mouseX - offX) / cellSize - 0.5;
+        final my = (mouseY - offY) / cellSize - 0.5;
+        if (hovers[clientID] != null) {
+          if (hovers[clientID]!.x != mx || hovers[clientID]!.y != my) {
+            sendToServer(
+              'set-hover $clientID $mx $my',
+            );
+          }
+        }
+        var shouldCursor = false;
+        if (cursors[clientID] == null) {
+          shouldCursor = true;
+        } else {
+          final c = cursors[clientID]!;
+          shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture);
+        }
+        if (shouldCursor) {
           sendToServer(
-            'set-hover $clientID $mx $my',
+            'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture',
           );
         }
       }
-      var shouldCursor = false;
-      if (cursors[clientID] == null) {
-        shouldCursor = true;
+      if (realisticRendering) {
+        final speed = storage.getDouble("lerp_speed") ?? 10.0;
+        final t = dt * speed;
+        cellSize = lerp(cellSize, wantedCellSize.toDouble(), t);
+        smoothOffX = lerp(smoothOffX, storedOffX, t);
+        smoothOffY = lerp(smoothOffY, storedOffY, t);
       } else {
-        final c = cursors[clientID]!;
-        shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture);
+        cellSize = wantedCellSize.toDouble();
+        smoothOffX = storedOffX;
+        smoothOffY = storedOffY;
       }
-      if (shouldCursor) {
-        sendToServer(
-          'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture',
-        );
+      // if (overlays.isActive('CellBar')) {
+      //   overlays.remove('CellBar');
+      // }
+      // if (!overlays.isActive('CellBar')) {
+      //   overlays.add('CellBar');
+      // }
+      // if (!overlays.isActive('ActionBar')) {
+      //   overlays.add('ActionBar');
+      // }
+      // if (!overlays.isActive('Info')) {
+      //   overlays.add('Info');
+      // }
+      if (puzzleLost && edType == EditorType.loaded) {
+        if (!overlays.isActive("Lose")) {
+          overlays.add("Lose");
+          AchievementManager.complete("loser");
+        }
+        return;
       }
-    }
-    if (realisticRendering) {
-      final speed = storage.getDouble("lerp_speed") ?? 10.0;
-      final t = dt * speed;
-      cellSize = lerp(cellSize, wantedCellSize.toDouble(), t);
-      smoothOffX = lerp(smoothOffX, storedOffX, t);
-      smoothOffY = lerp(smoothOffY, storedOffY, t);
-    } else {
-      cellSize = wantedCellSize.toDouble();
-      smoothOffX = storedOffX;
-      smoothOffY = storedOffY;
-    }
-    // if (overlays.isActive('CellBar')) {
-    //   overlays.remove('CellBar');
-    // }
-    // if (!overlays.isActive('CellBar')) {
-    //   overlays.add('CellBar');
-    // }
-    // if (!overlays.isActive('ActionBar')) {
-    //   overlays.add('ActionBar');
-    // }
-    // if (!overlays.isActive('Info')) {
-    //   overlays.add('Info');
-    // }
-    if (puzzleLost && edType == EditorType.loaded) {
-      if (!overlays.isActive("Lose")) {
-        overlays.add("Lose");
-        AchievementManager.complete("loser");
+      if (puzzleWin && edType == EditorType.loaded) {
+        if ((!overlays.isActive("Win"))) {
+          overlays.add("Win");
+          CoinManager.give(Random().nextInt(7) + 3);
+          AchievementManager.complete("winner");
+        }
+        return;
       }
-      return;
-    }
-    if (puzzleWin && edType == EditorType.loaded) {
-      if ((!overlays.isActive("Win"))) {
-        overlays.add("Win");
-        CoinManager.give(Random().nextInt(7) + 3);
-        AchievementManager.complete("winner");
-      }
-      return;
-    }
-    if (!overlays.isActive("EditorMenu")) {
-      if ((running || onetick)) {
-        itime += dt;
+      if (!overlays.isActive("EditorMenu")) {
+        if ((running || onetick)) {
+          itime += dt;
 
-        while (itime > delay) {
-          itime -= delay;
-          if (onetick) {
-            onetick = false;
-            itime = 0;
-          } else {
-            grid.update(); // Update the cells boizz
+          while (itime > delay) {
+            itime -= delay;
+            if (onetick) {
+              onetick = false;
+              itime = 0;
+            } else {
+              grid.update(); // Update the cells boizz
+            }
           }
         }
-      }
 
-      const speed = 600;
-      if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
-        storedOffY += speed * dt;
-      }
-      if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
-        storedOffY -= speed * dt;
-      }
-      if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
-        storedOffX += speed * dt;
-      }
-      if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
-        storedOffX -= speed * dt;
-      }
+        const speed = 600;
+        if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
+          storedOffY += speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
+          storedOffY -= speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
+          storedOffX += speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
+          storedOffX -= speed * dt;
+        }
 
-      if (selecting && dragPos && setPos) {
-        final ex = max(min(cellMouseX, grid.width - 1), -1);
-        final ey = max(min(cellMouseY, grid.height - 1), -1);
+        if (selecting && dragPos && setPos) {
+          final ex = max(min(cellMouseX, grid.width - 1), -1);
+          final ey = max(min(cellMouseY, grid.height - 1), -1);
 
-        selW = ex - selX + 1;
-        selH = ey - selY + 1;
-      }
+          selW = ex - selX + 1;
+          selH = ey - selY + 1;
+        }
 
-      if (!(pasting || selecting || edType == EditorType.loaded)) {
-        if (mouseDown) {
-          final mx = (mouseX - offX) ~/ cellSize;
-          final my = (mouseY - offY) ~/ cellSize;
-          for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
-            for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
-              if (grid.inside(cx, cy)) {
-                if (mouseButton == kPrimaryMouseButton) {
-                  placeCell(currentSelection, currentRotation, cx, cy);
-                } else if (mouseButton == kSecondaryMouseButton) {
-                  placeCell("empty", 0, cx, cy);
+        if (!(pasting || selecting || edType == EditorType.loaded)) {
+          if (mouseDown) {
+            final mx = (mouseX - offX) ~/ cellSize;
+            final my = (mouseY - offY) ~/ cellSize;
+            for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+              for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
+                if (grid.inside(cx, cy)) {
+                  if (mouseButton == kPrimaryMouseButton) {
+                    placeCell(currentSelection, currentRotation, cx, cy);
+                  } else if (mouseButton == kSecondaryMouseButton) {
+                    placeCell("empty", 0, cx, cy);
+                  }
                 }
               }
             }
-          }
-          if (mouseButton == kMiddleMouseButton && !middleMove) {
-            if (grid.inside(mx, my)) {
-              final id = grid.at(mx, my).id;
-              final p = grid.placeable(mx, my);
+            if (mouseButton == kMiddleMouseButton && !middleMove) {
+              if (grid.inside(mx, my)) {
+                final id = grid.at(mx, my).id;
+                final p = grid.placeable(mx, my);
 
-              if (edType == EditorType.making) {
-                if (cells.contains(id)) {
-                  currentSelection = id;
-                  animatePropertyEditor();
-                  if (id == "empty" && cells.contains(p)) {
-                    currentSelection = p;
-                  } else {
-                    currentRotation = grid.at(mx, my).rot;
-                    currentData = {...grid.at(mx, my).data};
+                if (edType == EditorType.making) {
+                  if (cells.contains(id)) {
+                    currentSelection = id;
+                    animatePropertyEditor();
+                    if (id == "empty" && cells.contains(p)) {
+                      currentSelection = p;
+                    } else {
+                      currentRotation = grid.at(mx, my).rot;
+                      currentData = {...grid.at(mx, my).data};
+                    }
                   }
                 }
               }
@@ -2933,9 +2942,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           }
         }
       }
-    }
 
-    super.update(dt);
+      super.update(dt);
+    } catch (e) {
+      print(e);
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (ctx) => ErrorWidget(e),
+      ));
+    }
   }
 
   bool get inMenu => overlays.isActive('EditorMenu');
