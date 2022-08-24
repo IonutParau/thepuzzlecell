@@ -278,6 +278,8 @@ final cells = {
   "math_notequal",
   "math_greater",
   "math_less",
+  "math_greater_equal",
+  "math_less_equal",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -285,6 +287,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_greater_equal.png": "math/logic/math_greater_equal.png",
+  "math_less_equal.png": "math/logic/math_less_equal.png",
   "math_equal.png": "math/logic/math_equal.png",
   "math_notequal.png": "math/logic/math_notequal.png",
   "math_greater.png": "math/logic/math_greater.png",
@@ -1073,11 +1077,13 @@ final categories = [
         [
           "math_equal",
           "math_greater",
-          "math_notequal",
           "math_less",
+          "math_notequal",
+          "math_greater_equal",
+          "math_less_equal",
         ],
-        "math_greater",
-        max: 2,
+        "math_equal",
+        max: 3,
       ),
       CellCategory(
         "Variables",
@@ -2356,6 +2362,14 @@ final cellInfo = <String, CellProfile>{
   "math_less": CellProfile(
     "Less",
     "Checks if the first input is less than the second",
+  ),
+  "math_greater_equal": CellProfile(
+    "Greater or Equal",
+    "Checks if the first input is greater than or equal to the second one",
+  ),
+  "math_less_equal": CellProfile(
+    "Less or Equal",
+    "Checks if the first input is less than or equal to the second one",
   ),
 };
 
