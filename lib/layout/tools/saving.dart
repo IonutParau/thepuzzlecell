@@ -976,9 +976,22 @@ class P4 {
       }
       if (props['viewbox'] != null) {
         QueueManager.add("post-game-init", () {
-          final vb = props['viewbox'] as Map<String, dynamic>;
+          final vb = props['viewbox'] as Map;
 
           game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
+        });
+      }
+      // We gotta decode le' RAM stick
+      if (props['memory'] != null) {
+        final m = props['memory'] as Map;
+        m.forEach((key, value) {
+          final c = <int, num>{};
+
+          value.forEach((key, value) {
+            c[int.parse(key)] = decodeValue(value);
+          });
+
+          g.memory[int.parse(key)] = c;
         });
       }
     }

@@ -9,6 +9,7 @@ final subticks = [
   stoppers,
   heat,
   mechs,
+  math,
   gates,
   automata,
   spreaders,
@@ -223,6 +224,8 @@ class Grid {
   late List<List<String>> place;
   late List<List<Set<String>>> chunks;
 
+  Map<int, Map<int, num>> memory = {};
+
   String title = "";
   String desc = "";
 
@@ -356,6 +359,9 @@ class Grid {
         grid.set(x, y, cell.copy);
       },
     );
+    memory.forEach((key, value) {
+      grid.memory[key] = {...value};
+    });
     return grid;
   }
 

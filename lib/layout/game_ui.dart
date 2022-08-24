@@ -941,8 +941,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         animatePropertyEditor();
       }
     } else {
-      currentData = {};
       currentSelection = newSelection;
+      currentData = {};
+      final p = props[currentSelection];
+      if (p != null) {
+        p.forEach((prop) {
+          if (prop.def != null) currentData[prop.key] = prop.def;
+        });
+      }
       animatePropertyEditor();
     }
   }
@@ -2715,8 +2721,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     var text = "";
 
+    String countToString(num? count) {
+      if (count == double.infinity) return "inf";
+      if (count == double.negativeInfinity) return "-inf";
+      if (count == double.nan) return "nan";
+
+      return count.toString();
+    }
+
     if (cell.id == "counter" || cell.id == "math_number") {
-      text = "${cell.data['count'] ?? 0}";
+      text = countToString(cell.data['count']);
     }
 
     if (cell.id == "mech_trash") {
