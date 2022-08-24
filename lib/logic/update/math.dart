@@ -77,29 +77,47 @@ class MathManager {
     // Aboslute
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
+      if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, abs(i));
     }, null, "math_abs");
     // Ceil
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
+      if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, ceil(i));
     }, null, "math_ceil");
     // Floor
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
+      if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, floor(i));
     }, null, "math_floor");
     // Natural Log
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
+      if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, log(i));
     }, null, "math_log");
     // LogN
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot - 1);
+      if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.nan) return output(x, y, cell.rot, double.nan);
       final base = input(x, y, cell.rot + 1);
+      if (base == double.infinity) return output(x, y, cell.rot, 0);
+      if (base == double.negativeInfinity) return output(x, y, cell.rot, 0);
+      if (base == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, logn(i, base));
-    }, null, "math_floor");
+    }, null, "math_logn");
     // Max
     grid.updateCell((cell, x, y) {
       final i1 = input(x, y, cell.rot - 1);
