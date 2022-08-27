@@ -2762,7 +2762,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if ((cell.data['scale'] ?? 1) == 1) {
         text = "";
       }
-      text = "${MechanicalManager.on(cell)}";
     }
 
     if (text != "") {
