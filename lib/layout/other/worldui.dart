@@ -1,8 +1,8 @@
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart' hide Colors;
-import 'package:fluent_ui/fluent_ui.dart' show Colors, ContentDialog, TextBox;
+import 'package:flutter/material.dart' show AlertDialog, MaterialButton, MaterialPageRoute;
+import 'package:fluent_ui/fluent_ui.dart';
 import '../../logic/logic.dart' show grid, lang, worldIndex, worldManager;
 
 class WorldUI extends StatefulWidget {
@@ -15,9 +15,9 @@ class WorldUI extends StatefulWidget {
 class _WorldUIState extends State<WorldUI> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(
@@ -29,10 +29,9 @@ class _WorldUIState extends State<WorldUI> {
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
-        automaticallyImplyLeading: false,
+        color: Colors.grey[100],
       ),
-      body: Padding(
+      content: Padding(
         padding: EdgeInsets.all(1.w),
         child: ListView.builder(
           itemCount: worldManager.worldLength,
@@ -42,24 +41,29 @@ class _WorldUIState extends State<WorldUI> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          size: 12.sp,
-          color: Colors.grey[150],
-        ),
-        backgroundColor: Colors.orange,
-        onPressed: () => Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (ctx) => WorldCreate(),
-              ),
-            )
-            .then(
-              (v) => setState(
-                () {},
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Button(
+            child: Text(
+              lang("create", "Create"),
+              style: TextStyle(
+                fontSize: 10.sp,
               ),
             ),
+            onPressed: () => Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (ctx) => WorldCreate(),
+                  ),
+                )
+                .then(
+                  (v) => setState(
+                    () {},
+                  ),
+                ),
+          ),
+        ],
       ),
     );
   }
@@ -69,8 +73,7 @@ class WorldTile extends StatelessWidget {
   final int index;
   final Function() whenPressed;
 
-  const WorldTile({Key? key, required this.index, required this.whenPressed})
-      : super(key: key);
+  const WorldTile({Key? key, required this.index, required this.whenPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +84,8 @@ class WorldTile extends StatelessWidget {
       child: Container(
         color: Colors.grey[150],
         padding: EdgeInsets.all(0.5.w),
+        width: 15.w,
+        height: 10.h,
         child: ListTile(
           title: Row(
             children: [
@@ -216,18 +221,18 @@ class _WorldCreateState extends State<WorldCreate> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(lang('create_world', 'Create A World')),
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
+        color: Colors.grey[100],
       ),
-      body: Center(
+      content: Center(
         child: Column(
           children: [
             Spacer(flex: 10),

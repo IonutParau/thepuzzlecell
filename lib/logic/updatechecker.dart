@@ -18,6 +18,9 @@ bool higherVersion(String v1, String v2) {
     if (int.parse(segs1[i]) > int.parse(segs2[i])) {
       return true;
     }
+    if (int.parse(segs1[i]) < int.parse(segs2[i])) {
+      return false;
+    }
   }
 
   return false;

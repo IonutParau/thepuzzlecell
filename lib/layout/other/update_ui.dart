@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:fluent_ui/fluent_ui.dart' show Colors;
+import 'package:flutter/material.dart' show MaterialButton, CircularProgressIndicator;
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../../logic/logic.dart' show getVersion, higherVersion, lang, versionToCheck;
 import '../../utils/ScaleAssist.dart';
@@ -16,9 +16,9 @@ class _UpdateUIState extends State<UpdateUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(
@@ -30,10 +30,9 @@ class _UpdateUIState extends State<UpdateUI> {
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
-        automaticallyImplyLeading: false,
+        color: Colors.grey[100],
       ),
-      body: Center(
+      content: Center(
         child: Builder(
           builder: (ctx) {
             final updateBtn = MaterialButton(

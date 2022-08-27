@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:fluent_ui/fluent_ui.dart' show Colors;
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 final credits = [
@@ -16,26 +15,34 @@ final credits = [
 class CreditsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Special thanks to:",
-          style: TextStyle(
-            fontSize: 10.sp,
-          ),
+    return ScaffoldPage(
+      header: Container(
+        color: Colors.grey[100],
+        child: Row(
+          children: [
+            Spacer(),
+            Text(
+              'Special thanks to:',
+              style: TextStyle(
+                fontSize: 7.sp,
+              ),
+            ),
+            Spacer(),
+          ],
         ),
-        backgroundColor: Colors.grey[100],
-        automaticallyImplyLeading: false,
       ),
-      body: ListView.builder(
+      content: ListView.builder(
         itemCount: credits.length,
         itemBuilder: (ctx, i) {
           final item = credits[i];
-          return ListTile(
-            title: Text(
-              item,
-              style: TextStyle(
-                fontSize: 7.sp,
+          return Container(
+            height: 7.h,
+            child: ListTile(
+              title: Text(
+                item,
+                style: TextStyle(
+                  fontSize: 7.sp,
+                ),
               ),
             ),
           );

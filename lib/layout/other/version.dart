@@ -25,6 +25,7 @@ final List<String> changes = [
   "Made settings make more sense",
   "Added Texture Packs UI to disable or enable texture packs. You can still run multiple at the same time",
   "Made Version page also display current cell count, background count and biome count",
+  "Redesigned some pages to be more modern",
 ];
 
 IconData getTrailing(String change) {

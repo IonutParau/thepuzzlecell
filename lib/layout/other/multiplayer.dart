@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart' hide Colors;
-import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, TextBox;
+import 'package:flutter/material.dart' show Icons, MaterialButton, MaterialPageRoute;
+import 'package:fluent_ui/fluent_ui.dart';
 import '../../logic/logic.dart' show Grid, grid, lang, storage;
 
 class MultiplayerPage extends StatefulWidget {
@@ -40,6 +40,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
         borderRadius: BorderRadius.circular(20.w),
       ),
       width: 10.w,
+      height: 10.h,
       child: ListTile(
         tileColor: Colors.grey[130],
         leading: FutureBuilder<http.Response>(
@@ -128,9 +129,9 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(
@@ -142,35 +143,37 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
-        automaticallyImplyLeading: false,
+        color: Colors.grey[100],
       ),
-      body: ListView.builder(
+      content: ListView.builder(
         itemCount: storage.getStringList("servers")!.length,
         itemBuilder: (ctx, i) {
           return serverToTile(storage.getStringList("servers")![i], i);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 12.sp,
-        ),
-        backgroundColor: Colors.blue,
-        onPressed: () {
-          Navigator.of(context)
-              .push(
-                MaterialPageRoute(
-                  builder: (ctx) => AddServer(),
-                ),
-              )
-              .then(
-                (v) => setState(
-                  () {},
-                ),
-              );
-        },
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Button(
+            child: Text(
+              lang("add", "Add"),
+              style: TextStyle(fontSize: 10.sp),
+            ),
+            onPressed: () {
+              Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (ctx) => AddServer(),
+                    ),
+                  )
+                  .then(
+                    (v) => setState(
+                      () {},
+                    ),
+                  );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -196,18 +199,18 @@ class _AddServerState extends State<AddServer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(lang("add_server", "Add a server")),
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
+        color: Colors.grey[100],
       ),
-      body: Center(
+      content: Center(
         child: Container(
           width: 80.w,
           height: 80.h,
@@ -354,18 +357,18 @@ class _EditServerPageState extends State<EditServerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        child: Row(
           children: [
             Spacer(),
             Text(lang("edit_server", "Edit server")),
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
+        color: Colors.grey[100],
       ),
-      body: Center(
+      content: Center(
         child: Container(
           width: 80.w,
           height: 80.h,
