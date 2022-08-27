@@ -13,46 +13,54 @@ class MathManager {
   void logic() {
     // Equals
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 == i2 ? 1 : 0);
+      output(x, y, cell.rot, a == b ? 1 : 0);
     }, null, "math_equal");
     // Not Equals
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 != i2 ? 1 : 0);
+      output(x, y, cell.rot, a != b ? 1 : 0);
     }, null, "math_notequal");
     // Greater
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 > i2 ? 1 : 0);
+      output(x, y, cell.rot, a > b ? 1 : 0);
     }, null, "math_greater");
     // Greater or Equal
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 >= i2 ? 1 : 0);
+      output(x, y, cell.rot, a >= b ? 1 : 0);
     }, null, "math_greater_equal");
     // Less
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 < i2 ? 1 : 0);
+      output(x, y, cell.rot, a < b ? 1 : 0);
     }, null, "math_less");
     // Less or Equal
     grid.updateCell((cell, x, y) {
-      final i1 = input(x, y, cell.rot - 1);
-      final i2 = input(x, y, cell.rot + 1);
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
 
-      output(x, y, cell.rot, i1 <= i2 ? 1 : 0);
+      output(x, y, cell.rot, a <= b ? 1 : 0);
     }, null, "math_less_equal");
+    // Switch
+    grid.updateCell((cell, x, y) {
+      final a = input(x, y, cell.rot - 1);
+      final b = input(x, y, cell.rot + 1);
+      final c = input(x, y, cell.rot + 2);
+
+      output(x, y, cell.rot, c > 0 ? a : b);
+    }, null, "math_switch");
   }
 
   void trigonometry() {

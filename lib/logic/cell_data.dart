@@ -280,6 +280,8 @@ final cells = {
   "math_less",
   "math_greater_equal",
   "math_less_equal",
+  "math_switch",
+  "math_mod",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -287,6 +289,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_switch.png": "math/logic/math_switch.png",
   "math_greater_equal.png": "math/logic/math_greater_equal.png",
   "math_less_equal.png": "math/logic/math_less_equal.png",
   "math_equal.png": "math/logic/math_equal.png",
@@ -298,6 +301,7 @@ Map<String, String> textureMap = {
   "math_minus.png": "math/core/math_minus.png",
   "math_mult.png": "math/core/math_mult.png",
   "math_div.png": "math/core/math_div.png",
+  "math_mod.png": "math/core/math_mod.png",
   "math_exp.png": "math/core/math_exp.png",
   "math_sqrt.png": "math/core/math_sqrt.png",
   "math_abs.png": "math/functions/math_abs.png",
@@ -1046,6 +1050,7 @@ final categories = [
           "math_minus",
           "math_mult",
           "math_div",
+          "math_mod",
           "math_exp",
           "math_sqrt",
         ],
@@ -1081,6 +1086,7 @@ final categories = [
           "math_notequal",
           "math_greater_equal",
           "math_less_equal",
+          "math_switch",
         ],
         "math_equal",
         max: 3,
@@ -2236,7 +2242,7 @@ final cellInfo = <String, CellProfile>{
     "Outputs the product of the 2 inputs",
   ),
   "math_div": CellProfile(
-    "Multiply",
+    "Divide",
     "Outputs the first input divided by the 2nd input",
   ),
   "math_exp": CellProfile(
@@ -2370,6 +2376,14 @@ final cellInfo = <String, CellProfile>{
   "math_less_equal": CellProfile(
     "Less or Equal",
     "Checks if the first input is less than or equal to the second one",
+  ),
+  "math_switch": CellProfile(
+    "Mathematical Switch",
+    "It takes A, B and C. A and B are on its sides, C is behind it. If C is above 0, it will output A. If C is less or equal to 0, it will output B",
+  ),
+  "math_mod": CellProfile(
+    "Remainder",
+    "Outputs the remainder of the first input divided by the 2nd input",
   ),
 };
 
