@@ -22,6 +22,7 @@ final List<String> changes = [
   "Added the math category (OMG unexpected)",
   "Fixed a bug with onetick sometimes skipping ticks when lagging",
   "Made settings make more sense",
+  "Added Texture Packs UI to disable or enable texture packs. You can still run multiple at the same time",
 ];
 
 IconData getTrailing(String change) {

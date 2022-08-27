@@ -147,8 +147,6 @@ Future applyTexturePackSettings() async {
   final disabled = storage.getStringList("disabled_texturepacks")!;
 
   for (var tp in texturePacks) {
-    if (disabled.contains(tp.id)) {
-      tp.enabled = false;
-    }
+    tp.enabled = !disabled.contains(tp.id);
   }
 }
