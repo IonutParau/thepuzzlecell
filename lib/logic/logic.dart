@@ -184,7 +184,11 @@ Future<void> fixStorage() async {
     await storage.setBool("invert_zoom_scroll", true);
   }
 
-  if (storage.getBool("fullscreen") != null) {
-    await windowManager.setFullScreen(storage.getBool("fullscreen")!);
+  if (isDesktop) {
+    if (storage.getBool("fullscreen") != null) {
+      await windowManager.setFullScreen(storage.getBool("fullscreen")!);
+    }
   }
+
+  await applyTexturePackSettings();
 }

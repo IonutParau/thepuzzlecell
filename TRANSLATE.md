@@ -106,6 +106,10 @@ In the text, @variablename gets replaced with the variable.
 | save_level                     | The name of the Saved Level dialog                                                                                                      |           |
 | save_level_desc                | The content of the Saved Level dialog                                                                                                   |           |
 | resize                         | The name of the Resize button and dialog                                                                                                |           |
+| texture_packs                  | The name of the Texture Packs page                                                                                                      |           |
+| enable_all                     | The title of the Enable All button                                                                                                      |           |
+| reload                         | The title of the Reload button                                                                                                          |           |
+| no_texturepacks                | The text to display when there are no installed texture packs                                                                           |           |
 
 ## Button IDs:
 

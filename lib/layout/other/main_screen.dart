@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show ClipboardData;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
+import 'package:the_puzzle_cell/layout/other/texturepacks_ui.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
@@ -66,6 +67,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   MultiplayerPage(),
                   Shop(),
                   SettingsPage(),
+                  TexturePacksUI(),
                   if (isDesktop) LangsUI(),
                   CreditsPage(),
                   VersionPage(),
@@ -126,6 +128,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   PaneItem(
                     icon: Icon(FluentIcons.settings),
                     title: Text(lang('settings', 'Settings')),
+                  ),
+                  PaneItem(
+                    icon: Icon(FluentIcons.picture),
+                    title: Text(lang('texture_packs', 'Texture Packs')),
                   ),
                   if (isDesktop)
                     PaneItem(

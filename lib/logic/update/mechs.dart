@@ -92,23 +92,6 @@ void mechs(Set<String> cells) {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        if (cell.data['toggled'] == true) {
-          final fx = frontX(x, cell.rot);
-          final fy = frontY(y, cell.rot);
-
-          if (grid.inside(fx, fy)) {
-            MechanicalManager.spread(fx, fy, 0, false, cell.rot);
-          }
-        }
-      },
-      rot,
-      "mech_toggle",
-    );
-  }
-
-  for (var rot in rotOrder) {
-    grid.updateCell(
-      (cell, x, y) {
         if (MechanicalManager.on(cell) && !MechanicalManager.on(cell, true)) {
           final fx = frontX(x, cell.rot, 2);
           final fy = frontY(y, cell.rot, 2);
@@ -167,6 +150,26 @@ void mechs(Set<String> cells) {
       drawPower(cell);
     },
   );
+
+  for (var rot in rotOrder) {
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.tags.contains("toggle_normalUpdate")) return;
+        if (cell.data['toggled'] == true) {
+          final fx = frontX(x, cell.rot);
+          final fy = frontY(y, cell.rot);
+
+          if (grid.inside(fx, fy)) {
+            MechanicalManager.spread(fx, fy, 0, false, cell.rot);
+          }
+        }
+        cell.updated = false;
+        cell.tags.add("toggle_normalUpdate");
+      },
+      rot,
+      "mech_toggle",
+    );
+  }
 }
 
 void doDisplayer(int x, int y, int dir) {

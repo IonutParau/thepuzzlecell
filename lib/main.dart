@@ -20,13 +20,10 @@ void main() async {
   //await Flame.device.setLandscape();
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Flame.device.fullScreen();
 
   await loadAllPuzzles();
   await loadBlueprints();
   addBlueprints();
-
-  //fixDefault();
 
   td = ThemeData(
     brightness: Brightness.dark,
@@ -36,6 +33,8 @@ void main() async {
   storage = await SharedPreferences.getInstance();
 
   await fixStorage();
+
+  initSound();
 
   runApp(const MyApp());
 }
@@ -55,13 +54,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    initSound();
-    texturePacks.forEach(
-      (tp) {
-        tp.load(false);
-      },
-    ); // How to make people with 50,000 random texture packs they never use but keep installed mad
-
+    print("Test");
+    loadTexturePacks();
+    applyTexturePackSettings().then((v) => applyTexturePacks());
     ErrorWidget.builder = (details) {
       return Builder(builder: (context) {
         return Scaffold(

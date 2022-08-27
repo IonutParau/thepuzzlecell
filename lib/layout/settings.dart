@@ -219,15 +219,16 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Subticking',
                       false,
                     ),
-                    checkboxSetting(
-                      'fullscreen',
-                      'fullscreen',
-                      'Fullscreen Window',
-                      false,
-                      (v) {
-                        windowManager.setFullScreen(v);
-                      },
-                    ),
+                    if (isDesktop)
+                      checkboxSetting(
+                        'fullscreen',
+                        'fullscreen',
+                        'Fullscreen Window',
+                        false,
+                        (v) {
+                          windowManager.setFullScreen(v);
+                        },
+                      ),
                     checkboxSetting(
                       'invert_zoom_scroll',
                       'invert_zoom_scroll',
@@ -547,44 +548,4 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       ),
     );
   }
-}
-
-class SettingTile {
-  String settingID;
-  String langKey;
-  String title;
-  int width;
-  int height;
-
-  SettingTile({
-    required this.settingID,
-    required this.langKey,
-    required this.title,
-    required this.width,
-    required this.height,
-  });
-
-  Widget renderField(void Function() rerender) {
-    return Text("Raw setting tile");
-  }
-
-  Widget renderRaw(void Function() rerender) {
-    return Row(
-      children: [
-        Text(
-          lang(langKey, title),
-          style: TextStyle(
-            fontSize: 9.sp,
-          ),
-        ),
-        SizedBox(
-          width: width.w,
-          height: height.h,
-          child: renderField(rerender),
-        ),
-      ],
-    );
-  }
-
-  void dispose() {}
 }

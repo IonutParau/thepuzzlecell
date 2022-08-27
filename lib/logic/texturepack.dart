@@ -12,6 +12,29 @@ class TexturePack {
     ".bmp",
   ];
 
+  bool enabled = true;
+
+  void toggle() {
+    final l = storage.getStringList("disabled_texturepacks") ?? [];
+    if (enabled) {
+      l.remove(id);
+    } else {
+      if (!l.contains(id)) l.add(id); // Add but avoid duplicates (duplicates would suck)
+    }
+    storage.setStringList("disabled_texturepacks", l);
+    enabled = !enabled;
+  }
+
+  String get title => getMap()['title'] ?? "Untitled";
+  String get icon {
+    final i = getMap()['icon'];
+
+    if (i == null) return "assets/images/logo.png";
+    return "assets/images/texture_packs/${dir.path.split(path.separator).last}/$i";
+  }
+
+  String get id => dir.path.split(path.separator).last;
+
   void setupMap(Map<String, dynamic> m) {
     if (m['autoDetect'] == true) {
       final f = getFiles(dir.path);
@@ -83,7 +106,6 @@ class TexturePack {
   }
 
   void load([bool reset = true]) {
-    print("Loaded folder in ${dir.path}");
     if (reset) {
       textureMap = Map.from(textureMapBackup); // Restore the base stuff lmao
     }
@@ -101,11 +123,35 @@ final tpDir = Directory(
   ),
 ); // This is totally the teleporation directory. What is a texture pack
 
-List<TexturePack> get texturePacks {
+List<TexturePack> texturePacks = [];
+
+List<TexturePack> get enabledTexturePacks => [...texturePacks]..removeWhere((tp) => !tp.enabled);
+
+void loadTexturePacks() {
+  print("Loading texture packs in ${tpDir.path}");
   if (tpDir.existsSync()) {
     final l = tpDir.listSync();
     l.removeWhere((e) => e is File);
-    return l.map<TexturePack>((e) => TexturePack(e as Directory)).toList();
+    texturePacks = l.map<TexturePack>((e) => TexturePack(e as Directory)).toList();
   }
-  return [];
+}
+
+void applyTexturePacks() {
+  final e = enabledTexturePacks;
+  for (var i = 0; i < e.length; i++) {
+    e[i].load(i == 0);
+  }
+}
+
+Future applyTexturePackSettings() async {
+  if (storage.getStringList("disabled_texturepacks") == null) {
+    await storage.setStringList("disabled_texturepacks", []);
+  }
+  final disabled = storage.getStringList("disabled_texturepacks")!;
+
+  for (var tp in texturePacks) {
+    if (disabled.contains(tp.id)) {
+      tp.enabled = false;
+    }
+  }
 }
