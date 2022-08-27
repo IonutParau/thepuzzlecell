@@ -14,15 +14,16 @@ class TexturePack {
 
   bool enabled = true;
 
-  void toggle() {
-    final l = storage.getStringList("disabled_texturepacks") ?? [];
-    if (enabled) {
+  Future toggle() async {
+    var l = storage.getStringList("disabled_texturepacks") ?? [];
+    if (l.contains(id)) {
       l.remove(id);
+      enabled = true;
     } else {
-      if (!l.contains(id)) l.add(id); // Add but avoid duplicates (duplicates would suck)
+      l.add(id); // Add but avoid duplicates (duplicates would suck)
+      enabled = false;
     }
-    storage.setStringList("disabled_texturepacks", l);
-    enabled = !enabled;
+    await storage.setStringList("disabled_texturepacks", l.toSet().toList());
   }
 
   String get title => getMap()['title'] ?? "Untitled";
@@ -105,11 +106,7 @@ class TexturePack {
     return <String, dynamic>{};
   }
 
-  void load([bool reset = true]) {
-    if (reset) {
-      textureMap = Map.from(textureMapBackup); // Restore the base stuff lmao
-    }
-
+  void load() {
     setupMap(getMap());
   }
 }
@@ -128,7 +125,6 @@ List<TexturePack> texturePacks = [];
 List<TexturePack> get enabledTexturePacks => [...texturePacks]..removeWhere((tp) => !tp.enabled);
 
 void loadTexturePacks() {
-  print("Loading texture packs in ${tpDir.path}");
   if (tpDir.existsSync()) {
     final l = tpDir.listSync();
     l.removeWhere((e) => e is File);
@@ -138,8 +134,9 @@ void loadTexturePacks() {
 
 void applyTexturePacks() {
   final e = enabledTexturePacks;
+  textureMap = {...textureMapBackup};
   for (var i = 0; i < e.length; i++) {
-    e[i].load(i == 0);
+    e[i].load();
   }
 }
 

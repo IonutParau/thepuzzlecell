@@ -54,7 +54,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    print("Test");
     loadTexturePacks();
     applyTexturePackSettings().then((v) => applyTexturePacks());
     ErrorWidget.builder = (details) {

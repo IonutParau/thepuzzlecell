@@ -15,9 +15,10 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
       leading: Image.asset(tp.icon),
       trailing: Checkbox(
         checked: tp.enabled,
-        onChanged: (v) {
+        onChanged: (v) async {
           if (v != null && v != tp.enabled) {
-            tp.toggle();
+            await tp.toggle();
+            await applyTexturePackSettings();
             applyTexturePacks();
             setState(() {});
           }
@@ -59,8 +60,10 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
             ),
             Button(
               child: Text(lang("reload", "Reload"), style: TextStyle(fontSize: 7.sp)),
-              onPressed: () {
+              onPressed: () async {
                 loadTexturePacks();
+                await applyTexturePackSettings();
+                applyTexturePacks();
                 setState(() {});
               },
             ),
