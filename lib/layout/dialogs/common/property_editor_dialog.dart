@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
@@ -90,6 +92,11 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                 value = int.tryParse(text);
               } else if (type == CellPropertyType.number) {
                 value = num.tryParse(text);
+                if (text == "inf" || text == "infinity") value = double.infinity;
+                if (text == "-inf" || text == "-infinity") value = double.negativeInfinity;
+                if (text == "pi") value = pi;
+                if (text == "e") value = e;
+                if (text == "phi") value = (1 + sqrt(5)) / 2;
               } else if (type == CellPropertyType.boolean) {
                 value = (text == "true");
               }

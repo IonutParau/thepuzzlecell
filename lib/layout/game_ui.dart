@@ -2751,6 +2751,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       text = "${cell.data['channel'] ?? 0}\n\n${cell.data['index'] ?? 0}";
     }
 
+    if (cell.id == "math_to_mech") {
+      text = "${countToString(cell.data['offset'])}";
+      if ((cell.data['offset'] ?? 0) == 0) {
+        text = "";
+      }
+    }
+    if (cell.id == "mech_to_math") {
+      text = "x${countToString(cell.data['scale'])}";
+      if ((cell.data['scale'] ?? 1) == 1) {
+        text = "";
+      }
+      text = "${MechanicalManager.on(cell)}";
+    }
+
     if (text != "") {
       final tp = TextPainter(
         text: TextSpan(

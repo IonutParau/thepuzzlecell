@@ -282,6 +282,8 @@ final cells = {
   "math_less_equal",
   "math_switch",
   "math_mod",
+  "math_to_mech",
+  "mech_to_math",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -289,6 +291,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_to_mech.png": "unique/math_to_mech.png",
+  "mech_to_math.png": "unique/mech_to_math.png",
   "math_switch.png": "math/logic/math_switch.png",
   "math_greater_equal.png": "math/logic/math_greater_equal.png",
   "math_less_equal.png": "math/logic/math_less_equal.png",
@@ -1042,6 +1046,7 @@ final categories = [
     [
       "counter",
       "math_number",
+      "math_to_mech",
       CellCategory(
         "Core",
         "The minimum you expect from a mathematical system",
@@ -1136,6 +1141,7 @@ final categories = [
       "cross_mech_gear",
       "mech_toggle",
       "displayer",
+      "mech_to_math",
       CellCategory(
         "Power Givers",
         "They give cells mechanical power",
@@ -2385,6 +2391,14 @@ final cellInfo = <String, CellProfile>{
     "Remainder",
     "Outputs the remainder of the first input divided by the 2nd input",
   ),
+  "math_to_mech": CellProfile(
+    "Math to Mechanical",
+    "Checks if the number behind it is greater than its offset (0 by default) and if it is, it'll output a mechanical signal",
+  ),
+  "mech_to_math": CellProfile(
+    "Mechanical to Math",
+    "Checks if it has been powered, and if so, it'll output its scale (1 by default), otherwise, 0. It also writes its output, but ONLY when powered, thus, powering it off wont set the number in front to 0.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2420,5 +2434,11 @@ Map<String, List<CellProperty>> props = {
   "math_memreader": [
     CellProperty("Channel", "channel", CellPropertyType.integer, 0),
     CellProperty("Index", "index", CellPropertyType.integer, 0),
+  ],
+  "math_to_mech": [
+    CellProperty("Offset", "offset", CellPropertyType.number, 0),
+  ],
+  "mech_to_math": [
+    CellProperty("Scale", "scale", CellPropertyType.number, 1),
   ],
 };

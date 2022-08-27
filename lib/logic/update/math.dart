@@ -317,6 +317,10 @@ class MathManager {
       return getGlobal(channel, index);
     }
 
+    if (cell.id == "mech_to_math") {
+      return MechanicalManager.on(cell) ? (cell.data['scale'] ?? 1) : 0;
+    }
+
     return null;
   }
 

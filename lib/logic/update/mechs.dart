@@ -5,6 +5,27 @@ void mechs(Set<String> cells) {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
+        if (mathManager.input(x, y, cell.rot + 2) > (cell.data['offset'] ?? 0)) {
+          MechanicalManager.spread(
+            frontX(
+              x,
+              cell.rot,
+            ),
+            frontY(
+              y,
+              cell.rot,
+            ),
+            0,
+            false,
+            cell.rot,
+          );
+        }
+      },
+      rot,
+      "math_to_mech",
+    );
+    grid.updateCell(
+      (cell, x, y) {
         if (cell.rot != rot) return;
         MechanicalManager.spread(
           frontX(
@@ -216,7 +237,8 @@ class MechanicalManager {
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
-    if (cell.id.startsWith('mech_') && cell.id != "mech_gen") return true;
+    if (cell.id == "mech_to_math") return dir == cell.rot;
+    if (cell.id.startsWith('mech_') && !["mech_gen", "mech_keyleft", "mech_keyright", "mech_keyup", "mech_keydown"].contains(cell.id)) return true;
     if (cell.id == "keylimit") return true;
     if (cell.id == "keyforce") return true;
     if (cell.id == "keyfake") return true;
@@ -306,6 +328,8 @@ class MechanicalManager {
           cell.tags.add("stopped");
         }
       }
+    } else if (cell.id == "mech_to_math") {
+      mathManager.output(x, y, cell.rot, mathManager.customCount(cell, x, y, cell.rot) ?? 0);
     }
   }
 
