@@ -954,7 +954,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void animatePropertyEditor() {
-    final btn = buttonManager.buttons['prop-edit-btn']!;
+    final btn = buttonManager.buttons['prop-edit-btn'];
+    if (btn == null) return;
     if (btn.isRendering != btn.shouldRender()) {
       btn.time = 0;
       btn.duration = 0.25;
