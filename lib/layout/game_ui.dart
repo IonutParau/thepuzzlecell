@@ -529,8 +529,6 @@ double lerpRotation(int old, int newR, double t) {
 
 int ceil(num n) => floor(n + 0.999);
 
-Map<String, Sprite> spriteCache = {};
-
 Future loadSkinTextures() {
   return Flame.images.loadAll([
     "skins/hands.png",
@@ -2579,13 +2577,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       file = "base";
     }
 
-    var sprite = spriteCache['$file.png'];
-    if (sprite == null) {
-      sprite = Sprite(
-        Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'),
-      );
-      spriteCache['$file.png'] = sprite;
-    }
+    var sprite = Sprite(
+      Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'),
+    );
     final rot =
         (((running || onetick) && interpolation ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay) : cell.rot) + (edType == EditorType.loaded ? cell.data["trick_rot"] ?? 0 : 0) % 4) *
             halfPi;
