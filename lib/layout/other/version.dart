@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons;
+import 'package:flutter/material.dart' hide Colors, ListTile;
+import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage, ListTile;
+import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
 String currentVersion = '2.2.0.0 Mathematically Complete';
@@ -23,6 +24,7 @@ final List<String> changes = [
   "Fixed a bug with onetick sometimes skipping ticks when lagging",
   "Made settings make more sense",
   "Added Texture Packs UI to disable or enable texture packs. You can still run multiple at the same time",
+  "Made Version page also display current cell count, background count and biome count",
 ];
 
 IconData getTrailing(String change) {
@@ -49,9 +51,10 @@ IconData getTrailing(String change) {
 class VersionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+    return ScaffoldPage(
+      header: Container(
+        color: Colors.grey[100],
+        child: Row(
           children: [
             Spacer(),
             Text(
@@ -63,29 +66,44 @@ class VersionPage extends StatelessWidget {
             Spacer(),
           ],
         ),
-        backgroundColor: Colors.grey[100],
-        automaticallyImplyLeading: false,
       ),
-      body: ListView.builder(
-        itemCount: changes.length + 1,
-        itemBuilder: (ctx, i) {
-          if (i == 0) {
-            return Text(
-              'Changes in version $currentVersion',
-              style: TextStyle(
-                fontSize: 7.sp,
-              ),
-            );
-          }
+      content: LayoutBuilder(builder: (context, constraints) {
+        return SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          child: ListView.builder(
+            itemCount: changes.length + 1,
+            itemBuilder: (ctx, i) {
+              if (i == 0) {
+                return Text(
+                  'Changes in version $currentVersion',
+                  style: TextStyle(
+                    fontSize: 7.sp,
+                  ),
+                );
+              }
 
-          return ListTile(
-            leading: Icon(
-              getTrailing(changes[i - 1]),
-              size: 5.sp,
+              return ListTile(
+                leading: Icon(
+                  getTrailing(changes[i - 1]),
+                  size: 5.sp,
+                ),
+                title: Text(changes[i - 1]),
+              );
+            },
+          ),
+        );
+      }),
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Text(
+            "Cells: ${cells.length - backgrounds.length} | Backgrounds: ${backgrounds.length - biomes.length} | Biomes: ${biomes.length} | Total: ${cells.length}",
+            style: TextStyle(
+              fontSize: 7.sp,
             ),
-            title: Text(changes[i - 1]),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
