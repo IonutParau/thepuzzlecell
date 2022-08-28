@@ -284,6 +284,7 @@ final cells = {
   "math_mod",
   "math_to_mech",
   "mech_to_math",
+  "math_sync",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -291,6 +292,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_sync.png": "math/math_sync.png",
   "math_to_mech.png": "unique/math_to_mech.png",
   "mech_to_math.png": "unique/mech_to_math.png",
   "math_switch.png": "math/logic/math_switch.png",
@@ -1047,6 +1049,7 @@ final categories = [
       "counter",
       "math_number",
       "math_to_mech",
+      "math_sync",
       CellCategory(
         "Core",
         "The minimum you expect from a mathematical system",
@@ -2398,6 +2401,10 @@ final cellInfo = <String, CellProfile>{
   "mech_to_math": CellProfile(
     "Mechanical to Math",
     "Checks if it has been powered, and if so, it'll output its scale (1 by default), otherwise, 0. It also writes its output, but ONLY when powered, thus, powering it off wont set the number in front to 0.",
+  ),
+  "math_sync": CellProfile(
+    "Mathematical Sync",
+    "It has 4-way normal update order, and is the last math cell to update. It'll cache the number behind it, thus, effectively delaying it. It's meant to simplify synchronizing complex mathematical equasions that have delayed parts due to update order",
   ),
 };
 

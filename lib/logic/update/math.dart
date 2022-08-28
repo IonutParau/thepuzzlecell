@@ -7,6 +7,11 @@ void math() {
   mathManager.functions();
   mathManager.trigonometry();
   mathManager.logic();
+  for (var r in rotOrder) {
+    grid.updateCell((cell, x, y) {
+      cell.data['count'] = mathManager.input(x, y, cell.rot + 2);
+    }, r, "math_sync");
+  }
 }
 
 class MathManager {
@@ -348,6 +353,9 @@ class MathManager {
       return true;
     // Logic outputs
     if (["math_equal", "math_notequal", "math_greater", "math_less"].contains(cell.id) && dir == cell.rot) return true;
+
+    // sync
+    if (cell.id == "math_sync" && dir == cell.rot) return true;
 
     return false;
   }
