@@ -103,8 +103,8 @@ In the text, @variablename gets replaced with the variable.
 | saved_blueprint                | The name of the Saved Blueprint dialog                                                                                                  |           |
 | saved_blueprint_desc           | The description of the Saved Blueprint dialog                                                                                           |           |
 | add_to_builtin                 | The name of the Add to Built-in button                                                                                                  |           |
-| save_level                     | The name of the Saved Level dialog                                                                                                      |           |
-| save_level_desc                | The content of the Saved Level dialog                                                                                                   |           |
+| saved_level                    | The name of the Saved Level dialog                                                                                                      |           |
+| saved_level_desc               | The content of the Saved Level dialog                                                                                                   |           |
 | resize                         | The name of the Resize button and dialog                                                                                                |           |
 | texture_packs                  | The name of the Texture Packs page                                                                                                      |           |
 | enable_all                     | The title of the Enable All button                                                                                                      |           |
