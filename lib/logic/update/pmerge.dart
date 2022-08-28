@@ -21,7 +21,7 @@ void mergePuzzle(int x, int y, int dir) {
       f.id = "mover_puzzle";
       grid.setChunk(x, y, "mover_puzzle");
       o.id = "empty";
-    } else if (o.id == "unstable") {
+    } else if (o.id == "unstable_mover") {
       f.id = "unstable_puzzle";
       grid.setChunk(x, y, "unstable_puzzle");
       o.id = "empty";
@@ -36,6 +36,10 @@ void mergePuzzle(int x, int y, int dir) {
     } else if (o.id == "time_trash") {
       f.id = "temporal_puzzle";
       grid.setChunk(x, y, "temporal_puzzle");
+      o.id = "empty";
+    } else if (o.id == "transformer") {
+      f.id = "transform_puzzle";
+      grid.setChunk(x, y, "transform_puzzle");
       o.id = "empty";
     }
   }
