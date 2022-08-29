@@ -29,7 +29,7 @@ In the text, @variablename gets replaced with the variable.
 | worlds                         | The name of the worlds screen                                                                                                           |           |
 | puzzle                         | The name of the puzzle button                                                                                                           |           |
 | delete                         | The name of the delete button                                                                                                           |           |
-| multiplayer                    | The name of the multiplayer screen                                                                                                      |           |
+| multiplayer                    | The name of the multiplayer screen and Multiplayer settings tab                                                                         |           |
 | settings                       | The name of the settings screen                                                                                                         |           |
 | languages                      | The name of the language screen                                                                                                         |           |
 | credits                        | The name of the credits screen                                                                                                          |           |
@@ -110,6 +110,9 @@ In the text, @variablename gets replaced with the variable.
 | enable_all                     | The title of the Enable All button                                                                                                      |           |
 | reload                         | The title of the Reload button                                                                                                          |           |
 | no_texturepacks                | The text to display when there are no installed texture packs                                                                           |           |
+| audio                          | Name of the Audio settings tab                                                                                                          |           |
+| general                        | Name of the General settings tab                                                                                                        |           |
+| graphics                       | The name of the Graphics settings tab                                                                                                   |           |
 
 ## Button IDs:
 

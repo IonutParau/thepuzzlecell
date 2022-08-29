@@ -89,14 +89,13 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (ctx) => EditServerPage(
-                      title: title,
-                      ip: ip,
-                      index: index,
-                      refresh: () => setState(() {}),
-                    ),
+                showDialog(
+                  context: context,
+                  builder: (ctx) => EditServerDialog(
+                    index,
+                    title,
+                    ip,
+                    refresh: () => setState(() {}),
                   ),
                 );
               },
@@ -160,152 +159,16 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
               style: TextStyle(fontSize: 10.sp),
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .push(
-                    MaterialPageRoute(
-                      builder: (ctx) => AddServer(),
-                    ),
-                  )
-                  .then(
-                    (v) => setState(
-                      () {},
-                    ),
-                  );
+              // Bootiful cod
+              showDialog(
+                context: context,
+                builder: (ctx) => AddServerDialog(),
+              ).then(
+                (v) => setState(() {}),
+              );
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class AddServer extends StatefulWidget {
-  const AddServer({Key? key}) : super(key: key);
-
-  @override
-  _AddServerState createState() => _AddServerState();
-}
-
-class _AddServerState extends State<AddServer> {
-  final titleController = TextEditingController();
-  final ipController = TextEditingController();
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    ipController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaffoldPage(
-      header: Container(
-        child: Row(
-          children: [
-            Spacer(),
-            Text(lang("add_server", "Add a server")),
-            Spacer(),
-          ],
-        ),
-        color: Colors.grey[100],
-      ),
-      content: Center(
-        child: Container(
-          width: 80.w,
-          height: 80.h,
-          child: Center(
-            child: Column(
-              children: [
-                Spacer(flex: 2),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(1.w),
-                  ),
-                  width: 40.w,
-                  height: 20.h,
-                  padding: EdgeInsets.all(1.w),
-                  child: Column(
-                    children: [
-                      Spacer(flex: 5),
-                      Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            "${lang('title_box', 'Title')}: ",
-                            style: TextStyle(
-                              fontSize: 5.sp,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 30.w,
-                            child: TextBox(
-                              controller: titleController,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            "${lang('ip_address', 'IP / Address')}: ",
-                            style: TextStyle(
-                              fontSize: 5.sp,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 30.w,
-                            child: TextBox(
-                              controller: ipController,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
-                      Spacer(flex: 5),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.h),
-                  child: Row(
-                    children: [
-                      Spacer(),
-                      MaterialButton(
-                        color: Colors.blue,
-                        child: Padding(
-                          padding: EdgeInsets.all(0.2.w),
-                          child: Text(
-                            lang("add", "Add"),
-                            style: TextStyle(
-                              fontSize: 7.sp,
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          await storage.setStringList(
-                            "servers",
-                            storage.getStringList("servers")!
-                              ..add(
-                                "${titleController.text};${ipController.text}",
-                              ),
-                          );
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                ),
-                Spacer(flex: 2),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -323,149 +186,4 @@ void connectMultiplayer(BuildContext context, String ip) {
       },
     ),
   );
-}
-
-class EditServerPage extends StatefulWidget {
-  EditServerPage({Key? key, required this.title, required this.ip, required this.index, this.refresh}) : super(key: key);
-
-  final String title;
-  final String ip;
-  final int index;
-  final Function? refresh;
-
-  @override
-  State<EditServerPage> createState() => _EditServerPageState();
-}
-
-class _EditServerPageState extends State<EditServerPage> {
-  final titleController = TextEditingController();
-  final ipController = TextEditingController();
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    ipController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    titleController.text = widget.title;
-    ipController.text = widget.ip;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaffoldPage(
-      header: Container(
-        child: Row(
-          children: [
-            Spacer(),
-            Text(lang("edit_server", "Edit server")),
-            Spacer(),
-          ],
-        ),
-        color: Colors.grey[100],
-      ),
-      content: Center(
-        child: Container(
-          width: 80.w,
-          height: 80.h,
-          child: Center(
-            child: Column(
-              children: [
-                Spacer(flex: 2),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(1.w),
-                  ),
-                  width: 40.w,
-                  height: 20.h,
-                  padding: EdgeInsets.all(1.w),
-                  child: Column(
-                    children: [
-                      Spacer(flex: 5),
-                      Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            "${lang('title_box', 'Title')}: ",
-                            style: TextStyle(
-                              fontSize: 5.sp,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 30.w,
-                            child: TextBox(
-                              controller: titleController,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            "${lang('ip_address', 'IP / Address')}: ",
-                            style: TextStyle(
-                              fontSize: 5.sp,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 30.w,
-                            child: TextBox(
-                              controller: ipController,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
-                      Spacer(flex: 5),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.h),
-                  child: Row(
-                    children: [
-                      Spacer(),
-                      MaterialButton(
-                        color: Colors.blue,
-                        child: Padding(
-                          padding: EdgeInsets.all(0.2.w),
-                          child: Text(
-                            lang("edit", "Edit"),
-                            style: TextStyle(
-                              fontSize: 7.sp,
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          final strList = storage.getStringList("servers")!;
-
-                          strList[widget.index] = "${titleController.text};${ipController.text}";
-
-                          storage.setStringList('servers', strList);
-
-                          widget.refresh?.call();
-
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                ),
-                Spacer(flex: 2),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

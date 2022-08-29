@@ -158,16 +158,16 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
             isScrollable: true,
             tabs: [
               Tab(
-                text: 'General',
+                text: lang('general', 'General'),
               ),
               Tab(
-                text: 'Audio',
+                text: lang('audio', 'Audio'),
               ),
               Tab(
-                text: 'Graphics',
+                text: lang('graphics', 'Graphics'),
               ),
               Tab(
-                text: 'Multiplayer',
+                text: lang('multiplayer', 'Multiplayer'),
               ),
             ],
           ),

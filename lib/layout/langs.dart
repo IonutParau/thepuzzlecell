@@ -61,7 +61,7 @@ class LangsUI extends StatelessWidget {
           children: [
             Spacer(),
             Text(
-              "Languages",
+              lang("languages", "Languages"),
               style: TextStyle(
                 fontSize: 10.sp,
               ),

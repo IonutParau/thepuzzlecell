@@ -1,7 +1,7 @@
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart' show AlertDialog, MaterialButton, MaterialPageRoute;
+import 'package:flutter/material.dart' show MaterialButton;
 import 'package:fluent_ui/fluent_ui.dart';
 import '../../logic/logic.dart' show grid, lang, worldIndex, worldManager;
 
@@ -51,17 +51,11 @@ class _WorldUIState extends State<WorldUI> {
                 fontSize: 10.sp,
               ),
             ),
-            onPressed: () => Navigator.of(context)
-                .push(
-                  MaterialPageRoute(
-                    builder: (ctx) => WorldCreate(),
-                  ),
-                )
-                .then(
-                  (v) => setState(
-                    () {},
-                  ),
-                ),
+            onPressed: () => showDialog(context: context, builder: (ctx) => AddWorldDialog()).then(
+              (v) => setState(
+                () {},
+              ),
+            ),
           ),
         ],
       ),
@@ -191,182 +185,6 @@ class WorldTile extends StatelessWidget {
               fontSize: 3.sp,
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class WorldCreate extends StatefulWidget {
-  const WorldCreate({Key? key}) : super(key: key);
-
-  @override
-  State<WorldCreate> createState() => _WorldCreateState();
-}
-
-class _WorldCreateState extends State<WorldCreate> {
-  final widthController = TextEditingController();
-  final heightController = TextEditingController();
-  final titleController = TextEditingController();
-  final descController = TextEditingController();
-
-  @override
-  void dispose() {
-    widthController.dispose();
-    heightController.dispose();
-    titleController.dispose();
-    descController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaffoldPage(
-      header: Container(
-        child: Row(
-          children: [
-            Spacer(),
-            Text(lang('create_world', 'Create A World')),
-            Spacer(),
-          ],
-        ),
-        color: Colors.grey[100],
-      ),
-      content: Center(
-        child: Column(
-          children: [
-            Spacer(flex: 10),
-            Container(
-              width: 40.w,
-              height: 30.h,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(1.w),
-              ),
-              child: Column(
-                children: [
-                  Spacer(),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '${lang('title_box', 'Title')}: ',
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                        child: TextBox(
-                          controller: titleController,
-                          style: TextStyle(
-                            fontSize: 7.sp,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '${lang('description', 'Description')}: ',
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                        child: TextBox(
-                          controller: descController,
-                          style: TextStyle(
-                            fontSize: 7.sp,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '${lang('width', 'Width')}: ',
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                        child: TextBox(
-                          controller: widthController,
-                          style: TextStyle(
-                            fontSize: 7.sp,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '${lang('height', 'Height')}: ',
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                        child: TextBox(
-                          controller: heightController,
-                          style: TextStyle(
-                            fontSize: 7.sp,
-                          ),
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
-            Spacer(),
-            MaterialButton(
-              child: Text(
-                lang('add', 'Add'),
-                style: fontSize(
-                  7.sp,
-                ),
-              ),
-              color: Colors.blue,
-              onPressed: () {
-                try {
-                  worldManager.addWorld(
-                    titleController.text,
-                    descController.text,
-                    int.parse(widthController.text),
-                    int.parse(heightController.text),
-                  );
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) {
-                      return AlertDialog(
-                        title: Text("An error has occured"),
-                        content: Text("An error has occured.\nError: $e"),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-            Spacer(flex: 10),
-          ],
         ),
       ),
     );
