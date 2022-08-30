@@ -1,7 +1,7 @@
 part of logic;
 
 class MasterState {
-  Cell cell;
+  Map<String, dynamic> cell;
   int x;
   int y;
   int fakelifespan;
@@ -11,7 +11,7 @@ class MasterState {
 
   MasterState(this.cell, this.x, this.y, this.fakelifespan, this.fakecellScaleX, this.fakecellScaleY);
 
-  static List<MasterState> _states = [MasterState(Cell(0, 0), 0, 0, 0, 1, 1)];
+  static List<MasterState> _states = [MasterState(Cell(0, 0).toMap, 0, 0, 0, 1, 1)];
 
   static bool get isCurrentActive => _states.last.active;
   static MasterState get current => _states.last;
@@ -25,12 +25,12 @@ class MasterState {
     return s;
   }
 
-  static MasterState get empty => MasterState(Cell(0, 0), 0, 0, 0, 1, 1);
+  static MasterState get empty => MasterState(Cell(0, 0).toMap, 0, 0, 0, 1, 1);
 
   static bool get usable => current.active;
 
   // Copies it to an atomic replica
-  MasterState get copy => MasterState(cell.copy, x, y, fakelifespan, fakecellScaleX, fakecellScaleY)..active = active;
+  MasterState get copy => MasterState({...cell}, x, y, fakelifespan, fakecellScaleX, fakecellScaleY)..active = active;
 }
 
 void onMasterPowered(Cell cell, int x, int y) {}
