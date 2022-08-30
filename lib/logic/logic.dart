@@ -194,3 +194,26 @@ Future<void> fixStorage() async {
 
   await applyTexturePackSettings();
 }
+
+List parseJointCellStr(String str) {
+  final s = str.split(':');
+  if (s.length == 1) s.add("0");
+
+  return [s[0], int.parse(s[1])];
+}
+
+String rotToString(int rot) {
+  if (rot == 0) return lang("right", "Right");
+  if (rot == 1) return lang("down", "Down");
+  if (rot == 2) return lang("left", "Left");
+  if (rot == 3) return lang("up", "Up");
+  return "Unknown";
+}
+
+String idToString(String id) {
+  return lang("$id.title", (cellInfo[id] ?? defaultProfile).title);
+}
+
+String idToTexture(String id) {
+  return "assets/images/${textureMap['$id.png'] ?? '$id.png'}";
+}

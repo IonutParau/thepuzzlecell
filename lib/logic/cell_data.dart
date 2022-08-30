@@ -2430,6 +2430,7 @@ enum CellPropertyType {
   cellID,
   cellRot,
   cell,
+  background,
 }
 
 class CellProperty {

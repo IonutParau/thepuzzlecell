@@ -477,13 +477,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   ((storage.getString("cursor_texture") ?? "cursor") == "cursor"
                                       ? "interface/cursor.png"
                                       : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png"))),
-                              title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (cellInfo[storage.getString("cursor_texture")!] ?? defaultProfile).title),
+                              title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!))),
                               placement: FlyoutPlacement.start,
                               items: [
                                 for (var texture in cursorTextures)
                                   // ignore: deprecated_member_use
                                   DropDownButtonItem(
-                                    title: Text(texture == "cursor" ? "Default" : (cellInfo[texture] ?? defaultProfile).title),
+                                    title: Text(texture == "cursor" ? "Default" : idToString(texture)),
                                     leading: Image.asset("assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png"))),
                                     onTap: () async {
                                       await storage.setString("cursor_texture", texture);

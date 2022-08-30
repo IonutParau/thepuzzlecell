@@ -33,6 +33,92 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
   Widget propToTile(int i) {
     final property = props[game.currentSelection]![i];
+    if (property.type == CellPropertyType.cellID) {
+      final currentID = controllers[i].text;
+      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
+      return DropDownButton(
+        placement: FlyoutPlacement.start,
+        leading: Image.asset('assets/images/$tp'),
+        title: Text(idToString(currentID)),
+        items: [
+          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
+            MenuFlyoutItem(
+              leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
+              text: Text(idToString(id)),
+              onPressed: () {
+                controllers[i].text = id;
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
+    if (property.type == CellPropertyType.cellRot) {
+      final currentID = controllers[i].text;
+      final rot = int.tryParse(currentID) ?? 0;
+
+      return DropDownButton(
+        placement: FlyoutPlacement.start,
+        title: Text(rotToString(rot)),
+        items: [
+          for (var r = 0; r < 4; r++)
+            MenuFlyoutItem(
+              text: Text(rotToString(rot)),
+              onPressed: () {
+                controllers[i].text = r.toString();
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
+    if (property.type == CellPropertyType.cell) {
+      final current = controllers[i].text;
+
+      return DropDownButton(
+        placement: FlyoutPlacement.start,
+        leading: Transform.rotate(
+          angle: parseJointCellStr(current)[1] * halfPi,
+          child: Image.asset(parseJointCellStr(current)[0]),
+        ),
+        title: Text(idToString(parseJointCellStr(current)[0])),
+        items: [
+          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
+            for (var r = 0; r < 4; r++)
+              MenuFlyoutItem(
+                leading: Transform.rotate(
+                  angle: r * halfPi,
+                  child: Image.asset(idToTexture(id)),
+                ),
+                text: Text(idToString(id) + " "),
+                onPressed: () {
+                  controllers[i].text = "$id:$r";
+                  setState(() {});
+                },
+              ),
+        ],
+      );
+    }
+    if (property.type == CellPropertyType.background) {
+      final currentID = controllers[i].text;
+      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
+      return DropDownButton(
+        placement: FlyoutPlacement.start,
+        leading: Image.asset('assets/images/$tp'),
+        title: Text(idToString(currentID)),
+        items: [
+          for (var id in backgrounds)
+            MenuFlyoutItem(
+              leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
+              text: Text(idToString(id)),
+              onPressed: () {
+                controllers[i].text = id;
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
     if (property.type == CellPropertyType.boolean) {
       return Checkbox(
         checked: controllers[i].text == "true",
@@ -88,7 +174,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
               dynamic value = text;
 
-              if (type == CellPropertyType.integer) {
+              if (type == CellPropertyType.integer || type == CellPropertyType.cellRot) {
                 value = int.tryParse(text);
               } else if (type == CellPropertyType.number) {
                 value = num.tryParse(text);
