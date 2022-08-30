@@ -12,6 +12,7 @@ final subticks = [
   math,
   gates,
   automata,
+  spikefactories,
   spreaders,
   quantums,
   hungryTrashes,
@@ -49,13 +50,13 @@ class LastVars {
   Offset lastPos;
   int lastRot;
 
-  LastVars(this.lastRot, int x, int y)
+  LastVars(this.lastRot, num x, num y)
       : lastPos = Offset(
           x.toDouble(),
           y.toDouble(),
         );
 
-  LastVars get copy => LastVars(lastRot, lastPos.dx.toInt(), lastPos.dy.toInt());
+  LastVars get copy => LastVars(lastRot, lastPos.dx, lastPos.dy);
 }
 
 // For cells destroyed by entering destruction cells
@@ -157,10 +158,10 @@ class Cell {
   }
 
   static Cell fromMap(Map<String, dynamic> map, int x, int y) {
-    final cell = Cell(x, y, map["rot"]);
+    final cell = Cell(x, y, map["rot"].toInt());
 
     cell.id = map["id"] ?? "empty";
-    cell.rot = map["rot"] ?? 0;
+    cell.rot = (map["rot"] ?? 0).toInt();
     cell.data = map["data"] as Map<String, dynamic>;
     cell.tags = map["tags"] ?? {};
     cell.lifespan = map["lifespan"] ?? 0;
@@ -295,7 +296,7 @@ class Grid {
 
   void set(int x, int y, Cell cell) {
     if (cell == get(x, y)) genOptimizer.remove(x, y);
-    cells.add(cell.id);
+    if (cell.id != "empty") cells.add(cell.id);
 
     x = this.x(x);
     y = this.y(y);
@@ -329,6 +330,7 @@ class Grid {
   int chunkToCellY(int y) => y * chunkSize;
 
   void setChunk(int x, int y, String id) {
+    if (id == "empty") return;
     cells.add(id);
     chunks[cx(x)][cy(y)].add(id);
   }

@@ -12,6 +12,7 @@ final biomes = [
   "no_burn_biome",
   "consistency_biome",
   "mechanical_halting",
+  "spiketrap_biome",
 ];
 
 // Biomes
@@ -44,9 +45,13 @@ void biome() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.addBroken(cell, x, y, "shrinking");
     grid.set(x, y, Cell(x, y));
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "trash_biome");
+    grid.setPlace(x, y, "empty");
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "spiketrap_biome");
 
-  final rng = Random();
+  grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    grid.addBroken(cell, x, y, "shrinking");
+    grid.set(x, y, Cell(x, y));
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "trash_biome");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     if (cell.id != "empty") {

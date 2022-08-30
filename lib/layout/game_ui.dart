@@ -2752,8 +2752,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
     }
     if (cell.id == "mech_to_math") {
-      text = "x${countToString(cell.data['scale'])}";
+      text = "x${countToString(cell.data['scale'] ?? 1)}";
       if ((cell.data['scale'] ?? 1) == 1) {
+        text = "";
+      }
+    }
+
+    if (cell.id == "spikefactory") {
+      text = "${countToString(cell.data['interval'] ?? 1)}\n${cell.data['radius'] ?? 1}";
+      if ((cell.data['interval'] ?? 1) == 1 || (cell.data['radius'] ?? 1) == 1) {
         text = "";
       }
     }
@@ -2769,6 +2776,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           ),
         ),
         textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
       );
       tp.layout();
       tp.paint(

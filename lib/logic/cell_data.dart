@@ -285,6 +285,8 @@ final cells = {
   "math_to_mech",
   "mech_to_math",
   "math_sync",
+  "spiketrap_biome",
+  "spikefactory",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -292,6 +294,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "spikefactory.png": "unique/spikefactory.png",
+  "spiketrap_biome.png": "backgrounds/biomes/spiketrap_biome.png",
   "math_sync.png": "math/math_sync.png",
   "math_to_mech.png": "unique/math_to_mech.png",
   "mech_to_math.png": "unique/mech_to_math.png",
@@ -707,6 +711,7 @@ final categories = [
           "forest",
           "freezing",
           "trash_biome",
+          "spiketrap_biome",
           "mechanical_halting",
           "quantum_biome",
           "no_burn_biome",
@@ -1039,6 +1044,7 @@ final categories = [
       "gas",
       "crystal",
       "floppy",
+      "spikefactory",
     ],
     "unstable_mover",
   ),
@@ -2406,6 +2412,14 @@ final cellInfo = <String, CellProfile>{
     "Mathematical Sync",
     "It has 4-way normal update order, and is the last math cell to update. It'll cache the number behind it, thus, effectively delaying it. It's meant to simplify synchronizing complex mathematical equasions that have delayed parts due to update order",
   ),
+  "spiketrap_biome": CellProfile(
+    "Spiketrap Biome",
+    "Like a Trash Biome, but, it also deletes itself",
+  ),
+  "spikefactory": CellProfile(
+    "Spike Factory",
+    "Spawns spiketrap biomes around it within a specified radius at a specified interval (in ticks)",
+  ),
 };
 
 enum CellPropertyType {
@@ -2413,6 +2427,9 @@ enum CellPropertyType {
   integer,
   text,
   boolean,
+  cellID,
+  cellRot,
+  cell,
 }
 
 class CellProperty {
@@ -2447,5 +2464,9 @@ Map<String, List<CellProperty>> props = {
   ],
   "mech_to_math": [
     CellProperty("Scale", "scale", CellPropertyType.number, 1),
+  ],
+  "spikefactory": [
+    CellProperty("Interval", "interval", CellPropertyType.number, 1),
+    CellProperty("Radius", "radius", CellPropertyType.integer, 1),
   ],
 };
