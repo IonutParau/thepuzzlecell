@@ -336,11 +336,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                               placement: FlyoutPlacement.start,
                               items: [
                                 for (var music in musics)
-                                  // ignore: deprecated_member_use
-                                  DropDownButtonItem(
-                                    title: Text(music.name),
+                                  MenuFlyoutItem(
+                                    text: Text(music.name),
                                     leading: Icon(FluentIcons.music_note),
-                                    onTap: () async {
+                                    onPressed: () async {
                                       await changeMusic(music.id);
                                       setState(() {});
                                     },
@@ -481,11 +480,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                               placement: FlyoutPlacement.start,
                               items: [
                                 for (var texture in cursorTextures)
-                                  // ignore: deprecated_member_use
-                                  DropDownButtonItem(
-                                    title: Text(texture == "cursor" ? "Default" : idToString(texture)),
+                                  MenuFlyoutItem(
+                                    text: Text(texture == "cursor" ? "Default" : idToString(texture)),
                                     leading: Image.asset("assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png"))),
-                                    onTap: () async {
+                                    onPressed: () async {
                                       await storage.setString("cursor_texture", texture);
                                       setState(() {});
                                     },
