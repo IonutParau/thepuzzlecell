@@ -44,7 +44,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
               leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
-              text: Text(idToString(id)),
+              text: Text("${property.name}: " + idToString(id)),
               onPressed: () {
                 controllers[i].text = id;
                 setState(() {});
@@ -59,7 +59,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
       return DropDownButton(
         placement: FlyoutPlacement.start,
-        title: Text(rotToString(rot)),
+        title: Text("${property.name}: " + rotToString(rot)),
         items: [
           for (var r = 0; r < 4; r++)
             MenuFlyoutItem(
@@ -81,7 +81,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           angle: parseJointCellStr(current)[1] * halfPi,
           child: Image.asset(idToTexture(parseJointCellStr(current)[0])),
         ),
-        title: Text(idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
+        title: Text("${property.name}: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             for (var r = 0; r < 4; r++)
@@ -105,7 +105,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       return DropDownButton(
         placement: FlyoutPlacement.start,
         leading: Image.asset('assets/images/$tp'),
-        title: Text(idToString(currentID)),
+        title: Text("${property.name}: " + idToString(currentID)),
         items: [
           for (var id in backgrounds)
             MenuFlyoutItem(
