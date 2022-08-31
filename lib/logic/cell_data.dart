@@ -287,6 +287,7 @@ final cells = {
   "math_sync",
   "spiketrap_biome",
   "spikefactory",
+  "explosive",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -294,6 +295,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "explosive.png": "destroyers/enemy/explosive.png",
   "spikefactory.png": "unique/spikefactory.png",
   "spiketrap_biome.png": "backgrounds/biomes/spiketrap_biome.png",
   "math_sync.png": "math/math_sync.png",
@@ -937,6 +939,7 @@ final categories = [
           "enemy",
           "semi_enemy",
           "physical_enemy",
+          "explosive",
         ],
         "enemy",
       ),
@@ -2420,6 +2423,10 @@ final cellInfo = <String, CellProfile>{
     "Spike Factory",
     "Spawns spiketrap biomes around it within a specified radius at a specified interval (in ticks)",
   ),
+  "explosive": CellProfile(
+    "Explosive",
+    "Like a normal enemy, except it will explode within a specified radius (default of 1) with a specified effectiveness (default of 100%), leaving behind a specified cell (default of empty",
+  ),
 };
 
 enum CellPropertyType {
@@ -2469,5 +2476,10 @@ Map<String, List<CellProperty>> props = {
   "spikefactory": [
     CellProperty("Interval", "interval", CellPropertyType.number, 1),
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
+  ],
+  "explosive": [
+    CellProperty("Radius", "radius", CellPropertyType.integer, 1),
+    CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
+    CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty:0"),
   ],
 };

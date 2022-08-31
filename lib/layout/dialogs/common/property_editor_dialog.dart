@@ -79,9 +79,9 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
         placement: FlyoutPlacement.start,
         leading: Transform.rotate(
           angle: parseJointCellStr(current)[1] * halfPi,
-          child: Image.asset(parseJointCellStr(current)[0]),
+          child: Image.asset(idToTexture(parseJointCellStr(current)[0])),
         ),
-        title: Text(idToString(parseJointCellStr(current)[0])),
+        title: Text(idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             for (var r = 0; r < 4; r++)
@@ -90,7 +90,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                   angle: r * halfPi,
                   child: Image.asset(idToTexture(id)),
                 ),
-                text: Text(idToString(id) + " "),
+                text: Text(idToString(id) + " (" + rotToString(r) + ")"),
                 onPressed: () {
                   controllers[i].text = "$id:$r";
                   setState(() {});
@@ -144,10 +144,13 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           return ListView(
             children: [
               for (var i = 0; i < props[game.currentSelection]!.length; i++)
-                SizedBox(
-                  width: constraints.maxWidth * 0.7,
-                  height: 7.h,
-                  child: propToTile(i),
+                Padding(
+                  padding: EdgeInsets.all(1.w),
+                  child: SizedBox(
+                    width: constraints.maxWidth * 0.7,
+                    height: 7.h,
+                    child: propToTile(i),
+                  ),
                 ),
             ],
           );
