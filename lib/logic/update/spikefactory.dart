@@ -22,7 +22,7 @@ void doSpikeFactory(Cell cell, int x, int y) {
       var attempts = 0;
 
       // Tries to make sure it actually DOES spawn something lmao
-      while (!grid.inside(bx, by) || grid.placeable(bx, by) != "spiketrap_biome") {
+      while (!grid.inside(bx, by) || (grid.placeable(bx, by) != "spiketrap_biome" && grid.placeable(bx, by) != "empty") || (bx == x && by == y)) {
         if (attempts == grid.width * grid.height) return;
         bx = x + ((rng.nextDouble() * 2 - 1) * radius).toInt();
         by = y + ((rng.nextDouble() * 2 - 1) * radius).toInt();
