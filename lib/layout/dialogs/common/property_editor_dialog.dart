@@ -124,6 +124,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
         checked: controllers[i].text == "true",
         onChanged: (v) {
           controllers[i].text = (v == true) ? "true" : "false";
+          setState(() {});
         },
         content: Text(property.name),
       );

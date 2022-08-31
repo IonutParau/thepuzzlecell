@@ -154,7 +154,9 @@ final justMoveInsideOf = [
   "time_reset",
   "portal_a",
   "portal_b",
-];
+  ...trashes,
+  ...enemies,
+].toSet().toList();
 
 bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
   dir %= 4;
@@ -291,6 +293,7 @@ final enemies = [
   "semi_enemy",
   "silent_enemy",
   "physical_enemy",
+  "explosive",
 ];
 
 T debug<T>(T value) {
@@ -520,6 +523,43 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     if (destroyer.id == "physical_enemy") {
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
       game.blueparticles.emit(enemyParticleCounts, x, y);
+    } else if (destroyer.id == "explosive") {
+      final radius = destroyer.data['radius'] ?? 1;
+      final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
+      final byproduct = destroyer.data['byproduct'] ?? "empty:0";
+      final circular = destroyer.data['circular'] ?? false;
+      final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
+
+      for (var cx = x - radius; cx <= x + radius; cx++) {
+        for (var cy = y - radius; cy <= y + radius; cy++) {
+          if (cx != x || cy != y) {
+            final d = sqrt(pow(cx - x, 2) + pow(cy - y, 2));
+            if ((circular && d <= radius) || !circular) {
+              var r = 0.0;
+
+              if (pseudoRandom) {
+                // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
+                r = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount).nextDouble();
+              } else {
+                // Random
+                r = rng.nextDouble();
+              }
+
+              if (r <= effectiveness) {
+                final id = parseJointCellStr(byproduct)[0];
+                final rot = parseJointCellStr(byproduct)[1];
+                // Confusing cascade operator stuffs
+                final c = Cell(cx.toInt(), cy.toInt(), rot)
+                  ..id = id
+                  ..rot = rot;
+
+                grid.set(cx.toInt(), cy.toInt(), c);
+              }
+            }
+          }
+        }
+      }
+      game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
       game.redparticles.emit(enemyParticleCounts, x, y);
     }
@@ -746,6 +786,13 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     // final cb = grid.at(ox, oy).copy;
     // grid.set(ox, oy, Cell(ox, oy));
     final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
+    // If we have been modified, only allow the past one to move if we have been fully deleted
+    if (c != grid.at(ox, oy)) {
+      if (c.id == "empty") {
+        grid.set(ox, oy, c.copy);
+      }
+      return c.id == "empty";
+    }
     if (mightMove) {
       genOptimizer.remove(x, y);
       if (mt == MoveType.sync && c.id == "sync") {
