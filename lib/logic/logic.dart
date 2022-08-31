@@ -196,7 +196,7 @@ Future<void> fixStorage() async {
 }
 
 List parseJointCellStr(String str) {
-  final s = str.split(':');
+  final s = str.split('!');
   if (s.length == 1) s.add("0");
 
   return [s[0], int.parse(s[1])];

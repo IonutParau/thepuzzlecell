@@ -92,7 +92,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                 ),
                 text: Text(idToString(id) + " (" + rotToString(r) + ")"),
                 onPressed: () {
-                  controllers[i].text = "$id:$r";
+                  controllers[i].text = "$id!$r";
                   setState(() {});
                 },
               ),

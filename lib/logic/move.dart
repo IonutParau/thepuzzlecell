@@ -526,7 +526,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     } else if (destroyer.id == "explosive") {
       final radius = destroyer.data['radius'] ?? 1;
       final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
-      final byproduct = destroyer.data['byproduct'] ?? "empty:0";
+      final byproduct = destroyer.data['byproduct'] ?? "empty!0";
       final circular = destroyer.data['circular'] ?? false;
       final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
 
