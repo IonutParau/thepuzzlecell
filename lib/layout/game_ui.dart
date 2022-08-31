@@ -1208,6 +1208,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             args[3],
             int.parse(args[4]),
             args[5],
+            parseCellDataStr(args[6]),
           );
         } else {
           cursors[args.first]!.x = double.parse(args[1]);
@@ -2839,11 +2840,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           shouldCursor = true;
         } else {
           final c = cursors[clientID]!;
-          shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture);
+          shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture || !mapEquals(c.data, currentData));
         }
         if (shouldCursor) {
           sendToServer(
-            'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture',
+            'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture ${cellDataStr(currentData)}',
           );
         }
       }

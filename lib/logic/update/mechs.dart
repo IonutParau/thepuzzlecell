@@ -113,12 +113,15 @@ void mechs(Set<String> cells) {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
+        if (cell.tags.contains("piston-update")) return;
+        cell.tags.add("piston-update");
         if (MechanicalManager.on(cell) && !MechanicalManager.on(cell, true)) {
           final fx = frontX(x, cell.rot, 2);
           final fy = frontY(y, cell.rot, 2);
 
           pull(fx, fy, (cell.rot + 2) % 4, 1);
         }
+        cell.updated = false;
       },
       rot,
       "piston",
