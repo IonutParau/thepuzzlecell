@@ -27,6 +27,9 @@ final List<String> changes = [
   "Made Version page also display current cell count, background count and biome count",
   "Redesigned some pages to be more modern",
   "Removed Full-Screen pages in favor of dialogs",
+  "Added Spike Trap and Spike Factory",
+  "Added Explosive",
+  "Added Factory",
 ];
 
 IconData getTrailing(String change) {

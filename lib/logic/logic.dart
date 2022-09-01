@@ -78,6 +78,7 @@ part 'update/floppy.dart';
 part 'update/math.dart';
 part 'update/master.dart';
 part 'update/spikefactory.dart';
+part 'update/factory.dart';
 
 extension SetX on Set<String> {
   bool containsAny(List<String> strings) {

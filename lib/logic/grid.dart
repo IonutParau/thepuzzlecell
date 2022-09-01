@@ -20,6 +20,7 @@ final subticks = [
   gens,
   supgens,
   memgens,
+  factories,
   reps,
   tunnels,
   transformers,

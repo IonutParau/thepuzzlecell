@@ -71,13 +71,28 @@ void rots(Set<String> cells) {
           final fx = frontX(x, cell.rot);
           final fy = frontY(y, cell.rot);
           if (grid.inside(fx, fy)) {
-            final front = grid.at(fx, fy);
-            grid.rotate(fx, fy, (rot - front.rot + 4) % 4);
+            redirect(grid.at(fx, fy), fx, fy, rot);
           }
         },
         rot,
         "redirector",
       );
     }
+    if (cells.contains("super_redirector")) {
+      grid.updateCell(
+        (cell, x, y) {
+          redirect(grid.at(x + 1, y), x + 1, y, rot);
+          redirect(grid.at(x - 1, y), x - 1, y, rot);
+          redirect(grid.at(x, y + 1), x, y + 1, rot);
+          redirect(grid.at(x, y - 1), x, y - 1, rot);
+        },
+        rot,
+        "super_redirector",
+      );
+    }
   }
+}
+
+void redirect(Cell cell, int x, int y, int dir) {
+  grid.rotate(x, y, (dir - cell.rot) % 4);
 }

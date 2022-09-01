@@ -84,7 +84,7 @@ void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preadde
 
   toGenerate.tags.add("gend $gendir");
 
-  if (ungennable.contains(toGenerate.id)) {
+  if (isUngennable(toGenerate, gx, gy, gendir)) {
     return;
   }
 

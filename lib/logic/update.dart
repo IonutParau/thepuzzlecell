@@ -38,6 +38,12 @@ final ungennable = [
   "gen_trash",
 ];
 
+bool isUngennable(Cell cell, int x, int y, int dir) {
+  /* Special code here */
+
+  return ungennable.contains(cell.id);
+}
+
 enum RotationalType {
   clockwise,
   counter_clockwise,

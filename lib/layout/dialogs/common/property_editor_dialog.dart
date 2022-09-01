@@ -146,7 +146,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
             children: [
               for (var i = 0; i < props[game.currentSelection]!.length; i++)
                 Padding(
-                  padding: EdgeInsets.all(1.w),
+                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,

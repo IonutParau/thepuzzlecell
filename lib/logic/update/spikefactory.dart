@@ -9,7 +9,7 @@ void doSpikeFactory(Cell cell, int x, int y) {
 
   cell.data['int_t'] ??= 0;
   cell.data['int_t']++;
-  while (cell.data['int_t'] > interval) {
+  while (cell.data['int_t'] >= interval) {
     cell.data['int_t'] -= interval;
 
     final offx = ((rng.nextDouble() * 2 - 1) * radius).toInt();

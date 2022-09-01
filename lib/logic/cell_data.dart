@@ -288,6 +288,8 @@ final cells = {
   "spiketrap_biome",
   "spikefactory",
   "explosive",
+  "super_redirector",
+  "factory",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -295,6 +297,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "super_redirector.png": "rotators/super_redirector.png",
+  "factory.png": "recreators/factory.png",
   "explosive.png": "destroyers/enemy/explosive.png",
   "spikefactory.png": "unique/spikefactory.png",
   "spiketrap_biome.png": "backgrounds/biomes/spiketrap_biome.png",
@@ -889,17 +893,6 @@ final categories = [
         max: 5,
       ),
       CellCategory(
-        "Transformers",
-        "They transform the cell in front of them into a copy of the cell behind them",
-        [
-          "transformer",
-          "transformer_cw",
-          "transformer_ccw",
-          "triple_transformer",
-        ],
-        "transformer",
-      ),
-      CellCategory(
         "Forkers",
         "A cell comes in from the back, a copy of it comes out front",
         [
@@ -911,6 +904,18 @@ final categories = [
         ],
         "forker",
       ),
+      CellCategory(
+        "Transformers",
+        "They transform the cell in front of them into a copy of the cell behind them",
+        [
+          "transformer",
+          "transformer_cw",
+          "transformer_ccw",
+          "triple_transformer",
+        ],
+        "transformer",
+      ),
+      "factory",
       "filler",
     ],
     "generator",
@@ -924,6 +929,7 @@ final categories = [
       "rotator_180",
       "rotator_rand",
       "redirector",
+      "super_redirector",
       "opposite_rotator",
     ],
     "rotator_cw",
@@ -2427,6 +2433,14 @@ final cellInfo = <String, CellProfile>{
     "Explosive",
     "Like a normal enemy, except it will explode within a specified radius (default of 1) with a specified effectiveness (default of 100%), leaving behind a specified cell (default of empty",
   ),
+  "super_redirector": CellProfile(
+    "Super Redirector",
+    "A redirecotr that applies to all 4 sides",
+  ),
+  "factory": CellProfile(
+    "Factory",
+    "A generator that generates at a specified interval a specified cell, can be physical and the rotation offset is optional",
+  ),
 };
 
 enum CellPropertyType {
@@ -2483,5 +2497,11 @@ Map<String, List<CellProperty>> props = {
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
+  ],
+  "factory": [
+    CellProperty("Cell", "cell", CellPropertyType.cell, "push!0"),
+    CellProperty("Interval", "interval", CellPropertyType.number, 1),
+    CellProperty("Add Rotation", "addrot", CellPropertyType.boolean, false),
+    CellProperty("Physical", "physical", CellPropertyType.boolean, false),
   ],
 };
