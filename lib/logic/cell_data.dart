@@ -290,6 +290,8 @@ final cells = {
   "explosive",
   "super_redirector",
   "factory",
+  "checkpoint",
+  "mech_checkpoint",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -297,6 +299,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "checkpoint.png": "puzzle/checkpoint.png",
+  "mech_checkpoint.png": "mechanical/users/mech_checkpoint.png",
   "super_redirector.png": "rotators/super_redirector.png",
   "factory.png": "recreators/factory.png",
   "explosive.png": "destroyers/enemy/explosive.png",
@@ -1192,6 +1196,7 @@ final categories = [
           "keyforce",
           "keyfake",
           "mech_stopper",
+          "mech_checkpoint",
         ],
         "mech_mover",
       ),
@@ -1220,6 +1225,7 @@ final categories = [
     "Cells made to be used in puzzles",
     [
       "puzzle",
+      "checkpoint",
       "antipuzzle",
       "propuzzle",
       "pmerge",
@@ -2441,6 +2447,14 @@ final cellInfo = <String, CellProfile>{
     "Factory",
     "A generator that generates at a specified interval a specified cell, can be physical and the rotation offset is optional",
   ),
+  "checkpoint": CellProfile(
+    "Checkpoint",
+    "When activated, and there are no more puzzle cells, it'll spawn one in front with the same rotation as this checkpoint unless told to reset it",
+  ),
+  "mech_checkpoint": CellProfile(
+    "Mechanically Powered Checkpoint",
+    "Checkpoint but activated mechanically",
+  ),
 };
 
 enum CellPropertyType {
@@ -2503,5 +2517,15 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Interval", "interval", CellPropertyType.number, 1),
     CellProperty("Add Rotation", "addrot", CellPropertyType.boolean, false),
     CellProperty("Physical", "physical", CellPropertyType.boolean, false),
+  ],
+  "checkpoint": [
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+  ],
+  "mech_checkpoint": [
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
 };

@@ -60,6 +60,8 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       puzzleWin = true;
       if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
+  } else if (o.id == "checkpoint") {
+    enableCheckpoint(o, ox, oy);
   }
 
   if (type == "unstable") {

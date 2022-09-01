@@ -333,6 +333,8 @@ class MechanicalManager {
       }
     } else if (cell.id == "mech_to_math") {
       mathManager.output(x, y, cell.rot, mathManager.customCount(cell, x, y, cell.rot) ?? 0);
+    } else if (cell.id == "mech_checkpoint") {
+      enableCheckpoint(cell, x, y);
     }
   }
 

@@ -44,6 +44,7 @@ final subticks = [
   puzzles,
   pmerges,
   autoflag,
+  checkpoints,
   timetravel,
 ];
 
