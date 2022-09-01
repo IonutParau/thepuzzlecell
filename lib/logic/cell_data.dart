@@ -2480,7 +2480,7 @@ Map<String, List<CellProperty>> props = {
   "explosive": [
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
     CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
-    CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty:0"),
+    CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
