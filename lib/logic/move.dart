@@ -154,8 +154,6 @@ final justMoveInsideOf = [
   "time_reset",
   "portal_a",
   "portal_b",
-  ...trashes,
-  ...enemies,
 ].toSet().toList();
 
 bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
