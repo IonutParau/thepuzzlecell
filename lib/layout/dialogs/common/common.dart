@@ -8,3 +8,4 @@ export 'property_editor_dialog.dart' show PropertyEditorDialog;
 export 'add_server_dialog.dart' show AddServerDialog;
 export 'edit_server_dialog.dart' show EditServerDialog;
 export 'add_world_dialog.dart' show AddWorldDialog;
+export 'loading_dialog.dart' show LoadingDialog;

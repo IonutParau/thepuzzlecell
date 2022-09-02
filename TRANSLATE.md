@@ -113,7 +113,8 @@ In the text, @variablename gets replaced with the variable.
 | audio                          | Name of the Audio settings tab                                                                                                          |           |
 | general                        | Name of the General settings tab                                                                                                        |           |
 | graphics                       | The name of the Graphics settings tab                                                                                                   |           |
-| up / left / right / down       | You can probably figure out what worlds these replace                                                                                   |           |
+| up / left / right / down       | You can probably figure out what words these replace                                                                                    |           |
+| install_from_file              | The name of the Install from File button found in the Texturepacks UI                                                                   |           |
 
 ## Button IDs:
 
