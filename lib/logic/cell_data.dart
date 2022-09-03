@@ -2517,6 +2517,7 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Interval", "interval", CellPropertyType.number, 1),
     CellProperty("Add Rotation", "addrot", CellPropertyType.boolean, false),
     CellProperty("Physical", "physical", CellPropertyType.boolean, false),
+    CellProperty("Quantized", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
     CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),

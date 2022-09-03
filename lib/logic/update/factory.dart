@@ -11,6 +11,7 @@ void doFactory(Cell cell, int x, int y) {
   while (cell.data['t'] >= cell.data['interval']) {
     cell.data['t'] -= cell.data['interval'];
     final physical = cell.data['physical'] ?? false;
+    final quantized = cell.data['quantized'] ?? false;
 
     final ox = frontX(x, cell.rot);
     final oy = frontY(y, cell.rot);
@@ -30,6 +31,8 @@ void doFactory(Cell cell, int x, int y) {
     rot %= 4;
 
     final output = Cell(x, y);
+    output.cx = frontX(x, cell.rot + 2);
+    output.cy = frontY(y, cell.rot + 2);
     output.id = id;
     output.rot = rot;
     output.lastvars.lastRot = r;
@@ -39,7 +42,9 @@ void doFactory(Cell cell, int x, int y) {
       output.updated = true;
     }
 
-    if (!push(ox, oy, cell.rot, 1, replaceCell: output)) {
+    if (quantized) {
+      unstableGen(x, y, cell.rot, output.copy);
+    } else if (!push(ox, oy, cell.rot, 1, replaceCell: output)) {
       if (physical) {
         if (push(x, y, (cell.rot + 2) % 4, 1)) {
           output.lastvars.lastPos = cell.lastvars.lastPos.scale(1, 1);

@@ -285,7 +285,9 @@ class Grid {
   }
 
   Cell at(int x, int y) {
-    return grid[this.x(x)][this.y(y)];
+    return grid[this.x(x)][this.y(y)]
+      ..cx = this.x(x)
+      ..cy = this.y(y);
   }
 
   Cell? get(int x, int y) {
