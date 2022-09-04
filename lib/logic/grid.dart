@@ -33,6 +33,7 @@ final subticks = [
   movers,
   liners,
   bringers,
+  lofters,
   axis,
   birds,
   fans,

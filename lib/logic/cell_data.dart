@@ -295,6 +295,7 @@ final cells = {
   "mobile_enemy",
   "mover_trash",
   "mover_enemy",
+  "lofter",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -302,6 +303,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "lofter.png": "movers/combos/lofter.png",
   "mover_trash.png": "movers/movers/mover_trash.png",
   "mover_enemy.png": "movers/movers/mover_enemy.png",
   "mobile_enemy.png": "destroyers/enemy/mobile_enemy.png",
@@ -793,7 +795,12 @@ final categories = [
       CellCategory(
         "Combinations",
         "Combinations of the base movers",
-        ["liner", "axis", "bringer"],
+        [
+          "liner",
+          "axis",
+          "bringer",
+          "lofter",
+        ],
         "liner",
       ),
     ],
@@ -2475,6 +2482,10 @@ final cellInfo = <String, CellProfile>{
   "mover_enemy": CellProfile(
     "Enemy Mover",
     "A one-directional Mobile Enemy that is also a mover",
+  ),
+  "lofter": CellProfile(
+    "Lofter",
+    "Puller + Grabber",
   ),
 };
 

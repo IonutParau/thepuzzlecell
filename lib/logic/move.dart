@@ -607,6 +607,7 @@ final withBias = [
   "pelican",
   "mover_trash",
   "mover_enemy",
+  "lofter",
 ];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
