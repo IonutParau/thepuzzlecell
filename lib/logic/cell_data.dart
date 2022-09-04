@@ -292,6 +292,9 @@ final cells = {
   "factory",
   "checkpoint",
   "mech_checkpoint",
+  "mobile_enemy",
+  "mover_trash",
+  "mover_enemy",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -299,6 +302,9 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mover_trash.png": "movers/movers/mover_trash.png",
+  "mover_enemy.png": "movers/movers/mover_enemy.png",
+  "mobile_enemy.png": "destroyers/enemy/mobile_enemy.png",
   "checkpoint.png": "puzzle/checkpoint.png",
   "mech_checkpoint.png": "mechanical/users/mech_checkpoint.png",
   "super_redirector.png": "rotators/super_redirector.png",
@@ -744,6 +750,8 @@ final categories = [
           "slow_mover",
           "fast_mover",
           "bird",
+          "mover_trash",
+          "mover_enemy",
           "releaser",
         ],
         "mover",
@@ -948,6 +956,7 @@ final categories = [
         [
           "enemy",
           "semi_enemy",
+          "mobile_enemy",
           "physical_enemy",
           "explosive",
         ],
@@ -960,6 +969,7 @@ final categories = [
           "trash",
           "silent_trash",
           "semi_trash",
+          "mobile_trash",
           "physical_trash",
           "push_trash",
           "pull_trash",
@@ -981,7 +991,6 @@ final categories = [
         ],
         "wormhole",
       ),
-      "mobile_trash",
       "counter",
       "hungry_trash",
       "fire",
@@ -2455,6 +2464,18 @@ final cellInfo = <String, CellProfile>{
     "Mechanically Powered Checkpoint",
     "Checkpoint but activated mechanically",
   ),
+  "mobile_enemy": CellProfile(
+    "Mobile Enemy",
+    "Like a Mobile Trash, but it also dies",
+  ),
+  "mover_trash": CellProfile(
+    "Trash Mover",
+    "A one-directional Mobile Trash that is also a mover",
+  ),
+  "mover_enemy": CellProfile(
+    "Enemy Mover",
+    "A one-directional Mobile Enemy that is also a mover",
+  ),
 };
 
 enum CellPropertyType {
@@ -2510,6 +2531,7 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
+    CellProperty("Mobile", "mobile", CellPropertyType.boolean, false),
     CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [

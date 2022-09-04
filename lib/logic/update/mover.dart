@@ -22,6 +22,24 @@ void movers() {
       filter: (c, x, y) => c.id == "mover" && c.rot == rot && !c.updated,
     );
     grid.loopChunks(
+      "mover_trash",
+      fromRot(rot),
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        push(x, y, cell.rot, 0);
+      },
+      filter: (c, x, y) => c.id == "mover_trash" && c.rot == rot && !c.updated,
+    );
+    grid.loopChunks(
+      "mover_enemy",
+      fromRot(rot),
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        push(x, y, cell.rot, 0);
+      },
+      filter: (c, x, y) => c.id == "mover_enemy" && c.rot == rot && !c.updated,
+    );
+    grid.loopChunks(
       "slow_mover",
       fromRot(rot),
       (cell, x, y) {

@@ -159,6 +159,9 @@ final justMoveInsideOf = [
 bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
   dir %= 4;
   if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
+  if (into.id == "explosive") {
+    return !(into.data['mobile'] ?? false);
+  }
   if (justMoveInsideOf.contains(into.id)) return true;
 
   final side = toSide(dir, into.rot);
@@ -522,41 +525,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
       game.blueparticles.emit(enemyParticleCounts, x, y);
     } else if (destroyer.id == "explosive") {
-      final radius = destroyer.data['radius'] ?? 1;
-      final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
-      final byproduct = destroyer.data['byproduct'] ?? "empty!0";
-      final circular = destroyer.data['circular'] ?? false;
-      final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
-
-      for (var cx = x - radius; cx <= x + radius; cx++) {
-        for (var cy = y - radius; cy <= y + radius; cy++) {
-          if (cx != x || cy != y) {
-            final d = sqrt(pow(cx - x, 2) + pow(cy - y, 2));
-            if ((circular && d <= radius) || !circular) {
-              var r = 0.0;
-
-              if (pseudoRandom) {
-                // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
-                r = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount).nextDouble();
-              } else {
-                // Random
-                r = rng.nextDouble();
-              }
-
-              if (r <= effectiveness) {
-                final id = parseJointCellStr(byproduct)[0];
-                final rot = parseJointCellStr(byproduct)[1];
-                // Confusing cascade operator stuffs
-                final c = Cell(cx.toInt(), cy.toInt(), rot)
-                  ..id = id
-                  ..rot = rot;
-
-                grid.set(cx.toInt(), cy.toInt(), c);
-              }
-            }
-          }
-        }
-      }
+      doExplosive(destroyer, x, y);
       game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
       game.redparticles.emit(enemyParticleCounts, x, y);
@@ -636,9 +605,9 @@ final withBias = [
   "thief",
   "hawk",
   "pelican",
+  "mover_trash",
+  "mover_enemy",
 ];
-
-final noForce = [];
 
 int addedForce(Cell cell, int dir, MoveType mt) {
   dir %= 4;
@@ -772,9 +741,23 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   }
   if (!grid.inside(x, y)) return false;
   if (canMove(ox, oy, dir, force, mt)) {
-    if (replaceCell.id == "mobile_trash") {
+    if (replaceCell.id == "mobile_trash" || (replaceCell.id == "mover_trash" && replaceCell.rot == dir)) {
       if (c.id != "empty") {
         grid.addBroken(c, ox, oy);
+      }
+      grid.set(ox, oy, replaceCell);
+      return true;
+    }
+    if (replaceCell.id == "mobile_enemy" || (replaceCell.id == "mover_enemy" && replaceCell.rot == dir) || replaceCell.id == "explosive") {
+      if (c.id != "empty") {
+        grid.addBroken(c, ox, oy, "shrinking");
+        grid.addBroken(replaceCell, ox, oy, "shrinking");
+        if (replaceCell.id == "explosive") {
+          doExplosive(replaceCell, ox, oy);
+        }
+        grid.set(ox, oy, Cell(ox, oy));
+        game.yellowparticles.emit(enemyParticleCounts, ox, oy);
+        return true;
       }
       grid.set(ox, oy, replaceCell);
       return true;
@@ -785,11 +768,12 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     // grid.set(ox, oy, Cell(ox, oy));
     final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
     // If we have been modified, only allow the past one to move if we have been fully deleted
-    if (c != grid.at(ox, oy)) {
-      if (c.id == "empty") {
-        grid.set(ox, oy, c.copy);
-      }
-      return c.id == "empty";
+    final now = grid.at(ox, oy);
+    if (c != now) {
+      // if (now.id == "empty") {
+      //   grid.set(ox, oy, replaceCell.copy);
+      // }
+      return now.id == "empty";
     }
     if (mightMove) {
       genOptimizer.remove(x, y);
@@ -1027,5 +1011,43 @@ void postmove(Cell cell, int x, int y, int dir, int force, MoveType mt) {
 
     if (safeAt(lx, ly)?.tags.contains("push_glued") == false) push(lx, ly, dir, force);
     if (safeAt(rx, ry)?.tags.contains("push_glued") == false) push(rx, ry, dir, force);
+  }
+}
+
+void doExplosive(Cell destroyer, int x, int y) {
+  final radius = destroyer.data['radius'] ?? 1;
+  final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
+  final byproduct = destroyer.data['byproduct'] ?? "empty!0";
+  final circular = destroyer.data['circular'] ?? false;
+  final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
+
+  for (var cx = x - radius; cx <= x + radius; cx++) {
+    for (var cy = y - radius; cy <= y + radius; cy++) {
+      if (cx != x || cy != y) {
+        final d = sqrt(pow(cx - x, 2) + pow(cy - y, 2));
+        if ((circular && d <= radius) || !circular) {
+          var r = 0.0;
+
+          if (pseudoRandom) {
+            // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
+            r = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount).nextDouble();
+          } else {
+            // Random
+            r = rng.nextDouble();
+          }
+
+          if (r <= effectiveness) {
+            final id = parseJointCellStr(byproduct)[0];
+            final rot = parseJointCellStr(byproduct)[1];
+            // Confusing cascade operator stuffs
+            final c = Cell(cx.toInt(), cy.toInt(), rot)
+              ..id = id
+              ..rot = rot;
+
+            grid.set(cx.toInt(), cy.toInt(), c);
+          }
+        }
+      }
+    }
   }
 }
