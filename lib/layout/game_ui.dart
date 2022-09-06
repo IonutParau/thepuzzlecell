@@ -2574,6 +2574,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       ignoreSafety = true;
     }
 
+    if (backgrounds.contains(cell.id)) {
+      ignoreSafety = true;
+    }
+
     if (!ignoreSafety && !cells.contains(file)) {
       file = "base";
     }
@@ -2764,6 +2768,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if ((cell.data['interval'] ?? 1) == 1 || (cell.data['radius'] ?? 1) == 1) {
         text = "";
       }
+    }
+
+    if (cell.id == "trash_can") {
+      text = "${cell.data['remaining'] ?? 10}";
     }
 
     if (text != "") {

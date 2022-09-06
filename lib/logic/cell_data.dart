@@ -296,6 +296,7 @@ final cells = {
   "mover_trash",
   "mover_enemy",
   "lofter",
+  "trash_can",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -303,6 +304,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "trash_can.png": "destroyers/trash/trash_can.png",
   "lofter.png": "movers/combos/lofter.png",
   "mover_trash.png": "movers/movers/mover_trash.png",
   "mover_enemy.png": "movers/movers/mover_enemy.png",
@@ -978,6 +980,7 @@ final categories = [
           "semi_trash",
           "mobile_trash",
           "physical_trash",
+          "trash_can",
           "push_trash",
           "pull_trash",
           "grab_trash",
@@ -2487,6 +2490,10 @@ final cellInfo = <String, CellProfile>{
     "Lofter",
     "Puller + Grabber",
   ),
+  "trash_can": CellProfile(
+    "Trash Can",
+    "Trash Cell with a remaining property, but when the remaining property is 0 or less it behaves like a push cell. Also, each time it eats cell it subtracts one from the remainig property.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2506,7 +2513,7 @@ class CellProperty {
   CellPropertyType type;
   dynamic def;
 
-  CellProperty(this.name, this.key, this.type, [this.def]);
+  CellProperty(this.name, this.key, this.type, this.def);
 }
 
 Map<String, List<CellProperty>> props = {
@@ -2515,6 +2522,7 @@ Map<String, List<CellProperty>> props = {
   ],
   "counter": [
     CellProperty("Count", "count", CellPropertyType.number, 0),
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
   ],
   "mech_trash": [
     CellProperty("Countdown", "countdown", CellPropertyType.integer, 0),
@@ -2561,5 +2569,9 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
     CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
     CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+  ],
+  "trash_can": [
+    CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
   ],
 };

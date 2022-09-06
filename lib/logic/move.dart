@@ -190,6 +190,8 @@ bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
     return mt == MoveType.puzzle;
   }
 
+  if (into.id == "trash_can") return (into.data['remaining'] ?? 10) > 0;
+
   if (trashes.contains(into.id) && !into.tags.contains("stopped")) return true;
 
   if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"].contains(into.id)) {
@@ -287,6 +289,7 @@ final trashes = [
   "transform_trash",
   "puzzle_trash",
   "counter",
+  "trash_can",
 ];
 
 final enemies = [
@@ -510,10 +513,14 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
         push(frontX(x, dir), frontY(y, dir), dir, 1);
       }
     } else if (destroyer.id == "counter") {
-      grid.addBroken(moving, x, y);
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
       var amount = 1;
       if (moving.id == "counter" || moving.id == "math_number") amount = (moving.data['count'] ?? 0);
       destroyer.data['count'] = (destroyer.data['count'] ?? 0) + amount;
+    } else if (destroyer.id == "trash_can") {
+      destroyer.data['remaining'] ??= 10;
+      destroyer.data['remaining']--;
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
     } else {
       grid.addBroken(moving, x, y);
     }
@@ -1026,6 +1033,13 @@ void doExplosive(Cell destroyer, int x, int y) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
       if (cx != x || cy != y) {
         final d = sqrt(pow(cx - x, 2) + pow(cy - y, 2));
+        final ox = cx - x;
+        final oy = cy - y;
+        final c = grid.at(cx.toInt(), cy.toInt());
+
+        if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox, oy), BreakType.explode)) {
+          return;
+        }
         if ((circular && d <= radius) || !circular) {
           var r = 0.0;
 

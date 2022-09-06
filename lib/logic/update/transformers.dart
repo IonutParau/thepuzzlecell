@@ -68,6 +68,7 @@ enum BreakType {
   rotate,
   transform,
   burn,
+  explode,
 }
 
 bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
