@@ -22,7 +22,10 @@ import 'package:toml/toml.dart';
 import 'package:window_manager/window_manager.dart';
 
 // Stuffz
-part 'grid.dart';
+part 'grid/grid.dart';
+part 'grid/cell.dart';
+part 'grid/subticks.dart';
+part 'performance/quad_chunks.dart';
 part 'update.dart';
 part 'move.dart';
 part 'cell_data.dart';

@@ -68,7 +68,6 @@ void initSound() {
 }
 
 Future playSound(Source sound, [double? volume]) async {
-  if (inBruteForce) return;
   if (volume == 0) return;
   await sfxPlayer.play(sound, volume: (volume ?? (storage.getDouble("sfx_volume") ?? 1)));
 }
