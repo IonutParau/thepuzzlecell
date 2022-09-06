@@ -1037,7 +1037,7 @@ void doExplosive(Cell destroyer, int x, int y) {
         final oy = cy - y;
         final c = grid.at(cx.toInt(), cy.toInt());
 
-        if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox, oy), BreakType.explode)) {
+        if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
           return;
         }
         if ((circular && d <= radius) || !circular) {
