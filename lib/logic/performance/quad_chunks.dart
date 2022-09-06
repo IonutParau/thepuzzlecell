@@ -57,24 +57,32 @@ class QuadChunk {
     return types.contains(id);
   }
 
-  List<List<int>> fetch(String id) {
+  List<List<int>> fetch(String id, [int? minx, int? miny, int? maxx, int? maxy]) {
     // Stop if the type is not within the node
     if (!containsType(id)) return [];
+
+    // Outside of size
+    if (minx != null && ex < minx) return [];
+    if (miny != null && ey < miny) return [];
+    if (maxx != null && sx > maxx) return [];
+    if (maxy != null && sy > maxy) return [];
+    reads++;
+    bool recount = (reads == 200);
+    if (recount) reads = 0;
 
     // If we're only supposed to be a node, return what the nodes agree on
     if (isNodeOnly) {
       final l = <List<int>>[];
 
+      if (recount) types = {};
+
       for (var sub in subs) {
         l.addAll(sub.fetch(id));
-        types.addAll(sub.types);
+        if (recount) types.addAll(sub.types);
       }
 
       return l;
     } else {
-      reads++;
-      bool recount = (reads == 200);
-      if (recount) reads = 0;
       final l = <List<int>>[];
 
       // Add all x,y pairs within
