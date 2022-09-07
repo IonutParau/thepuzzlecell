@@ -16,6 +16,8 @@ class Grid {
   late List<List<String>> place;
   late List<List<Set<String>>> chunks;
 
+  late QuadChunk quadChunk;
+
   Map<int, Map<int, num>> memory = {};
 
   String title = "";
@@ -62,6 +64,8 @@ class Grid {
         chunks.last.add({});
       }
     }
+
+    quadChunk = QuadChunk(0, 0, width - 1, height - 1);
   }
 
   int x(int rawX) => wrap ? ((rawX + width) % width) : rawX;
@@ -89,7 +93,9 @@ class Grid {
 
   void set(int x, int y, Cell cell) {
     if (cell == get(x, y)) genOptimizer.remove(x, y);
-    if (cell.id != "empty") cells.add(cell.id);
+    if (cell.id != "empty") {
+      cells.add(cell.id);
+    }
 
     x = this.x(x);
     y = this.y(y);
@@ -126,6 +132,7 @@ class Grid {
     if (id == "empty") return;
     cells.add(id);
     chunks[cx(x)][cy(y)].add(id);
+    quadChunk.insert(x, y, id);
   }
 
   bool inChunk(int x, int y, String id) {

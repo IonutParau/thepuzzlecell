@@ -30,9 +30,9 @@ class QuadChunk {
     // Subdivide to 4 sub-nodes
     subs.addAll([
       QuadChunk(sx, sy, sx + w2, sy + h2),
-      QuadChunk(sx + w2, sy, ex, sy + h2),
-      QuadChunk(sx, sy + h2, sx + w2, ey),
-      QuadChunk(sx + w2, sy + h2, ex, ey),
+      QuadChunk(sx + w2 + 1, sy, ex, sy + h2),
+      QuadChunk(sx, sy + h2 + 1, sx + w2, ey),
+      QuadChunk(sx + w2 + 1, sy + h2 + 1, ex, ey),
     ]);
   }
 
@@ -57,6 +57,8 @@ class QuadChunk {
     return types.contains(id);
   }
 
+  bool recount = false;
+
   List<List<int>> fetch(String id, [int? minx, int? miny, int? maxx, int? maxy]) {
     // Stop if the type is not within the node
     if (!containsType(id)) return [];
@@ -66,9 +68,6 @@ class QuadChunk {
     if (miny != null && ey < miny) return [];
     if (maxx != null && sx > maxx) return [];
     if (maxy != null && sy > maxy) return [];
-    reads++;
-    bool recount = (reads == 200);
-    if (recount) reads = 0;
 
     // If we're only supposed to be a node, return what the nodes agree on
     if (isNodeOnly) {
@@ -77,9 +76,13 @@ class QuadChunk {
       if (recount) types = {};
 
       for (var sub in subs) {
-        l.addAll(sub.fetch(id));
+        l.addAll(sub.fetch(id, minx, miny, maxx, maxy));
         if (recount) types.addAll(sub.types);
       }
+
+      if (recount) types.remove("empty");
+
+      recount = false;
 
       return l;
     } else {
@@ -92,6 +95,8 @@ class QuadChunk {
           if (recount) types.add(grid.get(x, y)?.id ?? "empty");
         }
       }
+
+      recount = false;
 
       return l;
     }

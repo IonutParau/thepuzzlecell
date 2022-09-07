@@ -2148,7 +2148,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       canvas.translate(offX, offY);
 
       if (!firstRender) {
-        emptyImage!.render(
+        emptyImage?.render(
           canvas,
           position: Vector2.zero(),
           size: Vector2(
@@ -2185,47 +2185,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         ey = min(ey + extra, grid.height);
       }
 
-      final renderMap = <int, List<int>>{};
+      final cellsPos = grid.quadChunk.fetch("all", sx, sy, ex, ey);
 
-      for (var x = sx; x < ex; x++) {
-        for (var y = sy; y < ey; y++) {
-          if (!grid.inChunk(x, y, "*")) {
-            x = grid.chunkToCellX(grid.cx(x) + 1); // Skip chunk
-          } else {
-            if (grid.inside(x, y)) {
-              if (grid.at(x, y).id != "empty") {
-                renderMap[x] ??= [];
-                renderMap[x]!.add(y);
-              }
-              renderEmpty(grid.at(x, y), x, y);
-            }
-          }
-        }
+      for (var p in cellsPos) {
+        final x = p[0];
+        final y = p[1];
+
+        if (grid.placeable(x, y) != "empty") renderEmpty(grid.at(x, y), x, y);
       }
 
       fancyRender(canvas);
 
-      renderMap.forEach(
-        (x, ys) => ys.forEach(
-          (y) => renderCell(
-            grid.at(x, y),
-            x,
-            y,
-          ),
-        ),
-      );
+      for (var p in cellsPos) {
+        final x = p[0];
+        final y = p[1];
 
-      // grid.loopChunks(
-      //   "all",
-      //   GridAlignment.BOTTOMLEFT,
-      //   renderCell,
-      //   // minx: sx,
-      //   // miny: sy,
-      //   // maxx: ex,
-      //   // maxy: ey,
-      //   fastChunk: false, // Fast chunk has some problems
-      //   filter: (cell, x, y) => cell.id != "empty",
-      // );
+        if (grid.at(x, y).id != "empty") renderCell(grid.at(x, y), x, y);
+      }
 
       if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
         var mx = cellMouseX; // shorter names
