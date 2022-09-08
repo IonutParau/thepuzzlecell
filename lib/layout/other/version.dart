@@ -30,6 +30,7 @@ final List<String> changes = [
   "Added Spike Trap and Spike Factory",
   "Added Explosive",
   "Added Factory",
+  "Added many performance-related settings",
 ];
 
 IconData getTrailing(String change) {

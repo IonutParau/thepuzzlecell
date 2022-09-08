@@ -1029,6 +1029,9 @@ void doExplosive(Cell destroyer, int x, int y) {
   final circular = destroyer.data['circular'] ?? false;
   final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
 
+  // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
+  final prng = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount);
+
   for (var cx = x - radius; cx <= x + radius; cx++) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
       if (cx != x || cy != y) {
@@ -1044,8 +1047,7 @@ void doExplosive(Cell destroyer, int x, int y) {
           var r = 0.0;
 
           if (pseudoRandom) {
-            // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
-            r = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount).nextDouble();
+            r = prng.nextDouble();
           } else {
             // Random
             r = rng.nextDouble();

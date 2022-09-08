@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';

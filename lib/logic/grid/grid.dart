@@ -248,6 +248,7 @@ class Grid {
 
     for (var p in cells) {
       if (filter(at(p[0], p[1]), p[0], p[1])) {
+        if (chunkID != "all" && chunkID != "*") at(p[0], p[1]).updated = true;
         callback(at(p[0], p[1]), p[0], p[1]);
       }
     }
