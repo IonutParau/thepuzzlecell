@@ -33,7 +33,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                   Navigator.pop(ctx);
                   return Text("");
                 } else {
-                  return Text(widget.completionMessage!, style: TextStyle(fontSize: 7.sp));
+                  return SingleChildScrollView(child: Text(widget.completionMessage!.replaceAll("%value", snap.data.toString()), style: TextStyle(fontSize: 7.sp)));
                 }
               }
 

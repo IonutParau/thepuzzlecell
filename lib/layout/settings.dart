@@ -151,7 +151,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         ),
       ),
       content: DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           appBar: TabBar(
             indicatorColor: Colors.grey[100],
@@ -169,6 +169,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               Tab(
                 text: lang('multiplayer', 'Multiplayer'),
               ),
+              Tab(
+                text: lang('performance', 'Performance'),
+              ),
             ],
           ),
           body: Container(
@@ -177,46 +180,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               children: [
                 ListView(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${lang('update_delay', 'Update Delay')}: ',
-                          style: textStyle,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                          height: 5.h,
-                          child: TextBox(
-                            style: textBoxStyle,
-                            controller: _delayController,
-                            onChanged: (str) {
-                              if (num.tryParse(str) != null) {
-                                storage
-                                    .setDouble(
-                                      "delay",
-                                      max(min(num.tryParse(str)!.toDouble(), 1), 0.01),
-                                    )
-                                    .then(
-                                      (e) => setState(
-                                        () {},
-                                      ),
-                                    );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
                     checkboxSetting(
                       'middle_move',
                       'middle_move',
                       'Middle Click Moving',
-                      false,
-                    ),
-                    checkboxSetting(
-                      'subtick',
-                      'subticking',
-                      'Subticking',
                       false,
                     ),
                     if (isDesktop)
@@ -240,32 +207,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'debug_mode',
                       'Debug Mode',
                       false,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          lang('chunk_size', 'Chunk Size') + ': ',
-                          style: textStyle,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                          height: 5.h,
-                          child: Slider(
-                            value: (storage.getInt("chunk_size") ?? 25).toDouble(),
-                            min: 1,
-                            max: 100,
-                            onChanged: (v) => storage
-                                .setInt(
-                                  "chunk_size",
-                                  v.toInt(),
-                                )
-                                .then(
-                                  (v) => setState(() {}),
-                                ),
-                            label: '${(storage.getInt('chunk_size') ?? 25)}',
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -492,6 +433,120 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+                ListView(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${lang('update_delay', 'Update Delay')}: ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          child: TextBox(
+                            style: textBoxStyle,
+                            controller: _delayController,
+                            onChanged: (str) {
+                              if (num.tryParse(str) != null) {
+                                storage
+                                    .setDouble(
+                                      "delay",
+                                      max(min(num.tryParse(str)!.toDouble(), 1), 0.01),
+                                    )
+                                    .then(
+                                      (e) => setState(
+                                        () {},
+                                      ),
+                                    );
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    checkboxSetting(
+                      'subtick',
+                      'subticking',
+                      'Subticking',
+                      false,
+                    ),
+                    checkboxSetting(
+                      'background_rect',
+                      'background_rect',
+                      'Replace Background Image with Rectangle',
+                      false,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('min_node_size', 'Minimum Node Size') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: (QuadChunk.minSize).toDouble(),
+                            min: 1,
+                            max: 100,
+                            onChanged: (v) => storage
+                                .setInt(
+                                  "min_node_size",
+                                  v.toInt(),
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${QuadChunk.minSize}',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('benchmark_length', 'Benchmark Length (Ticks)') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: (storage.getInt("benchmark_length") ?? 100).toDouble(),
+                            min: 10,
+                            max: 1000,
+                            onChanged: (v) => storage
+                                .setInt(
+                                  "benchmark_length",
+                                  v.toInt(),
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getInt("benchmark_length") ?? 100}',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(
+                        child: Button(
+                          child: Text(lang("benchmark", "Benchmark")),
+                          onPressed: () {
+                            final f = benchmarkOnThread(BenchmarkSettings(storage.getInt("benchmark_length") ?? 100, storage));
+                            showDialog(
+                              context: context,
+                              builder: (ctx) {
+                                return LoadingDialog(future: f, completionMessage: "%value", title: lang("benchmark", "Benchmark"));
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],

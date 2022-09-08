@@ -135,13 +135,6 @@ class Grid {
     quadChunk.insert(x, y, id);
   }
 
-  bool inChunk(int x, int y, String id) {
-    if (id == "*") return true;
-    if (id == "all") return chunks[cx(x)][cy(y)].isNotEmpty;
-
-    return chunks[cx(x)][cy(y)].contains(id);
-  }
-
   String placeable(int x, int y) {
     if (wrap) {
       return place[(x + width) % width][(y + height) % height];
@@ -203,91 +196,59 @@ class Grid {
       };
     }
 
-    // 0,0 to w,h
+    final cells = quadChunk.fetch(chunkID, 0, 0, width - 1, height - 1);
+
     if (alignment == fromRot(2)) {
-      var x = 0;
-      var y = 0;
+      // 0,0 to w,h
+      cells.sort((a, b) {
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
+        if (a[1] < b[1]) return -1;
+        if (a[1] > b[1]) return 1;
 
-      while (y < height) {
-        while (x < width) {
-          if (this.inChunk(x, y, chunkID)) {
-            if (filter(at(x, y), x, y)) {
-              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
-              callback(at(x, y), x, y);
-            }
-            x++;
-          } else {
-            x = chunkToCellX(cx(x) + 1);
-          }
-        }
-        y++;
-        x = 0;
-      }
+        return 0;
+      });
     }
 
-    // w,h to 0,0
     if (alignment == fromRot(0)) {
-      var x = width - 1;
-      var y = height - 1;
+      // w,h or 0,0
+      cells.sort((a, b) {
+        if (a[0] > b[0]) return -1;
+        if (a[0] < b[0]) return 1;
+        if (a[1] > b[1]) return -1;
+        if (a[1] < b[1]) return 1;
 
-      while (y >= 0) {
-        while (x >= 0) {
-          if (this.inChunk(x, y, chunkID)) {
-            if (filter(at(x, y), x, y)) {
-              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
-              callback(at(x, y), x, y);
-            }
-            x--;
-          } else {
-            x = chunkToCellX(cx(x)) - 1;
-          }
-        }
-        y--;
-        x = width - 1;
-      }
+        return 0;
+      });
     }
 
-    // 0,h to w,0
     if (alignment == fromRot(1)) {
-      var x = 0;
-      var y = height - 1;
+      // 0,h to w,0
+      cells.sort((a, b) {
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
+        if (a[1] > b[1]) return -1;
+        if (a[1] < b[1]) return 1;
 
-      while (x < width) {
-        while (y >= 0) {
-          if (this.inChunk(x, y, chunkID)) {
-            if (filter(at(x, y), x, y)) {
-              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
-              callback(at(x, y), x, y);
-            }
-            y--;
-          } else {
-            y = chunkToCellY(cy(y)) - 1;
-          }
-        }
-        x++;
-        y = height - 1;
-      }
+        return 0;
+      });
     }
 
-    // w,0 to 0,h
     if (alignment == fromRot(3)) {
-      var x = width - 1;
-      var y = 0;
+      // w,0 to 0,h
+      cells.sort((a, b) {
+        if (a[0] > b[0]) return -1;
+        if (a[0] < b[0]) return 1;
+        if (a[1] < b[1]) return -1;
+        if (a[1] > b[1]) return 1;
 
-      while (x >= 0) {
-        while (y < height) {
-          if (this.inChunk(x, y, chunkID)) {
-            if (filter(at(x, y), x, y)) {
-              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
-              callback(at(x, y), x, y);
-            }
-            y++;
-          } else {
-            y = chunkToCellY(cy(y) + 1);
-          }
-        }
-        x--;
-        y = 0;
+        return 0;
+      });
+    }
+
+    for (var p in cells) {
+      if (filter(at(p[0], p[1]), p[0], p[1])) {
+        callback(at(p[0], p[1]), p[0], p[1]);
       }
     }
   }
@@ -332,23 +293,25 @@ class Grid {
     brokenCells = [];
     final cells = <String>{};
 
-    //if (tickCount % 100 == 0) clearChunks();
+    final cellPos = quadChunk.fetch("all");
 
-    forEach(
-      (cell, x, y) {
-        cell.updated = false;
-        cell.lastvars = LastVars(cell.rot, x, y);
-        cell.tags.clear();
-        cell.cx = x;
-        cell.cy = y;
-        cell.lifespan++;
-        cells.add(cell.id);
-        if (place[x][y] != "empty") cells.add(place[x][y]);
-        if (tickCount % 100 == 0) {
-          setChunk(x, y, cell.id);
-        }
-      },
-    );
+    if (cellPos.length < width * height) cells.add("empty"); // If we skipped some its guaranteed we have some empties
+
+    for (var p in cellPos) {
+      var x = p[0];
+      var y = p[1];
+      var cell = at(x, y);
+      cell.updated = false;
+      cell.lastvars = LastVars(cell.rot, x, y);
+      cell.tags.clear();
+      cell.cx = x;
+      cell.cy = y;
+      cell.lifespan++;
+      cells.add(cell.id);
+      if (place[x][y] != "empty") cells.add(place[x][y]);
+    }
+
+    if (tickCount % 100 == 0) quadChunk.reload();
 
     return cells;
   }

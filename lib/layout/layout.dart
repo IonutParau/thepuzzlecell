@@ -20,13 +20,13 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:the_puzzle_cell/layout/other/other.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
+import 'package:the_puzzle_cell/logic/performance/grid_benchmark.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
 import 'package:window_manager/window_manager.dart';
 import 'tools/tools.dart';
 export 'other/other.dart';
-import '../logic/logic.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'game_ui.dart';

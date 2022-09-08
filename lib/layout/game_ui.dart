@@ -1973,6 +1973,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var middleMove = false;
   var cursorTexture = "cursor";
   var proxyMirror = false;
+  var replaceBgWithRect = false;
 
   @override
   Future<void>? onLoad() async {
@@ -1983,6 +1984,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     middleMove = storage.getBool("middle_move") ?? false;
     cursorTexture = storage.getString("cursor_texture") ?? "cursor";
     proxyMirror = storage.getBool("local_packet_mirror") ?? false;
+    replaceBgWithRect = storage.getBool("background_rect") ?? false;
 
     if (worldIndex != null) gridTabIndex = worldIndex!;
 
@@ -2148,14 +2150,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       canvas.translate(offX, offY);
 
       if (!firstRender) {
-        emptyImage?.render(
-          canvas,
-          position: Vector2.zero(),
-          size: Vector2(
-            grid.width * cellSize,
-            grid.height * cellSize,
-          ),
-        );
+        if (replaceBgWithRect) {
+          canvas.drawRect(Offset.zero & Size(grid.width / 1, grid.height / 1) * cellSize, Paint()..color = Color.fromARGB(255, 49, 47, 47));
+        } else {
+          emptyImage?.render(
+            canvas,
+            position: Vector2.zero(),
+            size: Vector2(
+              grid.width * cellSize,
+              grid.height * cellSize,
+            ),
+          );
+        }
       }
 
       firstRender = false;

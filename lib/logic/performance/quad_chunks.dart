@@ -3,7 +3,10 @@ part of logic;
 // QuadChunk is an optimization that turns the chunk system into a quad-tree
 class QuadChunk {
   // Arbitrarily chosen value of 5
-  static int minSize = 5;
+  static int get minSize => storage.getInt("min_node_size") ?? 5;
+  static set minSize(int val) {
+    storage.setInt("min_node_size", val);
+  }
 
   // Tree stuff
   List<QuadChunk> subs = [];
@@ -100,5 +103,10 @@ class QuadChunk {
 
       return l;
     }
+  }
+
+  void reload() {
+    recount = true;
+    subs.forEach((node) => node.reload());
   }
 }

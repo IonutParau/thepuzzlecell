@@ -84,7 +84,7 @@ In the text, @variablename gets replaced with the variable.
 | audioDevice                    | The name of the current audio device text                                                                                               |           |
 | sfx_volume                     | The name of the SFX volume setting                                                                                                      |           |
 | lerp_speed                     | The name of the Lerp Speed setting                                                                                                      |           |
-| chunk_size                     | The name of the Chunk Size setting                                                                                                      |           |
+| min_node_size                  | The name of the Minimum Node Size setting                                                                                               |           |
 | middle_move                    | The name of the Middle Click Move setting                                                                                               |           |
 | music_type                     | The name of the Music setting                                                                                                           |           |
 | error                          | The word to replace Error with                                                                                                          |           |
@@ -115,6 +115,10 @@ In the text, @variablename gets replaced with the variable.
 | graphics                       | The name of the Graphics settings tab                                                                                                   |           |
 | up / left / right / down       | You can probably figure out what words these replace                                                                                    |           |
 | install_from_file              | The name of the Install from File button found in the Texturepacks UI                                                                   |           |
+| performance                    | The name of the Performance tab in Settings                                                                                             |           |
+| benchmark                      | The name of the Benchmark button                                                                                                        |           |
+| background_rect                | The name of the Replace Background Image with Rectangle setting                                                                         |           |
+| benchmark_length               | The name of the Benchmark Length setting                                                                                                |           |
 
 ## Button IDs:
 
