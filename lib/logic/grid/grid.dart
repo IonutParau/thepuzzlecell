@@ -188,6 +188,13 @@ class Grid {
     }
   }
 
+  bool inChunk(int x, int y, String id) {
+    if (id == "*") return true;
+    if (id == "all") return chunks[cx(x)][cy(y)].isNotEmpty;
+
+    return chunks[cx(x)][cy(y)].contains(id);
+  }
+
   void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter, bool shouldUpdate = true}) {
     if (filter == null) {
       filter = (Cell c, int x, int y) {
@@ -196,60 +203,91 @@ class Grid {
       };
     }
 
-    final cells = quadChunk.fetch(chunkID, 0, 0, width - 1, height - 1);
-
+    // 0,0 to w,h
     if (alignment == fromRot(2)) {
-      // 0,0 to w,h
-      cells.sort((a, b) {
-        if (a[0] < b[0]) return -1;
-        if (a[0] > b[0]) return 1;
-        if (a[1] < b[1]) return -1;
-        if (a[1] > b[1]) return 1;
+      var x = 0;
+      var y = 0;
 
-        return 0;
-      });
+      while (y < height) {
+        while (x < width) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            x++;
+          } else {
+            x = chunkToCellX(cx(x) + 1);
+          }
+        }
+        y++;
+        x = 0;
+      }
     }
 
+    // w,h to 0,0
     if (alignment == fromRot(0)) {
-      // w,h or 0,0
-      cells.sort((a, b) {
-        if (a[0] > b[0]) return -1;
-        if (a[0] < b[0]) return 1;
-        if (a[1] > b[1]) return -1;
-        if (a[1] < b[1]) return 1;
+      var x = width - 1;
+      var y = height - 1;
 
-        return 0;
-      });
+      while (y >= 0) {
+        while (x >= 0) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            x--;
+          } else {
+            x = chunkToCellX(cx(x)) - 1;
+          }
+        }
+        y--;
+        x = width - 1;
+      }
     }
 
+    // 0,h to w,0
     if (alignment == fromRot(1)) {
-      // 0,h to w,0
-      cells.sort((a, b) {
-        if (a[0] < b[0]) return -1;
-        if (a[0] > b[0]) return 1;
-        if (a[1] > b[1]) return -1;
-        if (a[1] < b[1]) return 1;
+      var x = 0;
+      var y = height - 1;
 
-        return 0;
-      });
+      while (x < width) {
+        while (y >= 0) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            y--;
+          } else {
+            y = chunkToCellY(cy(y)) - 1;
+          }
+        }
+        x++;
+        y = height - 1;
+      }
     }
 
+    // w,0 to 0,h
     if (alignment == fromRot(3)) {
-      // w,0 to 0,h
-      cells.sort((a, b) {
-        if (a[0] > b[0]) return -1;
-        if (a[0] < b[0]) return 1;
-        if (a[1] < b[1]) return -1;
-        if (a[1] > b[1]) return 1;
+      var x = width - 1;
+      var y = 0;
 
-        return 0;
-      });
-    }
-
-    for (var p in cells) {
-      if (filter(at(p[0], p[1]), p[0], p[1])) {
-        if (chunkID != "all" && chunkID != "*") at(p[0], p[1]).updated = true;
-        callback(at(p[0], p[1]), p[0], p[1]);
+      while (x >= 0) {
+        while (y < height) {
+          if (this.inChunk(x, y, chunkID)) {
+            if (filter(at(x, y), x, y)) {
+              if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
+              callback(at(x, y), x, y);
+            }
+            y++;
+          } else {
+            y = chunkToCellY(cy(y) + 1);
+          }
+        }
+        x--;
+        y = 0;
       }
     }
   }
