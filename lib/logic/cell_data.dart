@@ -2460,7 +2460,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "super_redirector": CellProfile(
     "Super Redirector",
-    "A redirecotr that applies to all 4 sides",
+    "A redirector that applies to all 4 sides",
   ),
   "factory": CellProfile(
     "Factory",
