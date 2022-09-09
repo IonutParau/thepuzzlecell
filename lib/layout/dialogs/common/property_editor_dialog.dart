@@ -33,6 +33,9 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
   Widget propToTile(int i) {
     final property = props[game.currentSelection]![i];
+
+    final displayName = lang("property.${game.currentSelection}.${property.key}", property.name);
+
     if (property.type == CellPropertyType.cellID) {
       final currentID = controllers[i].text;
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
@@ -44,7 +47,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
               leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
-              text: Text("${property.name}: " + idToString(id)),
+              text: Text("$displayName: " + idToString(id)),
               onPressed: () {
                 controllers[i].text = id;
                 setState(() {});
@@ -59,7 +62,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
       return DropDownButton(
         placement: FlyoutPlacement.start,
-        title: Text("${property.name}: " + rotToString(rot)),
+        title: Text("$displayName: " + rotToString(rot)),
         items: [
           for (var r = 0; r < 4; r++)
             MenuFlyoutItem(
@@ -81,7 +84,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           angle: parseJointCellStr(current)[1] * halfPi,
           child: Image.asset(idToTexture(parseJointCellStr(current)[0])),
         ),
-        title: Text("${property.name}: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
+        title: Text("$displayName: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             for (var r = 0; r < 4; r++)
@@ -105,7 +108,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       return DropDownButton(
         placement: FlyoutPlacement.start,
         leading: Image.asset('assets/images/$tp'),
-        title: Text("${property.name}: " + idToString(currentID)),
+        title: Text("$displayName: " + idToString(currentID)),
         items: [
           for (var id in backgrounds)
             MenuFlyoutItem(
@@ -126,11 +129,11 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           controllers[i].text = (v == true) ? "true" : "false";
           setState(() {});
         },
-        content: Text(property.name),
+        content: Text(displayName),
       );
     }
     return TextBox(
-      header: property.name,
+      header: displayName,
       controller: controllers[i],
     );
   }

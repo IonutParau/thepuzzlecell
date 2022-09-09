@@ -162,6 +162,9 @@ bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
   if (into.id == "explosive") {
     return !(into.data['mobile'] ?? false);
   }
+  if (into.id == "mech_p_trash" || into.id == "mech_enemy") {
+    return MechanicalManager.on(into);
+  }
   if (justMoveInsideOf.contains(into.id)) return true;
 
   final side = toSide(dir, into.rot);
@@ -290,6 +293,7 @@ final trashes = [
   "puzzle_trash",
   "counter",
   "trash_can",
+  "mech_p_trash",
 ];
 
 final enemies = [
@@ -298,6 +302,7 @@ final enemies = [
   "silent_enemy",
   "physical_enemy",
   "explosive",
+  "mech_enemy",
 ];
 
 T debug<T>(T value) {
@@ -519,7 +524,11 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
       destroyer.data['count'] = (destroyer.data['count'] ?? 0) + amount;
     } else if (destroyer.id == "trash_can") {
       destroyer.data['remaining'] ??= 10;
-      destroyer.data['remaining']--;
+      if (moving.id == "number" || moving.id == "counter") {
+        destroyer.data['remaining'] -= (moving.data['count'] ?? 0);
+      } else {
+        destroyer.data['remaining']--;
+      }
       grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
     } else {
       grid.addBroken(moving, x, y);

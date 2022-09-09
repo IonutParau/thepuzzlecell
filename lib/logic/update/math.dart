@@ -158,7 +158,7 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
 
       output(x, y, cell.rot, rng.nextDouble() * (i2 - i1) + i1);
-    }, null, "math_prng");
+    }, null, "math_rng");
   }
 
   void core() {

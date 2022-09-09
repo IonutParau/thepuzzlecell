@@ -208,6 +208,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Debug Mode',
                       false,
                     ),
+                    checkboxSetting(
+                      'translator_mode',
+                      'translator_mode',
+                      'Translator Mode',
+                      false,
+                    ),
                   ],
                 ),
                 ListView(
@@ -509,6 +515,32 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     Row(
                       children: [
                         Text(
+                          lang('chunk_size', 'Chunk Size') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: (storage.getInt("chunk_size") ?? 25).toDouble(),
+                            min: 1,
+                            max: 100,
+                            onChanged: (v) => storage
+                                .setInt(
+                                  "chunk_size",
+                                  v.toInt(),
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getInt("chunk_size") ?? 25}',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
                           lang('benchmark_length', 'Benchmark Length (Ticks)') + ': ',
                           style: textStyle,
                         ),
@@ -536,7 +568,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       alignment: Alignment.topLeft,
                       child: SizedBox(
                         child: Button(
-                          child: Text(lang("benchmark", "Benchmark")),
+                          child: Text(lang("benchmark", "Benchmark"), style: textStyle),
                           onPressed: () {
                             final f = benchmarkOnThread(BenchmarkSettings(storage.getInt("benchmark_length") ?? 100, storage));
                             showDialog(

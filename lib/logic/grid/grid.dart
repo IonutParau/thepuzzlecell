@@ -36,7 +36,7 @@ class Grid {
     brokenCells.add(b);
   }
 
-  final chunkSize = 25;
+  int get chunkSize => storage.getInt("chunk_size") ?? 25;
 
   int width;
   int height;

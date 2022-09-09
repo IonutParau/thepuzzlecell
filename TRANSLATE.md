@@ -119,6 +119,9 @@ In the text, @variablename gets replaced with the variable.
 | benchmark                      | The name of the Benchmark button                                                                                                        |           |
 | background_rect                | The name of the Replace Background Image with Rectangle setting                                                                         |           |
 | benchmark_length               | The name of the Benchmark Length setting                                                                                                |           |
+| chunk_size                     | The name of the Chunk Size setting                                                                                                      |           |
+| translator_mode                | The name of the Translator Mode                                                                                                         |           |
+| property.cellid.propertykey    | The name of the property with the property key "propertykey" from the cell with id "cellid"                                             |           |
 
 ## Button IDs:
 
@@ -169,5 +172,12 @@ Like so:
 ```
 
 The last field-value pair must not have a , at the end or the parser fails and you get an error.
+
+# This is hard to remember...
+
+"Is there a simpler way of getting all the keys?"
+Yes! Translator mode, available since 2.2.0.0! You enable it in your settings, and all newly-rendered text that can be translated will be changed to the translation key, aka, what you gotta put as the field.
+
+It works for everything, even properties!
 
 Hope this helped you!

@@ -45,7 +45,7 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
       trailing: Button(
         child: Text(lang("delete", "Delete")),
         onPressed: () async {
-          tp.dir.deleteSync(recursive: true);
+          await tp.dir.delete(recursive: true);
           loadTexturePacks();
           await applyTexturePackSettings();
           applyTexturePacks();

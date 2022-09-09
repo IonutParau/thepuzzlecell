@@ -297,6 +297,8 @@ final cells = {
   "mover_enemy",
   "lofter",
   "trash_can",
+  "mech_enemy",
+  "mech_p_trash",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -304,6 +306,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_enemy.png": "mechanical/users/mech_enemy.png",
+  "mech_p_trash.png": "mechanical/users/mech_p_trash.png",
   "trash_can.png": "destroyers/trash/trash_can.png",
   "lofter.png": "movers/combos/lofter.png",
   "mover_trash.png": "movers/movers/mover_trash.png",
@@ -968,6 +972,7 @@ final categories = [
           "mobile_enemy",
           "physical_enemy",
           "explosive",
+          "mech_enemy",
         ],
         "enemy",
       ),
@@ -988,6 +993,7 @@ final categories = [
           "gen_trash",
           "transform_trash",
           "puzzle_trash",
+          "mech_p_trash",
         ],
         "trash",
       ),
@@ -2494,6 +2500,14 @@ final cellInfo = <String, CellProfile>{
     "Trash Can",
     "Trash Cell with a remaining property, but when the remaining property is 0 or less it behaves like a push cell. Also, each time it eats cell it subtracts one from the remainig property.",
   ),
+  "mech_enemy": CellProfile(
+    "Mechanically Powered Enemy",
+    "Only killable if it is powered",
+  ),
+  "mech_p_trash": CellProfile(
+    "Mechanically Powered Trash",
+    "Can only eat if it is powered",
+  ),
 };
 
 enum CellPropertyType {
@@ -2526,6 +2540,7 @@ Map<String, List<CellProperty>> props = {
   ],
   "mech_trash": [
     CellProperty("Countdown", "countdown", CellPropertyType.integer, 0),
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
   ],
   "math_memwriter": [
     CellProperty("Channel", "channel", CellPropertyType.integer, 0),
@@ -2572,6 +2587,12 @@ Map<String, List<CellProperty>> props = {
   ],
   "trash_can": [
     CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
+  ],
+  "mech_enemy": [
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
+  ],
+  "mech_p_trash": [
     CellProperty("Silent", "silent", CellPropertyType.boolean, false),
   ],
 };

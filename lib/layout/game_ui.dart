@@ -585,6 +585,7 @@ class VirtualButton {
   ButtonAlignment alignment;
   void Function() callback;
   bool Function() shouldRender;
+  bool isCellButton;
 
   late Vector2 canvasSize;
 
@@ -603,7 +604,8 @@ class VirtualButton {
 
   String? id;
 
-  VirtualButton(this.position, Vector2 size, this.texture, this.alignment, this.callback, this.shouldRender, {this.title = "Untitled", this.description = "No description", this.id})
+  VirtualButton(this.position, Vector2 size, this.texture, this.alignment, this.callback, this.shouldRender,
+      {this.title = "Untitled", this.description = "No description", this.id, this.isCellButton = false})
       : rotation = 0,
         lastRot = 0,
         startPos = position * storage.getDouble('ui_scale')!,
@@ -613,6 +615,7 @@ class VirtualButton {
   } // Constructors
 
   void translate() {
+    if (isCellButton) return;
     if (id != null) {
       title = lang("$id.title", title);
       description = lang("$id.desc", description);
@@ -723,7 +726,7 @@ class ButtonManager {
   void setButton(String key, VirtualButton button) {
     buttons[key] = button;
     button.id = key;
-    button.translate();
+    if (!button.isCellButton) button.translate();
   }
 
   void forEach(void Function(String key, VirtualButton button) callback) => buttons.forEach(callback);
@@ -1861,6 +1864,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 categories[i].description,
               ) +
               (debugMode ? "\nID: ${categories[i]}" : ""),
+          isCellButton: true,
         ),
       );
       for (var j = 0; j < categories[i].items.length; j++) {
@@ -1902,6 +1906,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 ? lang('${categories[i]}.${categories[i].items[j]}.desc', categories[i].items[j].description) +
                     (debugMode ? "\nID: ${categories[i].toString()}.${categories[i].items[j].toString()}" : "")
                 : lang("${categories[i].items[j].toString()}.desc", (cellInfo[categories[i].items[j]] ?? defaultProfile).description) + (debugMode ? "\nID: ${categories[i].items[j]}" : ""),
+            isCellButton: true,
           )..time = 50,
         );
 
@@ -1935,6 +1940,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   "$cell.desc",
                   (cellInfo[cell] ?? defaultProfile).description + (debugMode ? "\nID: $cell" : ""),
                 ),
+                isCellButton: true,
               )
                 ..time = 50
                 ..duration += k * 0.005,
@@ -2414,7 +2420,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             id = c.data["trick_as"];
           }
 
-          renderInfoBox(canvas, (cellInfo[id] ?? defaultProfile).title, (cellInfo[id] ?? defaultProfile).description + (debugMode ? "\nID: $id" : ""));
+          var d = lang("$id.desc", (cellInfo[id] ?? defaultProfile).description);
+          if (debugMode) {
+            d += "\nID: $id";
+            final prop = props[id];
+            if (prop != null) {
+              var strings = [];
+
+              prop.forEach((property) {
+                strings.add(lang("property.$id.${property.key}", property.name) + ": " + (c.data[property.key] ?? property.def).toString());
+              });
+
+              var str = strings.join("\n");
+              d += "\n\n$str";
+            }
+          }
+
+          renderInfoBox(canvas, lang("$id.title", (cellInfo[id] ?? defaultProfile).title), d);
         }
       }
 

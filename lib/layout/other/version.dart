@@ -31,6 +31,7 @@ final List<String> changes = [
   "Added Explosive",
   "Added Factory",
   "Added many performance-related settings",
+  "Added Mechanically Powered Enemy and Mechanically Powered Trash",
 ];
 
 IconData getTrailing(String change) {
