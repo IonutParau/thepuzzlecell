@@ -13,6 +13,15 @@ void movers() {
       filter: (c, x, y) => c.id == "fast_mover" && c.rot == rot && !c.updated,
     );
     grid.loopChunks(
+      "bulldozer",
+      fromRot(rot),
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        push(x, y, cell.rot, 0);
+      },
+      filter: (c, x, y) => c.id == "bulldozer" && c.rot == rot && !c.updated,
+    );
+    grid.loopChunks(
       "mover",
       fromRot(rot),
       (cell, x, y) {

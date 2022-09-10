@@ -299,6 +299,7 @@ final cells = {
   "trash_can",
   "mech_enemy",
   "mech_p_trash",
+  "bulldozer",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -306,6 +307,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "bulldozer.png": "movers/movers/bulldozer.png",
   "mech_enemy.png": "mechanical/users/mech_enemy.png",
   "mech_p_trash.png": "mechanical/users/mech_p_trash.png",
   "trash_can.png": "destroyers/trash/trash_can.png",
@@ -761,6 +763,7 @@ final categories = [
           "mover_trash",
           "mover_enemy",
           "releaser",
+          "bulldozer",
         ],
         "mover",
         max: 3,
@@ -2508,6 +2511,10 @@ final cellInfo = <String, CellProfile>{
     "Mechanically Powered Trash",
     "Can only eat if it is powered",
   ),
+  "bulldozer": CellProfile(
+    "Bulldozer",
+    "A mover with adjustable bias",
+  ),
 };
 
 enum CellPropertyType {
@@ -2594,5 +2601,8 @@ Map<String, List<CellProperty>> props = {
   ],
   "mech_p_trash": [
     CellProperty("Silent", "silent", CellPropertyType.boolean, false),
+  ],
+  "bulldozer": [
+    CellProperty("Bias", "bias", CellPropertyType.integer, 0),
   ],
 };

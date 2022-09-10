@@ -145,8 +145,8 @@ void fans() {
   for (var rot in rotOrder) {
     grid.updateCell(
       (c, x, y) {
-        grabSide(x, y, c.rot - 1, c.rot, 0);
-        grabSide(x, y, c.rot + 1, c.rot, 0);
+        grabSide(x, y, c.rot - 1, c.rot);
+        grabSide(x, y, c.rot + 1, c.rot);
       },
       rot,
       "conveyor",

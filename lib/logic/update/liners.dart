@@ -21,6 +21,6 @@ void liners() {
 
 void doBringer(int x, int y, int dir) {
   doDriller(x, y, dir);
-  grabSide(x, y, dir - 1, dir, 1);
-  grabSide(x, y, dir + 1, dir, 1);
+  grabSide(x, y, dir - 1, dir);
+  grabSide(x, y, dir + 1, dir);
 }

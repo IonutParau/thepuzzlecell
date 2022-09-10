@@ -215,7 +215,7 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
         return true;
       }
 
-      force += addedForce(grid.at(x, y), dir, mt);
+      force += addedForce(grid.at(x, y), dir, force, mt);
       if (force <= 0) return false;
 
       if (dir == 0) {
@@ -535,8 +535,8 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     }
   } else if (enemies.contains(destroyer.id)) {
     // Enenmies
+    grid.addBroken(destroyer, x, y, "shrinking");
     grid.set(x, y, Cell(x, y));
-    playSound(destroySound);
     if (destroyer.id == "physical_enemy") {
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
       game.blueparticles.emit(enemyParticleCounts, x, y);
@@ -549,14 +549,11 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
   }
 }
 
-bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move]) {
+bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move, int force = 1]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (dir == null) {
-    if (ox < nx) dir = 0;
-    if (oy < ny) dir = 1;
-    if (ox > nx) dir = 2;
-    if (oy > ny) dir = 3;
+    dir = dirFromOff(nx - ox, ny - oy);
   }
   final movingTo = grid.at(nx, ny).copy;
 
@@ -580,10 +577,18 @@ bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveTyp
 
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
-  if (moveInsideOf(movingTo, nx, ny, dir!, mt) && movingTo.id != "empty") {
+  if (moveInsideOf(movingTo, nx, ny, dir, mt) && movingTo.id != "empty") {
     handleInside(nx, ny, dir, moving, mt);
+    QueueManager.runQueue("post-move");
+    return true;
   } else {
     grid.set(nx, ny, moving);
+  }
+
+  if (acidic(moving, dir, force, mt, movingTo, nx, ny)) {
+    if (movingTo.id != "empty") {
+      handleAcid(moving, dir, force, mt, movingTo, nx, ny);
+    }
   }
 
   if (ox != nx || oy != ny) {
@@ -626,7 +631,7 @@ final withBias = [
   "lofter",
 ];
 
-int addedForce(Cell cell, int dir, MoveType mt) {
+int addedForce(Cell cell, int dir, int force, MoveType mt) {
   dir %= 4;
   if (cell.id == "weight") {
     return -1;
@@ -659,6 +664,18 @@ int addedForce(Cell cell, int dir, MoveType mt) {
     } else
       return 0;
   }
+
+  if (cell.id == "bulldozer") {
+    final bias = cell.data['bias'] ?? 1;
+
+    if (cell.rot == dir) {
+      return bias;
+    } else if (cell.rot == odir) {
+      return -bias;
+    }
+    return 0;
+  }
+
   if (withBias.contains(cell.id)) {
     if (cell.rot == dir) {
       cell.updated = true;
@@ -707,24 +724,39 @@ int addedForce(Cell cell, int dir, MoveType mt) {
   return 0;
 }
 
-// bool stickyNudge(int x, int y, int dir, MoveType mt) {
-//   if (grid.inside(x, y)) {
-//     final c = grid.at(x, y);
+// The term "acidic" comes from CelLua's "Acid" cell.
+bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int iy) {
+  if (["mobile_trash", "mobile_enemy"].contains(cell.id)) {
+    return true;
+  }
 
-//     if (c.id != "sticky") {
-//       return nudge(x, y, dir);
-//     } else if (c.id == "sticky") {
-//       final fx = frontX(x, dir);
-//       final fy = frontY(y, dir);
+  if (["mover_trash", "mover_enemy"].contains(cell.id) && cell.rot == dir) {
+    return true;
+  }
 
-//       if (stickyNudge(fx, fy, dir, mt)) {
-//         return nudge(x, y, dir);
-//       }
-//     }
-//   }
+  if (cell.id == "explosive") {
+    return cell.data['mobile'] ?? false;
+  }
 
-//   return false;
-// }
+  return false;
+}
+
+void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+  if (cell.id == "mobile_trash" || cell.id == "mover_trash") {
+    grid.addBroken(melting, mx, my);
+    grid.set(mx, my, cell);
+  }
+
+  if (cell.id == "mobile_enemy" || cell.id == "mover_enemy" || cell.id == "explosive") {
+    grid.addBroken(melting, mx, my, "shrinking");
+    grid.addBroken(cell, mx, my, "shrinking");
+    if (cell.id == "explosive") {
+      doExplosive(cell, mx, my);
+    }
+    grid.set(mx, my, Cell(mx, my));
+    game.yellowparticles.emit(enemyParticleCounts, mx, my);
+  }
+}
 
 bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell, bool shifted = false}) {
   replaceCell ??= Cell(x, y);
@@ -758,38 +790,20 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   }
   if (!grid.inside(x, y)) return false;
   if (canMove(ox, oy, dir, force, mt)) {
-    if (replaceCell.id == "mobile_trash" || (replaceCell.id == "mover_trash" && replaceCell.rot == dir)) {
+    if (acidic(replaceCell, dir, force, mt, c, ox, oy)) {
       if (c.id != "empty") {
-        grid.addBroken(c, ox, oy);
+        handleAcid(replaceCell, dir, force, mt, c, ox, oy);
+      } else {
+        grid.set(ox, oy, replaceCell);
       }
-      grid.set(ox, oy, replaceCell);
       return true;
     }
-    if (replaceCell.id == "mobile_enemy" || (replaceCell.id == "mover_enemy" && replaceCell.rot == dir) || replaceCell.id == "explosive") {
-      if (c.id != "empty") {
-        grid.addBroken(c, ox, oy, "shrinking");
-        grid.addBroken(replaceCell, ox, oy, "shrinking");
-        if (replaceCell.id == "explosive") {
-          doExplosive(replaceCell, ox, oy);
-        }
-        grid.set(ox, oy, Cell(ox, oy));
-        game.yellowparticles.emit(enemyParticleCounts, ox, oy);
-        return true;
-      }
-      grid.set(ox, oy, replaceCell);
-      return true;
-    }
-    force += addedForce(c, dir, mt);
+    force += addedForce(c, dir, force, mt);
     if (force <= 0) return false;
-    // final cb = grid.at(ox, oy).copy;
-    // grid.set(ox, oy, Cell(ox, oy));
     final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
     // If we have been modified, only allow the past one to move if we have been fully deleted
     final now = grid.at(ox, oy);
     if (c != now) {
-      // if (now.id == "empty") {
-      //   grid.set(ox, oy, replaceCell.copy);
-      // }
       return now.id == "empty";
     }
     if (mightMove) {
@@ -808,36 +822,6 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     if (depth == 0) QueueManager.runQueue("post-move");
     return false;
   }
-}
-
-bool pushDistance(int x, int y, int dir, int force, int distance, [MoveType mt = MoveType.push]) {
-  final oforce = 0;
-  final ox = x;
-  final oy = y;
-  while (distance > 0) {
-    distance--;
-    x -= (dir % 2 == 0 ? dir - 1 : 0);
-    y -= (dir % 2 != 0 ? dir - 2 : 0);
-    if (!grid.inside(x, y)) {
-      return false;
-    }
-
-    final c = grid.at(x, y);
-
-    if (canMove(x, y, force, dir, mt)) {
-      if (moveInsideOf(c, x, y, dir, mt)) {
-        break;
-      }
-      force += addedForce(c, dir, mt);
-      if (force <= 0) return false;
-    }
-  }
-
-  if ((!moveInsideOf(inFront(x, y, dir) ?? grid.at(x, y), x, y, dir, mt)) && !moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
-    return false;
-  }
-
-  return push(ox, oy, dir, oforce + 1, mt: mt);
 }
 
 bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool shifted = false]) {
@@ -883,7 +867,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
     cy = nc.y;
     dir = (nc.dir + 2) % 4;
     if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
-    force += addedForce(grid.at(cx, cy), dir, mt);
+    force += addedForce(grid.at(cx, cy), dir, force, mt);
     if (force <= 0) return false;
     final lastrot = grid.at(cx, cy).rot;
     grid.at(cx, cy).rot -= nc.addedrot;
@@ -914,7 +898,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
     final addedrot = nc.addedrot;
     if (!grid.inside(cx, cy)) break;
     if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
-    force += addedForce(grid.at(cx, cy), dir, mt);
+    force += addedForce(grid.at(cx, cy), dir, force, mt);
     if (force <= 0) return false;
     if (canMove(cx, cy, dir, force, mt)) {
       grid.at(cx, cy).rot = (grid.at(cx, cy).rot - addedrot) % 4;
@@ -1048,6 +1032,8 @@ void doExplosive(Cell destroyer, int x, int y) {
         final ox = cx - x;
         final oy = cy - y;
         final c = grid.at(cx.toInt(), cy.toInt());
+
+        grid.addBroken(c, x, y, "shrinking");
 
         if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
           return;

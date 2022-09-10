@@ -5,8 +5,8 @@ void doAxis(int x, int y, int dir) {
     final bx = x + (dir % 2 == 0 ? dir - 1 : 0);
     final by = y + (dir % 2 == 1 ? dir - 2 : 0);
     pull(bx, by, dir, 1);
-    grabSide(x, y, dir - 1, dir, 1);
-    grabSide(x, y, dir + 1, dir, 1);
+    grabSide(x, y, dir - 1, dir);
+    grabSide(x, y, dir + 1, dir);
   }
 }
 

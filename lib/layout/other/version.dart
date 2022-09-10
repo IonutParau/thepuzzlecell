@@ -32,6 +32,9 @@ final List<String> changes = [
   "Added Factory",
   "Added many performance-related settings",
   "Added Mechanically Powered Enemy and Mechanically Powered Trash",
+  "Added Bulldozer",
+  "Made enemies have a fancy death animation",
+  "Made death animations play the soudn when they start instead of when they end",
 ];
 
 IconData getTrailing(String change) {

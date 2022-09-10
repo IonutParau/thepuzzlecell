@@ -21,13 +21,13 @@ void grabbers() {
 
 void doThief(int x, int y, int dir) {
   if (nudge(x, y, dir, mt: MoveType.grab)) {
-    if (grabSide(x, y, dir - 1, dir, 2)) {
+    if (grabSide(x, y, dir - 1, dir)) {
       safeAt(
         frontX(x, dir) + frontX(0, (dir + 3) % 4),
         frontY(y, dir) + frontY(0, (dir + 3) % 4),
       )?.updated = true;
     }
-    if (grabSide(x, y, dir + 1, dir, 2)) {
+    if (grabSide(x, y, dir + 1, dir)) {
       safeAt(
         frontX(x, dir) + frontX(0, (dir + 1) % 4),
         frontY(y, dir) + frontY(0, (dir + 1) % 4),
@@ -36,23 +36,27 @@ void doThief(int x, int y, int dir) {
   }
 }
 
-bool doGrabber(int x, int y, int dir, [int rdepth = 0]) {
+bool doGrabber(int x, int y, int dir) {
   grid.at(x, y).updated = true;
-  if (rdepth > 9000) return false; // ITS OVER 9000!!!
   var fx = frontX(x, dir);
   var fy = frontY(y, dir);
-  var depth = 0;
   if (grid.inside(fx, fy)) {
     final f = grid.at(fx, fy);
     if (!moveInsideOf(f, fx, fy, dir, MoveType.grab)) return false;
   }
-  push(x, y, dir, 1, mt: MoveType.grab);
-  grabSide(x, y, dir - 1, dir, depth);
-  grabSide(x, y, dir + 1, dir, depth);
+  moveCell(x, y, frontX(x, dir), frontY(y, dir), dir, null, MoveType.grab);
+  grabSide(x, y, dir - 1, dir);
+  grabSide(x, y, dir + 1, dir);
   return true;
 }
 
-bool grabSide(int x, int y, int mdir, int dir, int checkDepth) {
+bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
+  if (cell.id == "mech_grabber") return MechanicalManager.on(cell, true);
+
+  return ["grabber", "axis", "bringer", "lofter", "conveyor"].contains(cell.id) && cell.rot == dir;
+}
+
+bool grabSide(int x, int y, int mdir, int dir) {
   mdir %= 4;
   final ox = x;
   final oy = y;
@@ -65,16 +69,9 @@ bool grabSide(int x, int y, int mdir, int dir, int checkDepth) {
         if (moveInsideOf(grid.at(x, y), x, y, dir, MoveType.grab)) {
           break;
         } else {
-          if ((grid.at(x, y).id == "grabber" ||
-                  (grid.at(x, y).id == "mech_grabber" &&
-                      MechanicalManager.onAt(x, y, true)) ||
-                  grid.at(x, y).id == "axis" ||
-                  grid.at(x, y).id == "bringer" ||
-                  grid.at(x, y).id == "conveyor") &&
-              grid.at(x, y).rot == dir) grid.at(x, y).updated = true;
-          if (!pushDistance(x, y, dir, 1, checkDepth - 1, MoveType.grab)) {
-            break;
-          }
+          if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir)) grid.at(x, y).updated = true;
+          if (!canMove(x, y, dir, 1, MoveType.grab)) break;
+          moveCell(x, y, frontX(x, dir), frontY(y, dir), dir, null, MoveType.grab);
         }
       } else {
         break;

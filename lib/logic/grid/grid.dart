@@ -322,13 +322,6 @@ class Grid {
   Set<String> cells = {};
 
   Set<String> prepareTick() {
-    final types = <String>{};
-    for (var bcell in brokenCells) {
-      types.add(bcell.type);
-    }
-    if (types.contains("normal") || types.contains("shrinking")) {
-      playSound(destroySound);
-    }
     brokenCells = [];
     final cells = <String>{};
 
@@ -351,6 +344,14 @@ class Grid {
     }
 
     if (tickCount % 100 == 0) quadChunk.reload();
+
+    final types = <String>{};
+    for (var bcell in brokenCells) {
+      types.add(bcell.type);
+    }
+    if (types.contains("normal") || types.contains("shrinking")) {
+      playSound(destroySound);
+    }
 
     return cells;
   }
