@@ -345,14 +345,6 @@ class Grid {
 
     if (tickCount % 100 == 0) quadChunk.reload();
 
-    final types = <String>{};
-    for (var bcell in brokenCells) {
-      types.add(bcell.type);
-    }
-    if (types.contains("normal") || types.contains("shrinking")) {
-      playSound(destroySound);
-    }
-
     return cells;
   }
 
@@ -376,6 +368,16 @@ class Grid {
     }
     at(x, y).rot += rot;
     at(x, y).rot %= 4;
+  }
+
+  void handleBrokenCellSounds() {
+    final types = <String>{};
+    for (var bcell in brokenCells) {
+      types.add(bcell.type);
+    }
+    if (types.contains("normal") || types.contains("shrinking")) {
+      playSound(destroySound);
+    }
   }
 
   void update() {
@@ -406,6 +408,7 @@ class Grid {
       }
       QueueManager.runQueue("newtick");
     }
+    handleBrokenCellSounds();
   }
 }
 
