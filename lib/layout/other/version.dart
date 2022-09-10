@@ -35,6 +35,8 @@ final List<String> changes = [
   "Added Bulldozer",
   "Made enemies have a fancy death animation",
   "Made death animations play the soudn when they start instead of when they end",
+  "Added Translator Mode to help translators",
+  "Debug mode also shows properties",
 ];
 
 IconData getTrailing(String change) {

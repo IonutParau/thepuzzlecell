@@ -71,7 +71,12 @@ bool grabSide(int x, int y, int mdir, int dir) {
         } else {
           if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir)) grid.at(x, y).updated = true;
           if (!canMove(x, y, dir, 1, MoveType.grab)) break;
-          moveCell(x, y, frontX(x, dir), frontY(y, dir), dir, null, MoveType.grab);
+          final fx = frontX(x, dir);
+          final fy = frontY(y, dir);
+          if (!grid.inside(fx, fy)) break;
+          if (moveInsideOf(grid.at(fx, fy), fx, fy, dir, MoveType.grab)) {
+            moveCell(x, y, fx, fy, dir, null, MoveType.grab);
+          }
         }
       } else {
         break;

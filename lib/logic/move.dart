@@ -579,6 +579,7 @@ bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveTyp
 
   if (moveInsideOf(movingTo, nx, ny, dir, mt) && movingTo.id != "empty") {
     handleInside(nx, ny, dir, moving, mt);
+    grid.set(ox, oy, Cell(ox, oy));
     QueueManager.runQueue("post-move");
     return true;
   } else {

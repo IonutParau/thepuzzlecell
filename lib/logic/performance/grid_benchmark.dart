@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
@@ -86,9 +88,9 @@ class GridBenchmarkData {
 
 Future<TPSType> benchmarkGrid(GridBenchmarkData data) async {
   try {
+    storage = data.settings.storage;
     game = PuzzleGame();
     game.initial = Grid(1, 1);
-    storage = data.settings.storage;
     grid = loadStr(data.levelCode, false);
     final stopwatch = Stopwatch()..start();
 
@@ -96,8 +98,9 @@ Future<TPSType> benchmarkGrid(GridBenchmarkData data) async {
 
     stopwatch.stop();
 
-    return debug(data.settings.tickCount / (stopwatch.elapsedMilliseconds / 1000));
+    return debug(data.settings.tickCount / max(stopwatch.elapsedMilliseconds / 1000, double.minPositive));
   } catch (e) {
+    print(e);
     return 0;
   }
 }
