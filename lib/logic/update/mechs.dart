@@ -335,6 +335,8 @@ class MechanicalManager {
       mathManager.output(x, y, cell.rot, mathManager.customCount(cell, x, y, cell.rot) ?? 0);
     } else if (cell.id == "mech_checkpoint") {
       enableCheckpoint(cell, x, y);
+    } else if (cell.id == "mech_mirror") {
+      doMirror(x, y, cell.rot % 2);
     }
   }
 

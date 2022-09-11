@@ -303,6 +303,7 @@ final cells = {
   "math_wireless_tunnel",
   "math_safe_number",
   "biome_norot",
+  "mech_mirror",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -310,6 +311,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_mirror.png": "mechanical/users/mech_mirror.png",
   "biome_norot.png": "backgrounds/biomes/biome_norot.png",
   "math_safe_number.png": "math/math_safe_number.png",
   "math_wireless_tunnel.png": "math/tunnels/math_wireless_tunnel.png",
@@ -1236,6 +1238,9 @@ final categories = [
           "keyfake",
           "mech_stopper",
           "mech_checkpoint",
+          "mech_enemy",
+          "mech_p_trash",
+          "mech_mirror",
         ],
         "mech_mover",
       ),
@@ -1308,15 +1313,6 @@ final defaultProfile = CellProfile("Unnamed", "No description available");
 String profileToMessage(CellProfile profile) {
   return "${profile.title} - ${profile.description}";
 }
-
-final borders = <String>{
-  "empty",
-  "wall",
-  "ghost",
-  "trash",
-  "silent_trash",
-  "wormhole",
-}.toList();
 
 final cellInfo = <String, CellProfile>{
   "empty": CellProfile(
@@ -2537,6 +2533,10 @@ final cellInfo = <String, CellProfile>{
   "biome_norot": CellProfile(
     "Anti-Rotation Biome",
     "Prevents the cell above it from being rotated in any way.",
+  ),
+  "mech_mirror": CellProfile(
+    "Mechanically Powered Mirror",
+    "Mirror but powered mechanically",
   ),
 };
 
