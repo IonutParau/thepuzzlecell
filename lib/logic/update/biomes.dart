@@ -13,6 +13,7 @@ final biomes = [
   "consistency_biome",
   "mechanical_halting",
   "spiketrap_biome",
+  "biome_norot",
 ];
 
 // Biomes

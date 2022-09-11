@@ -80,6 +80,8 @@ bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
 
   if (c.id == "untransformable" && bt == BreakType.transform) return false;
 
+  if (grid.placeable(x, y) == "biome_norot" && bt == BreakType.rotate) return false;
+
   if (bt == BreakType.transform) {
     if (c.id == "pushable") {
       return false;

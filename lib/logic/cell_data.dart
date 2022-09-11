@@ -302,6 +302,7 @@ final cells = {
   "bulldozer",
   "math_wireless_tunnel",
   "math_safe_number",
+  "biome_norot",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -309,6 +310,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "biome_norot.png": "backgrounds/biomes/biome_norot.png",
   "math_safe_number.png": "math/math_safe_number.png",
   "math_wireless_tunnel.png": "math/tunnels/math_wireless_tunnel.png",
   "bulldozer.png": "movers/movers/bulldozer.png",
@@ -736,6 +738,7 @@ final categories = [
         [
           "biome_cw",
           "biome_ccw",
+          "biome_norot",
           "desert",
           "snowy",
           "forest",
@@ -2530,6 +2533,10 @@ final cellInfo = <String, CellProfile>{
   "math_safe_number": CellProfile(
     "Safe Number",
     "When read, it behaves the same as a normal number, however, when written, the value is stored in a temporary field. At the end of the math subtick, the value is updated to the one in that temporary field. Thus, this number can handle synchronization errors caused by update order.",
+  ),
+  "biome_norot": CellProfile(
+    "Anti-Rotation Biome",
+    "Prevents the cell above it from being rotated in any way.",
   ),
 };
 
