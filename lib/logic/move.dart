@@ -156,7 +156,7 @@ final justMoveInsideOf = [
   "portal_b",
 ].toSet().toList();
 
-bool moveInsideOf(Cell into, int x, int y, int dir, MoveType mt) {
+bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
   dir %= 4;
   if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
   if (into.id == "explosive") {
@@ -211,7 +211,7 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
     if (depth > depthLimit) return false;
     depth++;
     if (canMove(x, y, dir, force, mt)) {
-      if (moveInsideOf(grid.at(x, y), x, y, dir, mt)) {
+      if (moveInsideOf(grid.at(x, y), x, y, dir, force, mt)) {
         return true;
       }
 
@@ -232,42 +232,6 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
     }
   }
   return false;
-}
-
-// bool stickyNudge(int x, int y, int dir) {
-//   final fx = frontX(x, dir);
-//   final fy = frontY(y, dir);
-
-//   final c = grid.at(x, y);
-
-//   final bx = frontX(x, dir + 2);
-//   final by = frontY(y, dir + 2);
-
-//   if (!grid.inside(fx, fy)) return false; // Cant move in nonexistant location
-
-//   final f = grid.at(fx, fy);
-
-//   if (f.id == "sticky" || moveInsideOf(f, fx, fy, dir)) {
-//     if (f.id == "empty") {
-//       grid.set(fx, fy, c);
-//     } else if (f.id == "sticky") {
-//       if (stickyNudge(fx, fy, dir)) {
-//         grid.set(fx, fy, c);
-//         return true;
-//       }
-//       return false;
-//     } else {
-//       handleInside(fx, fy, dir, c, MoveType.unkown_move);
-//     }
-//     grid.set(x, y, Cell(x, y));
-//     return true;
-//   }
-
-//   return false;
-// }
-
-void whenMoved(Cell c, int x, int y, int dir, MoveType mt) {
-  if (c.id == "sticky") {}
 }
 
 Vector2 randomVector2() {
@@ -312,11 +276,11 @@ T debug<T>(T value) {
 
 final int enemyParticleCounts = 50;
 
-void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
+void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   if (moving.id == "empty") return;
   final destroyer = grid.at(x, y);
 
-  if (!moveInsideOf(destroyer, x, y, dir, mt)) return;
+  if (!moveInsideOf(destroyer, x, y, dir, force, mt)) return;
 
   if (destroyer.id == "wormhole") {
     if (grid.wrap) {
@@ -581,8 +545,8 @@ bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveTyp
 
   moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
 
-  if (moveInsideOf(movingTo, nx, ny, dir, mt) && movingTo.id != "empty") {
-    handleInside(nx, ny, dir, moving, mt);
+  if (moveInsideOf(movingTo, nx, ny, dir, force, mt) && movingTo.id != "empty") {
+    handleInside(nx, ny, dir, force, moving, mt);
     grid.set(ox, oy, Cell(ox, oy));
     QueueManager.runQueue("post-move");
     return true;
@@ -788,8 +752,8 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     grid.set(ox, oy, replaceCell);
     return true;
   }
-  if (moveInsideOf(c, ox, oy, dir, mt)) {
-    handleInside(ox, oy, dir, replaceCell, mt);
+  if (moveInsideOf(c, ox, oy, dir, force, mt)) {
+    handleInside(ox, oy, dir, force, replaceCell, mt);
     if (depth == 0) QueueManager.runQueue("post-move");
     return force > 0;
   }
@@ -831,7 +795,7 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
 
 bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool shifted = false]) {
   if (!grid.inside(x, y)) return false;
-  if (moveInsideOf(grid.at(x, y), x, y, dir, mt)) return true;
+  if (moveInsideOf(grid.at(x, y), x, y, dir, force, mt)) return true;
   if (!canMove(x, y, dir, force, mt)) return false;
 
   if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
@@ -851,7 +815,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
 
   if (!grid.inside(fx, fy)) return false;
 
-  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir, mt)) {
+  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir, force, mt)) {
     return false;
   }
 
@@ -871,7 +835,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
     cx = nc.x;
     cy = nc.y;
     dir = (nc.dir + 2) % 4;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
     force += addedForce(grid.at(cx, cy), dir, force, mt);
     if (force <= 0) return false;
     final lastrot = grid.at(cx, cy).rot;
@@ -902,7 +866,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
     dir = (nc.dir + 2) % 4;
     final addedrot = nc.addedrot;
     if (!grid.inside(cx, cy)) break;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, mt)) break;
+    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
     force += addedForce(grid.at(cx, cy), dir, force, mt);
     if (force <= 0) return false;
     if (canMove(cx, cy, dir, force, mt)) {
@@ -921,7 +885,7 @@ bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
   final fx = frontX(x, rot);
   final fy = frontY(y, rot);
   if (grid.inside(fx, fy)) {
-    if (moveInsideOf(grid.at(fx, fy), fx, fy, rot, mt)) {
+    if (moveInsideOf(grid.at(fx, fy), fx, fy, rot, 1, mt)) {
       moveCell(x, y, fx, fy, rot, null, mt);
       return true;
     }
