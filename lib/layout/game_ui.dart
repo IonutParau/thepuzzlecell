@@ -2766,6 +2766,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         text = "";
       }
     }
+    if (cell.id == "math_wireless_tunnel") {
+      text = "${cell.data['id'] ?? 0}\n\n${cell.data['target']}";
+    }
 
     if (cell.id == "spikefactory") {
       text = "${countToString(cell.data['interval'] ?? 1)}\n${cell.data['radius'] ?? 1}";

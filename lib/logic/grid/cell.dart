@@ -145,7 +145,7 @@ class Cell {
     return c;
   }
 
-  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible";
+  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
 
   void rotate(int amount) {
     lastvars.lastRot = rot;

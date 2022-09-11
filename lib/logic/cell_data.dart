@@ -300,6 +300,7 @@ final cells = {
   "mech_enemy",
   "mech_p_trash",
   "bulldozer",
+  "math_wireless_tunnel",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -307,6 +308,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_wireless_tunnel.png": "math/tunnels/math_wireless_tunnel.png",
   "bulldozer.png": "movers/movers/bulldozer.png",
   "mech_enemy.png": "mechanical/users/mech_enemy.png",
   "mech_p_trash.png": "mechanical/users/mech_p_trash.png",
@@ -1172,14 +1174,17 @@ final categories = [
         max: 2,
       ),
       CellCategory(
-          "Math Tunnels",
-          "Designed to link distant inputs and outputs with wires",
-          [
-            "math_tunnel",
-            "math_tunnel_cw",
-            "math_cross_tunnel",
-          ],
-          "math_cross_tunnel")
+        "Math Tunnels",
+        "Designed to link distant inputs and outputs with wires",
+        [
+          "math_tunnel",
+          "math_tunnel_cw",
+          "math_cross_tunnel",
+          "math_wireless_tunnel",
+        ],
+        "math_cross_tunnel",
+        max: 2,
+      )
     ],
     "math/math_block",
   ),
@@ -2515,6 +2520,10 @@ final cellInfo = <String, CellProfile>{
     "Bulldozer",
     "A mover with adjustable bias",
   ),
+  "math_wireless_tunnel": CellProfile(
+    "Wireless Numerical Tunnel",
+    "A tunnel but wireless. It has an ID and a Target ID.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2604,5 +2613,9 @@ Map<String, List<CellProperty>> props = {
   ],
   "bulldozer": [
     CellProperty("Bias", "bias", CellPropertyType.integer, 0),
+  ],
+  "math_wireless_tunnel": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+    CellProperty("Target ID", "target", CellPropertyType.integer, 0),
   ],
 };

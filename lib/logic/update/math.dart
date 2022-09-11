@@ -3,15 +3,16 @@ part of logic;
 final mathManager = MathManager();
 
 void math() {
+  for (var r in rotOrder) {
+    grid.updateCell((cell, x, y) {
+      cell.data['count'] = mathManager.input(x, y, cell.rot + 2);
+      mathManager.output(x, y, cell.rot, cell.data['count']!);
+    }, r, "math_sync");
+  }
   mathManager.core();
   mathManager.functions();
   mathManager.trigonometry();
   mathManager.logic();
-  for (var r in rotOrder) {
-    grid.updateCell((cell, x, y) {
-      cell.data['count'] = mathManager.input(x, y, cell.rot + 2);
-    }, r, "math_sync");
-  }
 }
 
 class MathManager {
@@ -286,6 +287,42 @@ class MathManager {
             return [x, y];
           }
           break;
+        case "math_wireless_tunnel":
+          if (side == 0) {
+            Cell? target;
+            double best = double.infinity;
+
+            final cells = grid.quadChunk.fetch("math_wireless_tunnel");
+
+            for (var pos in cells) {
+              final cx = pos[0];
+              final cy = pos[1];
+              final c = grid.at(cx, cy);
+
+              if (c.id == "math_wireless_tunnel") {
+                final dx = cx - x;
+                final dy = cy - y;
+                // Distance squared
+                final dsqr = (dx * dx + dy * dy).toDouble();
+
+                // Check if its the best one we've got, but not us
+                if (dsqr < best && dsqr > 0) {
+                  best = dsqr;
+                  target = c;
+                }
+              }
+            }
+
+            print(target);
+
+            if (target == null) return [x, y];
+            x = target.cx!;
+            y = target.cy!;
+            dir = (target.rot + 2) % 4;
+            break;
+          } else {
+            return [x, y];
+          }
         case "math_cross_tunnel":
           break;
         default:
