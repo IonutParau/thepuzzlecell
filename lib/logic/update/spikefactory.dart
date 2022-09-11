@@ -12,8 +12,8 @@ void doSpikeFactory(Cell cell, int x, int y) {
   while (cell.data['int_t'] >= interval) {
     cell.data['int_t'] -= interval;
 
-    final offx = ((rng.nextDouble() * 2 - 1) * radius).toInt();
-    final offy = ((rng.nextDouble() * 2 - 1) * radius).toInt();
+    final offx = ((rng.nextDouble() * 2 - 1) * radius + 0.5).toInt();
+    final offy = ((rng.nextDouble() * 2 - 1) * radius + 0.5).toInt();
 
     if (offx != 0 || offy != 0) {
       var bx = x + offx;

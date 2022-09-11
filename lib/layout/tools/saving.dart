@@ -84,6 +84,7 @@ Grid loadStr(String str, [bool allowGameStateChanges = true]) {
   if (str.startsWith('V3;')) return MysticCodes.decodeV3(str);
   if (str.startsWith('P3;')) return P3.decodeString(str);
   if (str.startsWith('P4;')) return P4.decodeString(str, allowGameStateChanges);
+  if (str.startsWith('P5;')) return P5.decodeString(str, allowGameStateChanges);
 
   throw "Unsupported saving format";
 }
@@ -999,6 +1000,245 @@ class P4 {
     return g;
   }
 
+  static String encodeValue(dynamic value) {
+    if (value is Set) {
+      value = value.toList();
+    }
+    if (value is List) {
+      return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
+    } else if (value is Map) {
+      final keys = value.isEmpty ? ["="] : [];
+
+      value.forEach((key, value) {
+        keys.add('$key=${encodeValue(value)}');
+      });
+
+      return '(${keys.join(':')})';
+    }
+
+    if (value == double.infinity) {
+      return "inf";
+    }
+    if (value == double.nan) {
+      return "nan";
+    }
+    if (value == double.negativeInfinity) {
+      return "-inf";
+    }
+
+    return value.toString();
+  }
+
+  static dynamic decodeValue(String str) {
+    if (str == '{}') return <String>{};
+    if (str == '()') return <String>{};
+    if (str == "inf") return double.infinity;
+    if (str == "nan") return double.nan;
+    if (str == "-inf") return double.negativeInfinity;
+    if (int.tryParse(str) != null) {
+      return int.parse(str);
+    } else if (double.tryParse(str) != null) {
+      return double.parse(str);
+    } else if (str == "true" || str == "false") {
+      return str == "true";
+    } else if (str.startsWith('(') && str.endsWith(')')) {
+      final s = str.substring(1, str.length - 1);
+
+      if (stringContainsAtRoot(s, '=')) {
+        // It is a map, decode it as a map
+        final map = <String, dynamic>{};
+
+        final parts = fancySplit(s, ':');
+
+        for (var part in parts) {
+          final kv = fancySplit(part, '=');
+          final k = kv[0];
+          final v = decodeValue(kv[1]);
+
+          map[k] = v;
+        }
+        return map;
+      } else {
+        // It is a list, decode it as a list
+        return fancySplit(s, ':').map<dynamic>((e) => decodeValue(e)).toSet();
+      }
+    }
+
+    return str;
+  }
+}
+
+// The current saving format
+typedef SavingFormat = P5;
+
+class P5 {
+  static final String valueString = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.={}";
+
+  static final String base = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  static final baseEncoder = BaseXCodec(base);
+
+  static String header = "P5;";
+
+  static String encodeCell(int x, int y, Grid grid) {
+    final c = grid.at(x, y);
+    final bg = grid.placeable(x, y);
+
+    final m = {
+      "id": c.id,
+      "rot": c.rot,
+      "bg": bg,
+    };
+
+    if (c.data.isNotEmpty) m['data'] = c.data;
+    if (c.tags.isNotEmpty) m['tags'] = c.tags;
+    if (c.lifespan != 0) m['lifespan'] = c.lifespan;
+    if (c.invisible) m['invisible'] = true;
+
+    return TPCML.encodeValue(m);
+  }
+
+  static void setCell(String str, int x, int y, Grid grid) {
+    final m = TPCML.decodeValue(str);
+
+    final c = Cell(x, y);
+    c.lastvars.lastRot = (m['rot'] ?? 0).toInt();
+    c.rot = (m['rot'] ?? 0).toInt();
+    c.data = m['data'] ?? {};
+    c.tags = {};
+    (m['tags'] ?? []).forEach((v) => c.tags.add(v.toString()));
+    c.id = m['id'] ?? "empty";
+    c.lifespan = (m['lifespan'] ?? 0).toInt();
+    c.invisible = m['invisible'] ?? false;
+    final bg = m['bg'] ?? "empty";
+
+    grid.set(x, y, c);
+    grid.setPlace(x, y, bg);
+  }
+
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
+    var str = header + '$title;$description;'; // Header, title and description
+
+    str += '${encodeNum(grid.width, valueString)};';
+    str += '${encodeNum(grid.height, valueString)};';
+
+    final cellDataList = [];
+
+    grid.forEach(
+      (cell, x, y) {
+        final cstr = encodeCell(x, y, grid);
+        if (cellDataList.isNotEmpty) {
+          final m = TPCML.decodeValue(cellDataList.last);
+          final c = m['count'];
+
+          if (TPCML.encodeValue(m['cell']) == cstr) {
+            m['count'] = c + 1;
+            cellDataList.last = TPCML.encodeValue(m);
+            return;
+          }
+        }
+        cellDataList.add(TPCML.encodeValue({"cell": cstr, "count": 1}));
+      },
+    );
+
+    final cellDataStr = baseEncoder.encode(
+      Uint8List.fromList(zlib.encode(
+        utf8.encode(
+          cellDataList.join(''),
+        ),
+      )),
+    );
+
+    str += '$cellDataStr;';
+
+    final props = {};
+
+    if (grid.wrap) props['W'] = true;
+
+    str += '${TPCML.encodeValue(props)};';
+
+    return str;
+  }
+
+  static Grid decodeString(String str, [bool handleCustomProps = true]) {
+    final segs = str.split(';');
+
+    final width = decodeNum(segs[3], valueString);
+    final height = decodeNum(segs[4], valueString);
+
+    final g = Grid(width, height);
+
+    g.title = segs[1];
+    g.desc = segs[2];
+
+    final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
+
+    while (rawCellDataList.first == "") {
+      rawCellDataList.removeAt(0);
+    }
+    while (rawCellDataList.last == "") {
+      rawCellDataList.removeLast();
+    }
+
+    final cellDataList = [];
+
+    for (var cellData in rawCellDataList) {
+      final m = TPCML.decodeValue(cellData);
+
+      final c = m['count'] ?? 1;
+
+      for (var i = 0; i < c; i++) {
+        cellDataList.add(TPCML.encodeValue(m['cell']));
+      }
+    }
+
+    var i = 0;
+
+    g.forEach(
+      (cell, x, y) {
+        if (cellDataList.length > i) {
+          setCell(cellDataList[i], x, y, g);
+        }
+        i++;
+      },
+    );
+
+    final props = TPCML.decodeValue(segs[6]);
+    g.wrap = props['W'] ?? false;
+
+    if (handleCustomProps) {
+      if (props['update_delay'] is num) {
+        QueueManager.add("post-game-init", () {
+          game.delay = props['update_delay']!;
+        });
+      }
+      if (props['viewbox'] != null) {
+        QueueManager.add("post-game-init", () {
+          final vb = props['viewbox'] as Map;
+
+          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
+        });
+      }
+      // We gotta decode le' RAM stick
+      if (props['memory'] != null) {
+        final m = props['memory'] as Map;
+        m.forEach((key, value) {
+          final c = <int, num>{};
+
+          value.forEach((key, value) {
+            c[int.parse(key)] = TPCML.decodeValue(value);
+          });
+
+          g.memory[int.parse(key)] = c;
+        });
+      }
+    }
+
+    return g;
+  }
+}
+
+class TPCML {
   static String encodeValue(dynamic value) {
     if (value is Set) {
       value = value.toList();

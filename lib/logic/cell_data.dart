@@ -301,6 +301,7 @@ final cells = {
   "mech_p_trash",
   "bulldozer",
   "math_wireless_tunnel",
+  "math_safe_number",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -308,6 +309,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_safe_number.png": "math/math_safe_number.png",
   "math_wireless_tunnel.png": "math/tunnels/math_wireless_tunnel.png",
   "bulldozer.png": "movers/movers/bulldozer.png",
   "mech_enemy.png": "mechanical/users/mech_enemy.png",
@@ -1097,6 +1099,7 @@ final categories = [
     [
       "counter",
       "math_number",
+      "math_safe_number",
       "math_to_mech",
       "math_sync",
       CellCategory(
@@ -2524,6 +2527,10 @@ final cellInfo = <String, CellProfile>{
     "Wireless Numerical Tunnel",
     "A tunnel but wireless. It has an ID and a Target ID.",
   ),
+  "math_safe_number": CellProfile(
+    "Safe Number",
+    "When read, it behaves the same as a normal number, however, when written, the value is stored in a temporary field. At the end of the math subtick, the value is updated to the one in that temporary field. Thus, this number can handle synchronization errors caused by update order.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2617,5 +2624,8 @@ Map<String, List<CellProperty>> props = {
   "math_wireless_tunnel": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Target ID", "target", CellPropertyType.integer, 0),
+  ],
+  "math_safe_number": [
+    CellProperty("Count", "count", CellPropertyType.number, 0),
   ],
 };

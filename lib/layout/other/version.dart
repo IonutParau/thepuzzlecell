@@ -26,7 +26,7 @@ final List<String> changes = [
   "Added Texture Packs UI to disable or enable texture packs. You can still run multiple at the same time",
   "Made Version page also display current cell count, background count and biome count",
   "Redesigned some pages to be more modern",
-  "Removed Full-Screen pages in favor of dialogs",
+  "Removed many of the Full-Screen pages in favor of dialogs",
   "Added Spike Trap and Spike Factory",
   "Added Explosive",
   "Added Factory",
@@ -37,6 +37,7 @@ final List<String> changes = [
   "Made death animations play the soudn when they start instead of when they end",
   "Added Translator Mode to help translators",
   "Debug mode also shows properties",
+  "Added the P5 saving format (P4 but safer for Discord and a bit smarter)",
 ];
 
 IconData getTrailing(String change) {

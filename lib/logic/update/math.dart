@@ -13,6 +13,20 @@ void math() {
   mathManager.functions();
   mathManager.trigonometry();
   mathManager.logic();
+
+  final safeNums = grid.quadChunk.fetch("math_safe_number");
+
+  for (var pos in safeNums) {
+    final x = pos[0];
+    final y = pos[1];
+
+    final c = grid.at(x, y);
+
+    if (c.id == "math_safe_number") {
+      c.data['count'] = ((c.data['next_count'] ?? c.data['count']) ?? 0);
+      c.data.remove("next_count");
+    }
+  }
 }
 
 class MathManager {
@@ -335,6 +349,9 @@ class MathManager {
     if (cell.id == "math_memwriter") {
       setGlobal(cell.data['channel'], cell.data['index'], amount);
     }
+    if (cell.id == "math_safe_number") {
+      cell.data['next_count'] = amount;
+    }
     if (cell.id == "math_memset") {
       final channel = input(x, y, dir - 1);
       final index = input(x, y, dir + 1);
@@ -370,7 +387,7 @@ class MathManager {
   bool isWritable(int x, int y, int dir) {
     final cell = grid.at(x, y);
 
-    if (cell.id == "counter" || cell.id == "math_number") return true;
+    if (cell.id == "counter" || cell.id == "math_number" || cell.id == "math_safe_number") return true;
     if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) return true;
 
     return false;
@@ -380,7 +397,7 @@ class MathManager {
   bool isOutput(int x, int y, int dir) {
     final cell = grid.at(x, y);
 
-    if (["counter", "math_number", "math_e", "math_infinity", "math_phi", "math_pi", "math_tick", "math_time"].contains(cell.id)) return true;
+    if (["counter", "math_number", "math_e", "math_infinity", "math_phi", "math_pi", "math_tick", "math_time", "math_safe_number"].contains(cell.id)) return true;
     // Memory outputs
     if (["math_memget", "math_memreader", "math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) return true;
     // Core outputs
@@ -397,6 +414,12 @@ class MathManager {
     return false;
   }
 
+  bool autoApplyCount(Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
+    if (cell.id == "math_safe_number") return false;
+
+    return true;
+  }
+
   void output(int x, int y, int dir, num count) {
     grid.at(x, y).data['count'] = count;
     dir %= 4;
@@ -405,7 +428,7 @@ class MathManager {
     final ty = t[1];
 
     if (isWritable(tx, ty, dir)) {
-      grid.at(tx, ty).data['count'] = count;
+      if (autoApplyCount(grid.at(tx, ty), tx, ty, dir, count, x, y)) grid.at(tx, ty).data['count'] = count;
       whenWritten(grid.at(tx, ty), tx, ty, dir, count);
     }
   }

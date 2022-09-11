@@ -1108,7 +1108,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     for (var pair in pairs) {
       final segs = fancySplit(pair, '=');
-      m[segs[0]] = P4.decodeValue(segs[1]);
+      m[segs[0]] = TPCML.decodeValue(segs[1]);
     }
 
     return m;
@@ -1191,7 +1191,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           int.parse(
             args[4],
           ),
-          P4.decodeValue(args.sublist(5).join(" ")),
+          TPCML.decodeValue(args.sublist(5).join(" ")),
         );
       } else if (cmd == "set-hover") {
         hovers[args.first]!.x = double.parse(args[1]);
@@ -1325,7 +1325,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     buttonManager.buttons['play-btn']?.rotation = 0;
                     buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
 
-                    sendToServer('setinit ${P4.encodeGrid(grid)}');
+                    sendToServer('setinit ${SavingFormat.encodeGrid(grid)}');
 
                     hovers.forEach(
                       (key, value) {
@@ -1368,7 +1368,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         "interface/save.png",
         ButtonAlignment.TOPRIGHT,
         () {
-          final c = P4.encodeGrid(grid);
+          final c = SavingFormat.encodeGrid(grid);
           FlutterClipboard.copy(c);
           if (worldIndex != null) {
             worldManager.saveWorld(worldIndex!);
@@ -1583,7 +1583,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
             final bp = Grid(g.length, g.isEmpty ? 0 : g.first.length);
             bp.grid = g;
-            final bpSave = P4.encodeGrid(bp, title: "Unnamed Blueprint", description: "This blueprint currently has no name");
+            final bpSave = SavingFormat.encodeGrid(bp, title: "Unnamed Blueprint", description: "This blueprint currently has no name");
 
             FlutterClipboard.controlC(bpSave).then((v) {
               if (v) {
@@ -1647,7 +1647,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           },
           () => true,
           title: 'Load as Blueprint',
-          description: 'Loads a blueprint from your clipboard (using a P4 level code)',
+          description: 'Loads a blueprint from your clipboard (using a level code)',
         ),
       );
 
@@ -2741,7 +2741,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       return count.toString();
     }
 
-    if (cell.id == "counter" || cell.id == "math_number") {
+    if (cell.id == "counter" || cell.id == "math_number" || cell.id == "math_safe_number") {
       text = countToString(cell.data['count']);
     }
 
@@ -2965,8 +2965,35 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     if (id == "empty" && cells.contains(p)) {
                       currentSelection = p;
                     } else {
+                      for (var i = 0; i < categories.length; i++) {
+                        buttonManager.buttons['cat$i']!.lastRot = currentRotation;
+                        buttonManager.buttons['cat$i']!.timeRot = 0;
+                        for (var j = 0; j < categories[i].items.length; j++) {
+                          buttonManager.buttons['cat${i}cell$j']!.lastRot = currentRotation;
+                          buttonManager.buttons['cat${i}cell$j']!.timeRot = 0;
+
+                          if (categories[i].items[j] is CellCategory) {
+                            for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                              buttonManager.buttons['cat${i}cell${j}sub$k']!.lastRot = currentRotation;
+                              buttonManager.buttons['cat${i}cell${j}sub$k']!.timeRot = 0;
+                            }
+                          }
+                        }
+                      }
                       currentRotation = grid.at(mx, my).rot;
                       currentData = {...grid.at(mx, my).data};
+                      for (var i = 0; i < categories.length; i++) {
+                        buttonManager.buttons['cat$i']!.rotation = currentRotation;
+                        for (var j = 0; j < categories[i].items.length; j++) {
+                          buttonManager.buttons['cat${i}cell$j']!.rotation = currentRotation;
+
+                          if (categories[i].items[j] is CellCategory) {
+                            for (var k = 0; k < categories[i].items[j].items.length; k++) {
+                              buttonManager.buttons['cat${i}cell${j}sub$k']!.rotation = currentRotation;
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -3002,7 +3029,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     final l = [];
 
     cellData.forEach((key, value) {
-      l.add("$key=${P4.encodeValue(value)}");
+      l.add("$key=${TPCML.encodeValue(value)}");
     });
 
     return l.join(':');
@@ -3088,7 +3115,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
         sendToServer('place $cx $cy empty 0 0');
         sendToServer(
-          'new-hover $clientID $cx $cy $currentSelection $currentRotation ${P4.encodeValue(currentData)}',
+          'new-hover $clientID $cx $cy $currentSelection $currentRotation ${TPCML.encodeValue(currentData)}',
         );
       } else if (grid.at(cx, cy).id == "empty" && grid.placeable(cx, cy) == originalPlace) {
         if (!isMultiplayer) {
@@ -3195,7 +3222,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 if (gmx >= hover.x - 0.5 && gmx <= hover.x + 0.5 && gmy >= hover.y - 0.5 && gmy < hover.y + 0.5) {
                   hijacked = true;
                   sendToServer(
-                    'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot} ${P4.encodeValue(hover.data)}',
+                    'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot} ${TPCML.encodeValue(hover.data)}',
                   );
                   currentSelection = hover.id;
                   currentRotation = hover.rot;
@@ -3284,7 +3311,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
     timeGrid = null;
-    if (isMultiplayer) sendToServer('setinit ${P4.encodeGrid(grid)}');
+    if (isMultiplayer) sendToServer('setinit ${SavingFormat.encodeGrid(grid)}');
     grid.tickCount = 0;
   }
 

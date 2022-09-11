@@ -501,7 +501,7 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     } else if (destroyer.id == "time_reset") {
       mustTimeTravel = true;
     } else if (destroyer.id == "mech_trash") {
-      grid.addBroken(moving, x, y);
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
       if ((destroyer.data['countdown'] ?? 0) > 0) {
         destroyer.data['countdown']--;
       } else {
@@ -535,15 +535,19 @@ void handleInside(int x, int y, int dir, Cell moving, MoveType mt) {
     }
   } else if (enemies.contains(destroyer.id)) {
     // Enenmies
-    grid.addBroken(destroyer, x, y, "shrinking");
-    grid.set(x, y, Cell(x, y));
     if (destroyer.id == "physical_enemy") {
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.addBroken(moving, x, y, "shrinking");
+      grid.set(x, y, Cell(x, y));
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
       game.blueparticles.emit(enemyParticleCounts, x, y);
     } else if (destroyer.id == "explosive") {
       doExplosive(destroyer, x, y);
       game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.addBroken(moving, x, y, "shrinking");
+      grid.set(x, y, Cell(x, y));
       game.redparticles.emit(enemyParticleCounts, x, y);
     }
   }
@@ -1016,12 +1020,14 @@ void postmove(Cell cell, int x, int y, int dir, int force, MoveType mt) {
   }
 }
 
-void doExplosive(Cell destroyer, int x, int y) {
+void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
   final radius = destroyer.data['radius'] ?? 1;
   final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
   final byproduct = destroyer.data['byproduct'] ?? "empty!0";
   final circular = destroyer.data['circular'] ?? false;
   final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
+
+  grid.addBroken(destroyer, x, y, silent ? "silent_shrinking" : "shrinking");
 
   // Grid index modulo height XOR'd with the tick count. Seems like a pretty good pseudo-random seed
   final prng = Random(((x + y * grid.width) % grid.height) ^ grid.tickCount);
@@ -1029,7 +1035,7 @@ void doExplosive(Cell destroyer, int x, int y) {
   for (var cx = x - radius; cx <= x + radius; cx++) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
       if (cx != x || cy != y) {
-        final d = sqrt(pow(cx - x, 2) + pow(cy - y, 2));
+        final d = pow(cx - x, 2) + pow(cy - y, 2);
         final ox = cx - x;
         final oy = cy - y;
         final c = grid.at(cx.toInt(), cy.toInt());
@@ -1049,7 +1055,7 @@ void doExplosive(Cell destroyer, int x, int y) {
             r = rng.nextDouble();
           }
 
-          if (r <= effectiveness) {
+          if (r <= effectiveness || d == 0) {
             final id = parseJointCellStr(byproduct)[0];
             final rot = parseJointCellStr(byproduct)[1];
             // Confusing cascade operator stuffs
