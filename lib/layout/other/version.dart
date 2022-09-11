@@ -38,6 +38,7 @@ final List<String> changes = [
   "Added Translator Mode to help translators",
   "Debug mode also shows properties",
   "Added the P5 saving format (P4 but safer for Discord and a bit smarter)",
+  "Improved the look of the Mechanical Halting biome",
 ];
 
 IconData getTrailing(String change) {
