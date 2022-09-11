@@ -46,7 +46,7 @@ class TexturePack {
         for (var fileExt in allowedFiles) if (file.endsWith(fileExt)) allowed = true;
 
         if (allowed) {
-          textureMap[file.split('/').last.split('.').first + '.png'] = fixPath(file);
+          textureMap[file.split(path.separator).last.split('.').first + '.png'] = fixPath(file);
         }
       }
     }
