@@ -2096,6 +2096,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   int get cellMouseX => (mouseX - offX) ~/ cellSize;
   int get cellMouseY => (mouseY - offY) ~/ cellSize;
 
+  int pixelToCellX(int px) => (px - offX) ~/ cellSize;
+  int pixelToCellY(int py) => (py - offY) ~/ cellSize;
+
   Map<String, CellCursor> cursors = {};
 
   void fancyRender(Canvas canvas) {

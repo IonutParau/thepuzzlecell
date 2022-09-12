@@ -304,6 +304,14 @@ final cells = {
   "math_safe_number",
   "biome_norot",
   "mech_mirror",
+  "master_get_camx",
+  "master_get_camy",
+  "master_get_mousex",
+  "master_get_mousey",
+  "master_get_rot",
+  "master_get_lastrot",
+  "master_has_id",
+  "master_has_idx",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -311,6 +319,14 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "master_get_camx.png": "master/getter/master_get_camx.png",
+  "master_get_camy.png": "master/getter/master_get_camy.png",
+  "master_get_mousex.png": "master/getter/master_get_mousex.png",
+  "master_get_mousey.png": "master/getter/master_get_mousey.png",
+  "master_get_rot.png": "master/getter/master_get_rot.png",
+  "master_get_lastrot.png": "master/getter/master_get_lastrot.png",
+  "master_has_id.png": "master/checker/master_has_id.png",
+  "master_has_idx.png": "master/checker/master_has_idx.png",
   "mech_mirror.png": "mechanical/users/mech_mirror.png",
   "biome_norot.png": "backgrounds/biomes/biome_norot.png",
   "math_safe_number.png": "math/math_safe_number.png",
@@ -1263,6 +1279,35 @@ final categories = [
       ),
     ],
     "mech_gear",
+  ),
+  CellCategory(
+    "Master Cells",
+    "Cells that can manipulate or interact with the grid.\nThese are extremely complicated to use, and generally require an advanced understanding of the game's internals\nThese aren't allowed when solving vaults!",
+    [
+      CellCategory(
+        "Getters",
+        "They can be read as a number, and give information about either the grid or currently selected cells",
+        [
+          "master_get_camx",
+          "master_get_camy",
+          "master_get_mousex",
+          "master_get_mousey",
+          "master_get_rot",
+          "master_get_lastrot",
+        ],
+        "master_get_camx",
+      ),
+      CellCategory(
+        "Checkers",
+        "They output a mechanical signal when updating if the thing they're checking for is correct",
+        [
+          "master_has_id",
+          "master_has_idx",
+        ],
+        "master_has_id",
+      ),
+    ],
+    "master_has_id",
   ),
   CellCategory(
     "Puzzle Cells",
@@ -2537,6 +2582,38 @@ final cellInfo = <String, CellProfile>{
   "mech_mirror": CellProfile(
     "Mechanically Powered Mirror",
     "Mirror but powered mechanically",
+  ),
+  "master_get_camx": CellProfile(
+    "Get Camera Central Point X",
+    "Holds the approximate X coordinate of the screen's center point",
+  ),
+  "master_get_camy": CellProfile(
+    "Get Camera Central Point Y",
+    "Holds the approximate Y coordinate of the screen's center point",
+  ),
+  "master_get_mousex": CellProfile(
+    "Get Mouse X",
+    "Holds the approximate X coordinate of the mouse cursor",
+  ),
+  "master_get_mousey": CellProfile(
+    "Get Mouse Y",
+    "Holds the approximate Y coordinate of the mouse cursor",
+  ),
+  "master_get_rot": CellProfile(
+    "Get Selected Cell Rotation",
+    "Holds the currently stored rotation of the selected cell",
+  ),
+  "master_get_lastrot": CellProfile(
+    "Get Selected Cell's Last Rotation",
+    "Holds the reported last rotation of the selected cell",
+  ),
+  "master_has_id": CellProfile(
+    "Check For Selected Cell ID Equality",
+    "Checks if the selected cell's ID is equal to the stored cell ID",
+  ),
+  "master_has_idx": CellProfile(
+    "Check For Selected Cell ID Equality To Index",
+    "Checks if the selected cell's ID is equal to the cell ID at the index specified as the input",
   ),
 };
 

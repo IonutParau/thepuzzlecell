@@ -6,6 +6,7 @@ final subticks = [
   heat,
   mechs,
   math,
+  master,
   gates,
   automata,
   spikefactories,

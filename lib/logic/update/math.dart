@@ -380,7 +380,7 @@ class MathManager {
       return MechanicalManager.on(cell) ? (cell.data['scale'] ?? 1) : 0;
     }
 
-    return null;
+    return customMasterNum(cell, x, y, dir);
   }
 
   // Returns if we should override count
@@ -396,6 +396,8 @@ class MathManager {
   // Returns if we should read count
   bool isOutput(int x, int y, int dir) {
     final cell = grid.at(x, y);
+
+    if (cell.id.startsWith("master_get_")) return true;
 
     if (["counter", "math_number", "math_e", "math_infinity", "math_phi", "math_pi", "math_tick", "math_time", "math_safe_number"].contains(cell.id)) return true;
     // Memory outputs

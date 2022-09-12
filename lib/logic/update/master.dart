@@ -52,6 +52,30 @@ class MasterController {
 
 void onMasterPowered(Cell cell, int x, int y) {}
 
-num? customMasterNum() {
+num? customMasterNum(Cell cell, int x, int y, int dir) {
+  if (cell.id == "master_get_camx") return game.pixelToCellX(game.canvasSize.x ~/ 2);
+  if (cell.id == "master_get_camy") return game.pixelToCellY(game.canvasSize.y ~/ 2);
+  if (cell.id == "master_get_mousex") return game.cellMouseX;
+  if (cell.id == "master_get_mousey") return game.cellMouseY;
+  if (cell.id == "master_get_rot") return MasterState.usable ? (MasterState.current.cell['rot'] ?? 0) : 0;
+  if (cell.id == "master_get_lastrot") return MasterState.usable ? (MasterState.current.lastVars.lastRot) : 0;
+
   return null;
+}
+
+void master() {
+  if (MasterState.usable) {
+    grid.updateCell((cell, x, y) {
+      if (MasterState.current.cell['id'] == (cell.data['id'] ?? "empty")) {
+        MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+      }
+    }, null, "master_has_id");
+    grid.updateCell((cell, x, y) {
+      final idx = mathManager.input(x, y, cell.rot - 1).toInt();
+      final id = cells[idx % cells.length];
+      if (MasterState.current.cell['id'] == id) {
+        MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+      }
+    }, null, "master_has_idx");
+  }
 }
