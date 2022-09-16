@@ -24,9 +24,9 @@ class GenOptimizer {
   }
 
   bool shouldSkip(int x, int y, int dir) {
-    if (hasWorked[hash(x, y, dir)] == false) {
-      return true;
-    }
+    // if (hasWorked[hash(x, y, dir)] == false) {
+    //   return true;
+    // }
 
     return false;
   }

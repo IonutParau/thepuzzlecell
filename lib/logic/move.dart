@@ -506,7 +506,9 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       if (mt == MoveType.push) push(frontX(x, dir), frontY(y, dir), dir, 1);
       game.blueparticles.emit(enemyParticleCounts, x, y);
     } else if (destroyer.id == "explosive") {
-      doExplosive(destroyer, x, y);
+      QueueManager.add("post-move", () => doExplosive(destroyer, x, y));
+      grid.set(x, y, Cell(x, y));
+      grid.addBroken(moving, x, y, "shrinking");
       game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
       grid.addBroken(destroyer, x, y, "shrinking");
@@ -720,7 +722,7 @@ void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx
     grid.addBroken(melting, mx, my, "shrinking");
     grid.addBroken(cell, mx, my, "shrinking");
     if (cell.id == "explosive") {
-      doExplosive(cell, mx, my);
+      QueueManager.add("post-move", () => doExplosive(cell, mx, my));
     }
     grid.set(mx, my, Cell(mx, my));
     game.yellowparticles.emit(enemyParticleCounts, mx, my);
@@ -998,37 +1000,35 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
 
   for (var cx = x - radius; cx <= x + radius; cx++) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
-      if (cx != x || cy != y) {
-        final d = pow(cx - x, 2) + pow(cy - y, 2);
-        final ox = cx - x;
-        final oy = cy - y;
-        final c = grid.at(cx.toInt(), cy.toInt());
+      final d = pow(cx - x, 2) + pow(cy - y, 2);
+      final ox = cx - x;
+      final oy = cy - y;
+      final c = grid.at(cx.toInt(), cy.toInt());
 
-        grid.addBroken(c, x, y, "shrinking");
+      grid.addBroken(c, x, y, "shrinking");
 
-        if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
-          return;
+      if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
+        return;
+      }
+      if ((circular && d <= radius) || !circular || (cx == x && cy == y)) {
+        var r = 0.0;
+
+        if (pseudoRandom) {
+          r = prng.nextDouble();
+        } else {
+          // Random
+          r = rng.nextDouble();
         }
-        if ((circular && d <= radius) || !circular) {
-          var r = 0.0;
 
-          if (pseudoRandom) {
-            r = prng.nextDouble();
-          } else {
-            // Random
-            r = rng.nextDouble();
-          }
+        if (r <= effectiveness || d == 0) {
+          final id = parseJointCellStr(byproduct)[0];
+          final rot = parseJointCellStr(byproduct)[1];
+          // Confusing cascade operator stuffs
+          final c = Cell(cx.toInt(), cy.toInt(), rot)
+            ..id = id
+            ..rot = rot;
 
-          if (r <= effectiveness || d == 0) {
-            final id = parseJointCellStr(byproduct)[0];
-            final rot = parseJointCellStr(byproduct)[1];
-            // Confusing cascade operator stuffs
-            final c = Cell(cx.toInt(), cy.toInt(), rot)
-              ..id = id
-              ..rot = rot;
-
-            grid.set(cx.toInt(), cy.toInt(), c);
-          }
+          grid.set(cx.toInt(), cy.toInt(), c);
         }
       }
     }

@@ -92,7 +92,7 @@ class Grid {
   }
 
   void set(int x, int y, Cell cell) {
-    if (cell == get(x, y)) genOptimizer.remove(x, y);
+    if (cell != get(x, y)) genOptimizer.remove(x, y);
     if (cell.id != "empty") {
       cells.add(cell.id);
     }

@@ -2712,4 +2712,7 @@ Map<String, List<CellProperty>> props = {
   "math_safe_number": [
     CellProperty("Count", "count", CellPropertyType.number, 0),
   ],
+  "master_has_id": [
+    CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
+  ]
 };
