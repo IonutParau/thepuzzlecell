@@ -81,10 +81,10 @@ void rots(Set<String> cells) {
     if (cells.contains("super_redirector")) {
       grid.updateCell(
         (cell, x, y) {
-          redirect(grid.at(x + 1, y), x + 1, y, rot);
-          redirect(grid.at(x - 1, y), x - 1, y, rot);
-          redirect(grid.at(x, y + 1), x, y + 1, rot);
-          redirect(grid.at(x, y - 1), x, y - 1, rot);
+          redirect(grid.get(x + 1, y) ?? Cell(x + 1, y), x + 1, y, rot);
+          redirect(grid.get(x - 1, y) ?? Cell(x - 1, y), x - 1, y, rot);
+          redirect(grid.get(x, y + 1) ?? Cell(x, y + 1), x, y + 1, rot);
+          redirect(grid.get(x, y - 1) ?? Cell(x, y - 1), x, y - 1, rot);
         },
         rot,
         "super_redirector",
@@ -94,5 +94,6 @@ void rots(Set<String> cells) {
 }
 
 void redirect(Cell cell, int x, int y, int dir) {
+  if (!grid.inside(x, y)) return;
   grid.rotate(x, y, (dir - cell.rot) % 4);
 }
