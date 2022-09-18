@@ -2615,6 +2615,10 @@ final cellInfo = <String, CellProfile>{
     "Check For Selected Cell ID Equality To Index",
     "Checks if the selected cell's ID is equal to the cell ID at the index specified as the input",
   ),
+  "unlock": CellProfile(
+    "Unlocked Lock",
+    "A lock that has already been unlocked. Acts like a push cell",
+  ),
 };
 
 enum CellPropertyType {
