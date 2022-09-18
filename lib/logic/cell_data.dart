@@ -844,12 +844,26 @@ final categories = [
     "Forcers",
     "Cells that move other cells but don't move themselves",
     [
-      "fan",
-      "superfan",
-      "airflow",
-      "vacuum",
-      "supervacuum",
-      "inverse_airflow",
+      CellCategory(
+        "Fans",
+        "They push cells away",
+        [
+          "fan",
+          "superfan",
+          "airflow",
+        ],
+        "fan",
+      ),
+      CellCategory(
+        "Vacuums",
+        "They pull cells towards themselves",
+        [
+          "vacuum",
+          "supervacuum",
+          "inverse_airflow",
+        ],
+        "vacuum",
+      ),
       "conveyor",
       "swapper",
       "nudger",
