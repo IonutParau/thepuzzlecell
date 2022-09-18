@@ -844,12 +844,26 @@ final categories = [
     "Forcers",
     "Cells that move other cells but don't move themselves",
     [
-      "fan",
-      "superfan",
-      "airflow",
-      "vacuum",
-      "supervacuum",
-      "inverse_airflow",
+      CellCategory(
+        "Fans",
+        "They push cells away",
+        [
+          "fan",
+          "superfan",
+          "airflow",
+        ],
+        "fan",
+      ),
+      CellCategory(
+        "Vacuums",
+        "They pull cells towards themselves",
+        [
+          "vacuum",
+          "supervacuum",
+          "inverse_airflow",
+        ],
+        "vacuum",
+      ),
       "conveyor",
       "swapper",
       "nudger",
@@ -2614,6 +2628,10 @@ final cellInfo = <String, CellProfile>{
   "master_has_idx": CellProfile(
     "Check For Selected Cell ID Equality To Index",
     "Checks if the selected cell's ID is equal to the cell ID at the index specified as the input",
+  ),
+  "unlock": CellProfile(
+    "Unlocked Lock",
+    "A lock that has already been unlocked. Acts like a push cell",
   ),
 };
 
