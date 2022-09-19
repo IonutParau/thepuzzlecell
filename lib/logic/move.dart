@@ -291,7 +291,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
 
       final digging = grid.at(dx, dy);
       if (digging.id == "wormhole") return;
-      push(dx, dy, dir, 9999999999999, replaceCell: moving);
+      QueueManager.add("post-move", () => push(dx, dy, dir, 9999999999999, replaceCell: moving));
       // If not empty attempt destruction
     } else {
       grid.addBroken(moving, x, y);
@@ -329,7 +329,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       sending.rot %= 4;
 
       if (grid.inside(fx, fy)) {
-        push(fx, fy, odir, 1, replaceCell: sending);
+        QueueManager.add("post-move", () => push(fx, fy, odir, 1, replaceCell: sending));
       }
     }
     return;
@@ -366,7 +366,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       sending.rot %= 4;
 
       if (grid.inside(fx, fy)) {
-        push(fx, fy, odir, 1, replaceCell: sending);
+        QueueManager.add("post-move", () => push(fx, fy, odir, 1, replaceCell: sending));
       }
     }
     return;
@@ -375,36 +375,45 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   if (destroyer.id == "forker") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot;
-    push(
-      frontX(x, r),
-      frontY(y, r),
-      r,
-      1,
-      replaceCell: moving.copy,
+    QueueManager.add(
+      "post-move",
+      () => push(
+        frontX(x, r),
+        frontY(y, r),
+        r,
+        1,
+        replaceCell: moving.copy,
+      ),
     );
     return;
   }
   if (destroyer.id == "forker_cw") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot + 1;
-    push(
-      frontX(x, r),
-      frontY(y, r),
-      r,
-      1,
-      replaceCell: moving.copy..rotate(1),
+    QueueManager.add(
+      "post-move",
+      () => push(
+        frontX(x, r),
+        frontY(y, r),
+        r,
+        1,
+        replaceCell: moving.copy..rotate(1),
+      ),
     );
     return;
   }
   if (destroyer.id == "forker_ccw") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot + 3;
-    push(
-      frontX(x, r),
-      frontY(y, r),
-      r,
-      1,
-      replaceCell: moving.copy..rotate(3),
+    QueueManager.add(
+      "post-move",
+      () => push(
+        frontX(x, r),
+        frontY(y, r),
+        r,
+        1,
+        replaceCell: moving.copy..rotate(3),
+      ),
     );
     return;
   }
@@ -425,32 +434,53 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       1,
       replaceCell: moving.copy..rotate(3),
     );
+    QueueManager.add(
+      "post-move",
+      () {
+        push(
+          frontX(x, r + 1),
+          frontY(y, r + 1),
+          r + 1,
+          1,
+          replaceCell: moving.copy..rotate(1),
+        );
+        push(
+          frontX(x, r + 3),
+          frontY(y, r + 3),
+          r + 3,
+          1,
+          replaceCell: moving.copy..rotate(3),
+        );
+      },
+    );
     return;
   }
   if (destroyer.id == "triple_forker") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot;
-    push(
-      frontX(x, r),
-      frontY(y, r),
-      r,
-      1,
-      replaceCell: moving.copy,
-    );
-    push(
-      frontX(x, r + 1),
-      frontY(y, r + 1),
-      r + 1,
-      1,
-      replaceCell: moving.copy..rotate(1),
-    );
-    push(
-      frontX(x, r + 3),
-      frontY(y, r + 3),
-      r + 3,
-      1,
-      replaceCell: moving.copy..rotate(3),
-    );
+    QueueManager.add("post-move", () {
+      push(
+        frontX(x, r),
+        frontY(y, r),
+        r,
+        1,
+        replaceCell: moving.copy,
+      );
+      push(
+        frontX(x, r + 1),
+        frontY(y, r + 1),
+        r + 1,
+        1,
+        replaceCell: moving.copy..rotate(1),
+      );
+      push(
+        frontX(x, r + 3),
+        frontY(y, r + 3),
+        r + 3,
+        1,
+        replaceCell: moving.copy..rotate(3),
+      );
+    });
     return;
   }
 
