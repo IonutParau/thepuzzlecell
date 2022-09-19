@@ -1000,9 +1000,12 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
 
   for (var cx = x - radius; cx <= x + radius; cx++) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
+      if (!grid.inside(cx.toInt(), cy.toInt())) return;
+
       final d = pow(cx - x, 2) + pow(cy - y, 2);
       final ox = cx - x;
       final oy = cy - y;
+
       final c = grid.at(cx.toInt(), cy.toInt());
 
       grid.addBroken(c, x, y, "shrinking");
