@@ -43,7 +43,8 @@ bool doGrabber(int x, int y, int dir) {
   if (grid.inside(fx, fy)) {
     final f = grid.at(fx, fy);
     if (!moveInsideOf(f, fx, fy, dir, 1, MoveType.grab)) return false;
-  }
+  } else
+    return false;
   moveCell(x, y, frontX(x, dir), frontY(y, dir), dir, null, MoveType.grab);
   grabSide(x, y, dir - 1, dir);
   grabSide(x, y, dir + 1, dir);
