@@ -38,7 +38,7 @@ class _RenameSaveDialogState extends State<RenameSaveDialog> {
                   width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Title',
+                    header: lang('title_box', 'Title'),
                     controller: _titleController,
                   ),
                 ),
@@ -47,7 +47,7 @@ class _RenameSaveDialogState extends State<RenameSaveDialog> {
                   width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Description',
+                    header: lang('description', 'Description'),
                     controller: _descController,
                   ),
                 ),

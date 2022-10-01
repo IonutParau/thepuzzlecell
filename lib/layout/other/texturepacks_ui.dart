@@ -42,15 +42,34 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
           Image.asset(tp.icon),
         ],
       ),
-      trailing: Button(
-        child: Text(lang("delete", "Delete")),
-        onPressed: () async {
-          await tp.dir.delete(recursive: true);
-          loadTexturePacks();
-          await applyTexturePackSettings();
-          applyTexturePacks();
-          setState(() {});
-        },
+      trailing: Row(
+        children: [
+          Button(
+            child: Text(lang("modify", "Modify")),
+            onPressed: () async {
+              await showDialog(
+                context: context,
+                builder: (ctx) {
+                  return ModifyTexturePackDialog(tp);
+                },
+              );
+              loadTexturePacks();
+              await applyTexturePackSettings();
+              applyTexturePacks();
+              setState(() {});
+            },
+          ),
+          Button(
+            child: Text(lang("delete", "Delete")),
+            onPressed: () async {
+              await tp.dir.delete(recursive: true);
+              loadTexturePacks();
+              await applyTexturePackSettings();
+              applyTexturePacks();
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
@@ -121,6 +140,16 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
           Button(
             child: Text(lang("reload", "Reload"), style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
+              loadTexturePacks();
+              await applyTexturePackSettings();
+              applyTexturePacks();
+              setState(() {});
+            },
+          ),
+          Button(
+            child: Text(lang("create", "Create"), style: TextStyle(fontSize: 7.sp)),
+            onPressed: () async {
+              await showDialog(context: context, builder: (ctx) => CreateTexturePackDialog());
               loadTexturePacks();
               await applyTexturePackSettings();
               applyTexturePacks();

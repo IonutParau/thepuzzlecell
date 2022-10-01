@@ -44,7 +44,7 @@ In the text, @variablename gets replaced with the variable.
 | create_world                   | The title of the Create a World page                                                                                                    |           |
 | width                          | The name of the width box                                                                                                               |           |
 | height                         | The name of the height box                                                                                                              |           |
-| title_box                      | The name of the title box in worlds                                                                                                     |           |
+| title_box                      | The name of the title box in worlds or when creating a texture pack                                                                     |           |
 | description                    | The name of the description box in worlds                                                                                               |           |
 | play                           | The name of the play button                                                                                                             |           |
 | connect                        | The name of the connect button in multiplayer                                                                                           |           |
@@ -122,6 +122,11 @@ In the text, @variablename gets replaced with the variable.
 | chunk_size                     | The name of the Chunk Size setting                                                                                                      |           |
 | translator_mode                | The name of the Translator Mode                                                                                                         |           |
 | property.cellid.propertykey    | The name of the property with the property key "propertykey" from the cell with id "cellid"                                             |           |
+| export                         | The name of the Export button                                                                                                           |           |
+| modify                         | The name of the Modify button                                                                                                           |           |
+| modify_tp                      | The name of the Modify (texture pack name) dialog title                                                                                 | name      |
+| create_tp                      | The name of the Create Texture Pack dialog                                                                                              |           |
+| create                         | The name of the Create buttons                                                                                                          |           |
 
 ## Button IDs:
 

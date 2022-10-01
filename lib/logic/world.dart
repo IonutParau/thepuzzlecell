@@ -19,14 +19,14 @@ class WorldManager {
 
   void addWorld(String title, String description, int x, int y) {
     final g = Grid(x, y);
-    _worlds.add(P4.encodeGrid(g, title: title, description: description));
+    _worlds.add(SavingFormat.encodeGrid(g, title: title, description: description));
     saveWorldsToSettings();
   }
 
   void saveWorld(int i) {
     final str = _worlds[i].split(';');
     var g = game.isinitial ? grid : game.initial;
-    _worlds[i] = P4.encodeGrid(g, title: str[1], description: str[2]);
+    _worlds[i] = SavingFormat.encodeGrid(g, title: str[1], description: str[2]);
     saveWorldsToSettings();
   }
 

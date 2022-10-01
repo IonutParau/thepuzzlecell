@@ -157,6 +157,10 @@ late SharedPreferences storage;
 
 final String assetsPath = findAssetDirPath();
 
+File assetToFile(String p) {
+  return File(path.joinAll([assetsPath, 'assets', ...(p.split('/'))]));
+}
+
 Future<void> fixStorage() async {
   if (storage.getString("lang") != null) {
     loadLangByName(storage.getString("lang")!);

@@ -12,6 +12,32 @@ class TexturePack {
     ".bmp",
   ];
 
+  List<String> get retextured {
+    final l = <String>[];
+    final m = getMap();
+
+    for (var cell in cells) {
+      if (m.containsKey(cell)) {
+        l.add(cell);
+      }
+    }
+
+    return l;
+  }
+
+  Map<String, String> get retexturedMap {
+    final l = <String, String>{};
+    final m = getMap();
+
+    for (var cell in cells) {
+      if (m.containsKey(cell)) {
+        l[cell] = m[cell];
+      }
+    }
+
+    return l;
+  }
+
   bool enabled = true;
 
   Future toggle() async {
@@ -60,6 +86,11 @@ class TexturePack {
     );
   }
 
+  String fix(String id) {
+    final m = getMap();
+    return 'texture_packs/${(dir.path.split(path.separator).last)}/${m[id]}';
+  }
+
   String fixPath(String p) {
     final i = path.split(p).indexOf('texture_packs');
 
@@ -104,6 +135,27 @@ class TexturePack {
     }
 
     return <String, dynamic>{};
+  }
+
+  void setMap(Map<String, dynamic> map) {
+    final f = File(path.join(dir.path, 'pack.json'));
+
+    if (f.existsSync()) {
+      f.writeAsStringSync(jsonEncode(map));
+    } else {
+      final yamlF = File(path.join(dir.path, 'pack.yaml'));
+
+      if (yamlF.existsSync()) {
+        // JSON is YAML.
+        yamlF.writeAsStringSync(jsonEncode(map));
+      } else {
+        final tomlF = File(path.join(dir.path, 'pack.toml'));
+
+        if (tomlF.existsSync()) {
+          tomlF.writeAsStringSync(TomlDocument.fromMap(map).toString());
+        }
+      }
+    }
   }
 
   void load() {

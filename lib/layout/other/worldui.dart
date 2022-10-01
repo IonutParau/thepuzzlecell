@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
@@ -125,6 +126,21 @@ class WorldTile extends StatelessWidget {
                   whenPressed();
                 },
                 color: Colors.blue,
+              ),
+              MaterialButton(
+                child: Text(
+                  lang('export', 'Export'),
+                  style: TextStyle(
+                    fontSize: 5.sp,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () async {
+                  await FlutterClipboard.copy(worldManager.worldAt(index));
+
+                  showDialog(context: context, builder: (ctx) => ExportWorldDialog());
+                },
+                color: Colors.teal,
               ),
               MaterialButton(
                 child: Text(
