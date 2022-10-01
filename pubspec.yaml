@@ -12,11 +12,11 @@ environment:
 dependencies:
   base_x: ^2.0.0
   clipboard: any
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   flame: ^1.4.0
-  audioplayers: ^1.0.1
+  audioplayers: ^1.1.0
   flame_splash_screen: any
-  fluent_ui: ^3.12.0
+  fluent_ui: ^4.0.1
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.0.3

@@ -58,22 +58,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           stream: langEvents.stream,
           builder: (context, snapshot) {
             return NavigationView(
-              content: NavigationBody(
-                index: _navIndex,
-                children: [
-                  Editor(),
-                  Puzzles(),
-                  WorldUI(),
-                  MultiplayerPage(),
-                  Shop(),
-                  SettingsPage(),
-                  TexturePacksUI(),
-                  if (isDesktop) LangsUI(),
-                  CreditsPage(),
-                  VersionPage(),
-                  UpdateUI(),
-                ],
-              ),
               pane: NavigationPane(
                 selected: _navIndex,
                 onChanged: (i) => setState(() => _navIndex = i),
@@ -108,47 +92,58 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   PaneItem(
                     icon: Icon(FluentIcons.edit),
                     title: Text(lang('editor', 'Editor')),
+                    body: Editor(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.puzzle),
                     title: Text(lang('puzzles', 'Puzzles')),
+                    body: Puzzles(),
                   ),
                   PaneItem(
                     icon: Icon(FontAwesomeIcons.earthEurope),
                     title: Text(lang('worlds', 'Worlds')),
+                    body: WorldUI(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.my_network),
                     title: Text(lang('multiplayer', 'Multiplayer')),
+                    body: MultiplayerPage(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.store_logo16),
                     title: Text(lang('shop', 'In-Game Shop')),
+                    body: Shop(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.settings),
                     title: Text(lang('settings', 'Settings')),
+                    body: SettingsPage(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.picture),
                     title: Text(lang('texture_packs', 'Texture Packs')),
+                    body: TexturePacksUI(),
                   ),
                   if (isDesktop)
                     PaneItem(
                       icon: Icon(FluentIcons.locale_language),
                       title: Text(lang('languages', 'Languages')),
+                      body: LangsUI(),
                     ),
                   PaneItem(
                     icon: Icon(FluentIcons.text_document),
                     title: Text(lang('credits', 'Credits')),
+                    body: CreditsPage(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.change_entitlements),
                     title: Text(lang('version', 'Version')),
+                    body: VersionPage(),
                   ),
                   PaneItem(
                     icon: Icon(FluentIcons.update_restore),
                     title: Text(lang('update', 'Update')),
+                    body: UpdateUI(),
                   ),
                   PaneItemAction(
                     icon: Icon(FluentIcons.clipboard_list),

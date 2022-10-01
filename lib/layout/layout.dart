@@ -10,7 +10,7 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
-import 'package:flame/input.dart';
+import 'package:flame/input.dart' hide ButtonState;
 import 'package:fluent_ui/fluent_ui.dart' hide showDialog, Tab, TabView;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -36,3 +36,18 @@ part 'settings.dart';
 part 'langs.dart';
 part 'shopui.dart';
 part 'achievement.dart';
+
+class ConstantColorButtonState extends ButtonState<Color> {
+  final Color color;
+
+  ConstantColorButtonState(this.color) : super();
+
+  @override
+  Color resolve(Set<ButtonStates> states) {
+    return color;
+  }
+}
+
+extension on Color {
+  ConstantColorButtonState get state => ConstantColorButtonState(this);
+}

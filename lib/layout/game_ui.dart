@@ -239,12 +239,9 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     padding: EdgeInsets.all(2.w),
                                     child: Slider(
                                       style: SliderThemeData(
-                                        thumbColor: Colors.black,
-                                        activeColor: Colors.blue,
-                                        inactiveColor: Colors.black,
-                                        disabledActiveColor: Colors.black,
-                                        disabledInactiveColor: Colors.black,
-                                        disabledThumbColor: Colors.black,
+                                        thumbColor: Colors.black.state,
+                                        activeColor: Colors.blue.state,
+                                        inactiveColor: Colors.black.state,
                                         useThumbBall: true,
                                       ),
                                       value: game.delay,
@@ -279,12 +276,9 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
                                         style: SliderThemeData(
-                                          thumbColor: Colors.black,
-                                          activeColor: Colors.blue,
-                                          inactiveColor: Colors.black,
-                                          disabledActiveColor: Colors.black,
-                                          disabledInactiveColor: Colors.black,
-                                          disabledThumbColor: Colors.black,
+                                          thumbColor: Colors.black.state,
+                                          activeColor: Colors.blue.state,
+                                          inactiveColor: Colors.black.state,
                                           useThumbBall: true,
                                         ),
                                         value: getMusicVolume(),
@@ -328,12 +322,9 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
                                         style: SliderThemeData(
-                                          thumbColor: Colors.black,
-                                          activeColor: Colors.blue,
-                                          inactiveColor: Colors.black,
-                                          disabledActiveColor: Colors.black,
-                                          disabledInactiveColor: Colors.black,
-                                          disabledThumbColor: Colors.black,
+                                          thumbColor: Colors.black.state,
+                                          activeColor: Colors.blue.state,
+                                          inactiveColor: Colors.black.state,
                                           useThumbBall: true,
                                         ),
                                         value: storage.getDouble("sfx_volume") ?? 1,

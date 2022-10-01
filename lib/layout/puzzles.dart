@@ -68,7 +68,7 @@ class _PuzzlesState extends State<Puzzles> {
                     width: 2.w,
                     height: 2.w,
                   ),
-                  tileColor: Colors.grey[130],
+                  tileColor: ConstantColorButtonState(Colors.grey[130]),
                 ),
               ),
             );

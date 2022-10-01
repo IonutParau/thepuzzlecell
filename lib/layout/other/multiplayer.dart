@@ -42,7 +42,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       width: 10.w,
       height: 10.h,
       child: ListTile(
-        tileColor: Colors.grey[130],
+        tileColor: ConstantColorButtonState(Colors.grey[130]),
         leading: FutureBuilder<http.Response>(
             future: http.post(Uri.parse(pingIp)),
             builder: (ctx, snap) {
