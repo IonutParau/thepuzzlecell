@@ -2819,7 +2819,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
       if (rerenderOverlays) {
         rerenderOverlays = false;
-        final openOverlays = Set.from(overlays.value);
+        final openOverlays = Set.from(overlays.activeOverlays);
         for (var open in openOverlays) {
           // Force a rerender
           overlays.remove(open);
