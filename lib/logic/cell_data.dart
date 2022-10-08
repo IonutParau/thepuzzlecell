@@ -2732,5 +2732,20 @@ Map<String, List<CellProperty>> props = {
   ],
   "master_has_id": [
     CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
-  ]
+  ],
+  "crystal": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+  ],
+  "cancer": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+  ],
+  "fire": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+  ],
+  "plasma": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+  ],
+  "lava": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
+  ],
 };

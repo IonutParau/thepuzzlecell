@@ -2775,6 +2775,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       text = "${cell.data['remaining'] ?? 10}";
     }
 
+    if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id)) {
+      text = "${cell.data['id'] ?? 0}";
+    }
+
     if (text != "") {
       final tp = TextPainter(
         text: TextSpan(
@@ -2783,6 +2787,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             fontSize: cellSize * 0.25,
             color: paint?.color,
             fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                offset: Offset(cellSize, cellSize) * 0.025,
+                blurRadius: cellSize / 200,
+              ),
+            ],
           ),
         ),
         textDirection: TextDirection.ltr,

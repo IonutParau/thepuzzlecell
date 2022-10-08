@@ -42,17 +42,18 @@ void doGas(Cell cell, int x, int y) {
 
 void doCrystal(Cell cell, int x, int y) {
   var mustMove = true;
+  int id = cell.data['id'] ?? 0;
 
-  if (grid.get(x + 1, y)?.id == cell.id) {
+  if (grid.get(x + 1, y)?.id == cell.id && (grid.get(x + 1, y)?.data['id'] ?? 0) == id) {
     mustMove = false;
   }
-  if (grid.get(x - 1, y)?.id == cell.id) {
+  if (grid.get(x - 1, y)?.id == cell.id && (grid.get(x - 1, y)?.data['id'] ?? 0) == id) {
     mustMove = false;
   }
-  if (grid.get(x, y + 1)?.id == cell.id) {
+  if (grid.get(x, y + 1)?.id == cell.id && (grid.get(x, y + 1)?.data['id'] ?? 0) == id) {
     mustMove = false;
   }
-  if (grid.get(x, y - 1)?.id == cell.id) {
+  if (grid.get(x, y - 1)?.id == cell.id && (grid.get(x, y - 1)?.data['id'] ?? 0) == id) {
     mustMove = false;
   }
 

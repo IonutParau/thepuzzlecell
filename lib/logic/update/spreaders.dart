@@ -4,37 +4,7 @@ void doFire(Cell cell, int x, int y) {
   final fire = cell.copy;
   fire.updated = true;
 
-  if (grid.inside(x + 1, y)) {
-    final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && cell.id != "fire" && breakable(cell, x + 1, y, 0, BreakType.burn)) {
-      grid.addBroken(cell, x + 1, y, "silent");
-      grid.set(x + 1, y, fire.copy);
-    }
-  }
-
-  if (grid.inside(x - 1, y)) {
-    final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && cell.id != "fire" && breakable(cell, x - 1, y, 2, BreakType.burn)) {
-      grid.addBroken(cell, x - 1, y, "silent");
-      grid.set(x - 1, y, fire.copy);
-    }
-  }
-
-  if (grid.inside(x, y + 1)) {
-    final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && cell.id != "fire" && breakable(cell, x, y + 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y + 1, "silent");
-      grid.set(x, y + 1, fire.copy);
-    }
-  }
-
-  if (grid.inside(x, y - 1)) {
-    final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && cell.id != "fire" && breakable(cell, x, y - 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y - 1, "silent");
-      grid.set(x, y - 1, fire.copy);
-    }
-  }
+  spread(x, y, fire);
 
   grid.addBroken(cell, x, y, "silent_shrinking");
   grid.set(x, y, Cell(x, y));
@@ -44,37 +14,7 @@ void doPlasma(Cell cell, int x, int y) {
   final plasma = cell.copy;
   plasma.updated = true;
 
-  if (grid.inside(x + 1, y)) {
-    final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && cell.id != "plasma" && breakable(cell, x + 1, y, 0, BreakType.burn)) {
-      grid.addBroken(cell, x + 1, y, "silent");
-      grid.set(x + 1, y, plasma.copy);
-    }
-  }
-
-  if (grid.inside(x - 1, y)) {
-    final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && cell.id != "plasma" && breakable(cell, x - 1, y, 2, BreakType.burn)) {
-      grid.addBroken(cell, x - 1, y, "silent");
-      grid.set(x - 1, y, plasma.copy);
-    }
-  }
-
-  if (grid.inside(x, y + 1)) {
-    final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && cell.id != "plasma" && breakable(cell, x, y + 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y + 1, "silent");
-      grid.set(x, y + 1, plasma.copy);
-    }
-  }
-
-  if (grid.inside(x, y - 1)) {
-    final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && cell.id != "plasma" && breakable(cell, x, y - 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y - 1, "silent");
-      grid.set(x, y - 1, plasma.copy);
-    }
-  }
+  spread(x, y, plasma);
 
   doGas(cell, x, y);
 }
@@ -83,47 +23,18 @@ void doLava(Cell cell, int x, int y) {
   final lava = cell.copy;
   lava.updated = true;
 
-  if (grid.inside(x + 1, y)) {
-    final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x + 1, y, 0, BreakType.burn)) {
-      grid.addBroken(cell, x + 1, y, "silent");
-      grid.set(x + 1, y, lava.copy);
-    }
-  }
-
-  if (grid.inside(x - 1, y)) {
-    final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x - 1, y, 2, BreakType.burn)) {
-      grid.addBroken(cell, x - 1, y, "silent");
-      grid.set(x - 1, y, lava.copy);
-    }
-  }
-
-  if (grid.inside(x, y + 1)) {
-    final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x, y + 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y + 1, "silent");
-      grid.set(x, y + 1, lava.copy);
-    }
-  }
-
-  if (grid.inside(x, y - 1)) {
-    final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && cell.id != "lava" && breakable(cell, x, y - 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y - 1, "silent");
-      grid.set(x, y - 1, lava.copy);
-    }
-  }
+  spread(x, y, lava);
 
   doWater(cell, x, y);
 }
 
 bool spread(int x, int y, Cell spreader) {
   bool hasSpread = false;
+  int id = spreader.data['id'] ?? 0;
 
   if (grid.inside(x + 1, y)) {
     final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x + 1, y, 0, BreakType.burn)) {
+    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x + 1, y, 0, BreakType.burn)) {
       grid.addBroken(cell, x + 1, y, "silent");
       grid.set(x + 1, y, spreader.copy);
       hasSpread = true;
@@ -132,7 +43,7 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x - 1, y)) {
     final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x - 1, y, 2, BreakType.burn)) {
+    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x - 1, y, 2, BreakType.burn)) {
       grid.addBroken(cell, x - 1, y, "silent");
       grid.set(x - 1, y, spreader.copy);
       hasSpread = true;
@@ -141,7 +52,7 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x, y + 1)) {
     final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x, y + 1, 0, BreakType.burn)) {
+    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x, y + 1, 1, BreakType.burn)) {
       grid.addBroken(cell, x, y + 1, "silent");
       grid.set(x, y + 1, spreader.copy);
       hasSpread = true;
@@ -150,7 +61,7 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x, y - 1)) {
     final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && cell.id != spreader.id && breakable(cell, x, y - 1, 0, BreakType.burn)) {
+    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x, y - 1, 3, BreakType.burn)) {
       grid.addBroken(cell, x, y - 1, "silent");
       grid.set(x, y - 1, spreader.copy);
       hasSpread = true;
@@ -164,37 +75,7 @@ void doCancer(Cell cell, int x, int y) {
   final cancer = cell.copy;
   cancer.updated = true;
 
-  if (grid.inside(x + 1, y)) {
-    final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && cell.id != "cancer" && breakable(cell, x + 1, y, 0, BreakType.burn)) {
-      grid.addBroken(cell, x + 1, y, "silent");
-      grid.set(x + 1, y, cancer.copy);
-    }
-  }
-
-  if (grid.inside(x - 1, y)) {
-    final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && cell.id != "cancer" && breakable(cell, x - 1, y, 2, BreakType.burn)) {
-      grid.addBroken(cell, x - 1, y, "silent");
-      grid.set(x - 1, y, cancer.copy);
-    }
-  }
-
-  if (grid.inside(x, y + 1)) {
-    final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && cell.id != "cancer" && breakable(cell, x, y + 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y + 1, "silent");
-      grid.set(x, y + 1, cancer.copy);
-    }
-  }
-
-  if (grid.inside(x, y - 1)) {
-    final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && cell.id != "cancer" && breakable(cell, x, y - 1, 0, BreakType.burn)) {
-      grid.addBroken(cell, x, y - 1, "silent");
-      grid.set(x, y - 1, cancer.copy);
-    }
-  }
+  spread(x, y, cancer);
 }
 
 void doFiller(Cell cell, int x, int y) {

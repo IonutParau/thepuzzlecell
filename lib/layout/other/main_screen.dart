@@ -67,15 +67,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   child: Row(
                     children: [
                       Spacer(flex: 10),
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          filterQuality: FilterQuality.none,
-                          width: 2.w,
-                          height: 2.w,
-                          fit: BoxFit.fill,
-                        ),
+                      Image.asset(
+                        'assets/images/logo.png',
+                        filterQuality: FilterQuality.none,
+                        width: 2.w,
+                        height: 2.w,
+                        fit: BoxFit.fill,
                       ),
                       Spacer(),
                       Text(
