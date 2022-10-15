@@ -525,10 +525,11 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       }
       grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
     } else {
-      grid.addBroken(moving, x, y);
+      final silent = destroyer.data['silent'] ?? false;
+      grid.addBroken(moving, x, y, silent == true ? "silent" : "normal");
     }
   } else if (enemies.contains(destroyer.id)) {
-    // Enenmies
+    // Enemies
     if (destroyer.id == "physical_enemy") {
       grid.addBroken(destroyer, x, y, "shrinking");
       grid.addBroken(moving, x, y, "shrinking");
@@ -541,8 +542,9 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       grid.addBroken(moving, x, y, "shrinking");
       game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
-      grid.addBroken(destroyer, x, y, "shrinking");
-      grid.addBroken(moving, x, y, "shrinking");
+      final silent = destroyer.data['silent'] ?? false;
+      grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
+      grid.addBroken(moving, x, y, silent == true ? "silent_shrinking" : "shrinking");
       grid.set(x, y, Cell(x, y));
       game.redparticles.emit(enemyParticleCounts, x, y);
     }
@@ -1038,12 +1040,11 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
 
       final c = grid.at(cx.toInt(), cy.toInt());
 
-      grid.addBroken(c, x, y, "shrinking");
-
       if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
         return;
       }
       if ((circular && d <= radius) || !circular || (cx == x && cy == y)) {
+        grid.addBroken(c, x, y, "shrinking");
         var r = 0.0;
 
         if (pseudoRandom) {
