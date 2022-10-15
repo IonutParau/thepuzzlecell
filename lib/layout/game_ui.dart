@@ -2818,8 +2818,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       text = "${cell.data['remaining'] ?? 10}";
     }
 
-    if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id)) {
+    if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id) && cell.data['id'] != 0) {
       text = "${cell.data['id'] ?? 0}";
+    }
+
+    if (["transformer", "transformer_cw", "transformer_ccw", "triple_transformer", "mech_comparator", "mech_sensor", "transform_puzzle"].contains(cell.id) && (cell.data['offset'] ?? 1) != 1) {
+      text = "${cell.data['offset'] ?? 1}";
     }
 
     if (text != "") {

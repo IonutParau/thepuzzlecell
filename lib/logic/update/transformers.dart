@@ -4,30 +4,30 @@ void transformers() {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, cell.rot, 0, 0);
+        doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1);
       },
       rot,
       "transformer",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0);
+        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1);
       },
       rot,
       "transformer_cw",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0);
+        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0, cell.data['offset'] ?? 1);
       },
       rot,
       "transformer_ccw",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0);
-        doTransformer(x, y, cell.rot, cell.rot, 0, 0);
-        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0);
+        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1);
       },
       rot,
       "triple_transformer",
@@ -35,7 +35,7 @@ void transformers() {
   }
 }
 
-void doTransformer(int x, int y, int dir, int outdir, int offX, int offY) {
+void doTransformer(int x, int y, int dir, int outdir, int offX, int offY, int off) {
   final idir = (dir + 2) % 4;
 
   final bx = frontX(x, idir);
@@ -45,8 +45,8 @@ void doTransformer(int x, int y, int dir, int outdir, int offX, int offY) {
 
   final input = grid.at(bx, by).copy;
 
-  final ox = frontX(x, outdir) + offX;
-  final oy = frontY(y, outdir) + offY;
+  final ox = frontX(x, outdir, off) + offX;
+  final oy = frontY(y, outdir, off) + offY;
 
   if (!grid.inside(ox, oy)) return;
 

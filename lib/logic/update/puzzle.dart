@@ -373,13 +373,13 @@ void puzzles(Set<String> cells) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.keyT.keyLabel] == true) {
           if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot - 1) % 4, (cell.rot - 1) % 4, 0, 0);
+            doTransformer(x, y, (cell.rot - 1) % 4, (cell.rot - 1) % 4, 0, 0, cell.data['offset'] ?? 1);
           } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4, 0, 0);
+            doTransformer(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1);
           } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4, 0, 0);
+            doTransformer(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4, 0, 0, cell.data['offset'] ?? 1);
           } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
-            doTransformer(x, y, cell.rot, cell.rot, 0, 0);
+            doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1);
           }
         } else {
           if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {

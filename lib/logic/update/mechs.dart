@@ -47,7 +47,8 @@ void mechs(Set<String> cells) {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        final front = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+        final off = cell.data['offset'] ?? 1;
+        final front = grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
         if (front == null) return;
         if (front.id != "empty") {
           MechanicalManager.spread(
@@ -73,7 +74,8 @@ void mechs(Set<String> cells) {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        final front = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+        final off = cell.data['offset'] ?? 1;
+        final front = grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
         final back = grid.get(frontX(x, cell.rot, -1), frontY(y, cell.rot, -1));
         if (front == null || back == null) return;
         if (front.id != "empty" && (front.id == back.id && front.rot == back.rot)) {

@@ -2748,4 +2748,22 @@ Map<String, List<CellProperty>> props = {
   "lava": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
   ],
+  "mech_sensor": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "mech_comparator": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "transformer": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "transformer_cw": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "transformer_ccw": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "transform_puzzle": [
+    CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
 };
