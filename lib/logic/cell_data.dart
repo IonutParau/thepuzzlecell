@@ -1759,7 +1759,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "transformer": CellProfile(
     "Transformer",
-    "This cell is quite over-powered. It will turn the cell in front of it into a copy of the cell behind it.",
+    "This cell is quite over-powered. It will turn the cell in front of it (by the specified offset) into a copy of the cell behind it.",
   ),
   "transformer_cw": CellProfile(
     "Transformer CW",
@@ -2251,11 +2251,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "mech_sensor": CellProfile(
     "Sensor",
-    "Gives power in the back when a cell is in front",
+    "Gives power in the back when a cell is in front (by specified offset amount)",
   ),
   "mech_comparator": CellProfile(
     "Comparator",
-    "Gives power in the left and right if a cell is in front and its rotation and type is the same as the cell in the back",
+    "Gives power in the left and right if a cell is in front (by specified offset amount) and its rotation and type is the same as the cell in the back",
   ),
   "imply_gate": CellProfile(
     "IMPLY Gate",
