@@ -1563,7 +1563,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "mech_trash": CellProfile(
     "Trash-Based Mechanical Generator",
-    "Generates mechanical signals around it whenever it eats a cell",
+    "Generates mechanical signals around it whenever it eats a cell, unless the countdown is above 0 in which case it will decrease the countdown by 1 instead.",
   ),
   "cross_mech_gear": CellProfile(
     "Cross Mechanical Gear",
@@ -2227,23 +2227,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "fire": CellProfile(
     "Fire",
-    "Dies after 1 tick, but spreads onto burnable cells",
+    "Dies after 1 tick, but spreads onto burnable cells including fire cells with a different ID",
   ),
   "plasma": CellProfile(
     "Plasma",
-    "Spreads onto burnable cells, but also behaves like Gas",
+    "Spreads onto burnable cells including plasmas with a different ID, but also behaves like Gas",
   ),
   "cancer": CellProfile(
     "Cancer",
-    "Spreads onto burnable cells. Doesn't die, doesn't behave like another cell, just spreads.",
+    "Spreads onto burnable cells including cancer with a different ID. Doesn't die, doesn't behave like another cell, just spreads.",
   ),
   "gas": CellProfile(
     "Gas",
-    "Like water but goes up instead of down",
+    "Like water but goes up instead of down. Does attempt to move down when it can't go up or sideways.",
   ),
   "lava": CellProfile(
     "Lava",
-    "Spreads onto burnable cells, but also behaves like Water",
+    "Spreads onto burnable cells including lava with a different ID, but also behaves like Water",
   ),
   "filler": CellProfile(
     "Filler",
@@ -2275,11 +2275,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "strangelet": CellProfile(
     "Stangelet",
-    "A destructive monster. Attracted a lot to Gravitons, Protons and Neutrons, and much weaker to Electrons and other Strangelets.",
+    "A destructive monster. Attracted a lot to Gravitons, Protons and Neutrons, and much weaker to Electrons and other Strangelets. Also spreads to burnable cells.",
   ),
   "no_burn_biome": CellProfile(
     "Fire Extinguisher Biome",
-    "Fire can't burn this. Cancer can't spread on this. Lava can't melt this. Plasma can't vaporize this. Strangelet can't strangelet this.",
+    "Makes the cell above unburnable. Unburnable cells are ignored by Fire, Cancer, Lava, Plasma and Strangelet.",
   ),
   "consistency_biome": CellProfile(
     "Consistency Biome",
@@ -2295,7 +2295,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "crystal": CellProfile(
     "Crystal",
-    "Moves in random directions until it touches another Crystal cell",
+    "Moves in random directions until it touches another Crystal cell with the same ID",
   ),
   "floppy": CellProfile(
     "Floppy",
