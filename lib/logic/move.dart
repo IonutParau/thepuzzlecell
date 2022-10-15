@@ -916,6 +916,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
 
 bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
   if (!canMove(x, y, rot, 0, mt)) return false;
+  if (moveInsideOf(grid.at(x, y), x, y, rot, 1, mt)) return false;
   final fx = frontX(x, rot);
   final fy = frontY(y, rot);
   if (grid.inside(fx, fy)) {
