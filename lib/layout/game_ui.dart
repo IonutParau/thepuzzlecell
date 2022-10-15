@@ -425,6 +425,34 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
+                              if (game.gridHistory.isNotEmpty) ...[
+                                Spacer(),
+                                Column(
+                                  children: [
+                                    MaterialButton(
+                                      onPressed: () async {
+                                        await showDialog(context: context, builder: (ctx) => LevelHistoryDialog());
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/' + textureMap['time_trash.png']!,
+                                        fit: BoxFit.fill,
+                                        colorBlendMode: BlendMode.clear,
+                                        filterQuality: FilterQuality.none,
+                                        isAntiAlias: true,
+                                        cacheWidth: 10.w.toInt(),
+                                        cacheHeight: 10.w.toInt(),
+                                        scale: 32 / 5.w,
+                                      ),
+                                    ),
+                                    Text(
+                                      game.isMultiplayer ? lang('session_history', 'Session History') : lang('grid_history', 'Grid History'),
+                                      style: TextStyle(
+                                        fontSize: 7.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                               Spacer(flex: 5),
                             ],
                           ),
@@ -869,6 +897,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   final cachedGridEmpties = <int, Sprite?>{};
   var gridTabIndex = 0;
 
+  var gridHistory = <String>[];
+
+  void saveHistory() {
+    if (!isMultiplayer && worldIndex == null) {
+      storage.setStringList("grid_history", gridHistory);
+    }
+  }
+
+  void loadHistory() {
+    if (!isMultiplayer && worldIndex == null) {
+      gridHistory = storage.getStringList("grid_history") ?? [];
+    }
+  }
+
   void changeTab(int newTabIndex) {
     if (edType != EditorType.making || isMultiplayer) return;
     if (worldIndex != null) {
@@ -952,6 +994,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       btn.time = 0;
       btn.duration = 0.25;
     }
+  }
+
+  void loadFromText(String str) {
+    grid = loadStr(str);
+    QueueManager.runQueue("post-game-init");
+    timeGrid = null;
+    initial = grid.copy;
+    buttonManager.buttons['play-btn']?.texture = 'mover.png';
+    buttonManager.buttons['play-btn']?.rotation = 0;
+    buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
   }
 
   void exit() {
@@ -1138,16 +1190,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           initial.wrap = !initial.wrap;
         }
       } else if (cmd == "setinit") {
+        gridHistory.add(SavingFormat.encodeGrid(grid, title: grid.title, description: grid.desc));
         if (isinitial) {
-          grid = loadStr(args.first);
-          timeGrid = null;
-          initial = grid.copy;
-          isinitial = true;
+          loadFromText(args.first);
           running = false;
-          buttonManager.buttons['play-btn']?.texture = 'mover.png';
-          buttonManager.buttons['play-btn']?.rotation = 0;
-          buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
-
           buildEmpty();
         } else {
           initial = loadStr(args.first);
@@ -1306,15 +1352,13 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               FlutterClipboard.controlV().then(
                 (str) {
                   if (str is ClipboardData) {
-                    grid = loadStr(str.text ?? "");
-                    QueueManager.runQueue("post-game-init");
+                    gridHistory.add(SavingFormat.encodeGrid(grid));
+                    saveHistory();
+
+                    loadFromText(str.text ?? "");
                     timeGrid = null;
-                    initial = grid.copy;
-                    isinitial = true;
                     running = false;
-                    buttonManager.buttons['play-btn']?.texture = 'mover.png';
-                    buttonManager.buttons['play-btn']?.rotation = 0;
-                    buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+                    isinitial = true;
 
                     sendToServer('setinit ${SavingFormat.encodeGrid(grid)}');
 
@@ -1756,17 +1800,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     if (isMultiplayer) {
                       sendToServer('setinit ${str.text}');
                     } else {
+                      gridHistory.add(SavingFormat.encodeGrid(grid, title: grid.title, description: grid.desc));
                       try {
-                        grid = loadStr(str.text ?? "");
-                        QueueManager.runQueue("post-game-init");
-                        timeGrid = null;
-                        initial = grid.copy;
-                        buttonManager.buttons['play-btn']?.texture = 'mover.png';
-                        buttonManager.buttons['play-btn']?.rotation = 0;
-                        buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+                        loadFromText(str.text ?? "");
                       } catch (e) {
+                        gridHistory.removeLast();
                         showDialog(context: context, builder: (ctx) => LoadSaveErrorDialog(e.toString()));
                       }
+                      saveHistory();
                     }
 
                     buildEmpty();
@@ -2054,6 +2095,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       overlays.add('loading');
     }
+
+    loadHistory();
 
     cellSize = defaultCellSize.toDouble();
     if (edType == EditorType.loaded) {

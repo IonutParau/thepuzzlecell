@@ -14,7 +14,7 @@ A remake of Cell Machine meant to add a wide range of possibilities to make very
 It has cells specifically made for fun puzzles or complex creations.
 It also has:
 
-- Many QoL improvements (renaming level when saving, blueprints, invisibility and trickster tool, etc.)
+- Many QoL improvements (renaming level when saving, blueprints, grid history, invisibility and trickster tool, etc.)
 - Worlds
 - Multiplayer
 - Grid Tabs
@@ -53,3 +53,14 @@ The invisibility tool is quite simple. You click it, then you click on the cell 
 
 The trickster tool is also very simple. You select the cell you want to disguise other cells at, then click on the tool, then click on the cells you want to disguise.
 In the editor, you will see a smaller version of how it'll look in puzzle mode. In puzzle mode, they're fully disguised. They're so well disguised that not even pressing Left Shift reveals what it is. Tho other cells still treat them as their actual cell, meaning Assistant still goes for keys, even if they're disguised as push cells.
+
+### Grid History
+
+When you load a level in the normal editor (aka when not in a world or in multiplayer), it'll be saved to your grid history. This means you can re-use that level.
+You can also delete it from your grid history, or clear it completely.
+
+There is also Session History for Multiplayer, which is the same thing but unsaved, so if you left, it would be reset.
+
+### Blueprints
+
+Blueprints allow you to save creations and reuse them. They are a huge time-saver, and there are some built-in ones to show some of the TPC community's accomplishments or just fun things you can make.
