@@ -52,24 +52,22 @@ class _PuzzlesState extends State<Puzzles> {
             final desc = isP1 ? data.split(';')[6] : data.split(';')[2];
             return Padding(
               padding: EdgeInsets.all(0.1.w),
-              child: GestureDetector(
-                onTap: () {
+              child: ListTile(
+                title: Text(title),
+                subtitle: Text(desc),
+                leading: Image.asset(
+                  'assets/images/logo.png',
+                  filterQuality: FilterQuality.none,
+                  fit: BoxFit.fill,
+                  width: 2.w,
+                  height: 2.w,
+                ),
+                onPressed: () {
                   loadPuzzle(i).then(
                     (_) => Navigator.of(context).pushNamed('/game-loaded'),
                   );
                 },
-                child: ListTile(
-                  title: Text(title),
-                  subtitle: Text(desc),
-                  leading: Image.asset(
-                    'assets/images/logo.png',
-                    filterQuality: FilterQuality.none,
-                    fit: BoxFit.fill,
-                    width: 2.w,
-                    height: 2.w,
-                  ),
-                  tileColor: ConstantColorButtonState(Colors.grey[130]),
-                ),
+                tileColor: ConstantColorButtonState(Colors.grey[130]),
               ),
             );
           } else {
