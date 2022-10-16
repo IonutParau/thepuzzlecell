@@ -27,6 +27,7 @@ class _LevelHistoryDialogState extends State<LevelHistoryDialog> {
             child: ListView.builder(
               itemCount: game.gridHistory.length,
               itemBuilder: (ctx, i) {
+                i = (game.gridHistory.length - i - 1);
                 final lvl = game.gridHistory[i];
                 final segs = lvl.split(';');
 

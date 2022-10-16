@@ -227,10 +227,6 @@ class MathManager {
       final i1 = input(x, y, cell.rot - 1);
       final i2 = input(x, y, cell.rot + 1);
 
-      if (i1 > 0 && i2 == 0) return output(x, y, cell.rot, double.infinity);
-      if (i1 < 0 && i2 == 0) return output(x, y, cell.rot, double.negativeInfinity);
-      if (i1 == 0 && i2 == 0) return output(x, y, cell.rot, double.nan);
-
       output(x, y, cell.rot, pow(i1, i2));
     }, null, "math_exp");
 
