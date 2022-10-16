@@ -131,6 +131,11 @@ In the text, @variablename gets replaced with the variable.
 | grid_history                   | The name of the Grid History button                                                                                                     |                               |
 | load                           | The name of the Load button                                                                                                             |                               |
 | level_from_history             | The title of a level from Grid or Session History                                                                                       | i - The index (starting at 0) |
+| top_left                       | The name of the Top Left corner                                                                                                         |                               |
+| top_right                      | The name of the Top Right corner                                                                                                        |                               |
+| bottom_right                   | The name of the Bottom Right corner                                                                                                     |                               |
+| bottom_left                    | The name of the Bottom Left corner                                                                                                      |                               |
+| resize_corner                  | The name of the Resizing Corner                                                                                                         |                               |
 
 ## Button IDs:
 

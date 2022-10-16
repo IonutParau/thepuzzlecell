@@ -5,6 +5,13 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 import '../../layout.dart';
 import '../../tools/tools.dart';
 
+enum ResizeCorner {
+  topleft,
+  topright,
+  bottomright,
+  bottomleft,
+}
+
 class ResizeDialog extends StatefulWidget {
   @override
   _ResizeDialogState createState() => _ResizeDialogState();
@@ -13,6 +20,7 @@ class ResizeDialog extends StatefulWidget {
 class _ResizeDialogState extends State<ResizeDialog> {
   final _widthController = TextEditingController();
   final _heightController = TextEditingController();
+  var corner = ResizeCorner.topleft;
 
   void dispose() {
     _widthController.dispose();
@@ -35,27 +43,50 @@ class _ResizeDialogState extends State<ResizeDialog> {
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
           return Center(
-            child: Row(
+            child: Column(
               children: [
-                Spacer(),
-                SizedBox(
-                  width: constraints.maxWidth / 3,
-                  height: 7.h,
-                  child: TextBox(
-                    header: 'Width',
-                    controller: _widthController,
-                  ),
+                Row(
+                  children: [
+                    Spacer(),
+                    SizedBox(
+                      width: constraints.maxWidth / 3,
+                      height: 7.h,
+                      child: TextBox(
+                        header: 'Width',
+                        controller: _widthController,
+                      ),
+                    ),
+                    SizedBox(width: constraints.maxWidth / 10),
+                    SizedBox(
+                      width: constraints.maxWidth / 3,
+                      height: 7.h,
+                      child: TextBox(
+                        header: 'Height',
+                        controller: _heightController,
+                      ),
+                    ),
+                    Spacer(),
+                  ],
                 ),
                 SizedBox(width: constraints.maxWidth / 10),
                 SizedBox(
-                  width: constraints.maxWidth / 3,
+                  width: constraints.maxWidth / 1.2,
                   height: 7.h,
-                  child: TextBox(
-                    header: 'Height',
-                    controller: _heightController,
+                  child: DropDownButton(
+                    title: Text(lang("resize_corner", "Resizing Corner") + ": " + cornerToString(corner.index)),
+                    items: [
+                      for (var i = 0; i < 4; i++)
+                        MenuFlyoutItem(
+                          text: Text(cornerToString(i)),
+                          onPressed: () {
+                            setState(() {
+                              corner = ResizeCorner.values[i % ResizeCorner.values.length];
+                            });
+                          },
+                        ),
+                    ],
                   ),
                 ),
-                Spacer(),
               ],
             ),
           );
@@ -80,30 +111,102 @@ class _ResizeDialogState extends State<ResizeDialog> {
             game.initial = grid.copy;
             game.itime = 0;
             final g = Grid(w, h);
+            g.title = grid.title;
+            g.desc = grid.desc;
             final area = w * h;
 
-            // Insane optimization
-            if (area < grid.width * grid.height) {
-              g.forEach(
-                (_, x, y) {
-                  if (grid.inside(x, y)) {
-                    g.set(x, y, grid.at(x, y));
-                  }
-                },
-              );
-            } else {
-              grid.forEach(
-                (cell, x, y) {
-                  if (g.inside(x, y)) {
-                    g.set(x, y, cell);
-                  }
-                },
-              );
+            switch (corner) {
+              case ResizeCorner.topleft:
+                if (area < grid.width * grid.height) {
+                  g.forEach(
+                    (_, x, y) {
+                      if (grid.inside(x, y)) {
+                        g.set(x, y, grid.at(x, y));
+                      }
+                    },
+                  );
+                } else {
+                  grid.forEach(
+                    (cell, x, y) {
+                      if (g.inside(x, y)) {
+                        g.set(x, y, cell);
+                      }
+                    },
+                  );
+                }
+                break;
+              case ResizeCorner.topright:
+                if (area < grid.width * grid.height) {
+                  g.forEach(
+                    (_, x, y) {
+                      final cx = x + grid.width - g.width;
+                      if (grid.inside(cx, y)) {
+                        g.set(x, y, grid.at(cx, y));
+                      }
+                    },
+                  );
+                } else {
+                  grid.forEach(
+                    (cell, x, y) {
+                      final cx = x + g.width - grid.width;
+                      if (g.inside(cx, y)) {
+                        g.set(cx, y, cell);
+                      }
+                    },
+                  );
+                }
+                break;
+              case ResizeCorner.bottomright:
+                if (area < grid.width * grid.height) {
+                  g.forEach(
+                    (_, x, y) {
+                      final cx = x + grid.width - g.width;
+                      final cy = y + grid.height - g.height;
+                      if (grid.inside(cx, cy)) {
+                        g.set(x, y, grid.at(cx, cy));
+                      }
+                    },
+                  );
+                } else {
+                  grid.forEach(
+                    (cell, x, y) {
+                      final cx = x + g.width - grid.width;
+                      final cy = y + g.height - grid.height;
+                      if (g.inside(cx, cy)) {
+                        g.set(cx, cy, cell);
+                      }
+                    },
+                  );
+                }
+                break;
+              case ResizeCorner.bottomleft:
+                if (area < grid.width * grid.height) {
+                  g.forEach(
+                    (_, x, y) {
+                      final cy = y + grid.height - g.height;
+                      if (grid.inside(x, cy)) {
+                        g.set(x, y, grid.at(x, cy));
+                      }
+                    },
+                  );
+                } else {
+                  grid.forEach(
+                    (cell, x, y) {
+                      final cy = y + g.height - grid.height;
+                      if (g.inside(x, cy)) {
+                        g.set(x, cy, cell);
+                      }
+                    },
+                  );
+                }
+                break;
+              default:
+                break;
             }
 
             if (game.isMultiplayer) {
               game.sendToServer(
-                'setinit ${P4.encodeGrid(g)}',
+                'setinit ${SavingFormat.encodeGrid(g, title: g.title, description: g.desc)}',
               );
             } else {
               grid = g;

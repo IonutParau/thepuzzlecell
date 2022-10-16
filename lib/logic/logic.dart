@@ -227,3 +227,12 @@ String idToString(String id) {
 String idToTexture(String id) {
   return "assets/images/${textureMap['$id.png'] ?? '$id.png'}";
 }
+
+String cornerToString(int rot) {
+  if (rot == 0) return lang("top_left", "Top Left");
+  if (rot == 1) return lang("top_right", "Top Right");
+  if (rot == 2) return lang("bottom_right", "Bottom Right");
+  if (rot == 3) return lang("bottom_left", "Bottom Left");
+
+  return "Unknown";
+}
