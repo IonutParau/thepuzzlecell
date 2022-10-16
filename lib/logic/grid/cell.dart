@@ -83,7 +83,7 @@ class BrokenCell {
   }
 }
 
-class Cell {
+class Cell extends Equatable {
   String id = "empty";
   int rot = 0;
   LastVars lastvars;
@@ -154,11 +154,6 @@ class Cell {
     rot %= 4;
   }
 
-  bool operator ==(Object other) {
-    if (other is Cell) {
-      return (mapEquals(toMap, other.toMap));
-    }
-
-    return false;
-  }
+  @override
+  List<Object?> get props => [id, rot, data, tags, lifespan, invisible];
 }

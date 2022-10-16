@@ -803,7 +803,7 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     }
     force += addedForce(c, dir, force, mt);
     if (force <= 0) return false;
-    final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c);
+    final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c.copy);
     // If we have been modified, only allow the past one to move if we have been fully deleted
     final now = grid.at(ox, oy);
     if (c != now) {
@@ -816,7 +816,7 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
       }
 
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
-      grid.set(ox, oy, replaceCell);
+      grid.set(ox, oy, replaceCell.copy);
       postmove(c, ox, oy, dir, force, mt);
     }
     if (depth == 0) QueueManager.runQueue("post-move");
