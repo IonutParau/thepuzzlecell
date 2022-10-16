@@ -869,7 +869,7 @@ final categories = [
       "nudger",
       CellCategory(
         "Mirrors",
-        "Swaps cells around themselves",
+        "They swap cells around themselves",
         ["mirror", "super_mirror"],
         "mirror",
       ),
@@ -973,7 +973,7 @@ final categories = [
       ),
       CellCategory(
         "Transformers",
-        "They transform the cell in front of them into a copy of the cell behind them",
+        "They transform the cell as many tiles away as the offset into a copy of the cell behind them",
         [
           "transformer",
           "transformer_cw",
@@ -1020,7 +1020,7 @@ final categories = [
       ),
       CellCategory(
         "Trash",
-        "When they kill, they don't die",
+        "They kill without dying",
         [
           "trash",
           "silent_trash",
@@ -1028,6 +1028,7 @@ final categories = [
           "mobile_trash",
           "physical_trash",
           "trash_can",
+          "counter",
           "push_trash",
           "pull_trash",
           "grab_trash",
@@ -1038,10 +1039,11 @@ final categories = [
           "mech_p_trash",
         ],
         "trash",
+        max: 7,
       ),
       CellCategory(
         "Portals",
-        "These are trash cells, but they'll try to send a copy of the incoming cell somewhere else",
+        "Trash cells that try to send a copy of the incoming cell somewhere else",
         [
           "portal_a",
           "portal_b",
@@ -1049,7 +1051,6 @@ final categories = [
         ],
         "wormhole",
       ),
-      "counter",
       "hungry_trash",
       "fire",
       "lava",
@@ -1119,9 +1120,18 @@ final categories = [
       ),
       "anchor",
       "sandbox",
-      "water",
-      "sand",
-      "gas",
+      CellCategory(
+        "Physical Cells",
+        "These cells behave the same way no matter their rotation",
+        [
+          "water",
+          "sand",
+          "gas",
+          "lava",
+          "plasma",
+        ],
+        "water",
+      ),
       "crystal",
       "floppy",
       "spikefactory",
@@ -1150,6 +1160,7 @@ final categories = [
           "math_sqrt",
         ],
         "math_plus",
+        max: 4,
       ),
       CellCategory(
         "Functions",
@@ -1241,14 +1252,15 @@ final categories = [
         [
           "mech_gen",
           "mech_trash",
-          "mech_keyup",
-          "mech_keyleft",
-          "mech_keyright",
-          "mech_keydown",
           "mech_sensor",
           "mech_comparator",
+          "mech_keyleft",
+          "mech_keydown",
+          "mech_keyup",
+          "mech_keyright",
         ],
         "mech_gen",
+        max: 4,
       ),
       CellCategory(
         "Users",
@@ -1261,18 +1273,19 @@ final categories = [
           "mech_fan",
           "mech_rotator_cw",
           "mech_rotator_ccw",
-          "pixel",
-          "piston",
-          "keylimit",
-          "keyforce",
-          "keyfake",
           "mech_stopper",
           "mech_checkpoint",
           "mech_enemy",
           "mech_p_trash",
           "mech_mirror",
+          "pixel",
+          "piston",
+          "keylimit",
+          "keyforce",
+          "keyfake",
         ],
         "mech_mover",
+        max: 6,
       ),
       CellCategory(
         "Logic Gates",
@@ -1328,14 +1341,6 @@ final categories = [
     "Cells made to be used in puzzles",
     [
       "puzzle",
-      "checkpoint",
-      "antipuzzle",
-      "propuzzle",
-      "pmerge",
-      "lock",
-      "key",
-      "flag",
-      "auto_flag",
       CellCategory(
         "Merged",
         "Puzzle Cells with extra abilities",
@@ -1350,9 +1355,25 @@ final categories = [
         ],
         "molten_puzzle",
       ),
+      "antipuzzle",
+      "propuzzle",
+      "pmerge",
+      CellCategory(
+        "Interactables",
+        "These cells will react to being interacted by a Puzzle Cell",
+        [
+          "key",
+          "lock",
+          "checkpoint",
+          "flag",
+        ],
+        "flag",
+        max: 2,
+      ),
+      "auto_flag",
       CellCategory(
         "Key Processors",
-        "They do stuff related to key-presses to make puzzles more difficult",
+        "They do stuff related to pressing keys to make puzzles more difficult",
         [
           "keylimit",
           "keyforce",
@@ -1759,7 +1780,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "transformer": CellProfile(
     "Transformer",
-    "This cell is quite over-powered. It will turn the cell in front of it (by the specified offset) into a copy of the cell behind it.",
+    "This cell is quite over-powered. It will turn the cell as many spaces away as the offset (default: 1) into a copy of the cell behind it.",
   ),
   "transformer_cw": CellProfile(
     "Transformer CW",
@@ -1771,7 +1792,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "triple_transformer": CellProfile(
     "Triple Transformer",
-    "Transformer + Transformer CW + Transformer CCW",
+    "Transformer + Transformer CW + Transformer CCW. Always has an offset of 1 due to being multi-directional.",
   ),
   "semi_enemy": CellProfile(
     "Semi Enemy",
@@ -1831,7 +1852,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "nudger": CellProfile(
     "Nudger",
-    "Acts like a fan but does not have any force",
+    "Fan that does not have any force, can only push 1 cell per tick.",
   ),
   "swapper": CellProfile(
     "Swapper",
