@@ -104,8 +104,8 @@ class Cell {
     return {
       "id": id,
       "rot": rot,
-      "data": data,
-      "tags": tags,
+      "data": {...data},
+      "tags": {...tags},
       "lifespan": lifespan,
       "invisible": invisible,
     };

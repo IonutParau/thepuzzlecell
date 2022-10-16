@@ -238,7 +238,6 @@ class MechanicalManager {
   static bool connectable(int? dir, Cell cell) {
     if (cell.id == "empty") return false;
     if (cell.id == "piston") return true;
-    if (dir == null) return true;
     if (cell.id == "time_machine") return true;
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
@@ -247,6 +246,10 @@ class MechanicalManager {
     if (cell.id == "keylimit") return true;
     if (cell.id == "keyforce") return true;
     if (cell.id == "keyfake") return true;
+    if (["master_new_cell", "master_place", "master_pop_state", "master_push_state", "master_select_xy", "master_set_xy", "master_set_last_xy", "master_set_rot", "master_set_lastrot"]
+            .contains(cell.id) &&
+        (dir ?? cell.rot) == cell.rot) return true;
+    if (dir == null) return true;
     return CellTypeManager.mechanical.contains(cell.id);
   }
 

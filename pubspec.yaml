@@ -59,7 +59,9 @@ flutter:
     - assets/images/math/logic/
     - assets/images/master/
     - assets/images/master/checker/
+    - assets/images/master/controller/
     - assets/images/master/getter/
+    - assets/images/master/setter/
     - assets/images/skins/
     - assets/images/movers/
     - assets/images/movers/combos/

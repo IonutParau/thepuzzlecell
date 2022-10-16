@@ -312,6 +312,17 @@ final cells = {
   "master_get_lastrot",
   "master_has_id",
   "master_has_idx",
+  "master_new_cell",
+  "master_place",
+  "master_pop_state",
+  "master_push_state",
+  "master_select_xy",
+  "master_set_id",
+  "master_set_idx",
+  "master_set_xy",
+  "master_set_last_xy",
+  "master_set_rot",
+  "master_set_lastrot",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -319,6 +330,17 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "master_set_rot.png": "master/setter/master_set_rot.png",
+  "master_set_lastrot.png": "master/setter/master_set_lastrot.png",
+  "master_set_xy.png": "master/setter/master_set_xy.png",
+  "master_set_last_xy.png": "master/setter/master_set_last_xy.png",
+  "master_set_id.png": "master/setter/master_set_id.png",
+  "master_set_idx.png": "master/setter/master_set_idx.png",
+  "master_select_xy.png": "master/controller/master_select_xy.png",
+  "master_new_cell.png": "master/controller/master_new_cell.png",
+  "master_place.png": "master/controller/master_place.png",
+  "master_pop_state.png": "master/controller/master_pop_state.png",
+  "master_push_state.png": "master/controller/master_push_state.png",
   "master_get_camx.png": "master/getter/master_get_camx.png",
   "master_get_camy.png": "master/getter/master_get_camy.png",
   "master_get_mousex.png": "master/getter/master_get_mousex.png",
@@ -1325,6 +1347,19 @@ final categories = [
         "master_get_camx",
       ),
       CellCategory(
+        "Setters",
+        "They take in a mechanical signal at the back, and numerical inputs from the sides, and they modify the master state in some way",
+        [
+          "master_set_id",
+          "master_set_idx",
+          "master_set_xy",
+          "master_set_last_xy",
+          "master_set_rot",
+          "master_set_lastrot",
+        ],
+        "master_set_id",
+      ),
+      CellCategory(
         "Checkers",
         "They output a mechanical signal when updating if the thing they're checking for is correct",
         [
@@ -1332,6 +1367,18 @@ final categories = [
           "master_has_idx",
         ],
         "master_has_id",
+      ),
+      CellCategory(
+        "Controllers",
+        "They manipulate the master state or grid in unique ways",
+        [
+          "master_new_cell",
+          "master_place",
+          "master_pop_state",
+          "master_push_state",
+          "master_select_xy",
+        ],
+        "master_push_state",
       ),
     ],
     "master_has_id",
@@ -2654,6 +2701,50 @@ final cellInfo = <String, CellProfile>{
     "Unlocked Lock",
     "A lock that has already been unlocked. Acts like a push cell",
   ),
+  "master_new_cell": CellProfile(
+    "Set Master State to New Cell",
+    "Sets the current master state's cell to a brand new empty cell.",
+  ),
+  "master_place": CellProfile(
+    "Place Cell from Master State",
+    "Places the cell stored in the current master state at the stored coordinates.",
+  ),
+  "master_pop_state": CellProfile(
+    "Pop Master State",
+    "Removes the current master state from the master state stack.",
+  ),
+  "master_push_state": CellProfile(
+    "Push Master State",
+    "Adds on top of the master state stack a new empty master state and makes it the current one",
+  ),
+  "master_select_xy": CellProfile(
+    "Select Cell at X and Y",
+    "Takes the X and Y and sets it to the Master State. Also sets the XY pair.",
+  ),
+  "master_set_id": CellProfile(
+    "Change to Constant ID",
+    "Sets the current master state's cell's ID to the ID configured by its properties.",
+  ),
+  "master_set_idx": CellProfile(
+    "Change to ID by index",
+    "Takes on the side a numerical input and turns it into an ID by index, then sets the current master state's cell's ID to said ID.",
+  ),
+  "master_set_xy": CellProfile(
+    "Set Position to X and Y",
+    "Sets the current master state's cell's position to the XY pair specified by numbers.",
+  ),
+  "master_set_last_xy": CellProfile(
+    "Set Last Position to X and Y",
+    "Sets the current master state's cell's last position to the XY pair specified by numbers.",
+  ),
+  "master_set_rot": CellProfile(
+    "Set Rotation to N",
+    "Sets the current master state's cell's rotation to the specified number.",
+  ),
+  "master_set_lastrot": CellProfile(
+    "Set Last Rotation to N",
+    "Sets the current master state's cell's last rotation to the specified number.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2786,5 +2877,8 @@ Map<String, List<CellProperty>> props = {
   ],
   "transform_puzzle": [
     CellProperty("Offset", "offset", CellPropertyType.integer, 1),
+  ],
+  "master_set_id": [
+    CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
   ],
 };
