@@ -791,6 +791,7 @@ final categories = [
           "consistency_biome",
         ],
         "biome_cw",
+        max: 4,
       ),
     ],
     "ghost",
@@ -1059,6 +1060,7 @@ final categories = [
           "transform_trash",
           "puzzle_trash",
           "mech_p_trash",
+          "hungry_trash",
         ],
         "trash",
         max: 7,
@@ -1073,12 +1075,18 @@ final categories = [
         ],
         "wormhole",
       ),
-      "hungry_trash",
-      "fire",
-      "lava",
-      "plasma",
-      "cancer",
-      "strangelet",
+      CellCategory(
+        "Spreaders",
+        "Cells that spread to other burnable cells.\nThey also spread their own cells with a different ID.",
+        [
+          "fire",
+          "lava",
+          "plasma",
+          "cancer",
+          "strangelet",
+        ],
+        "fire",
+      ),
     ],
     "trash",
   ),
@@ -1101,12 +1109,13 @@ final categories = [
           "muon",
           "tau",
           "graviton",
+          "inverse_graviton",
           "strangelet",
           "orbital",
-          "inverse_graviton",
           "quantum_destroyer",
         ],
         "unstable_mover",
+        max:4
       ),
       CellCategory(
         "Time Travel",
@@ -1123,7 +1132,7 @@ final categories = [
       ),
       CellCategory(
         "Heat Cells",
-        "Cells can now be hot or cool",
+        "Cells that heats up or cools down other cells",
         [
           "magma",
           "snow",
@@ -1206,7 +1215,7 @@ final categories = [
       ),
       CellCategory(
         "Logic",
-        "If the condition is true they output a one, otherwise, a zero",
+        "If the condition is true, they output a 1. otherwise, they output a 0.",
         [
           "math_equal",
           "math_greater",
@@ -1324,7 +1333,7 @@ final categories = [
           "not_gate",
         ],
         "and_gate",
-        max: 3,
+        max: 4,
       ),
     ],
     "mech_gear",
@@ -1345,6 +1354,7 @@ final categories = [
           "master_get_lastrot",
         ],
         "master_get_camx",
+        max: 2
       ),
       CellCategory(
         "Setters",
@@ -1402,9 +1412,9 @@ final categories = [
         ],
         "molten_puzzle",
       ),
+      "pmerge",
       "antipuzzle",
       "propuzzle",
-      "pmerge",
       CellCategory(
         "Interactables",
         "These cells will react to being interacted by a Puzzle Cell",
@@ -1675,7 +1685,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "vacuum": CellProfile(
     "Vacuum",
-    "Pulls the cell 2 tiles in front of it towards itself",
+    "Pulls a line of cells 2 tiles away towards itself",
   ),
   "onedir": CellProfile(
     "One Directional",
@@ -2327,11 +2337,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "imply_gate": CellProfile(
     "IMPLY Gate",
-    "Takes 2 inputs and outputs the result of their IMPLY operation",
+    "Takes 2 inputs and outputs the result of their IMPLY operation (left implies right)",
   ),
   "nimply_gate": CellProfile(
     "NIMPLY Gate",
-    "Takes 2 inputs and outputs the result of their NIMPLY operation",
+    "Takes 2 inputs and outputs the result of their NIMPLY operation (left doesn't imply right)",
   ),
   "airflow": CellProfile(
     "Airflow",
@@ -2419,7 +2429,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_number": CellProfile(
     "Number",
-    "It stores a number",
+    "It stores the most recently inputted number and outputs it every tick to nearby cells.",
   ),
   "math_plus": CellProfile(
     "Add",
@@ -2427,7 +2437,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_minus": CellProfile(
     "Subtract",
-    "Outputs the difference between the first input and second input",
+    "Outputs the difference between the left input and right input",
   ),
   "math_mult": CellProfile(
     "Multiply",
@@ -2435,11 +2445,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_div": CellProfile(
     "Divide",
-    "Outputs the first input divided by the 2nd input",
+    "Outputs the left input divided by the right input",
   ),
   "math_exp": CellProfile(
     "Exponent",
-    "Outputs the first input raised to the power of second input",
+    "Outputs the left input raised to the power of right input",
   ),
   "math_sqrt": CellProfile(
     "Square Root",
@@ -2463,7 +2473,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_logn": CellProfile(
     "LogN",
-    "Outputs the logarithm base 2nd input of the 1st input",
+    "Outputs the logarithm base right input of the left input",
   ),
   "math_min": CellProfile(
     "Minimum",
@@ -2475,11 +2485,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_rng": CellProfile(
     "Randomizer",
-    "Outputs a random number between the first and second input",
+    "Outputs a random number between the 2 inputs",
   ),
   "math_prng": CellProfile(
     "Pseudo-Randomizer",
-    "Outputs a pseudo-random number between the first and second input. It will always be the same sequence given the same grid size and position of the cell.",
+    "Outputs a pseudo-random number between the 2 inputs. It will always be the same sequence given the same grid size and position of the cell and the inputs.",
   ),
   "math_sin": CellProfile(
     "Sine",
@@ -2535,11 +2545,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_tunnel": CellProfile(
     "Numerical Tunnel",
-    "Used as a wire to connect an output and input. Is 2-way",
+    "Used as a wire to connect an output and input. It's 2-way",
   ),
   "math_tunnel_cw": CellProfile(
     "Bent Numerical Tunnel",
-    "A Numerical Tunnel but bent clockwise, still is 2-way",
+    "A Numerical Tunnel but bent clockwise, it still is 2-way",
   ),
   "math_cross_tunnel": CellProfile(
     "Numerical Cross Tunnel",
@@ -2551,7 +2561,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_greater": CellProfile(
     "Greater",
-    "Checks if the first input is greater than the second",
+    "Checks if the left input is greater than right input",
   ),
   "math_notequal": CellProfile(
     "Not Equal",
@@ -2559,31 +2569,31 @@ final cellInfo = <String, CellProfile>{
   ),
   "math_less": CellProfile(
     "Less",
-    "Checks if the first input is less than the second",
+    "Checks if the left input is less than right input",
   ),
   "math_greater_equal": CellProfile(
     "Greater or Equal",
-    "Checks if the first input is greater than or equal to the second one",
+    "Checks if the left input is greater than or equal to right input",
   ),
   "math_less_equal": CellProfile(
     "Less or Equal",
-    "Checks if the first input is less than or equal to the second one",
+    "Checks if the left input is less than or equal to right input",
   ),
   "math_switch": CellProfile(
     "Mathematical Switch",
-    "It takes A, B and C. A and B are on its sides, C is behind it. If C is above 0, it will output A. If C is less or equal to 0, it will output B",
+    "If the back input is greater than 0, it will output the left input. Otherwise, it will output the right input.",
   ),
   "math_mod": CellProfile(
     "Remainder",
-    "Outputs the remainder of the first input divided by the 2nd input",
+    "Outputs the remainder of the left input divided by the right input",
   ),
   "math_to_mech": CellProfile(
     "Math to Mechanical",
-    "Checks if the number behind it is greater than its offset (0 by default) and if it is, it'll output a mechanical signal",
+    "Checks if the input is greater than its offset (0 by default) and outputs a mechanical signal accordingly",
   ),
   "mech_to_math": CellProfile(
     "Mechanical to Math",
-    "Checks if it has been powered, and if so, it'll output its scale (1 by default), otherwise, 0. It also writes its output, but ONLY when powered, thus, powering it off wont set the number in front to 0.",
+    "If it has been powered, it'll output its scale (1 by default). Powering it off wont set the number in front to 0.",
   ),
   "math_sync": CellProfile(
     "Mathematical Sync",
@@ -2591,7 +2601,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "spiketrap_biome": CellProfile(
     "Spiketrap Biome",
-    "Like a Trash Biome, but, it also deletes itself",
+    "Like a Trash Biome, but it also deletes itself",
   ),
   "spikefactory": CellProfile(
     "Spike Factory",
