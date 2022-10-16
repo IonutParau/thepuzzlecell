@@ -214,6 +214,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Translator Mode',
                       false,
                     ),
+                    checkboxSetting(
+                      'save_on_exit',
+                      'save_on_exit',
+                      "Save Grid In History Upon Exit",
+                      false,
+                    ),
                   ],
                 ),
                 ListView(

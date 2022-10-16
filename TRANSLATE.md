@@ -136,6 +136,7 @@ In the text, @variablename gets replaced with the variable.
 | bottom_right                   | The name of the Bottom Right corner                                                                                                     |                               |
 | bottom_left                    | The name of the Bottom Left corner                                                                                                      |                               |
 | resize_corner                  | The name of the Resizing Corner                                                                                                         |                               |
+| save_on_exit                   | The name of the Save Grid In History Upon Exit setting                                                                                  |                               |
 
 ## Button IDs:
 

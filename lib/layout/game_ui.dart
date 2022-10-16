@@ -911,6 +911,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  void saveGridToHistory(Grid grid) {
+    final date = DateTime.now();
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+    final str = SavingFormat.encodeGrid(grid, title: (grid.title == "" ? dateFormat : grid.title), description: grid.desc);
+
+    gridHistory.add(str);
+    saveHistory();
+  }
+
   void changeTab(int newTabIndex) {
     if (edType != EditorType.making || isMultiplayer) return;
     if (worldIndex != null) {
@@ -1033,6 +1042,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   worldManager.saveWorld(
                     worldIndex!,
                   );
+                }
+                if ((storage.getBool("save_on_exit") == true) && worldIndex == null && !isMultiplayer) {
+                  saveGridToHistory(grid);
                 }
                 worldIndex = null;
                 puzzleIndex = null;
@@ -1190,7 +1202,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           initial.wrap = !initial.wrap;
         }
       } else if (cmd == "setinit") {
-        gridHistory.add(SavingFormat.encodeGrid(grid, title: grid.title, description: grid.desc));
+        saveGridToHistory(grid);
         if (isinitial) {
           loadFromText(args.first);
           running = false;
@@ -1352,8 +1364,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               FlutterClipboard.controlV().then(
                 (str) {
                   if (str is ClipboardData) {
-                    gridHistory.add(SavingFormat.encodeGrid(grid));
-                    saveHistory();
+                    saveGridToHistory(grid);
 
                     loadFromText(str.text ?? "");
                     timeGrid = null;
@@ -1798,9 +1809,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     running = false;
 
                     if (isMultiplayer) {
-                      sendToServer('setinit ${str.text}');
+                      final g = loadStr(str.text!, false);
+                      sendToServer('setinit ${SavingFormat.encodeGrid(g, title: g.title, description: g.desc)}');
                     } else {
-                      gridHistory.add(SavingFormat.encodeGrid(grid, title: grid.title, description: grid.desc));
+                      saveGridToHistory(grid);
                       try {
                         loadFromText(str.text ?? "");
                       } catch (e) {
