@@ -323,6 +323,9 @@ final cells = {
   "master_set_last_xy",
   "master_set_rot",
   "master_set_lastrot",
+  "master_fill_xy",
+  "master_push",
+  "master_add_fake",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -330,6 +333,9 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "master_fill_xy.png": "master/controller/master_fill_xy.png",
+  "master_push.png": "master/controller/master_push.png",
+  "master_add_fake.png": "master/controller/master_add_fake.png",
   "master_set_rot.png": "master/setter/master_set_rot.png",
   "master_set_lastrot.png": "master/setter/master_set_lastrot.png",
   "master_set_xy.png": "master/setter/master_set_xy.png",
@@ -1096,27 +1102,26 @@ final categories = [
     [
       "stopper",
       CellCategory(
-        "Quantum Cells",
-        "A whole new type of physics lies in this category",
-        [
+          "Quantum Cells",
+          "A whole new type of physics lies in this category",
+          [
+            "unstable_mover",
+            "unstable_gen",
+            "field",
+            "quantum_zypper",
+            "proton",
+            "neutron",
+            "electron",
+            "muon",
+            "tau",
+            "graviton",
+            "inverse_graviton",
+            "strangelet",
+            "orbital",
+            "quantum_destroyer",
+          ],
           "unstable_mover",
-          "unstable_gen",
-          "field",
-          "quantum_zypper",
-          "proton",
-          "neutron",
-          "electron",
-          "muon",
-          "tau",
-          "graviton",
-          "inverse_graviton",
-          "strangelet",
-          "orbital",
-          "quantum_destroyer",
-        ],
-        "unstable_mover",
-        max:4
-      ),
+          max: 4),
       CellCategory(
         "Time Travel",
         "Can send stuff, including time, back to the initial state. Make sure you don't make a time paradox!",
@@ -1343,19 +1348,18 @@ final categories = [
     "Cells that can manipulate or interact with the grid.\nThese are extremely complicated to use, and generally require an advanced understanding of the game's internals\nThese aren't allowed when solving vaults!",
     [
       CellCategory(
-        "Getters",
-        "They can be read as a number, and give information about either the grid or currently selected cells",
-        [
+          "Getters",
+          "They can be read as a number, and give information about either the grid or currently selected cells",
+          [
+            "master_get_camx",
+            "master_get_camy",
+            "master_get_mousex",
+            "master_get_mousey",
+            "master_get_rot",
+            "master_get_lastrot",
+          ],
           "master_get_camx",
-          "master_get_camy",
-          "master_get_mousex",
-          "master_get_mousey",
-          "master_get_rot",
-          "master_get_lastrot",
-        ],
-        "master_get_camx",
-        max: 2
-      ),
+          max: 2),
       CellCategory(
         "Setters",
         "They take in a mechanical signal at the back, and numerical inputs from the sides, and they modify the master state in some way",
@@ -1384,9 +1388,12 @@ final categories = [
         [
           "master_new_cell",
           "master_place",
+          "master_add_fake",
+          "master_push",
           "master_pop_state",
           "master_push_state",
           "master_select_xy",
+          "master_fill_xy",
         ],
         "master_push_state",
       ),
@@ -2755,6 +2762,18 @@ final cellInfo = <String, CellProfile>{
     "Set Last Rotation to N",
     "Sets the current master state's cell's last rotation to the specified number.",
   ),
+  "master_fill_xy": CellProfile(
+    "Fill until XY",
+    "Fills with the cell from the stored position to the specified XY",
+  ),
+  "master_push": CellProfile(
+    "Push cell",
+    "Pushes at the stored position in the specified rotation",
+  ),
+  "master_add_fake": CellProfile(
+    "Add as Fake Cell",
+    "Adds the stored cell as a fake cell. Fake cells don't actually exist, and are only a rendering effect.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2843,7 +2862,7 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Silent", "silent", CellPropertyType.boolean, false),
   ],
   "bulldozer": [
-    CellProperty("Bias", "bias", CellPropertyType.integer, 0),
+    CellProperty("Bias", "bias", CellPropertyType.integer, 1),
   ],
   "math_wireless_tunnel": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
@@ -2890,5 +2909,8 @@ Map<String, List<CellProperty>> props = {
   ],
   "master_set_id": [
     CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
+  ],
+  "master_push": [
+    CellProperty("Force", "force", CellPropertyType.integer, "force"),
   ],
 };

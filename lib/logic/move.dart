@@ -420,20 +420,6 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   if (destroyer.id == "double_forker") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot;
-    push(
-      frontX(x, r + 1),
-      frontY(y, r + 1),
-      r + 1,
-      1,
-      replaceCell: moving.copy..rotate(1),
-    );
-    push(
-      frontX(x, r + 3),
-      frontY(y, r + 3),
-      r + 3,
-      1,
-      replaceCell: moving.copy..rotate(3),
-    );
     QueueManager.add(
       "post-move",
       () {

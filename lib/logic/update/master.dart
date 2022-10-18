@@ -45,6 +45,21 @@ class MasterController {
     grid.set(state.x.toInt(), state.y.toInt(), c);
   }
 
+  void fill(int lx, int ly) {
+    final state = MasterState.current;
+    if (!state.active) return;
+    final sx = state.x.toInt();
+    final sy = state.y.toInt();
+
+    for (var cx = sx; (lx > sx) ? cx <= lx : cx >= lx; (lx > sx) ? cx++ : cx--) {
+      for (var cy = sy; (ly > sy) ? cy <= ly : cy >= ly; (ly > sy) ? cy++ : cy--) {
+        final c = Cell.fromMap(state.cell, cx, cy);
+        c.lastvars = state.lastVars.copy;
+        grid.set(cx, cy, c);
+      }
+    }
+  }
+
   void select(int x, int y) {
     if (!grid.inside(x, y)) return;
 
@@ -136,6 +151,27 @@ void onMasterPowered(Cell cell, int x, int y) {
 
     MasterState.current.lastVars.lastRot = rot;
     MasterState.current.active = true;
+    MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+  }
+  if (cell.id == "master_fill_xy") {
+    final cx = mathManager.input(x, y, cell.rot - 1).toInt();
+    final cy = mathManager.input(x, y, cell.rot + 1).toInt();
+
+    masterController.fill(cx, cy);
+
+    MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+  }
+  if (cell.id == "master_push") {
+    final cx = MasterState.current.x.toInt();
+    final cy = MasterState.current.y.toInt();
+
+    final r = mathManager.input(x, y, cell.rot - 1).toInt();
+
+    push(cx, cy, r, cell.data['force'] ?? 1);
+
+    MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+  }
+  if (cell.id == "master_add_fake") {
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
 }

@@ -258,7 +258,10 @@ class MechanicalManager {
       "master_set_rot",
       "master_set_lastrot",
       "master_set_id",
-      "master_set_idx"
+      "master_set_idx",
+      "master_fill_xy",
+      "master_push",
+      "master_add_fake",
     ].contains(cell.id)) return dir == cell.rot;
     return CellTypeManager.mechanical.contains(cell.id);
   }
