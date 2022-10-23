@@ -326,6 +326,8 @@ final cells = {
   "master_fill_xy",
   "master_push",
   "master_add_fake",
+  "debt",
+  "mech_debt",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -333,6 +335,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_debt.png": "mechanical/users/mech_debt.png",
+  "debt.png": "puzzle/debt.png",
   "master_fill_xy.png": "master/controller/master_fill_xy.png",
   "master_push.png": "master/controller/master_push.png",
   "master_add_fake.png": "master/controller/master_add_fake.png",
@@ -1314,6 +1318,7 @@ final categories = [
           "mech_enemy",
           "mech_p_trash",
           "mech_mirror",
+          "mech_debt",
           "pixel",
           "piston",
           "keylimit",
@@ -1447,6 +1452,7 @@ final categories = [
       ),
       "robot",
       "assistant",
+      "debt",
     ],
     "puzzle",
   ),
@@ -2774,6 +2780,14 @@ final cellInfo = <String, CellProfile>{
     "Add as Fake Cell",
     "Adds the stored cell as a fake cell. Fake cells don't actually exist, and are only a rendering effect.",
   ),
+  "debt": CellProfile(
+    "Debt",
+    "By default, it has a debt of 1 key. If you have the debt amount of keys or more, it'll take them and self-destruct.",
+  ),
+  "mech_debt": CellProfile(
+    "Mechanically Powered Debt",
+    "Like a debt cell, but it needs a mechanical signal to check and can be configured to not self-destruct.",
+  ),
 };
 
 enum CellPropertyType {
@@ -2912,5 +2926,12 @@ Map<String, List<CellProperty>> props = {
   ],
   "master_push": [
     CellProperty("Force", "force", CellPropertyType.integer, "force"),
+  ],
+  "debt": [
+    CellProperty("Debt", "debt", CellPropertyType.integer, 1),
+  ],
+  "mech_debt": [
+    CellProperty("Debt", "debt", CellPropertyType.integer, 1),
+    CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
   ],
 };

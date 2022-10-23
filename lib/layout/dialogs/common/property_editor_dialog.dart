@@ -42,12 +42,12 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       return DropDownButton(
         placement: FlyoutPlacement.start,
         leading: Image.asset('assets/images/$tp'),
-        title: Text(idToString(currentID)),
+        title: Text("$displayName: " + idToString(currentID)),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
               leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
-              text: Text("$displayName: " + idToString(id)),
+              text: Text(idToString(id)),
               onPressed: () {
                 controllers[i].text = id;
                 setState(() {});

@@ -230,12 +230,23 @@ void doAssistant(Cell cell, int x, int y) {
 
 void puzzles(Set<String> cells) {
   grid.updateCell(
+    (Cell cell, int x, int y) {
+      final debt = ((cell.data['debt'] ?? 1) as num).toInt();
+      if (playerKeys >= debt) {
+        playerKeys -= debt;
+        grid.addBroken(cell, x, y, "silent_shrinking");
+        grid.set(x, y, Cell(x, y));
+      }
+    },
+    null,
+    "debt",
+  );
+
+  grid.updateCell(
     doSandbox,
     null,
     "sandbox",
   );
-
-  var removeTriggerKey = false;
 
   grid.updateCell(
     doRobot,
@@ -248,6 +259,8 @@ void puzzles(Set<String> cells) {
     null,
     "assistant",
   );
+
+  var removeTriggerKey = false;
 
   for (var rot in rotOrder) {
     grid.updateCell(

@@ -243,6 +243,7 @@ class MechanicalManager {
     if (cell.id == "cross_mech_gear") return true;
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
     if (cell.id == "mech_to_math") return dir == cell.rot;
+    if (cell.id == "mech_debt") return true;
     if (cell.id.startsWith('mech_') && !["mech_gen", "mech_keyleft", "mech_keyright", "mech_keyup", "mech_keydown"].contains(cell.id)) return true;
     if (cell.id == "keylimit") return true;
     if (cell.id == "keyforce") return true;
@@ -355,6 +356,16 @@ class MechanicalManager {
       enableCheckpoint(cell, x, y);
     } else if (cell.id == "mech_mirror") {
       doMirror(x, y, cell.rot % 2);
+    } else if (cell.id == "mech_debt") {
+      final debt = ((cell.data['debt'] ?? 1) as num).toInt();
+      final selfDestruct = (cell.data['selfDestruct'] == true);
+
+      if (playerKeys >= debt) {
+        playerKeys -= debt;
+        if (selfDestruct) {
+          grid.addBroken(cell, x, y, "silent_shrinking");
+        }
+      }
     }
 
     onMasterPowered(cell, x, y);
