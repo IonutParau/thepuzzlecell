@@ -328,6 +328,7 @@ final cells = {
   "master_add_fake",
   "debt",
   "mech_debt",
+  "friend",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -335,6 +336,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "friend.png": "destroyers/enemy/friend.png",
   "mech_debt.png": "mechanical/users/mech_debt.png",
   "debt.png": "puzzle/debt.png",
   "master_fill_xy.png": "master/controller/master_fill_xy.png",
@@ -1048,6 +1050,7 @@ final categories = [
           "physical_enemy",
           "explosive",
           "mech_enemy",
+          "friend",
         ],
         "enemy",
       ),
@@ -2787,6 +2790,10 @@ final cellInfo = <String, CellProfile>{
   "mech_debt": CellProfile(
     "Mechanically Powered Debt",
     "Like a debt cell, but it needs a mechanical signal to check and can be configured to not self-destruct.",
+  ),
+  "friend": CellProfile(
+    "Friend",
+    "Like an enemy, but if you kill it, you lose. He's your friend, don't betray his trust.",
   ),
 };
 

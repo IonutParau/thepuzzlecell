@@ -3768,13 +3768,15 @@ class ParticleSystem {
   void render(Canvas canvas) {
     particles.forEach(
       (particle) {
-        final s = Size.square(particle.size);
+        final lerped = (lifespan - particle.lifetime) / lifespan;
+        final s = Size.square(particle.size) * lerped;
         canvas.drawRect(
-            (particle.off * cellSize - (s * cellSize / 2).toOffset()) & (s * cellSize),
-            Paint()
-              ..color = (color!.withOpacity(
-                (lifespan - particle.lifetime) / lifespan,
-              )));
+          (particle.off * cellSize - (s * cellSize / 2).toOffset()) & (s * cellSize),
+          Paint()
+            ..color = (color!.withOpacity(
+              lerped,
+            )),
+        );
       },
     );
   }

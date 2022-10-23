@@ -156,6 +156,38 @@ final justMoveInsideOf = [
   "portal_b",
 ].toSet().toList();
 
+final trashes = [
+  "trash",
+  "semi_trash",
+  "trashcan",
+  "silent_trash",
+  "physical_trash",
+  "hungry_trash",
+  "mech_trash",
+  "time_trash",
+  "time_reset",
+  "push_trash",
+  "pull_trash",
+  "grab_trash",
+  "swap_trash",
+  "gen_trash",
+  "transform_trash",
+  "puzzle_trash",
+  "counter",
+  "trash_can",
+  "mech_p_trash",
+].toSet().toList();
+
+final enemies = [
+  "enemy",
+  "semi_enemy",
+  "silent_enemy",
+  "physical_enemy",
+  "explosive",
+  "mech_enemy",
+  "friend",
+].toSet().toList();
+
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
   dir %= 4;
   if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
@@ -201,6 +233,9 @@ bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
     return (dir == into.rot);
   }
 
+  if (enemies.contains(into.id)) return true;
+  if (trashes.contains(into.id)) return true;
+
   return false;
 }
 
@@ -237,37 +272,6 @@ bool canMoveAll(int x, int y, int dir, int force, MoveType mt) {
 Vector2 randomVector2() {
   return (Vector2.random() - Vector2.all(0.5)) * 2;
 }
-
-final trashes = [
-  "trash",
-  "semi_trash",
-  "trashcan",
-  "silent_trash",
-  "physical_trash",
-  "hungry_trash",
-  "mech_trash",
-  "time_trash",
-  "time_reset",
-  "push_trash",
-  "pull_trash",
-  "grab_trash",
-  "swap_trash",
-  "gen_trash",
-  "transform_trash",
-  "puzzle_trash",
-  "counter",
-  "trash_can",
-  "mech_p_trash",
-];
-
-final enemies = [
-  "enemy",
-  "semi_enemy",
-  "silent_enemy",
-  "physical_enemy",
-  "explosive",
-  "mech_enemy",
-];
 
 T debug<T>(T value) {
   print(value);
@@ -527,6 +531,12 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       grid.set(x, y, Cell(x, y));
       grid.addBroken(moving, x, y, "shrinking");
       game.yellowparticles.emit(enemyParticleCounts, x, y);
+    } else if (destroyer.id == "friend") {
+      grid.set(x, y, Cell(x, y));
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.addBroken(moving, x, y, "shrinking");
+      game.greenparticles.emit(enemyParticleCounts, x, y);
+      QueueManager.add("post-move", () => puzzleLost = true);
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
