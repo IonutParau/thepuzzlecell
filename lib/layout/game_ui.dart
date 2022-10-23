@@ -2794,6 +2794,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       text = countToString(cell.data['count']);
     }
 
+    if(cell.id == "bulldozer" && (cell.data['bias'] != 1)) {
+      text = countToString(cell.data['bias']);
+    }
+
     if ((cell.id == "debt" || cell.id == "mech_debt") && (cell.data['debt'] != 1)) {
       text = (cell.data['debt'] ?? 1).toString();
     }
