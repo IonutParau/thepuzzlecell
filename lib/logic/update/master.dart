@@ -183,6 +183,10 @@ num? customMasterNum(Cell cell, int x, int y, int dir) {
   if (cell.id == "master_get_mousey") return game.cellMouseY;
   if (cell.id == "master_get_rot") return MasterState.usable ? (MasterState.current.cell['rot'] ?? 0) : 0;
   if (cell.id == "master_get_lastrot") return MasterState.usable ? (MasterState.current.lastVars.lastRot) : 0;
+  if (cell.id == "master_get_x") return (cell.cx ?? x);
+  if (cell.id == "master_get_y") return (cell.cy ?? y);
+  if (cell.id == "master_get_width") return grid.width;
+  if (cell.id == "master_get_height") return grid.height;
 
   return null;
 }

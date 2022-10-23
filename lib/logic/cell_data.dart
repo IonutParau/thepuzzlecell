@@ -329,6 +329,10 @@ final cells = {
   "debt",
   "mech_debt",
   "friend",
+  "master_get_x",
+  "master_get_y",
+  "master_get_width",
+  "master_get_height",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -336,6 +340,10 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "master_get_x.png": "master/getter/master_get_x.png",
+  "master_get_y.png": "master/getter/master_get_y.png",
+  "master_get_width.png": "master/getter/master_get_width.png",
+  "master_get_height.png": "master/getter/master_get_height.png",
   "friend.png": "destroyers/enemy/friend.png",
   "mech_debt.png": "mechanical/users/mech_debt.png",
   "debt.png": "puzzle/debt.png",
@@ -1365,6 +1373,10 @@ final categories = [
             "master_get_mousey",
             "master_get_rot",
             "master_get_lastrot",
+            "master_get_x",
+            "master_get_y",
+            "master_get_width",
+            "master_get_height",
           ],
           "master_get_camx",
           max: 2),
@@ -2794,6 +2806,22 @@ final cellInfo = <String, CellProfile>{
   "friend": CellProfile(
     "Friend",
     "Like an enemy, but if you kill it, you lose. He's your friend, don't betray his trust.",
+  ),
+  "master_get_x": CellProfile(
+    "Get X",
+    "Gives its X coordinate",
+  ),
+  "master_get_y": CellProfile(
+    "Get Y",
+    "Gives its Y coordinate",
+  ),
+  "master_get_width": CellProfile(
+    "Get Width",
+    "Gives the grid width",
+  ),
+  "master_get_height": CellProfile(
+    "Get Height",
+    "Gives the grid height",
   ),
 };
 
