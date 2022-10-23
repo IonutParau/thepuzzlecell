@@ -39,6 +39,10 @@ final List<String> changes = [
   "Debug mode also shows properties",
   "Added the P5 saving format (P4 but safer for Discord and a bit smarter)",
   "Improved the look of the Mechanical Halting biome",
+  "Added The Master Cells",
+  "Added Friend",
+  "Added Debt & Mechanically Powered Debt",
+  "Reworked some categories",
 ];
 
 IconData getTrailing(String change) {

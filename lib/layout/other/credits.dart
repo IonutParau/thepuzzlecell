@@ -7,6 +7,7 @@ final credits = [
   "k.#0086 for making all the OSTs",
   "The Generator Cell#7431 for helping me remake all of the textures",
   "Qwerty.R#9850 for making the sound effects",
+  "uku1928#8305 for fixing typos and reworking categories",
   "Resizing and clearing are based on CelLua's resizing and clearing buttons",
   "Blueprints are heavily inspired by schematics from Cell Machine Mystic Mod V4",
   "Everyone who has suggested the addition of features and cells",
