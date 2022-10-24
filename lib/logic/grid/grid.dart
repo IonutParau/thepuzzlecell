@@ -25,6 +25,8 @@ class Grid {
 
   List<BrokenCell> brokenCells = [];
 
+  List<FakeCell> fakeCells = [];
+
   void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
     if (cell.invisible && game.edType == EditorType.loaded) return;
     if (cell.id == "empty") return;
@@ -383,6 +385,9 @@ class Grid {
   void update() {
     tickCount++;
     cells = prepareTick();
+    for (var fc in fakeCells) {
+      fc.tick();
+    }
     //print(cells);
 
     final subticking = storage.getBool('subtick') ?? false;

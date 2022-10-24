@@ -77,6 +77,14 @@ class MasterController {
   void reset() {
     MasterState.current = MasterState.empty;
   }
+
+  void addAsFake(int lifespan) {
+    final state = MasterState.current;
+    final c = Cell.fromMap(state.cell, state.x.toInt(), state.y.toInt());
+    c.lastvars = state.lastVars.copy;
+    final fc = FakeCell(c, state.x, state.y, state.cell['rot'], state.fakecellScaleX, state.fakecellScaleY, lifespan);
+    grid.fakeCells.add(fc);
+  }
 }
 
 void onMasterPowered(Cell cell, int x, int y) {
@@ -172,6 +180,8 @@ void onMasterPowered(Cell cell, int x, int y) {
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_add_fake") {
+    final i = mathManager.input(x, y, cell.rot - 1).toInt();
+    masterController.addAsFake(i);
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
 }

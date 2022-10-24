@@ -83,6 +83,29 @@ class BrokenCell {
   }
 }
 
+class FakeCell {
+  int lifespan;
+  Cell cell;
+  num x;
+  num y;
+  num sx;
+  num sy;
+  num rot;
+
+  FakeCell(this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
+
+  void render(Canvas canvas) {
+    game.renderCell(cell, x, y, null, sx, sy, rot);
+  }
+
+  void tick() {
+    lifespan--;
+  }
+
+  bool get dead => lifespan <= 0;
+}
+
+// ignore: must_be_immutable
 class Cell extends Equatable {
   String id = "empty";
   int rot = 0;

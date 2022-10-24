@@ -2793,7 +2793,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "master_add_fake": CellProfile(
     "Add as Fake Cell",
-    "Adds the stored cell as a fake cell. Fake cells don't actually exist, and are only a rendering effect.",
+    "Adds the stored cell as a fake cell. Fake cells don't actually exist, and are only a rendering effect. On the side, it takes the amount of ticks the fake cell should live. By default, 0 ticks (aka it doesn't exist)",
   ),
   "debt": CellProfile(
     "Debt",

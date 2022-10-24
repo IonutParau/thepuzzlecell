@@ -542,7 +542,7 @@ double lerp(num a, num b, double t) {
   return a + (b - a) * min(t, 1);
 }
 
-double lerpRotation(int old, int newR, double t) {
+double lerpRotation(num old, num newR, double t) {
   return lerp(old, old + ((newR - old + 2) % 4 - 2), t);
 }
 
@@ -2264,6 +2264,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (grid.at(x, y).id != "empty") renderCell(grid.at(x, y), x, y);
       }
 
+      for (var fc in grid.fakeCells) {
+        fc.render(canvas);
+      }
+
+      grid.fakeCells.removeWhere((fc) => fc.dead);
+
       if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
         var mx = cellMouseX; // shorter names
         var my = cellMouseY; // shorter names
@@ -2573,7 +2579,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
-  void renderCell(Cell cell, num x, num y, [Paint? paint]) {
+  void renderCell(Cell cell, num x, num y, [Paint? paint, num scaleX = 1, num scaleY = 1, num? rrot]) {
     if ((paint?.color.opacity ?? 0) < 1 && cell.id == "empty") {
       final p = Offset(x.toDouble(), y.toDouble()) * cellSize;
       final r = p & Size(cellSize, cellSize);
@@ -2638,13 +2644,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     var sprite = Sprite(
       Flame.images.fromCache(textureMap['$file.png'] ?? '$file.png'),
     );
-    final rot =
-        (((running || onetick) && interpolation ? lerpRotation(cell.lastvars.lastRot, cell.rot, itime / delay) : cell.rot) + (edType == EditorType.loaded ? cell.data["trick_rot"] ?? 0 : 0) % 4) *
-            halfPi;
-    final center = Offset(cellSize.toDouble(), cellSize.toDouble()) / 2;
-
-    const scaleX = 1;
-    const scaleY = 1;
+    final rot = (((running || onetick) && interpolation ? lerpRotation(cell.lastvars.lastRot, rrot ?? cell.rot, itime / delay) : cell.rot) +
+            (edType == EditorType.loaded ? cell.data["trick_rot"] ?? 0 : 0) % 4) *
+        halfPi;
+    final center = Offset(cellSize.toDouble() * scaleX, cellSize.toDouble() * scaleY) / 2;
 
     canvas.save();
 
@@ -2667,7 +2670,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       ..paint = paint ?? Paint()
       ..render(
         canvas,
-        position: Vector2(off.dx * scaleX, off.dy * scaleY),
+        position: Vector2(off.dx, off.dy),
         size: Vector2(
           cellSize.toDouble() * scaleX,
           cellSize.toDouble() * scaleY,
@@ -2794,7 +2797,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       text = countToString(cell.data['count']);
     }
 
-    if(cell.id == "bulldozer" && (cell.data['bias'] != 1)) {
+    if (cell.id == "bulldozer" && (cell.data['bias'] != 1)) {
       text = countToString(cell.data['bias']);
     }
 
