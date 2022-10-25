@@ -123,27 +123,32 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
             onPointerUp: game.onPointerUp,
             onPointerSignal: (PointerSignalEvent event) {
               if (event is PointerScrollEvent) {
-                if (keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {
-                  if (keys[LogicalKeyboardKey.altLeft.keyLabel] == true) {
-                    if (event.scrollDelta.dy < 0) {
-                      game.increaseTemp();
-                    } else if (event.scrollDelta.dy > 0) {
-                      game.decreaseTemp();
+                game.scrollDelta += (event.scrollDelta.dy.abs());
+                while (game.scrollDelta > 16) {
+                  if (keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {
+                    if (keys[LogicalKeyboardKey.altLeft.keyLabel] == true) {
+                      if (event.scrollDelta.dy < 0) {
+                        game.increaseTemp();
+                      } else if (event.scrollDelta.dy > 0) {
+                        game.decreaseTemp();
+                      }
+                    } else {
+                      if (event.scrollDelta.dy < 0) {
+                        game.increaseBrush();
+                      } else if (event.scrollDelta.dy > 0) {
+                        game.decreaseBrush();
+                      }
                     }
                   } else {
-                    if (event.scrollDelta.dy < 0) {
-                      game.increaseBrush();
-                    } else if (event.scrollDelta.dy > 0) {
-                      game.decreaseBrush();
+                    final inv = storage.getBool("invert_zoom_scroll") ?? true;
+                    if (event.scrollDelta.dy > 0) {
+                      inv ? game.zoomin() : game.zoomout();
+                    } else if (event.scrollDelta.dy < 0) {
+                      inv ? game.zoomout() : game.zoomin();
                     }
                   }
-                } else {
-                  final inv = storage.getBool("invert_zoom_scroll") ?? true;
-                  if (event.scrollDelta.dy > 0) {
-                    inv ? game.zoomin() : game.zoomout();
-                  } else if (event.scrollDelta.dy < 0) {
-                    inv ? game.zoomout() : game.zoomin();
-                  }
+
+                  game.scrollDelta -= 16;
                 }
               }
             },
@@ -898,6 +903,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   var gridTabIndex = 0;
 
   var gridHistory = <String>[];
+
+  double scrollDelta = 0;
 
   void saveHistory() {
     if (!isMultiplayer && worldIndex == null) {
