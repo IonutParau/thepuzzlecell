@@ -3,7 +3,7 @@ import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.2.0.0 Mathematically Complete';
+String currentVersion = '2.2.0.1 Mathematically Complete';
 
 final List<String> changes = [
   "QuickFix 1: Made mouse scrolling work better on track pads",
