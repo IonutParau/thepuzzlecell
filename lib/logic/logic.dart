@@ -194,7 +194,7 @@ Future<void> fixStorage() async {
   }
 
   if (storage.getBool("invert_zoom_scroll") == null) {
-    await storage.setBool("invert_zoom_scroll", true);
+    await storage.setBool("invert_zoom_scroll", false);
   }
 
   if (isDesktop) {
