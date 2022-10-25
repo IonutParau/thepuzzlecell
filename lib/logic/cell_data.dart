@@ -2960,7 +2960,7 @@ Map<String, List<CellProperty>> props = {
     CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
   ],
   "master_push": [
-    CellProperty("Force", "force", CellPropertyType.integer, "force"),
+    CellProperty("Force", "force", CellPropertyType.integer, 0),
   ],
   "debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
