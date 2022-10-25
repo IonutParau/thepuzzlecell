@@ -9,6 +9,7 @@ final List<String> changes = [
   "QuickFix 1: Made mouse scrolling work better on track pads",
   "QuickFix 1: Made Load Level only load it once",
   "QuickFix 1: Made Place no longer crash the game",
+  "QuickFix 1: Made Master Cells unable to crash your game now",
 ];
 
 IconData getTrailing(String change) {

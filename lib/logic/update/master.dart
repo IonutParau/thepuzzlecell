@@ -40,6 +40,8 @@ class MasterController {
   void place() {
     final state = MasterState.current;
     if (!state.active) return;
+    if (state.x.isNaN || state.x.isInfinite || state.x.isNegative) return;
+    if (state.y.isNaN || state.y.isInfinite || state.y.isNegative) return;
     final c = Cell.fromMap(state.cell, state.x.toInt(), state.y.toInt());
     c.lastvars = state.lastVars.copy;
     grid.set(state.x.toInt(), state.y.toInt(), c);
@@ -48,6 +50,8 @@ class MasterController {
   void fill(int lx, int ly) {
     final state = MasterState.current;
     if (!state.active) return;
+    if (state.x.isNaN || state.x.isInfinite || state.x.isNegative) return;
+    if (state.y.isNaN || state.y.isInfinite || state.y.isNegative) return;
     final sx = state.x.toInt();
     final sy = state.y.toInt();
 
@@ -80,6 +84,8 @@ class MasterController {
 
   void addAsFake(int lifespan) {
     final state = MasterState.current;
+    if (state.x.isNaN || state.x.isInfinite || state.x.isNegative) return;
+    if (state.y.isNaN || state.y.isInfinite || state.y.isNegative) return;
     final c = Cell.fromMap(state.cell, state.x.toInt(), state.y.toInt());
     c.lastvars = state.lastVars.copy;
     final fc = FakeCell(c, state.x, state.y, state.cell['rot'], state.fakecellScaleX, state.fakecellScaleY, lifespan);
@@ -124,23 +130,29 @@ void onMasterPowered(Cell cell, int x, int y) {
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_select_xy") {
-    final cx = mathManager.input(x, y, cell.rot - 1).toInt();
-    final cy = mathManager.input(x, y, cell.rot + 1).toInt();
+    final cx = mathManager.input(x, y, cell.rot - 1);
+    final cy = mathManager.input(x, y, cell.rot + 1);
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
     MasterState.current.active = true;
-    masterController.select(cx, cy);
+    masterController.select(cx.toInt(), cy.toInt());
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_set_xy") {
-    final cx = mathManager.input(x, y, cell.rot - 1).toDouble();
-    final cy = mathManager.input(x, y, cell.rot + 1).toDouble();
+    final cx = mathManager.input(x, y, cell.rot - 1);
+    final cy = mathManager.input(x, y, cell.rot + 1);
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
     MasterState.current.active = true;
-    MasterState.current.x = cx;
-    MasterState.current.y = cy;
+    MasterState.current.x = cx.toDouble();
+    MasterState.current.y = cy.toDouble();
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_set_last_xy") {
     final cx = mathManager.input(x, y, cell.rot - 1).toDouble();
     final cy = mathManager.input(x, y, cell.rot + 1).toDouble();
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
     final lv = Offset(cx, cy);
 
     MasterState.current.lastVars.lastPos = lv;
@@ -148,40 +160,48 @@ void onMasterPowered(Cell cell, int x, int y) {
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_set_rot") {
-    final rot = mathManager.input(x, y, cell.rot - 1).toInt();
+    final rot = mathManager.input(x, y, cell.rot - 1);
+    if (rot.isInfinite || rot.isNaN || rot.isNegative) return;
 
-    MasterState.current.cell['rot'] = rot;
+    MasterState.current.cell['rot'] = rot.toInt();
     MasterState.current.active = true;
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_set_lastrot") {
-    final rot = mathManager.input(x, y, cell.rot - 1).toInt();
+    final rot = mathManager.input(x, y, cell.rot - 1);
+    if (rot.isInfinite || rot.isNaN || rot.isNegative) return;
 
-    MasterState.current.lastVars.lastRot = rot;
+    MasterState.current.lastVars.lastRot = rot.toInt();
     MasterState.current.active = true;
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_fill_xy") {
-    final cx = mathManager.input(x, y, cell.rot - 1).toInt();
-    final cy = mathManager.input(x, y, cell.rot + 1).toInt();
+    final cx = mathManager.input(x, y, cell.rot - 1);
+    final cy = mathManager.input(x, y, cell.rot + 1);
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
 
-    masterController.fill(cx, cy);
+    masterController.fill(cx.toInt(), cy.toInt());
 
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_push") {
-    final cx = MasterState.current.x.toInt();
-    final cy = MasterState.current.y.toInt();
+    final cx = MasterState.current.x;
+    final cy = MasterState.current.y;
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
 
-    final r = mathManager.input(x, y, cell.rot - 1).toInt();
+    final r = mathManager.input(x, y, cell.rot - 1);
+    if (r.isInfinite || r.isNaN || r.isNegative) return;
 
-    push(cx, cy, r, cell.data['force'] ?? 1);
+    push(cx.toInt(), cy.toInt(), r.toInt(), cell.data['force'] ?? 1);
 
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_add_fake") {
-    final i = mathManager.input(x, y, cell.rot - 1).toInt();
-    masterController.addAsFake(i);
+    final i = mathManager.input(x, y, cell.rot - 1);
+    if (i.isInfinite || i.isNaN || i.isNegative) return;
+    masterController.addAsFake(i.toInt());
     MechanicalManager.spread(frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
 }
