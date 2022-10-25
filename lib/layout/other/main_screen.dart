@@ -49,6 +49,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   }
 
   int _navIndex = 0;
+  DateTime lastLoadTime = DateTime.utc(2000);
 
   @override
   Widget build(BuildContext context) {
@@ -146,14 +147,19 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     icon: Icon(FluentIcons.clipboard_list),
                     title: Text(lang('loadLevel', 'Load Level')),
                     onTap: () {
+                      final now = DateTime.now();
+                      if (now.millisecondsSinceEpoch - lastLoadTime.millisecondsSinceEpoch < 500) {
+                        return;
+                      }
+                      lastLoadTime = now;
                       try {
                         FlutterClipboard.controlV().then(
                           (str) {
                             if (str is ClipboardData) {
-                              game = PuzzleGame();
                               try {
                                 grid = loadStr(str.text ?? "");
-                                Navigator.pushNamed(context, '/game-loaded').then((v) => setState(() {}));
+                                game = PuzzleGame();
+                                Navigator.pushNamed(context, '/game-loaded');
                               } catch (e) {
                                 print(e);
                                 showDialog(
@@ -167,7 +173,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                               showDialog(
                                 context: context,
                                 builder: (ctx) {
-                                  return LoadBlueprintErrorDialog("Clipboard does not contain text");
+                                  return LoadSaveErrorDialog("Clipboard does not contain text");
                                 },
                               );
                             }
@@ -178,7 +184,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                         showDialog(
                           context: context,
                           builder: (ctx) {
-                            return LoadBlueprintErrorDialog(e.toString());
+                            return LoadSaveErrorDialog(e.toString());
                           },
                         );
                       }

@@ -124,7 +124,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
             onPointerSignal: (PointerSignalEvent event) {
               if (event is PointerScrollEvent) {
                 game.scrollDelta += (event.scrollDelta.dy.abs());
-                while (game.scrollDelta > 16) {
+                final amount = 50;
+                while (game.scrollDelta > amount) {
                   if (keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {
                     if (keys[LogicalKeyboardKey.altLeft.keyLabel] == true) {
                       if (event.scrollDelta.dy < 0) {
@@ -148,7 +149,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                     }
                   }
 
-                  game.scrollDelta -= 16;
+                  game.scrollDelta -= amount;
                 }
               }
             },
