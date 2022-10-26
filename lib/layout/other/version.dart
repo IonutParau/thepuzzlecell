@@ -3,13 +3,10 @@ import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.2.0.1 Mathematically Complete';
+String currentVersion = '2.3.0.0 Configurable';
 
 final List<String> changes = [
-  "QuickFix 1: Made mouse scrolling work better on track pads",
-  "QuickFix 1: Made Load Level only load it once",
-  "QuickFix 1: Made Place no longer crash the game",
-  "QuickFix 1: Made Master Cells unable to crash your game now",
+  "Reworked all the textures",
 ];
 
 IconData getTrailing(String change) {

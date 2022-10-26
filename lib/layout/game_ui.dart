@@ -2205,7 +2205,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       canvas.drawRect(
         Offset.zero & Size(canvasSize.x, canvasSize.y),
-        Paint()..color = Colors.black,
+        Paint()..color = Color.fromARGB(255, 27, 27, 27),
       );
 
       //canvas.save();
