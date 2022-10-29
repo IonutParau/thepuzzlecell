@@ -1182,23 +1182,38 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       if (cmd == "place") {
         if (isinitial) {
-          grid.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
-          grid.grid[int.parse(args[0])][int.parse(args[1])].rot = int.parse(args[3]);
-          if (args.length > 4) {
-            grid.grid[int.parse(args[0])][int.parse(args[1])].data = parseCellDataStr(args[4]);
+          final size = int.parse(args[4]);
+          for (var ox = -size; ox <= size; ox++) {
+            for (var oy = -size; oy <= size; oy++) {
+              grid.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].id = args[2];
+              grid.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].rot = int.parse(args[3]);
+              if (args.length > 4) {
+                grid.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].data = parseCellDataStr(args[4]);
+              }
+              grid.setChunk(int.parse(args[0]) + ox, int.parse(args[1]) + oy, args[2]);
+              grid.at(int.parse(args[0]) + ox, int.parse(args[1]) + oy).invisible = false;
+            }
           }
-          grid.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
-          grid.at(int.parse(args[0]), int.parse(args[1])).invisible = false;
         } else {
-          initial.grid[int.parse(args[0])][int.parse(args[1])].id = args[2];
-          initial.grid[int.parse(args[0])][int.parse(args[1])].rot = int.parse(args[3]);
-          initial.setChunk(int.parse(args[0]), int.parse(args[1]), args[2]);
+          final size = int.parse(args[4]);
+          for (var ox = -size; ox < size; ox++) {
+            for (var oy = -size; oy < size; oy++) {
+              initial.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].id = args[2];
+              initial.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].rot = int.parse(args[3]);
+              initial.setChunk(int.parse(args[0]) + ox, int.parse(args[1]) + oy, args[2]);
+            }
+          }
         }
       } else if (cmd == "bg") {
-        if (isinitial) {
-          grid.place[int.parse(args[0])][int.parse(args[1])] = args[2];
-        } else {
-          initial.place[int.parse(args[0])][int.parse(args[1])] = args[2];
+        final size = int.parse(args[3]);
+        for (var ox = -size; ox < size; ox++) {
+          for (var oy = -size; oy < size; oy++) {
+            if (isinitial) {
+              grid.place[int.parse(args[0]) + ox][int.parse(args[1]) + oy] = args[2];
+            } else {
+              initial.place[int.parse(args[0]) + ox][int.parse(args[1]) + oy] = args[2];
+            }
+          }
         }
       } else if (cmd == "wrap") {
         if (isinitial) {
@@ -3006,7 +3021,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           shouldCursor = true;
         } else {
           final c = cursors[clientID]!;
-          shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture || !mapEquals(c.data, currentData));
+          shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture || (c.data.toString() != currentData.toString()));
         }
         if (shouldCursor) {
           sendToServer(
@@ -3093,13 +3108,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           if (mouseDown) {
             final mx = (mouseX - offX) ~/ cellSize;
             final my = (mouseY - offY) ~/ cellSize;
-            for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
-              for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
-                if (grid.inside(cx, cy)) {
-                  if (mouseButton == kPrimaryMouseButton) {
-                    placeCell(currentSelection, currentRotation, cx, cy);
-                  } else if (mouseButton == kSecondaryMouseButton) {
-                    placeCell("empty", 0, cx, cy);
+            if (isMultiplayer) {
+              if (backgrounds.contains(currentSelection)) {
+                sendToServer('bg $mx $my $currentSelection $brushSize');
+              } else {
+                sendToServer('place $mx $my $currentSelection $currentRotation ${cellDataStr(currentData)} $brushSize');
+              }
+            } else {
+              for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+                for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
+                  if (grid.inside(cx, cy)) {
+                    if (mouseButton == kPrimaryMouseButton) {
+                      placeCell(currentSelection, currentRotation, cx, cy);
+                    } else if (mouseButton == kSecondaryMouseButton) {
+                      placeCell("empty", 0, cx, cy);
+                    }
                   }
                 }
               }

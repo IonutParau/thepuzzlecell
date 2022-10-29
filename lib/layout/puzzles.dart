@@ -24,6 +24,7 @@ Future<void> loadPuzzle(int index) async {
   final data = puzzles[index];
   game = PuzzleGame();
   grid = loadStr(data);
+  game.initial = grid.copy;
   timeGrid = null;
   puzzleIndex = index;
 }
