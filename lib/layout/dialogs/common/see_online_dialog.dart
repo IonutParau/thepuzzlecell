@@ -27,12 +27,19 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                 itemCount: online.length,
                 padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                 itemBuilder: (context, index) {
+                  final cursorTexture = game.cursors[online[index]]?.texture;
                   return SizedBox(
                     width: constraints.maxWidth * 0.8,
                     child: ListTile(
+                      leading: Image.asset(
+                        "assets/images/" + ((cursorTexture ?? "cursor") == "cursor" ? "interface/cursor.png" : (textureMap["$cursorTexture.png"] ?? "$cursorTexture.png")),
+                        width: 5.h,
+                        height: 5.h,
+                        filterQuality: FilterQuality.none,
+                        fit: BoxFit.cover,
+                      ),
                       title: Text(online[index]),
                       tileColor: ConstantColorButtonState(Colors.grey[130]),
-                      onPressed: () {},
                     ),
                   );
                 },

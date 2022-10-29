@@ -425,17 +425,33 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           SizedBox(
                             height: 5.h,
                             child: DropDownButton(
-                              leading: Image.asset("assets/images/" +
-                                  ((storage.getString("cursor_texture") ?? "cursor") == "cursor"
-                                      ? "interface/cursor.png"
-                                      : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png"))),
+                              leading: Image.asset(
+                                "assets/images/" +
+                                    ((storage.getString("cursor_texture") ?? "cursor") == "cursor"
+                                        ? "interface/cursor.png"
+                                        : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png")),
+                                fit: BoxFit.fill,
+                                colorBlendMode: BlendMode.clear,
+                                filterQuality: FilterQuality.none,
+                                isAntiAlias: true,
+                                width: 3.h,
+                                height: 3.h,
+                              ),
                               title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!))),
                               placement: FlyoutPlacement.start,
                               items: [
                                 for (var texture in cursorTextures)
                                   MenuFlyoutItem(
                                     text: Text(texture == "cursor" ? "Default" : idToString(texture)),
-                                    leading: Image.asset("assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png"))),
+                                    leading: Image.asset(
+                                      "assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png")),
+                                      fit: BoxFit.fill,
+                                      colorBlendMode: BlendMode.clear,
+                                      filterQuality: FilterQuality.none,
+                                      isAntiAlias: true,
+                                      width: 3.h,
+                                      height: 3.h,
+                                    ),
                                     onPressed: () async {
                                       await storage.setString("cursor_texture", texture);
                                       setState(() {});

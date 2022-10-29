@@ -41,12 +41,28 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
       return DropDownButton(
         placement: FlyoutPlacement.start,
-        leading: Image.asset('assets/images/$tp'),
+        leading: Image.asset(
+          'assets/images/$tp',
+          fit: BoxFit.fill,
+          colorBlendMode: BlendMode.clear,
+          filterQuality: FilterQuality.none,
+          isAntiAlias: true,
+          width: 3.h,
+          height: 3.h,
+        ),
         title: Text("$displayName: " + idToString(currentID)),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
-              leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
+              leading: Image.asset(
+                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
+                fit: BoxFit.fill,
+                colorBlendMode: BlendMode.clear,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: true,
+                width: 3.h,
+                height: 3.h,
+              ),
               text: Text(idToString(id)),
               onPressed: () {
                 controllers[i].text = id;
@@ -82,7 +98,15 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
         placement: FlyoutPlacement.start,
         leading: Transform.rotate(
           angle: parseJointCellStr(current)[1] * halfPi,
-          child: Image.asset(idToTexture(parseJointCellStr(current)[0])),
+          child: Image.asset(
+            idToTexture(parseJointCellStr(current)[0]),
+            fit: BoxFit.fill,
+            colorBlendMode: BlendMode.clear,
+            filterQuality: FilterQuality.none,
+            isAntiAlias: true,
+            width: 3.h,
+            height: 3.h,
+          ),
         ),
         title: Text("$displayName: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
         items: [
@@ -91,7 +115,15 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
               MenuFlyoutItem(
                 leading: Transform.rotate(
                   angle: r * halfPi,
-                  child: Image.asset(idToTexture(id)),
+                  child: Image.asset(
+                    idToTexture(id),
+                    fit: BoxFit.fill,
+                    colorBlendMode: BlendMode.clear,
+                    filterQuality: FilterQuality.none,
+                    isAntiAlias: true,
+                    width: 3.h,
+                    height: 3.h,
+                  ),
                 ),
                 text: Text(idToString(id) + " (" + rotToString(r) + ")"),
                 onPressed: () {
@@ -107,12 +139,28 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
       return DropDownButton(
         placement: FlyoutPlacement.start,
-        leading: Image.asset('assets/images/$tp'),
+        leading: Image.asset(
+          'assets/images/$tp',
+          fit: BoxFit.fill,
+          colorBlendMode: BlendMode.clear,
+          filterQuality: FilterQuality.none,
+          isAntiAlias: true,
+          width: 3.h,
+          height: 3.h,
+        ),
         title: Text("$displayName: " + idToString(currentID)),
         items: [
           for (var id in backgrounds)
             MenuFlyoutItem(
-              leading: Image.asset('assets/images/${textureMap["$id.png"] ?? "$id.png"}'),
+              leading: Image.asset(
+                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
+                fit: BoxFit.fill,
+                colorBlendMode: BlendMode.clear,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: true,
+                width: 3.h,
+                height: 3.h,
+              ),
               text: Text(idToString(id)),
               onPressed: () {
                 controllers[i].text = id;

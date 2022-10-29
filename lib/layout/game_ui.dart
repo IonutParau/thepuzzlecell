@@ -366,9 +366,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,
                                       isAntiAlias: true,
-                                      cacheWidth: 10.w.toInt(),
-                                      cacheHeight: 10.w.toInt(),
-                                      scale: 32 / 5.w,
+                                      width: 5.w,
+                                      height: 5.w,
                                     ),
                                   ),
                                   Text(
@@ -392,9 +391,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,
                                       isAntiAlias: true,
-                                      cacheWidth: 10.w.toInt(),
-                                      cacheHeight: 10.w.toInt(),
-                                      scale: 32 / 5.w,
+                                      width: 5.w,
+                                      height: 5.w,
                                     ),
                                   ),
                                   Text(
@@ -418,9 +416,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,
                                       isAntiAlias: true,
-                                      cacheWidth: 10.w.toInt(),
-                                      cacheHeight: 10.w.toInt(),
-                                      scale: 32 / 5.w,
+                                      width: 5.w,
+                                      height: 5.w,
                                     ),
                                   ),
                                   Text(
@@ -445,9 +442,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                         colorBlendMode: BlendMode.clear,
                                         filterQuality: FilterQuality.none,
                                         isAntiAlias: true,
-                                        cacheWidth: 10.w.toInt(),
-                                        cacheHeight: 10.w.toInt(),
-                                        scale: 32 / 5.w,
+                                        width: 5.w,
+                                        height: 5.w,
                                       ),
                                     ),
                                     Text(
@@ -2149,7 +2145,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       multiplayerListener = channel.stream.listen(
         multiplayerCallback,
         onDone: () {
-          Navigator.of(context).pop();
+          Navigator.of(context).popUntil((route) {
+            return route.settings.name == "/main";
+          });
           showDialog(
             context: context,
             builder: (ctx) {
@@ -2158,7 +2156,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           );
         },
         onError: (e) {
-          Navigator.of(context).pop();
+          Navigator.of(context).popUntil((route) {
+            return route.settings.name == "/main";
+          });
           showDialog(
             context: context,
             builder: (ctx) {
