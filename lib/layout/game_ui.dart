@@ -591,6 +591,8 @@ Future loadAllButtonTextures() {
     "interface/del_bp.png",
     "interface/property_editor.png",
     "math/math_block.png",
+    "interface/chat.png",
+    "interface/see_online.png",
   ]);
 }
 
@@ -1284,6 +1286,27 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         final y = int.parse(args[1]);
 
         grid.at(x, y).invisible = !grid.at(x, y).invisible;
+      } else if (cmd == "chat") {
+        final payloadStr = args.join(" ");
+        try {
+          final payload = jsonDecode(payloadStr);
+
+          final author = payload["author"].toString();
+          final content = payload["content"].toString();
+
+          if (content.contains("@[$clientID]")) {
+            playSound(pingSound);
+          }
+
+          final msgStr = "[$author] > $content";
+
+          msgs.add(msgStr);
+
+          msgsListener.sink.add(msgStr);
+        } catch (e) {
+          print("Invalid message format received!");
+          print(e);
+        }
       }
     }
   }
@@ -1291,6 +1314,18 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   String clientID = "";
 
   Map<String, CellHover> hovers = {};
+
+  List<String> msgs = [];
+  var msgsListener = StreamController<String>();
+
+  void sendMessageToServer(String msg) {
+    final payload = <String, dynamic>{
+      "content": msg,
+      "author": clientID,
+    };
+
+    sendToServer('chat ${jsonEncode(payload)}');
+  }
 
   void sendToServer(String packet) {
     if (isMultiplayer && isinitial) {
@@ -1320,6 +1355,39 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         description: edType == EditorType.making ? lang('editor_menu_desc', 'Opens the Editor Menu') : lang('exit_desc', 'Exits the editor'),
       ),
     );
+
+    if (isMultiplayer) {
+      buttonManager.setButton(
+        "chat-btn",
+        VirtualButton(
+          Vector2(90, 0),
+          Vector2.all(80),
+          "interface/chat.png",
+          ButtonAlignment.TOPLEFT,
+          () {
+            showDialog(context: context, builder: (ctx) => ChatDialog());
+          },
+          () => true,
+          title: 'Send Chat Message',
+          description: "Send some messages to your friends! You can also ping them with @[<id>] (by replacing <id> with their id)",
+        ),
+      );
+      buttonManager.setButton(
+        "see-online-btn",
+        VirtualButton(
+          Vector2(180, 0),
+          Vector2.all(80),
+          "interface/see_online.png",
+          ButtonAlignment.TOPLEFT,
+          () {
+            showDialog(context: context, builder: (ctx) => SeeOnlineDialog());
+          },
+          () => true,
+          title: 'See Online',
+          description: "Shows you a list of every known user connected to this server",
+        ),
+      );
+    }
 
     if (edType == EditorType.making) {
       buttonManager.setButton(

@@ -2,6 +2,7 @@ part of layout;
 
 final flightMusic = AssetSource("audio/Flight.ogg");
 final destroySound = AssetSource("audio/destroy.wav");
+final pingSound = AssetSource("audio/ping.ogg");
 final floatMusic = AssetSource("audio/Float.ogg");
 final driftMusic = AssetSource("audio/Drift.ogg");
 

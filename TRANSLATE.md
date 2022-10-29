@@ -137,6 +137,10 @@ In the text, @variablename gets replaced with the variable.
 | bottom_left                    | The name of the Bottom Left corner                                                                                                      |                               |
 | resize_corner                  | The name of the Resizing Corner                                                                                                         |                               |
 | save_on_exit                   | The name of the Save Grid In History Upon Exit setting                                                                                  |                               |
+| chat_msg                       | The name of the Send Chat Message dialog                                                                                                |                               |
+| send                           | The name of the Send button                                                                                                             |                               |
+| msg                            | The name of the Message field                                                                                                           |                               |
+| no_msgs                        | The name of the No Messages text                                                                                                        |                               |
 
 ## Button IDs:
 
@@ -160,6 +164,7 @@ In the text, @variablename gets replaced with the variable.
 - Load as Blueprint button - `load-blueprint-btn`
 - Delete Blueprints button - `del-blueprint-btn`
 - Property Editor button - `prop-edit-btn`
+- Chat Editor button - `chat-btn`
 
 ## Example of JSON
 
