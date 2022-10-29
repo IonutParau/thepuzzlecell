@@ -1182,7 +1182,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       if (cmd == "place") {
         if (isinitial) {
-          final size = int.parse(args[4]);
+          final size = int.parse(args[5]);
           for (var ox = -size; ox <= size; ox++) {
             for (var oy = -size; oy <= size; oy++) {
               if (grid.inside(int.parse(args[0]) + ox, int.parse(args[1]) + oy)) {
@@ -1197,9 +1197,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
         } else {
-          final size = int.parse(args[4]);
-          for (var ox = -size; ox < size; ox++) {
-            for (var oy = -size; oy < size; oy++) {
+          final size = int.parse(args[5]);
+          for (var ox = -size; ox <= size; ox++) {
+            for (var oy = -size; oy <= size; oy++) {
               if (initial.inside(int.parse(args[0]) + ox, int.parse(args[1]) + oy)) {
                 initial.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].id = args[2];
                 initial.grid[int.parse(args[0]) + ox][int.parse(args[1]) + oy].rot = int.parse(args[3]);
