@@ -1213,7 +1213,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           }
         }
       } else if (cmd == "bg") {
-        print("ur mom ${rng.nextDouble()}");
         final size = int.parse(args[3]);
         for (var ox = -size; ox <= size; ox++) {
           for (var oy = -size; oy <= size; oy++) {
