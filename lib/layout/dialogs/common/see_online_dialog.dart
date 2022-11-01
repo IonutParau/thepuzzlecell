@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
@@ -28,6 +27,20 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                 padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                 itemBuilder: (context, index) {
                   final cursorTexture = game.cursors[online[index]]?.texture;
+                  final role = game.roles[online[index]]!;
+                  String roleStr = "";
+                  if (role == UserRole.guest) {
+                    roleStr = lang("guest", "Guest");
+                  }
+                  if (role == UserRole.member) {
+                    roleStr = lang("member", "Member");
+                  }
+                  if (role == UserRole.admin) {
+                    roleStr = lang("admin", "Admin");
+                  }
+                  if (role == UserRole.owner) {
+                    roleStr = lang("owner", "Owner");
+                  }
                   return SizedBox(
                     width: constraints.maxWidth * 0.8,
                     child: ListTile(
@@ -39,7 +52,14 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                         fit: BoxFit.cover,
                       ),
                       title: Text(online[index]),
+                      subtitle: Text(roleStr),
                       tileColor: ConstantColorButtonState(Colors.grey[130]),
+                      onPressed: () {
+                        final ourRole = game.roles[game.clientID];
+                        if (ourRole == UserRole.admin || ourRole == UserRole.owner) {
+                          showDialog(context: context, builder: (ctx) => EditUserDialog(online[index]));
+                        }
+                      },
                     ),
                   );
                 },

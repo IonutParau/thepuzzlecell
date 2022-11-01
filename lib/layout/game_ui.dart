@@ -1330,6 +1330,25 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           print("Invalid message format received!");
           print(e);
         }
+      } else if (cmd == "set-role") {
+        final id = args[0];
+        final role = args[1];
+
+        UserRole? userRole;
+
+        UserRole.values.forEach(
+          (urole) {
+            if (urole.toString().replaceAll('UserRole.', '') == role) {
+              userRole = urole;
+            }
+          },
+        );
+
+        if (userRole != null) {
+          roles[id] = userRole!;
+        }
+      } else if (cmd == "del-role") {
+        roles.remove(args[0]);
       }
     }
   }
@@ -1337,6 +1356,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   String clientID = "";
 
   Map<String, CellHover> hovers = {};
+  Map<String, UserRole> roles = {};
 
   List<String> msgs = [];
   var msgsListener = StreamController<String>();

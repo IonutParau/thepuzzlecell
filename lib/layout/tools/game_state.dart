@@ -27,3 +27,10 @@ class CellCursor {
 
   Vector2 get pos => Vector2(x, y);
 }
+
+enum UserRole {
+  guest,
+  member,
+  admin,
+  owner,
+}

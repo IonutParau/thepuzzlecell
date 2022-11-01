@@ -12,3 +12,4 @@ export 'loading_dialog.dart' show LoadingDialog;
 export 'level_history_dialog.dart' show LevelHistoryDialog;
 export 'chat_dialog.dart' show ChatDialog;
 export 'see_online_dialog.dart' show SeeOnlineDialog;
+export 'edit_user_dialog.dart' show EditUserDialog;

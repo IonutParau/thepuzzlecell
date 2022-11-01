@@ -141,6 +141,11 @@ In the text, @variablename gets replaced with the variable.
 | send                           | The name of the Send button                                                                                                             |                               |
 | msg                            | The name of the Message field                                                                                                           |                               |
 | no_msgs                        | The name of the No Messages text                                                                                                        |                               |
+| guest                          | The name of the Guest role                                                                                                              |                               |
+| member                         | The name of the Member role                                                                                                             |                               |
+| admin                          | The name of the Admin role                                                                                                              |                               |
+| owner                          | The name of the Owner role                                                                                                              |                               |
+| kick                           | The name of the Kick button                                                                                                             |                               |
 
 ## Button IDs:
 
