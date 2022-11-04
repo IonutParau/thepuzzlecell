@@ -463,6 +463,31 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ],
                       ),
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('cursor_precision', 'Cursor Precision') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getInt("cursor_precision")!.toDouble(),
+                            min: 1,
+                            max: 9,
+                            divisions: 9,
+                            onChanged: (v) => storage
+                                .setInt(
+                                  "cursor_precision",
+                                  (v + 0.5).toInt(),
+                                )
+                                .then((v) => setState(() {})),
+                            label: '${storage.getInt('cursor_precision')}',
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 ListView(

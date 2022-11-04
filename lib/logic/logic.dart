@@ -197,6 +197,10 @@ Future<void> fixStorage() async {
     await storage.setBool("invert_zoom_scroll", false);
   }
 
+  if (storage.getInt("cursor_precision") == null) {
+    await storage.setInt("cursor_precision", 3);
+  }
+
   if (isDesktop) {
     if (storage.getBool("fullscreen") != null) {
       await windowManager.setFullScreen(storage.getBool("fullscreen")!);

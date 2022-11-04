@@ -3039,8 +3039,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         },
       );
       if (isMultiplayer && mouseInside) {
-        final mx = (mouseX - offX) / cellSize - 0.5;
-        final my = (mouseY - offY) / cellSize - 0.5;
+        var n = pow(10, storage.getInt("cursor_precision")!);
+        num mx = (mouseX - offX) / cellSize - 0.5;
+        num my = (mouseY - offY) / cellSize - 0.5;
+        mx *= n;
+        mx ~/= 1;
+        mx /= n;
+        my *= n;
+        my ~/= 1;
+        my /= n;
         if (hovers[clientID] != null) {
           if (hovers[clientID]!.x != mx || hovers[clientID]!.y != my) {
             sendToServer(

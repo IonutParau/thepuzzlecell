@@ -146,6 +146,7 @@ In the text, @variablename gets replaced with the variable.
 | admin                          | The name of the Admin role                                                                                                              |                               |
 | owner                          | The name of the Owner role                                                                                                              |                               |
 | kick                           | The name of the Kick button                                                                                                             |                               |
+| cursor_precision               | The name of the Cursor Precision setting                                                                                                |                               |
 
 ## Button IDs:
 
