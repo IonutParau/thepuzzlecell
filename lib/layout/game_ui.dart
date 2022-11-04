@@ -1370,15 +1370,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     sendToServer('chat ${jsonEncode(payload)}');
   }
 
+  List<String> packetQueue = [];
+  double packetQueueTimer = 0;
+
+  int get packetQueueLimit => storage.getInt("packet_queue_limit")!;
+
   void sendToServer(String packet) {
     if (isMultiplayer && isinitial) {
-      channel.sink.add(packet);
-      if (proxyMirror) {
-        if (packet.startsWith('toggle-invis') || packet.startsWith('wrap')) {
-          return;
-        }
-        multiplayerCallback(packet);
-      }
+      packetQueue.add(packet);
     }
   }
 
@@ -3005,12 +3004,33 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     canvas.restore();
   }
 
+  int currentPacketBytes = 0;
+
   // Main game update
   @override
   void update(double dt) {
     try {
       if (overlays.isActive("loading")) {
         return;
+      }
+      while ((currentPacketBytes < packetQueueLimit) && packetQueue.isNotEmpty) {
+        final packet = packetQueue.first;
+        // packet.codeUnits is the UTF-16 bytes of the thing. Yes, Dart uses UTF-16, not UTF-8.
+        currentPacketBytes += packet.codeUnits.length;
+        channel.sink.add(packet);
+        if (proxyMirror) {
+          if (packet.startsWith('toggle-invis') || packet.startsWith('wrap')) {
+            return;
+          }
+          multiplayerCallback(packet);
+        }
+        packetQueue.removeAt(0);
+        if (packetQueue.isEmpty) break;
+      }
+      packetQueueTimer += dt;
+      if (packetQueueTimer > 1) {
+        packetQueueTimer = 0;
+        currentPacketBytes = 0;
       }
       if (rerenderOverlays) {
         rerenderOverlays = false;

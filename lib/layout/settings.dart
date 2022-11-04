@@ -488,6 +488,31 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('packet_queue_limit', 'Packet Queue Limit (KB/s)') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 50.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getInt("packet_queue_limit")!.toDouble(),
+                            min: 1000,
+                            max: 5000000,
+                            divisions: 5000,
+                            onChanged: (v) => storage
+                                .setInt(
+                                  "packet_queue_limit",
+                                  (v + 0.5).toInt(),
+                                )
+                                .then((v) => setState(() {})),
+                            label: '${storage.getInt('packet_queue_limit')! ~/ 1000} KB/s',
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 ListView(

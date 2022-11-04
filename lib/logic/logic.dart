@@ -200,6 +200,9 @@ Future<void> fixStorage() async {
   if (storage.getInt("cursor_precision") == null) {
     await storage.setInt("cursor_precision", 3);
   }
+  if (storage.getInt("packet_queue_limit") == null) {
+    await storage.setInt("packet_queue_limit", 1000000);
+  }
 
   if (isDesktop) {
     if (storage.getBool("fullscreen") != null) {
