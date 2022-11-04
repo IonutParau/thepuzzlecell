@@ -118,6 +118,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     body: SettingsPage(),
                   ),
                   PaneItem(
+                    icon: Icon(FluentIcons.list),
+                    title: Text(lang('achievements', 'Achievements')),
+                    body: AchievementsUI(),
+                  ),
+                  PaneItem(
                     icon: Icon(FluentIcons.picture),
                     title: Text(lang('texture_packs', 'Texture Packs')),
                     body: TexturePacksUI(),

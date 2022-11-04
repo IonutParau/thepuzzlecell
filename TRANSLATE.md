@@ -148,6 +148,7 @@ In the text, @variablename gets replaced with the variable.
 | kick                           | The name of the Kick button                                                                                                             |                               |
 | cursor_precision               | The name of the Cursor Precision setting                                                                                                |                               |
 | packet_queue_limit             | The name of the Packet Queue Limit                                                                                                      |                               |
+| achievements                   | The name of the Achievements tab                                                                                                        |                               |
 
 ## Button IDs:
 
