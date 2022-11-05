@@ -149,6 +149,17 @@ In the text, @variablename gets replaced with the variable.
 | cursor_precision               | The name of the Cursor Precision setting                                                                                                |                               |
 | packet_queue_limit             | The name of the Packet Queue Limit                                                                                                      |                               |
 | achievements                   | The name of the Achievements tab                                                                                                        |                               |
+| choose_color                   | The name of the Choose a Color dialog                                                                                                   |                               |
+| restore_default                | The name of the Restore to Default button                                                                                               |                               |
+| theme                          | The name of the Theme settings tab                                                                                                      |                               |
+| grid_opacity                   | The name of Grid Opacity setting                                                                                                        |                               |
+| game_bg                        | The name of the Game Background setting                                                                                                 |                               |
+| cellbar_background             | The name of the Cell Bar Background setting                                                                                             |                               |
+| cellbar_border                 | The name of the Cell Bar Border setting                                                                                                 |                               |
+| infobox_background             | The name of the Info Box Background setting                                                                                             |                               |
+| infobox_border                 | The name of the Info Box Border setting                                                                                                 |                               |
+| ui_button_opacity              | The name of the UI Button Opacity setting                                                                                               |                               |
+| cell_button_opacity            | The name of the Cell Button Opacity                                                                                                     |                               |
 
 ## Button IDs:
 

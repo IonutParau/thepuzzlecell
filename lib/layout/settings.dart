@@ -44,13 +44,17 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         ),
         SizedBox(
           child: Button(
-            child: Text(lang('choose_color', 'Choose a color'), style: textBoxStyle),
+            child: Container(
+              width: 2.5.w,
+              height: 2.5.w,
+              color: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
+            ),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text(lang('choose_color', 'Choose a color')),
+                    title: Text(lang('choose_color', 'Choose a Color')),
                     content: SingleChildScrollView(
                       child: ColorPicker(
                         pickerColor: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
@@ -61,7 +65,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     ),
                     actions: [
                       Button(
-                        child: Text('Restore to Default'),
+                        child: Text(lang('restore_default', 'Restore to Default')),
                         onPressed: () {
                           storage.setString(id, encodeColor(defaultValue)).then((v) => setState(() {}));
                           Navigator.of(context).pop();
@@ -151,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
         ),
       ),
       content: DefaultTabController(
-        length: 5,
+        length: 6,
         child: Scaffold(
           appBar: TabBar(
             indicatorColor: Colors.grey[100],
@@ -162,6 +166,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               ),
               Tab(
                 text: lang('audio', 'Audio'),
+              ),
+              Tab(
+                text: lang('theme', 'Theme'),
               ),
               Tab(
                 text: lang('graphics', 'Graphics'),
@@ -303,6 +310,93 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ],
                       ),
                     ),
+                  ],
+                ),
+                ListView(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          lang('grid_opacity', 'Grid Opacity') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getDouble("grid_opacity")!,
+                            min: 0,
+                            max: 1,
+                            onChanged: (v) => storage
+                                .setDouble(
+                                  "grid_opacity",
+                                  v,
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getDouble("grid_opacity")! * 100 ~/ 1}%',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('ui_button_opacity', 'UI Button Opacity') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getDouble("ui_button_opacity")!,
+                            min: 0,
+                            max: 1,
+                            onChanged: (v) => storage
+                                .setDouble(
+                                  "ui_button_opacity",
+                                  v,
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getDouble("ui_button_opacity")! * 100 ~/ 1}%',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('cell_button_opacity', 'Cell Button Opacity') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getDouble("cell_button_opacity")!,
+                            min: 0,
+                            max: 1,
+                            onChanged: (v) => storage
+                                .setDouble(
+                                  "cell_button_opacity",
+                                  v,
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getDouble("cell_button_opacity")! * 100 ~/ 1}%',
+                          ),
+                        ),
+                      ],
+                    ),
+                    colorSetting('game_bg', 'game_bg', 'Game Background', Color.fromARGB(255, 27, 27, 27)),
+                    colorSetting('cellbar_background', 'cellbar_background', 'Cell Bar Background', Colors.grey[180]),
+                    colorSetting('cellbar_border', 'cellbar_border', 'Cell Bar Border', Colors.grey[60]),
+                    colorSetting('infobox_background', 'infobox_background', 'Info Box Background', Colors.grey[180]),
+                    colorSetting('infobox_border', 'infobox_border', 'Info Box Border', Colors.white),
                   ],
                 ),
                 ListView(

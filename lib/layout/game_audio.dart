@@ -78,7 +78,7 @@ Future<void> playOnLoop(Source sound, double volume) async {
   if (_isMusicPlaying) musicPlayer.stop();
   _isMusicPlaying = false;
   if (volume > 0) {
-    await musicPlayer.play(sound, volume: volume, mode: PlayerMode.lowLatency);
+    await musicPlayer.play(sound, volume: volume);
     _isMusicPlaying = true;
     _musicPlayerVolume = volume;
   }

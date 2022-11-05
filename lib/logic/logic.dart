@@ -203,6 +203,15 @@ Future<void> fixStorage() async {
   if (storage.getInt("packet_queue_limit") == null) {
     await storage.setInt("packet_queue_limit", 1000000);
   }
+  if (storage.getDouble("grid_opacity") == null) {
+    await storage.setDouble("grid_opacity", 1);
+  }
+  if (storage.getDouble("ui_button_opacity") == null) {
+    await storage.setDouble("ui_button_opacity", 1);
+  }
+  if (storage.getDouble("cell_button_opacity") == null) {
+    await storage.setDouble("cell_button_opacity", 1);
+  }
 
   if (isDesktop) {
     if (storage.getBool("fullscreen") != null) {

@@ -651,6 +651,8 @@ class VirtualButton {
 
     var center = size / 2;
 
+    var opacity = isCellButton ? storage.getDouble("cell_button_opacity")! : storage.getDouble("ui_button_opacity")!;
+
     var untranslatedPostion = startPos.clone();
     untranslatedPostion.lerp(
       position,
@@ -702,9 +704,9 @@ class VirtualButton {
       textureMap[texture] ?? texture,
     ))
           ..paint.color = hovered
-              ? Colors.white
+              ? Colors.white.withOpacity(opacity)
               : Colors.white.withOpacity(
-                  0.8,
+                  0.8 * opacity,
                 ))
         .render(
       canvas,
@@ -798,16 +800,19 @@ void renderInfoBox(Canvas canvas, String title, String description) {
 
   final rect = off & size;
 
+  final background = settingsColor('infobox_background', Colors.grey[180]);
+  final border = settingsColor('infobox_border', Colors.white);
+
   canvas.drawRect(
     rect,
     Paint()
-      ..color = Colors.white
+      ..color = border
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10,
   );
   canvas.drawRect(
     rect,
-    Paint()..color = Colors.grey[180],
+    Paint()..color = background,
   );
   titleTP.paint(canvas, Offset(off.dx + 10, off.dy + 10));
   descriptionTP.paint(canvas, Offset(off.dx + 10, off.dy + titleTP.height + 20));
@@ -2319,7 +2324,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       canvas.drawRect(
         Offset.zero & Size(canvasSize.x, canvasSize.y),
-        Paint()..color = Color.fromARGB(255, 27, 27, 27),
+        Paint()..color = settingsColor('game_bg', Color.fromARGB(255, 27, 27, 27)),
       );
 
       //canvas.save();
@@ -2327,8 +2332,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       canvas.translate(offX, offY);
 
       if (!firstRender) {
+        final opacity = storage.getDouble("grid_opacity")!;
         if (replaceBgWithRect) {
-          canvas.drawRect(Offset.zero & Size(grid.width / 1, grid.height / 1) * cellSize, Paint()..color = Color.fromARGB(255, 49, 47, 47));
+          canvas.drawRect(Offset.zero & Size(grid.width / 1, grid.height / 1) * cellSize, Paint()..color = Color.fromARGB((opacity * 255).toInt(), 49, 47, 47));
         } else {
           emptyImage?.render(
             canvas,
@@ -2337,6 +2343,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               grid.width * cellSize,
               grid.height * cellSize,
             ),
+            overridePaint: Paint()..color = Colors.white.withOpacity(opacity),
           );
         }
       }
@@ -2528,9 +2535,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
 
       if (cellbar && edType == EditorType.making) {
+        final cellbarBackground = settingsColor('cellbar_background', Colors.grey[180]);
+        final cellbarBorder = settingsColor('cellbar_border', Colors.grey[60]);
+
         canvas.drawRect(
           Offset(0, canvasSize.y - 110 * uiScale) & Size(canvasSize.x, 110 * uiScale),
-          Paint()..color = Colors.grey[180],
+          Paint()..color = cellbarBackground,
         );
 
         final w = 5.0 * uiScale;
@@ -2538,7 +2548,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         canvas.drawRect(
           Offset(w, canvasSize.y - 110 * uiScale + w) & Size(canvasSize.x - w, 110 * uiScale - w),
           Paint()
-            ..color = Colors.grey[60]
+            ..color = cellbarBorder
             ..style = PaintingStyle.stroke
             ..strokeWidth = w,
         );
