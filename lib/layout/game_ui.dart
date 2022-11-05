@@ -219,7 +219,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                   return Center(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.7),
+                        color: settingsColor('editor_menu_bg', Colors.grey.withOpacity(0.7)),
                         borderRadius: BorderRadius.circular(2.w),
                       ),
                       width: 70.w,
@@ -245,9 +245,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     padding: EdgeInsets.all(2.w),
                                     child: Slider(
                                       style: SliderThemeData(
-                                        thumbColor: Colors.black.state,
-                                        activeColor: Colors.blue.state,
-                                        inactiveColor: Colors.black.state,
+                                        activeColor: settingsColor("editor_menu_slider_active", Colors.blue).state,
+                                        inactiveColor: settingsColor("editor_menu_slider_inactive", Colors.black).state,
                                         useThumbBall: true,
                                       ),
                                       value: game.delay,
@@ -282,9 +281,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
                                         style: SliderThemeData(
-                                          thumbColor: Colors.black.state,
-                                          activeColor: Colors.blue.state,
-                                          inactiveColor: Colors.black.state,
+                                          activeColor: settingsColor("editor_menu_slider_active", Colors.blue).state,
+                                          inactiveColor: settingsColor("editor_menu_slider_inactive", Colors.black).state,
                                           useThumbBall: true,
                                         ),
                                         value: getMusicVolume(),
@@ -328,9 +326,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
                                         style: SliderThemeData(
-                                          thumbColor: Colors.black.state,
-                                          activeColor: Colors.blue.state,
-                                          inactiveColor: Colors.black.state,
+                                          activeColor: settingsColor("editor_menu_slider_active", Colors.blue).state,
+                                          inactiveColor: settingsColor("editor_menu_slider_inactive", Colors.black).state,
                                           useThumbBall: true,
                                         ),
                                         value: storage.getDouble("sfx_volume") ?? 1,
@@ -360,14 +357,17 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     onPressed: () {
                                       game.exit();
                                     },
-                                    child: Image.asset(
-                                      'assets/images/interface/back.png',
-                                      fit: BoxFit.fill,
-                                      colorBlendMode: BlendMode.clear,
-                                      filterQuality: FilterQuality.none,
-                                      isAntiAlias: true,
-                                      width: 5.w,
-                                      height: 5.w,
+                                    child: Opacity(
+                                      opacity: storage.getDouble("editor_menu_button_opacity")!,
+                                      child: Image.asset(
+                                        'assets/images/interface/back.png',
+                                        fit: BoxFit.fill,
+                                        colorBlendMode: BlendMode.clear,
+                                        filterQuality: FilterQuality.none,
+                                        isAntiAlias: true,
+                                        width: 5.w,
+                                        height: 5.w,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -385,14 +385,17 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     onPressed: () async {
                                       await showDialog(context: context, builder: (ctx) => ClearDialog());
                                     },
-                                    child: Image.asset(
-                                      'assets/images/' + textureMap['trash.png']!,
-                                      fit: BoxFit.fill,
-                                      colorBlendMode: BlendMode.clear,
-                                      filterQuality: FilterQuality.none,
-                                      isAntiAlias: true,
-                                      width: 5.w,
-                                      height: 5.w,
+                                    child: Opacity(
+                                      opacity: storage.getDouble("editor_menu_button_opacity")!,
+                                      child: Image.asset(
+                                        'assets/images/' + textureMap['trash.png']!,
+                                        fit: BoxFit.fill,
+                                        colorBlendMode: BlendMode.clear,
+                                        filterQuality: FilterQuality.none,
+                                        isAntiAlias: true,
+                                        width: 5.w,
+                                        height: 5.w,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -410,14 +413,17 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                     onPressed: () async {
                                       await showDialog(context: context, builder: (ctx) => ResizeDialog());
                                     },
-                                    child: Image.asset(
-                                      'assets/images/' + textureMap['cancer.png']!,
-                                      fit: BoxFit.fill,
-                                      colorBlendMode: BlendMode.clear,
-                                      filterQuality: FilterQuality.none,
-                                      isAntiAlias: true,
-                                      width: 5.w,
-                                      height: 5.w,
+                                    child: Opacity(
+                                      opacity: storage.getDouble("editor_menu_button_opacity")!,
+                                      child: Image.asset(
+                                        'assets/images/' + textureMap['cancer.png']!,
+                                        fit: BoxFit.fill,
+                                        colorBlendMode: BlendMode.clear,
+                                        filterQuality: FilterQuality.none,
+                                        isAntiAlias: true,
+                                        width: 5.w,
+                                        height: 5.w,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -768,10 +774,13 @@ void renderInfoBox(Canvas canvas, String title, String description) {
   final titleTP = TextPainter(textWidthBasis: TextWidthBasis.longestLine, textDirection: TextDirection.ltr);
   final descriptionTP = TextPainter(textDirection: TextDirection.ltr);
 
+  final titleColor = settingsColor("infobox_title", Colors.white);
+  final descColor = settingsColor("infobox_desc", Colors.white);
+
   titleTP.text = TextSpan(
     text: title,
     style: TextStyle(
-      color: Colors.white,
+      color: titleColor,
       fontSize: 9.sp,
     ),
   );
@@ -779,7 +788,7 @@ void renderInfoBox(Canvas canvas, String title, String description) {
   descriptionTP.text = TextSpan(
     text: description,
     style: TextStyle(
-      color: Colors.white,
+      color: descColor,
       fontSize: 7.sp,
     ),
   );

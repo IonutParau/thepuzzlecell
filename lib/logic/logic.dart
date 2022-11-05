@@ -212,7 +212,9 @@ Future<void> fixStorage() async {
   if (storage.getDouble("cell_button_opacity") == null) {
     await storage.setDouble("cell_button_opacity", 1);
   }
-
+  if (storage.getDouble("editor_menu_button_opacity") == null) {
+    await storage.setDouble("editor_menu_button_opacity", 1);
+  }
   if (isDesktop) {
     if (storage.getBool("fullscreen") != null) {
       await windowManager.setFullScreen(storage.getBool("fullscreen")!);

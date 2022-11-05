@@ -160,6 +160,12 @@ In the text, @variablename gets replaced with the variable.
 | infobox_border                 | The name of the Info Box Border setting                                                                                                 |                               |
 | ui_button_opacity              | The name of the UI Button Opacity setting                                                                                               |                               |
 | cell_button_opacity            | The name of the Cell Button Opacity                                                                                                     |                               |
+| info_box_title                 | The name of the Info Box Title setting                                                                                                  |                               |
+| info_box_desc                  | The name of the Info Box Description setting                                                                                            |                               |
+| editor_menu_bg                 | The name of the Editor Menu Background setting                                                                                          |                               |
+| editor_menu_button_opacity     | The name of the Editor Menu Button Opacity setting                                                                                      |                               |
+| editor_menu_slider_active      | The name of the Editor Menu Slider Active Color setting                                                                                 |                               |
+| editor_menu_slider_inactive    | The name of the Editor Menu Slider Inactive Color setting                                                                               |                               |
 
 ## Button IDs:
 

@@ -392,11 +392,42 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('editor_menu_button_opacity', 'Editor Menu Button Opacity') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getDouble("editor_menu_button_opacity")!,
+                            min: 0,
+                            max: 1,
+                            onChanged: (v) => storage
+                                .setDouble(
+                                  "editor_menu_button_opacity",
+                                  v,
+                                )
+                                .then(
+                                  (v) => setState(() {}),
+                                ),
+                            label: '${storage.getDouble("editor_menu_button_opacity")! * 100 ~/ 1}%',
+                          ),
+                        ),
+                      ],
+                    ),
                     colorSetting('game_bg', 'game_bg', 'Game Background', Color.fromARGB(255, 27, 27, 27)),
                     colorSetting('cellbar_background', 'cellbar_background', 'Cell Bar Background', Colors.grey[180]),
                     colorSetting('cellbar_border', 'cellbar_border', 'Cell Bar Border', Colors.grey[60]),
                     colorSetting('infobox_background', 'infobox_background', 'Info Box Background', Colors.grey[180]),
                     colorSetting('infobox_border', 'infobox_border', 'Info Box Border', Colors.white),
+                    colorSetting('infobox_title', 'infobox_title', 'Info Box Title', Colors.white),
+                    colorSetting('infobox_desc', 'infobox_desc', 'Info Box Description', Colors.white),
+                    colorSetting('editor_menu_bg', 'editor_menu_bg', 'Editor Menu Background', Colors.grey.withOpacity(0.7)),
+                    colorSetting('editor_menu_slider_active', 'editor_menu_slider_active', 'Editor Menu Slider Active Color', Colors.blue),
+                    colorSetting('editor_menu_slider_inactive', 'editor_menu_slider_inactive', 'Editor Menu Slider Inactive Color', Colors.black),
                   ],
                 ),
                 ListView(
