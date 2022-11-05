@@ -68,12 +68,13 @@ void initSound() {
   musicPlayer.setReleaseMode(ReleaseMode.loop);
 }
 
-Future playSound(Source sound, [double? volume]) async {
+Future<void> playSound(Source sound, [double? volume]) async {
   if (volume == 0) return;
   await sfxPlayer.play(sound, volume: (volume ?? (storage.getDouble("sfx_volume") ?? 1)));
+  return;
 }
 
-Future playOnLoop(Source sound, double volume) async {
+Future<void> playOnLoop(Source sound, double volume) async {
   if (_isMusicPlaying) musicPlayer.stop();
   _isMusicPlaying = false;
   if (volume > 0) {
@@ -81,9 +82,10 @@ Future playOnLoop(Source sound, double volume) async {
     _isMusicPlaying = true;
     _musicPlayerVolume = volume;
   }
+  return;
 }
 
-Future setLoopSoundVolume(Source sound, double volume) async {
+Future<void> setLoopSoundVolume(Source sound, double volume) async {
   if (volume == 0) {
     if (_isMusicPlaying) {
       await musicPlayer.stop();
@@ -97,4 +99,5 @@ Future setLoopSoundVolume(Source sound, double volume) async {
       await playOnLoop(sound, volume);
     }
   }
+  return;
 }
