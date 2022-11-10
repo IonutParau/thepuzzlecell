@@ -26,6 +26,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
   final TextEditingController _delayController = TextEditingController();
+  final TextEditingController _updateQueueRunsController = TextEditingController();
   final TextEditingController _clientIDController = TextEditingController();
   final textStyle = TextStyle(
     fontSize: 9.sp,
@@ -121,6 +122,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     super.initState();
 
     _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
+    _updateQueueRunsController.text = storage.getInt("update_queue_runs").toString();
     _clientIDController.text = storage.getString("clientID") ?? "@uuid";
     _tabController = TabController(vsync: this, length: 1);
   }
@@ -438,7 +440,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       'Realistic Rendering',
                       true,
                     ),
-                    if (storage.getBool('realistic_render') == true)
+                    if ((storage.getBool('realistic_render') ?? true) == true)
                       Row(
                         children: [
                           Text(
@@ -658,7 +660,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 storage
                                     .setDouble(
                                       "delay",
-                                      max(min(num.tryParse(str)!.toDouble(), 1), 0.01),
+                                      max(min(num.tryParse(str)!.toDouble(), 5), 0.001),
                                     )
                                     .then(
                                       (e) => setState(

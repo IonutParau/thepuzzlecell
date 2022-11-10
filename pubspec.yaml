@@ -35,6 +35,7 @@ dependencies:
   file_picker: ^5.2.0+1
   intl: ^0.17.0
   equatable: ^2.0.5
+  lua_dardo: ^0.0.4
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
     - assets/images/destroyers/trash/
     - assets/images/destroyers/enemy/
     - assets/images/recreators/
+    - assets/images/recreators/fillers/
     - assets/images/recreators/supgens/
     - assets/images/recreators/generators/
     - assets/images/recreators/replicators/

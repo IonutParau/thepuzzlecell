@@ -7,6 +7,7 @@ import 'package:flutter/material.dart' show AppBar, Scaffold;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
+import 'package:the_puzzle_cell/scripts/scripts.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 
@@ -54,8 +55,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    loadTexturePacks();
-    applyTexturePackSettings().then((v) => applyTexturePacks());
+    if (isDesktop) {
+      loadTexturePacks();
+      applyTexturePackSettings().then((v) => applyTexturePacks());
+      scriptingManager.loadScripts();
+      scriptingManager.initScripts();
+    }
     ErrorWidget.builder = (details) {
       return Builder(builder: (context) {
         return Scaffold(

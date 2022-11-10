@@ -1,11 +1,11 @@
 {
-    "name": "the_puzzle_cell",
-    "short_name": "the_puzzle_cell",
+    "name": "The Puzzle Cell",
+    "short_name": "The Puzzle Cell",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A remake of Cell Machine meant to add a wide range of possibilities to make very good puzzles",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

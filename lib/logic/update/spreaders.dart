@@ -94,4 +94,6 @@ void spreaders() {
   grid.loopChunks("plasma", fromRot(3), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
 
   grid.updateCell(doFiller, null, "filler");
+
+  grid.updateCell((cell, x, y) => ((rng.nextBool()) ? doFiller(cell, x, y) : null), null, "random_filler");
 }

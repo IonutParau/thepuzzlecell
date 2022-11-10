@@ -5,9 +5,13 @@ class QueueManager {
 
   static void add(String key, void Function() callback) {
     if (!_queue.containsKey(key)) {
-      _queue[key] = [];
+      create(key);
     }
     _queue[key]!.add(callback);
+  }
+
+  static bool hasInQueue(String key) {
+    return _queue[key]?.isNotEmpty ?? false;
   }
 
   static void create(String key) {
@@ -19,6 +23,12 @@ class QueueManager {
   static void delete(String key) {
     if (_queue.containsKey(key)) {
       _queue.remove(key);
+    }
+  }
+
+  static void empty(String key) {
+    if (_queue.containsKey(key)) {
+      _queue[key] = [];
     }
   }
 

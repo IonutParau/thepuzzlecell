@@ -333,6 +333,7 @@ final cells = {
   "master_get_y",
   "master_get_width",
   "master_get_height",
+  "random_filler",
 }.toList();
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
@@ -340,6 +341,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "random_filler.png": "recreators/fillers/random_filler.png",
   "master_get_x.png": "master/getter/master_get_x.png",
   "master_get_y.png": "master/getter/master_get_y.png",
   "master_get_width.png": "master/getter/master_get_width.png",
@@ -454,7 +456,7 @@ Map<String, String> textureMap = {
   "nimply_gate.png": "mechanical/gates/nimply_gate.png",
   "mech_sensor.png": "mechanical/mech_sensor.png",
   "mech_comparator.png": "mechanical/mech_comparator.png",
-  "filler.png": "recreators/filler.png",
+  "filler.png": "recreators/fillers/filler.png",
   "lava.png": "destroyers/lava.png",
   "gas.png": "unique/gas.png",
   "plasma.png": "destroyers/plasma.png",
@@ -1025,8 +1027,15 @@ final categories = [
         ],
         "transformer",
       ),
+      CellCategory(
+          "Fillers",
+          "They fill space in quadratic time",
+          [
+            "filler",
+            "random_filler",
+          ],
+          "filler"),
       "factory",
-      "filler",
     ],
     "generator",
   ),
@@ -2822,6 +2831,10 @@ final cellInfo = <String, CellProfile>{
   "master_get_height": CellProfile(
     "Get Height",
     "Gives the grid height",
+  ),
+  "random_filler": CellProfile(
+    "Random Filler",
+    "Filler but spreads randomly",
   ),
 };
 

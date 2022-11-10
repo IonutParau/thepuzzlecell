@@ -122,17 +122,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     title: Text(lang('achievements', 'Achievements')),
                     body: AchievementsUI(),
                   ),
-                  PaneItem(
-                    icon: Icon(FluentIcons.picture),
-                    title: Text(lang('texture_packs', 'Texture Packs')),
-                    body: TexturePacksUI(),
-                  ),
-                  if (isDesktop)
+                  if (isDesktop) ...[
+                    PaneItem(
+                      icon: Icon(FluentIcons.picture),
+                      title: Text(lang('texture_packs', 'Texture Packs')),
+                      body: TexturePacksUI(),
+                    ),
                     PaneItem(
                       icon: Icon(FluentIcons.locale_language),
                       title: Text(lang('languages', 'Languages')),
                       body: LangsUI(),
                     ),
+                  ],
                   PaneItem(
                     icon: Icon(FluentIcons.text_document),
                     title: Text(lang('credits', 'Credits')),
@@ -195,13 +196,14 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                       }
                     },
                   ),
-                  PaneItemAction(
-                    icon: Icon(FluentIcons.leave),
-                    title: Text(lang('quit', 'Quit')),
-                    onTap: () {
-                      exit(0);
-                    },
-                  ),
+                  if (isDesktop)
+                    PaneItemAction(
+                      icon: Icon(FluentIcons.leave),
+                      title: Text(lang('quit', 'Quit')),
+                      onTap: () {
+                        exit(0);
+                      },
+                    ),
                 ],
               ),
             );

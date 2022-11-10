@@ -177,11 +177,18 @@ class Grid {
 
     if (rot == null) {
       // Update statically
-      loopChunks(id, invertOrder ? GridAlignment.topleft : GridAlignment.bottomright, callback, filter: (cell, x, y) => cell.id == id && !cell.updated);
+      loopChunks(
+        id,
+        invertOrder ? GridAlignment.topleft : GridAlignment.bottomright,
+        //(cell, x, y) => QueueManager.add("cell-updates", () => callback(cell, x, y)),
+        callback,
+        filter: (cell, x, y) => cell.id == id && !cell.updated,
+      );
     } else {
       loopChunks(
         id,
         fromRot((rot + (invertOrder ? 2 : 0)) % 4),
+        //(cell, x, y) => QueueManager.add("cell-updates", () => callback(cell, x, y)),
         callback,
         filter: (cell, x, y) {
           return ((cell.id == id) && (cell.rot == rot) && (!cell.updated));
@@ -395,23 +402,23 @@ class Grid {
       if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
       var subtick = subticks[tickCount % subticks.length];
       if (subtick is void Function(Set<String>)) {
+        // QueueManager.add("subticks", () => subtick(cells));
         subtick(cells);
-      } else {
+      } else if (subtick is void Function()) {
+        // QueueManager.add("subticks", subtick);
         subtick();
-      }
-      if (tickCount % subticks.length == 0) {
-        QueueManager.runQueue("newtick");
       }
     } else {
       for (var subtick in subticks) {
         if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
         if (subtick is void Function(Set<String>)) {
+          // QueueManager.add("subticks", () => subtick(cells));
           subtick(cells);
-        } else {
+        } else if (subtick is void Function()) {
+          // QueueManager.add("subticks", subtick);
           subtick();
         }
       }
-      QueueManager.runQueue("newtick");
     }
     handleBrokenCellSounds();
   }

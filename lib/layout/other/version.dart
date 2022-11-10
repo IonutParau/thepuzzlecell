@@ -7,6 +7,11 @@ String currentVersion = '2.3.0.0 Configurable';
 
 final List<String> changes = [
   "Reworked all the textures",
+  "Added themes",
+  "Improved multiplayer performance",
+  "Added some settings to limit bandwidth usage",
+  "Added a setting to *slightly* improve performance",
+  "Added Random Filler",
 ];
 
 IconData getTrailing(String change) {

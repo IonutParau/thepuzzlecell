@@ -240,7 +240,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 Spacer(),
                                 LayoutBuilder(builder: (context, cons) {
                                   return Container(
-                                    width: min(20.w, cons.maxWidth),
+                                    width: min(40.w, cons.maxWidth),
                                     height: 10.h,
                                     padding: EdgeInsets.all(2.w),
                                     child: Slider(
@@ -251,7 +251,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                       ),
                                       value: game.delay,
                                       min: 0.01,
-                                      max: 1,
+                                      max: 5,
                                       onChanged: (newVal) {
                                         game.delay = (newVal * 100 ~/ 1) / 100;
                                         refreshMenu();
@@ -276,7 +276,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 LayoutBuilder(
                                   builder: (context, cons) {
                                     return Container(
-                                      width: min(20.w, cons.maxWidth),
+                                      width: min(40.w, cons.maxWidth),
                                       height: 10.h,
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
@@ -321,7 +321,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                 LayoutBuilder(
                                   builder: (context, cons) {
                                     return Container(
-                                      width: min(20.w, cons.maxWidth),
+                                      width: min(40.w, cons.maxWidth),
                                       height: 10.h,
                                       padding: EdgeInsets.all(2.w),
                                       child: Slider(
@@ -1026,6 +1026,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void loadFromText(String str) {
+    genOptimizer.clear();
+    QueueManager.empty("cell-updates");
+    QueueManager.empty("subticks");
     grid = loadStr(str);
     QueueManager.runQueue("post-game-init");
     timeGrid = null;
@@ -2145,7 +2148,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         Vector2(0, y.toDouble()) * rowImage.height.toDouble(),
       );
     }
-    emptyImage = Sprite(await emptyCompose.compose());
+    final composed = await emptyCompose.compose();
+    emptyImage = Sprite(composed);
+    return emptyImage;
   }
 
   var debugMode = false;
@@ -3145,17 +3150,37 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
         return;
       }
+      var subticksPerFrame = subticks.length;
+      if (QueueManager.hasInQueue("cell-updates")) {
+        QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
+      } else {
+        for (var i = 0; i < subticksPerFrame; i++) {
+          QueueManager.runQueue("subticks", 1);
+          QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
+          if (QueueManager.hasInQueue("cell-updates")) break;
+        }
+      }
       if (!overlays.isActive("EditorMenu")) {
         if ((running || onetick)) {
           itime += dt;
 
           while (itime > delay) {
             itime -= delay;
+            while (QueueManager.hasInQueue("subticks")) {
+              QueueManager.runQueue("cell-updates");
+              QueueManager.runQueue("subticks", 1);
+            }
+            if (QueueManager.hasInQueue("cell-updates")) QueueManager.runQueue("cell-updates");
             if (onetick) {
               onetick = false;
               itime = 0;
             } else {
               grid.update(); // Update the cells boizz
+              for (var i = 0; i < subticksPerFrame; i++) {
+                QueueManager.runQueue("subticks", 1);
+                QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
+                if (QueueManager.hasInQueue("cell-updates")) break;
+              }
             }
           }
         }
@@ -3566,6 +3591,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void setInitial() {
     if (inMenu) return;
     genOptimizer.clear();
+    QueueManager.empty("cell-updates");
+    QueueManager.empty("subticks");
     initial = grid.copy;
     isinitial = true;
     running = false;
@@ -3579,6 +3606,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void restoreInitial() {
     if (inMenu) return;
     genOptimizer.clear();
+    QueueManager.empty("cell-updates");
+    QueueManager.empty("subticks");
     bool differentSize = (grid.width != initial.width || grid.height != initial.height);
     grid = initial.copy;
     isinitial = true;

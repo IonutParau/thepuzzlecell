@@ -232,7 +232,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
               if (type == CellPropertyType.integer || type == CellPropertyType.cellRot) {
                 value = int.tryParse(text);
               } else if (type == CellPropertyType.number) {
-                value = num.tryParse(text);
+                value = double.tryParse(text);
                 if (text == "inf" || text == "infinity") value = double.infinity;
                 if (text == "-inf" || text == "-infinity") value = double.negativeInfinity;
                 if (text == "pi") value = pi;
