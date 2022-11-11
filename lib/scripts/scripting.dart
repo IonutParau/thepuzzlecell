@@ -6,7 +6,8 @@ class ScriptingManager {
   List<LuaScript> luaScripts = [];
 
   void loadScripts([List<String> blocked = const []]) {
-    final subdirs = directory.listSync().where((e) => e is Directory).cast<Directory>();
+    final subitems = directory.listSync();
+    final subdirs = subitems.where((e) => e is Directory).cast<Directory>();
 
     for (var subdir in subdirs) {
       final id = path.split(subdir.path).last;
@@ -55,6 +56,35 @@ class ScriptingManager {
         script.OnMsg(msg);
       }
     }
+  }
+
+  void addToCat(String cat, String cell) {
+    final parts = cat.split('/');
+
+    CellCategory? current;
+
+    while (parts.isNotEmpty) {
+      if (current == null) {
+        final found = categories.where((cat) => cat.title == parts.first);
+        if (found.isEmpty) {
+          return;
+        }
+        current = found.first;
+      } else {
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
+        if (found.isEmpty) {
+          return;
+        }
+        current = found.first;
+      }
+      parts.removeAt(0);
+    }
+
+    current?.items.add(cell);
+  }
+
+  void addToCats(List<String> cats, String cell) {
+    cats.forEach((cat) => addToCat(cat, cell));
   }
 }
 
