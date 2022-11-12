@@ -27,7 +27,7 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                 padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                 itemBuilder: (context, index) {
                   final cursorTexture = game.cursors[online[index]]?.texture;
-                  final role = game.roles[online[index]]!;
+                  final role = game.roles[online[index]] ?? UserRole.guest;
                   String roleStr = "";
                   if (role == UserRole.guest) {
                     roleStr = lang("guest", "Guest");

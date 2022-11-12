@@ -11,6 +11,11 @@ class LastVars {
         );
 
   LastVars get copy => LastVars(lastRot, lastPos.dx, lastPos.dy);
+
+  @override
+  String toString() {
+    return "${lastPos.dx} ${lastPos.dy} $lastRot";
+  }
 }
 
 // For cells destroyed by entering destruction cells
