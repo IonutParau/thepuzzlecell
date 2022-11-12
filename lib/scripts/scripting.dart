@@ -58,6 +58,18 @@ class ScriptingManager {
     }
   }
 
+  int addedForce(Cell cell, int dir, MoveType moveType) {
+    final id = cell.id;
+    final side = toSide(dir, cell.rot);
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(id)) {
+        return lua.addedForce(cell, dir, side, moveType.name) ?? 0;
+      }
+    }
+
+    return 0;
+  }
+
   void addToCat(String cat, String cell) {
     final parts = cat.split('/');
 

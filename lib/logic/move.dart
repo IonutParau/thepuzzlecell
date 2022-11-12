@@ -333,7 +333,12 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       sending.rot %= 4;
 
       if (grid.inside(fx, fy)) {
-        QueueManager.add("post-move", () => push(fx, fy, odir, 1, replaceCell: sending));
+        QueueManager.add("post-move", () {
+          if (destroyer.tags.contains("portal_a_working")) return;
+          destroyer.tags.add("portal_a_working");
+          push(fx, fy, odir, 1, replaceCell: sending);
+          destroyer.tags.remove("portal_a_working");
+        });
       }
     }
     return;
@@ -370,7 +375,12 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       sending.rot %= 4;
 
       if (grid.inside(fx, fy)) {
-        QueueManager.add("post-move", () => push(fx, fy, odir, 1, replaceCell: sending));
+        QueueManager.add("post-move", () {
+          if (destroyer.tags.contains("portal_b_working")) return;
+          destroyer.tags.add("portal_b_working");
+          push(fx, fy, odir, 1, replaceCell: sending);
+          destroyer.tags.remove("portal_b_working");
+        });
       }
     }
     return;

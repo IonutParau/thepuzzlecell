@@ -261,82 +261,90 @@ class LuaScript {
     });
   }
 
-  int defineCell(LuaState ls) {
-    if (ls.isTable(-1)) {
-      ls.getField(-1, "id");
-      final cell = ls.toStr(-1)!;
-      if (cells.contains(cell)) return 0;
-      ls.getField(-2, "name");
-      final name = ls.toStr(-1)!;
-      ls.getField(-3, "desc");
-      final desc = ls.toStr(-1)!;
-      ls.getField(-4, "category");
-      if (ls.isTable(-1)) {
-        final cats = <String>[];
-
-        var i = 0;
-        var run = true;
-        while (run) {
-          i++;
-          ls.pushInteger(i);
-          ls.getTable(-2);
-          if (ls.isNil(-1)) {
-            ls.pop(1);
-            run = false;
-          } else {
-            cats.add(ls.toStr(-1)!);
-            ls.pop(1);
-          }
-        }
-
-        scriptingManager.addToCats(cats, cell);
-      } else if (ls.isString(-1)) {
-        scriptingManager.addToCat(ls.toStr(-1)!, cell);
-      }
-      ls.getField(-5, "texture");
-      final texture = ls.toStr(-1)!;
-
-      ls.getField(-6, "update");
-      if (ls.isTable(-1)) {
-        ls.getField(-1, "mode");
-        final mode = ls.toStr(-1) ?? "4-way";
-        ls.pop(1);
-
-        ls.getField(-1, "index");
-        final index = ls.toNumberX(-1) ?? -1;
-        ls.pop(1);
-
-        ls.getField(-1, "fn");
-        print(ls.typeName2(-1));
+  int? addedForce(Cell cell, int dir, int side, String moveType) {
+    if (definedCells.contains(cell.id)) {
+      // We getting into low level Lua VM stuff, we need garbage collection
+      final id = cell.id;
+      int? result;
+      collected(ls, () {
+        ls.getGlobal("ADDED_FORCE:$id");
         if (ls.isFunction(-1)) {
-          ls.setGlobal("CELL_UPDATE_FUNCS:$cell");
+          pushCell(cell);
+          ls.pushInteger(dir);
+          ls.pushInteger(side);
+          ls.pushString(moveType);
+          ls.call(4, 1);
+          result = ls.toIntegerX(-1);
         }
-        ls.pop(1);
+      });
+      return result;
+    }
+    return null;
+  }
 
-        int i = subticks.length;
+  int defineCell(LuaState ls) {
+    collected(ls, () {
+      if (ls.isTable(-1)) {
+        ls.getField(-1, "id");
+        final cell = ls.toStr(-1)!;
+        if (cells.contains(cell)) return;
+        ls.getField(-2, "name");
+        final name = ls.toStr(-1) ?? defaultProfile.title;
+        ls.getField(-3, "desc");
+        final desc = ls.toStr(-1) ?? defaultProfile.description;
+        ls.getField(-4, "category");
+        if (ls.isTable(-1)) {
+          final cats = <String>[];
 
-        if (index >= 0) {
-          i = index.toInt();
-        }
-
-        subticks.insert(i, () {
-          // Optimization!!!
-          if (grid.cells.contains(cell)) {
-            if (mode == "static") {
-              grid.updateCell((cell, x, y) {
-                collected(ls, () {
-                  ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
-                  if (ls.isFunction(-1)) {
-                    pushCell(cell);
-                    ls.pushNumber(x.toDouble());
-                    ls.pushNumber(y.toDouble());
-                    ls.call(3, 0);
-                  }
-                });
-              }, null, cell);
+          var i = 0;
+          var run = true;
+          while (run) {
+            i++;
+            ls.pushInteger(i);
+            ls.getTable(-2);
+            if (ls.isNil(-1)) {
+              ls.pop(1);
+              run = false;
+            } else {
+              cats.add(ls.toStr(-1)!);
+              ls.pop(1);
             }
-            if (mode == "4-way") {
-              for (var rot in rotOrder) {
+          }
+
+          scriptingManager.addToCats(cats, cell);
+        } else if (ls.isString(-1)) {
+          scriptingManager.addToCat(ls.toStr(-1)!, cell);
+        }
+        ls.getField(-5, "texture");
+        final texture = ls.toStr(-1) ?? "default.png";
+
+        ls.getField(-6, "update");
+        if (ls.isTable(-1)) {
+          ls.getField(-1, "mode");
+          final mode = ls.toStr(-1) ?? "4-way";
+          ls.pop(1);
+
+          ls.getField(-1, "index");
+          final index = ls.toNumberX(-1) ?? -1;
+          ls.pop(1);
+
+          ls.getField(-1, "fn");
+          print(ls.typeName2(-1));
+          if (ls.isFunction(-1)) {
+            ls.setGlobal("CELL_UPDATE_FUNCS:$cell");
+          }
+          ls.pop(1);
+
+          int i = subticks.length;
+
+          if (index >= 0) {
+            i = index.toInt();
+          }
+
+          subticks.insert(i, () {
+            // Optimization!!!
+            if (grid.cells.contains(cell)) {
+              if (mode == "static") {
                 grid.updateCell((cell, x, y) {
                   collected(ls, () {
                     ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
@@ -347,15 +355,11 @@ class LuaScript {
                       ls.call(3, 0);
                     }
                   });
-                }, rot, cell);
+                }, null, cell);
               }
-            }
-            if (mode == "2-way") {
-              for (var rot in [0, 1]) {
-                grid.loopChunks(
-                  cell,
-                  i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
-                  (cell, x, y) {
+              if (mode == "4-way") {
+                for (var rot in rotOrder) {
+                  grid.updateCell((cell, x, y) {
                     collected(ls, () {
                       ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
                       if (ls.isFunction(-1)) {
@@ -365,24 +369,43 @@ class LuaScript {
                         ls.call(3, 0);
                       }
                     });
-                  },
-                  filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
-                );
+                  }, rot, cell);
+                }
+              }
+              if (mode == "2-way") {
+                for (var rot in [0, 1]) {
+                  grid.loopChunks(
+                    cell,
+                    i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
+                    (cell, x, y) {
+                      collected(ls, () {
+                        ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
+                        if (ls.isFunction(-1)) {
+                          pushCell(cell);
+                          ls.pushNumber(x.toDouble());
+                          ls.pushNumber(y.toDouble());
+                          ls.call(3, 0);
+                        }
+                      });
+                    },
+                    filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
+                  );
+                }
               }
             }
-          }
-        });
-      }
+          });
+        }
 
-      // YO!!!
-      definedCells.add(cell);
-      cells.add(cell);
-      print("Defining Cell: " + cell);
-      cellInfo[cell] = CellProfile(name, desc);
-      textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
-      textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
-      ls.setGlobal("PROPS:$cell");
-    }
+        // YO!!!
+        definedCells.add(cell);
+        cells.add(cell);
+        print("Defining Cell: " + cell);
+        cellInfo[cell] = CellProfile(name, desc);
+        textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
+        textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
+        ls.setGlobal("PROPS:$cell");
+      }
+    });
     return 0;
   }
 

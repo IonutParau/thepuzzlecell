@@ -273,7 +273,10 @@ class MathManager {
   }
 
   List<int> tunneled(int x, int y, int dir) {
+    var depth = 0;
     while (true) {
+      depth++;
+      if (depth == grid.width * grid.height) return [x, y];
       var lx = x;
       var ly = y;
       x = frontX(x, dir);
