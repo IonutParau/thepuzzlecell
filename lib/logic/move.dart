@@ -191,6 +191,11 @@ final enemies = [
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
   dir %= 4;
   if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
+
+  if (modded.contains(into.id)) {
+    return scriptingManager.moveInsideOf(into, x, y, dir, force, mt);
+  }
+
   if (into.id == "explosive") {
     return !(into.data['mobile'] ?? false);
   }
@@ -285,6 +290,10 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   final destroyer = grid.at(x, y);
 
   if (!moveInsideOf(destroyer, x, y, dir, force, mt)) return;
+
+  if (modded.contains(destroyer.id)) {
+    return scriptingManager.handleInside(x, y, dir, force, moving, mt);
+  }
 
   if (destroyer.id == "wormhole") {
     if (grid.wrap) {
@@ -642,6 +651,11 @@ final withBias = [
 
 int addedForce(Cell cell, int dir, int force, MoveType mt) {
   dir %= 4;
+
+  if (modded.contains(cell.id)) {
+    return scriptingManager.addedForce(cell, dir, force, mt);
+  }
+
   if (cell.id == "weight") {
     return -1;
   }
@@ -688,8 +702,30 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
   if (withBias.contains(cell.id)) {
     if (cell.rot == dir) {
       cell.updated = true;
+      if (cell.id == "mover_puzzle") {
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          cell.rot = 3;
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          cell.rot = 1;
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          cell.rot = 2;
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          cell.rot = 0;
+        }
+      }
       return 1;
     } else if (cell.rot == odir) {
+      if (cell.id == "mover_puzzle") {
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          cell.rot = 3;
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          cell.rot = 1;
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          cell.rot = 2;
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          cell.rot = 0;
+        }
+      }
       //cell.updated = true;
       return -1;
     }
@@ -734,7 +770,11 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
 }
 
 // The term "acidic" comes from CelLua's "Acid" cell.
-bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int iy) {
+bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+  if (modded.contains(cell.id)) {
+    return scriptingManager.acidic(cell, dir, force, mt, melting, mx, my);
+  }
+
   if (["mobile_trash", "mobile_enemy"].contains(cell.id)) {
     return true;
   }
@@ -751,6 +791,10 @@ bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, in
 }
 
 void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+  if (modded.contains(cell.id)) {
+    return scriptingManager.handleAcid(cell, dir, force, mt, melting, mx, my);
+  }
+
   if (cell.id == "mobile_trash" || cell.id == "mover_trash") {
     grid.addBroken(melting, mx, my);
     grid.set(mx, my, cell);
@@ -777,11 +821,6 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   var ox = x;
   var oy = y;
 
-  // final nc = nextCell(x, y, dir, true);
-  // if (nc.broken) return false;
-  // x = nc.x;
-  // y = nc.y;
-  // dir = nc.dir;
   var addedRot = 0; //nc.addedrot;
   x = frontX(x, dir);
   y = frontY(y, dir);

@@ -22,6 +22,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   dir += 4;
   dir %= 4;
   var puzzle = grid.at(x, y);
+  if (puzzle.tags.contains("puzzle_recursive_move")) return;
   var ox = frontX(x, dir);
   var oy = frontY(y, dir);
   if (!grid.inside(ox, oy)) return;
@@ -30,12 +31,22 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot") {
     var nextType = "normal";
     if (o.rot == puzzle.rot && isPuzzleKeyDown((dir - o.rot) % 4)) {
-      print("Test");
       if (o.id == "trash_puzzle") nextType = "trash";
       if (o.id == "temporal_puzzle") nextType = "temporal";
       if (o.id == "unstable_puzzle") nextType = "unstable";
       if (o.id == "molten_puzzle") nextType = "molten";
       if (o.id == "frozen_puzzle") nextType = "frozen";
+      if (o.id == "mover_puzzle") {
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          o.rot = 3;
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          o.rot = 1;
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          o.rot = 2;
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          o.rot = 0;
+        }
+      }
       force++;
       o.updated = true;
     } else if (o.rot == ((puzzle.rot + 2) % 4) && isPuzzleKeyDown((dir - puzzle.rot) % 4)) {
@@ -43,7 +54,9 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
     }
     if (force == 0) return;
     if ((o.rot == puzzle.rot) || (o.rot == (puzzle.rot + 2) % 4)) {
+      puzzle.tags.add("puzzle_recursive_move");
       doPuzzleSide(ox, oy, dir, cells, nextType, force);
+      puzzle.tags.remove("puzzle_recursive_move");
     }
   }
   if (o.id == "key") {

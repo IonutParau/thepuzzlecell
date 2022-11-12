@@ -336,6 +336,8 @@ final cells = {
   "random_filler",
 }.toList();
 
+final modded = <String>[];
+
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
 final textureMapBackup = Map.from(textureMap);

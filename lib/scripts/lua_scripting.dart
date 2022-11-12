@@ -261,7 +261,7 @@ class LuaScript {
     });
   }
 
-  int? addedForce(Cell cell, int dir, int side, String moveType) {
+  int? addedForce(Cell cell, int dir, int force, int side, String moveType) {
     if (definedCells.contains(cell.id)) {
       // We getting into low level Lua VM stuff, we need garbage collection
       final id = cell.id;
@@ -272,14 +272,106 @@ class LuaScript {
           pushCell(cell);
           ls.pushInteger(dir);
           ls.pushInteger(side);
+          ls.pushInteger(force);
           ls.pushString(moveType);
-          ls.call(4, 1);
+          ls.call(5, 1);
           result = ls.toIntegerX(-1);
         }
       });
       return result;
     }
     return null;
+  }
+
+  bool? moveInsideOf(Cell into, int x, int y, int dir, int force, String mt) {
+    if (definedCells.contains(into.id)) {
+      final id = into.id;
+      bool? result;
+
+      collected(ls, () {
+        ls.getGlobal("MOVE_INSIDE_OF:$id");
+        if (ls.isFunction(-1)) {
+          pushCell(into);
+          ls.pushInteger(x);
+          ls.pushInteger(y);
+          ls.pushInteger(dir);
+          ls.pushInteger(toSide(dir, into.rot));
+          ls.pushInteger(force);
+          ls.pushString(mt);
+          ls.call(7, 1);
+          result = ls.toBoolean(-1);
+        }
+      });
+
+      return result;
+    }
+    return null;
+  }
+
+  void handleInside(int x, int y, int dir, int force, Cell moving, String mt) {
+    final destroyer = grid.at(x, y);
+    if (definedCells.contains(destroyer.id)) {
+      final id = destroyer.id;
+      collected(ls, () {
+        ls.getGlobal("HANDLE_INSIDE:$id");
+        if (ls.isFunction(-1)) {
+          pushCell(destroyer);
+          ls.pushInteger(x);
+          ls.pushInteger(y);
+          pushCell(moving);
+          ls.pushInteger(dir);
+          ls.pushInteger(toSide(dir, moving.rot));
+          ls.pushInteger(force);
+          ls.pushString(mt);
+          ls.call(8, 0);
+        }
+      });
+    }
+  }
+
+  bool? isAcidic(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+    if (definedCells.contains(cell.id)) {
+      final id = cell.id;
+      bool? result;
+      collected(ls, () {
+        ls.getGlobal("IS_ACIDIC:$id");
+        if (ls.isFunction(-1)) {
+          pushCell(cell);
+          ls.pushInteger(dir);
+          ls.pushInteger(toSide(dir, cell.rot));
+          ls.pushInteger(force);
+          ls.pushString(mt);
+          pushCell(melting);
+          ls.pushInteger(mx);
+          ls.pushInteger(my);
+          ls.call(8, 1);
+          result = ls.toBoolean(-1);
+        }
+      });
+      return result;
+    }
+
+    return null;
+  }
+
+  void handleAcid(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+    if (definedCells.contains(cell.id)) {
+      final id = cell.id;
+      collected(ls, () {
+        ls.getGlobal("HANDLE_ACID:$id");
+        if (ls.isFunction(-1)) {
+          pushCell(cell);
+          ls.pushInteger(dir);
+          ls.pushInteger(toSide(dir, cell.rot));
+          ls.pushInteger(force);
+          ls.pushString(mt);
+          pushCell(melting);
+          ls.pushInteger(mx);
+          ls.pushInteger(my);
+          ls.call(8, 0);
+        }
+      });
+    }
   }
 
   int defineCell(LuaState ls) {
@@ -395,10 +487,40 @@ class LuaScript {
             }
           });
         }
+        ls.getField(-7, "addedForce");
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("ADDED_FORCE:$cell");
+          ls.pushNil();
+        }
+
+        ls.getField(-8, "handleInside");
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("HANDLE_INSIDE:$cell");
+          ls.pushNil();
+        }
+
+        ls.getField(-9, "moveInsideOf");
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("MOVE_INSIDE_OF:$cell");
+          ls.pushNil();
+        }
+
+        ls.getField(-10, "acidic");
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("IS_ACIDIC:$cell");
+          ls.pushNil();
+        }
+
+        ls.getField(-11, "handleAcid");
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("HANDLE_ACID:$cell");
+          ls.pushNil();
+        }
 
         // YO!!!
         definedCells.add(cell);
         cells.add(cell);
+        modded.add(cell);
         print("Defining Cell: " + cell);
         cellInfo[cell] = CellProfile(name, desc);
         textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";

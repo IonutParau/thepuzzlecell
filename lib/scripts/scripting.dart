@@ -58,16 +58,53 @@ class ScriptingManager {
     }
   }
 
-  int addedForce(Cell cell, int dir, MoveType moveType) {
+  int addedForce(Cell cell, int dir, int force, MoveType moveType) {
     final id = cell.id;
     final side = toSide(dir, cell.rot);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(id)) {
-        return lua.addedForce(cell, dir, side, moveType.name) ?? 0;
+        return lua.addedForce(cell, dir, force, side, moveType.name) ?? 0;
       }
     }
 
     return 0;
+  }
+
+  bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(into.id)) {
+        return lua.moveInsideOf(into, x, y, dir, force, mt.name) ?? false;
+      }
+    }
+
+    return false;
+  }
+
+  void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
+    final destroyer = grid.at(x, y);
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(destroyer.id)) {
+        return lua.handleInside(x, y, dir, force, moving, mt.name);
+      }
+    }
+  }
+
+  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(cell.id)) {
+        return lua.isAcidic(cell, dir, force, mt.name, melting, mx, my) ?? false;
+      }
+    }
+
+    return false;
+  }
+
+  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(cell.id)) {
+        return lua.handleAcid(cell, dir, force, mt.name, melting, mx, my);
+      }
+    }
   }
 
   void addToCat(String cat, String cell) {

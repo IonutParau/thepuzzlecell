@@ -1,1 +1,1 @@
-export 'scripts_real.dart' if (dart.library.html) 'scripts_dummy.dart';
+export 'scripts_real.dart' if (dart.library.js) 'scripts_dummy.dart';

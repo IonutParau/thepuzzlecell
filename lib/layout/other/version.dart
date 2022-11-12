@@ -85,7 +85,7 @@ class VersionPage extends StatelessWidget {
         children: [
           Spacer(),
           Text(
-            "Cells: ${cells.length - backgrounds.length} | Backgrounds: ${backgrounds.length - biomes.length} | Biomes: ${biomes.length} | Total: ${cells.length}",
+            cellInfoBar,
             style: TextStyle(
               fontSize: 7.sp,
             ),
@@ -93,5 +93,21 @@ class VersionPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String get cellInfoBar {
+    final parts = <String>[];
+
+    parts.add("Foregrounds: ${cells.length - backgrounds.length}");
+    parts.add("Backgrounds: ${backgrounds.length - biomes.length}");
+    parts.add("Backgrounds: ${biomes.length}");
+
+    if (modded.isNotEmpty) {
+      parts.add("Modded: ${modded.length}");
+    }
+
+    parts.add("Total: ${cells.length}");
+
+    return parts.join(" | ");
   }
 }
