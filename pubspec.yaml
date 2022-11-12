@@ -104,4 +104,4 @@ flutter:
     - assets/audio/
     - languages/
     - mods/
-    - mods/test/
+    - mods/testmod/
