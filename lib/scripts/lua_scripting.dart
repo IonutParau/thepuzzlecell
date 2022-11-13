@@ -366,6 +366,11 @@ class LuaScript {
       cell.lifespan = ls.toInteger(-1);
       ls.pop(1);
 
+      ls.getField(-1, "updated");
+      ls.call(0, 1);
+      cell.updated = ls.toBoolean(-1);
+      ls.pop(1);
+
       ls.getField(-1, "cx");
       ls.call(0, 1);
       cell.cx = ls.toInteger(-1);
@@ -788,7 +793,7 @@ class LuaScript {
       final ny = ls.toNumber(-2).toInt();
       final update = ls.toBoolean(-1);
 
-      final c = grid.get(cx, cy);
+      final c = grid.get(cx, cy)?.copy;
       if (c != null) {
         c.updated = c.updated || update;
 

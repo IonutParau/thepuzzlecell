@@ -20,7 +20,7 @@ local cell = {
   update = {
     mode = "static",
     fn = function(cell, x, y)
-      fill(x, y, TPC.grid())
+      fill(x, y, TPC.Grid())
     end,
   },
   category = "Base",
