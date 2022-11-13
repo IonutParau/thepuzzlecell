@@ -728,6 +728,155 @@ class LuaScript {
     ls.getField(-1, key);
   }
 
+  void pushGrid(Grid grid) {
+    ls.newTable();
+
+    defineFunc("width", (ls) {
+      ls.pushInteger(grid.width);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("height", (ls) {
+      ls.pushInteger(grid.height);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("get", (ls) {
+      final x = ls.toNumber(-2).toInt();
+      final y = ls.toNumber(-1).toInt();
+
+      final c = grid.get(x, y);
+
+      if (c == null) {
+        ls.pushNil();
+      } else {
+        pushCell(c, ls);
+      }
+      return 1;
+    }, 1, 2);
+
+    defineFunc("set", (ls) {
+      try {
+        ls.pushNil();
+        ls.copy(-4, -1);
+        final cell = popCell(ls, false);
+        ls.pop(1);
+        final x = ls.toNumber(-2).toInt();
+        final y = ls.toNumber(-1).toInt();
+
+        grid.set(x, y, cell);
+        return 0;
+      } catch (e, st) {
+        print(e);
+        print(st);
+        return 0;
+      }
+    }, 0, 3);
+
+    defineFunc("inside", (ls) {
+      final x = ls.toNumber(-2).toInt();
+      final y = ls.toNumber(-1).toInt();
+
+      ls.pushBoolean(grid.inside(x, y));
+      return 1;
+    }, 1, 2);
+
+    defineFunc("copyCell", (ls) {
+      final cx = ls.toNumber(-5).toInt();
+      final cy = ls.toNumber(-4).toInt();
+      final nx = ls.toNumber(-3).toInt();
+      final ny = ls.toNumber(-2).toInt();
+      final update = ls.toBoolean(-1);
+
+      final c = grid.get(cx, cy);
+      if (c != null) {
+        c.updated = c.updated || update;
+
+        grid.set(nx, ny, c);
+      }
+
+      return 0;
+    }, 0, 5);
+
+    defineFunc("chunkSize", (ls) {
+      ls.pushInteger(grid.chunkSize);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("tickCount", (ls) {
+      ls.pushInteger(grid.tickCount);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("title", (ls) {
+      if (ls.getTop() == 1) {
+        grid.title = ls.toStr(-1)!;
+        ls.pushNil();
+        return 1;
+      }
+
+      ls.pushString(grid.title);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("desc", (ls) {
+      if (ls.getTop() == 1) {
+        grid.title = ls.toStr(-1)!;
+        ls.pushNil();
+        return 1;
+      }
+
+      ls.pushString(grid.title);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("wrap", (ls) {
+      if (ls.getTop() == 1) {
+        grid.wrap = ls.toBoolean(-1);
+        ls.pushNil();
+        return 1;
+      }
+
+      ls.pushBoolean(grid.wrap);
+      return 1;
+    }, 1, 0);
+
+    defineFunc("clearChunks", (ls) {
+      grid.clearChunks();
+      return 0;
+    }, 0, 0);
+
+    defineFunc("rotate", (ls) {
+      final x = ls.toNumber(-3).toInt();
+      final y = ls.toNumber(-2).toInt();
+      final rot = ls.toNumber(-1).toInt();
+      grid.rotate(x, y, rot);
+      return 0;
+    }, 0, 3);
+
+    defineFunc("addBroken", (ls) {
+      final x = ls.toNumber(-3).toInt();
+      final y = ls.toNumber(-2).toInt();
+      final rot = ls.toNumber(-1).toInt();
+      grid.rotate(x, y, rot);
+      return 0;
+    }, 0, 3);
+
+    defineFunc("placeable", (ls) {
+      final x = ls.toNumber(-2).toInt();
+      final y = ls.toNumber(-1).toInt();
+      ls.pushString(grid.placeable(x, y));
+      return 1;
+    }, 1, 2);
+
+    defineFunc("memory", (ls) {
+      final channel = ls.toNumber(-2).toInt();
+      final idx = ls.toNumber(-1).toInt();
+      ls.pushNumber(grid.memory[channel]?[idx]?.toDouble() ?? 0);
+      return 1;
+    }, 1, 2);
+  }
+
   void loadAPI() {
     ls.openLibs();
 
@@ -739,58 +888,7 @@ class LuaScript {
       defineFunc("Import", importOther, 0, 1);
 
       defineFunc("Grid", (ls) {
-        ls.newTable();
-
-        defineFunc("width", (ls) {
-          ls.pushInteger(grid.width);
-          return 1;
-        }, 1, 0);
-
-        defineFunc("height", (ls) {
-          ls.pushInteger(grid.height);
-          return 1;
-        }, 1, 0);
-
-        defineFunc("get", (ls) {
-          final x = ls.toNumber(-2).toInt();
-          final y = ls.toNumber(-1).toInt();
-
-          final c = grid.get(x, y);
-
-          if (c == null) {
-            ls.pushNil();
-          } else {
-            pushCell(c, ls);
-          }
-          return 1;
-        }, 1, 2);
-
-        defineFunc("set", (ls) {
-          try {
-            ls.pushNil();
-            ls.copy(-4, -1);
-            final cell = popCell(ls, false);
-            ls.pop(1);
-            final x = ls.toNumber(-2).toInt();
-            final y = ls.toNumber(-1).toInt();
-
-            grid.set(x, y, cell);
-            return 0;
-          } catch (e, st) {
-            print(e);
-            print(st);
-            return 0;
-          }
-        }, 0, 3);
-
-        defineFunc("inside", (ls) {
-          final x = ls.toNumber(-2).toInt();
-          final y = ls.toNumber(-1).toInt();
-
-          ls.pushBoolean(grid.inside(x, y));
-          return 1;
-        }, 1, 2);
-
+        pushGrid(grid);
         return 1;
       }, 1, 0);
     }, true);
