@@ -762,12 +762,9 @@ class LuaScript {
 
     defineFunc("set", (ls) {
       try {
-        ls.pushNil();
-        ls.copy(-4, -1);
+        final x = ls.toNumber(-3).toInt();
+        final y = ls.toNumber(-2).toInt();
         final cell = popCell(ls, false);
-        ls.pop(1);
-        final x = ls.toNumber(-2).toInt();
-        final y = ls.toNumber(-1).toInt();
 
         grid.set(x, y, cell);
         return 0;
@@ -802,6 +799,36 @@ class LuaScript {
 
       return 0;
     }, 0, 5);
+
+    defineFunc("copyCell", (ls) {
+      final cx = ls.toNumber(-5).toInt();
+      final cy = ls.toNumber(-4).toInt();
+      final nx = ls.toNumber(-3).toInt();
+      final ny = ls.toNumber(-2).toInt();
+      final update = ls.toBoolean(-1);
+
+      final c = grid.get(cx, cy)?.copy;
+      if (c != null) {
+        c.updated = c.updated || update;
+
+        grid.set(nx, ny, c);
+      }
+
+      return 0;
+    }, 0, 5);
+
+    defineFunc("spawn", (ls) {
+      final cx = ls.toNumber(-3).toInt();
+      final cy = ls.toNumber(-2).toInt();
+      final cell = popCell(ls, false);
+
+      final c = grid.get(cx, cy);
+      if (c != null && c.id == "empty") {
+        grid.set(cx, cy, cell);
+      }
+
+      return 0;
+    }, 0, 3);
 
     defineFunc("chunkSize", (ls) {
       ls.pushInteger(grid.chunkSize);
@@ -874,6 +901,41 @@ class LuaScript {
       return 1;
     }, 1, 2);
 
+    defineFunc("setPlace", (ls) {
+      final x = ls.toNumber(-3).toInt();
+      final y = ls.toNumber(-2).toInt();
+      final place = ls.toStr(-1)!;
+
+      grid.setPlace(x, y, place);
+      return 0;
+    }, 0, 3);
+
+    defineFunc("setChunk", (ls) {
+      final x = ls.toNumber(-3).toInt();
+      final y = ls.toNumber(-2).toInt();
+      final chunk = ls.toStr(-1)!;
+
+      grid.setChunk(x, y, chunk);
+      return 0;
+    }, 0, 3);
+
+    defineFunc("addBroken", (ls) {
+      // Grab cell from -6
+      ls.pushNil();
+      ls.copy(-7, -1);
+      final cell = popCell(ls);
+
+      // Grab rest of args
+      final dx = ls.toNumber(-5).toInt();
+      final dy = ls.toNumber(-4).toInt();
+      final type = ls.toStr(-3)!;
+      final rlvx = ls.toNumberX(-2)?.toInt();
+      final rlvy = ls.toNumberX(-1)?.toInt();
+
+      grid.addBroken(cell, dx, dy, type, rlvx, rlvy);
+      return 0;
+    }, 0, 6);
+
     defineFunc("memory", (ls) {
       final channel = ls.toNumber(-2).toInt();
       final idx = ls.toNumber(-1).toInt();
@@ -896,6 +958,11 @@ class LuaScript {
         pushGrid(grid);
         return 1;
       }, 1, 0);
+
+      defineFunc("enemyParticleCount", (ls) {
+        ls.pushNumber(enemyParticleCounts.toDouble());
+        return 1;
+      }, 1);
     }, true);
   }
 
