@@ -82,6 +82,10 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
     final rot = cell.rot;
     final side = toSide(dir, rot);
 
+    if (modded.contains(id)) {
+      return scriptingManager.canMove(cell, x, y, dir, side, force, mt);
+    }
+
     switch (id) {
       case "pushable":
         return mt == MoveType.push;

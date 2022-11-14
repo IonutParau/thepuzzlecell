@@ -87,6 +87,66 @@ void doFiller(Cell cell, int x, int y) {
   if (safeAt(x, y - 1)?.id == "empty") grid.set(x, y - 1, filler.copy);
 }
 
+void doConfigurableFiller(Cell cell, int x, int y) {
+  final consistency = cell.data['consistency'] as num;
+  if (rng.nextDouble() > consistency / 100) return;
+
+  final filler = cell.copy;
+  filler.updated = true;
+
+  final rotate = cell.data['rotate'] as bool;
+  final mutationChance = cell.data['mutationChance'] as num;
+
+  Cell toSpread(int dir) {
+    final c = filler.copy;
+
+    if (rotate) {
+      c.rot += dir;
+      c.rot %= 4;
+    }
+
+    cell.data.forEach(
+      (key, value) {
+        c.data[key] = value;
+        if (rng.nextDouble() <= mutationChance / 100) {
+          if (value is bool) {
+            c.data[key] = rng.nextBool();
+          }
+          if (value is num) {
+            c.data[key] = value += (rng.nextDouble() * 2 - 1);
+          }
+        }
+      },
+    );
+
+    return c;
+  }
+
+  for (var dir in [0, 1, 2, 3]) {
+    final fx = frontX(x, dir);
+    final fy = frontY(y, dir);
+
+    num odds = 100;
+
+    if (dir == 0) {
+      odds = cell.data['rightSpread'] as num;
+    }
+    if (dir == 2) {
+      odds = cell.data['leftSpread'] as num;
+    }
+    if (dir == 1) {
+      odds = cell.data['downSpread'] as num;
+    }
+    if (dir == 3) {
+      odds = cell.data['upSpread'] as num;
+    }
+
+    if (rng.nextDouble() <= odds / 100) {
+      if (safeAt(fx, fy)?.id == "empty") grid.set(fx, fy, toSpread(dir));
+    }
+  }
+}
+
 void spreaders() {
   grid.updateCell(doCancer, null, "cancer");
   grid.updateCell(doFire, null, "fire");
@@ -96,4 +156,6 @@ void spreaders() {
   grid.updateCell(doFiller, null, "filler");
 
   grid.updateCell((cell, x, y) => ((rng.nextBool()) ? doFiller(cell, x, y) : null), null, "random_filler");
+
+  grid.updateCell(doConfigurableFiller, null, "configurable_filler");
 }

@@ -334,6 +334,7 @@ final cells = {
   "master_get_width",
   "master_get_height",
   "random_filler",
+  "configurable_filler",
 }.toList();
 
 final modded = <String>[];
@@ -343,6 +344,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "configurable_filler.png": "recreators/fillers/configurable_filler.png",
   "random_filler.png": "recreators/fillers/random_filler.png",
   "master_get_x.png": "master/getter/master_get_x.png",
   "master_get_y.png": "master/getter/master_get_y.png",
@@ -1030,13 +1032,15 @@ final categories = [
         "transformer",
       ),
       CellCategory(
-          "Fillers",
-          "They fill space in quadratic time",
-          [
-            "filler",
-            "random_filler",
-          ],
-          "filler"),
+        "Fillers",
+        "They fill space in quadratic time",
+        [
+          "filler",
+          "random_filler",
+          "configurable_filler",
+        ],
+        "filler",
+      ),
       "factory",
     ],
     "generator",
@@ -2838,6 +2842,10 @@ final cellInfo = <String, CellProfile>{
     "Random Filler",
     "Filler but spreads randomly",
   ),
+  "configurable_filler": CellProfile(
+    "Configurable Filler",
+    "A filler with a lot of properties and capable of evolution",
+  ),
 };
 
 enum CellPropertyType {
@@ -2983,5 +2991,14 @@ Map<String, List<CellProperty>> props = {
   "mech_debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
     CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
+  ],
+  "configurable_filler": [
+    CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
+    CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
+    CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
+    CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
+    CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
+    CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
   ],
 };

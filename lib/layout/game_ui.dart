@@ -2489,6 +2489,23 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           Offset(selScreenX, selScreenY) & Size(selW * cellSize, selH * cellSize),
           Paint()..color = (Colors.grey[100].withOpacity(0.4)),
         );
+
+        if (debugMode) {
+          final tp = TextPainter(
+            text: TextSpan(
+              text: 'X: $selX\nY: $selY\nA: ${selW.abs()} x ${selH.abs()}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20 * uiScale,
+              ),
+            ),
+            textDirection: TextDirection.ltr,
+          );
+
+          tp.layout();
+
+          tp.paint(canvas, Offset(selScreenX, selScreenY + selH * cellSize));
+        }
       }
 
       redparticles.render(canvas);
@@ -2624,6 +2641,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           var d = lang("$id.desc", (cellInfo[id] ?? defaultProfile).description);
           if (debugMode) {
             d += "\nID: $id";
+            d += "\nX: $mx";
+            d += "\nY: $my";
             final prop = props[id];
             if (prop != null) {
               var strings = [];
@@ -2637,7 +2656,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
 
-          renderInfoBox(canvas, lang("$id.title", (cellInfo[id] ?? defaultProfile).title), d);
+          renderInfoBox(canvas, lang("$id.title", (cellInfo[id] ?? defaultProfile).title) + " (${rotToString(c.rot)})", d);
         }
       }
 

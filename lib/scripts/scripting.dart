@@ -135,6 +135,14 @@ class ScriptingManager {
   void addToCats(List<String> cats, String cell) {
     cats.forEach((cat) => addToCat(cat, cell));
   }
+
+  bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
+    for (var lua in luaScripts) {
+      return lua.canMove(cell, x, y, dir, side, force, mt.name) ?? true;
+    }
+
+    return true;
+  }
 }
 
 final scriptingManager = ScriptingManager();

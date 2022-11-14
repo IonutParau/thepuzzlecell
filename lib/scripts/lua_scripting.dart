@@ -230,6 +230,9 @@ class LuaScript {
         if (ls.isBoolean(-2) && (type == "auto" || type == "bool")) {
           cell.data[field] = ls.toBoolean(-2);
         }
+        if (ls.isInteger(-2) && (type == "auto" || type == "integer")) {
+          cell.data[field] = ls.toNumber(-2);
+        }
         if (ls.isNumber(-2) && (type == "auto" || type == "number")) {
           cell.data[field] = ls.toNumber(-2);
         }
@@ -250,11 +253,19 @@ class LuaScript {
           ls.pushNil();
           return 1;
         }
+        if (val is int && (type == "integer" || type == "auto")) {
+          ls.pushInteger(val);
+          return 1;
+        }
+        if (val is num && type == "integer") {
+          ls.pushInteger(val.toInt());
+          return 1;
+        }
         if (val is num && (type == "number" || type == "auto")) {
           ls.pushNumber(val.toDouble());
           return 1;
         }
-        if (val is bool && (type == "bool" || type == "auto")) {
+        if (val is bool && (type == "bool" || type == "boolean" || type == "auto")) {
           ls.pushBoolean(val);
           return 1;
         }
@@ -346,7 +357,7 @@ class LuaScript {
               if (p.type == CellPropertyType.number) {
                 cell.data[key] = ls.toNumber(-1);
               } else if (p.type == CellPropertyType.integer) {
-                cell.data[key] = ls.toInteger(-1);
+                cell.data[key] = ls.toNumber(-1).toInt();
               } else if (p.type == CellPropertyType.boolean) {
                 cell.data[key] = ls.toBoolean(-1);
               } else {
@@ -710,11 +721,62 @@ class LuaScript {
           }
           ls.pop(1);
 
+          ls.getField(-1, "properties");
+          if (ls.isTable(-1)) {
+            final cellProps = <CellProperty>[];
+
+            var i = 0;
+            var stopped = false;
+            while (!stopped) {
+              i++;
+              ls.pushInteger(i);
+              ls.getTable(-2);
+              if (ls.isNil(-1)) {
+                stopped = true;
+              } else if (ls.isTable(-1)) {
+                ls.getField(-1, "name");
+                final name = ls.toStr(-1)!;
+                ls.pop(1);
+
+                ls.getField(-1, "field");
+                final field = ls.toStr(-1)!;
+                ls.pop(1);
+
+                ls.getField(-1, "type");
+                final type = ls.toStr(-1)!;
+                ls.pop(1);
+
+                ls.getField(-1, "default");
+                for (var propType in CellPropertyType.values) {
+                  if (propType.name == type) {
+                    dynamic val;
+
+                    if (propType == CellPropertyType.number) {
+                      val = ls.toNumber(-1);
+                    } else if (propType == CellPropertyType.integer) {
+                      val = ls.toNumber(-1).toInt();
+                    } else if (propType == CellPropertyType.boolean) {
+                      val = ls.toBoolean(-1);
+                    } else {
+                      val = ls.toStr(-1);
+                    }
+                    cellProps.add(CellProperty(name, field, propType, val));
+                  }
+                }
+                ls.pop(1);
+              }
+              ls.pop(1);
+            }
+
+            props[cell] = cellProps;
+          }
+          ls.pop(1);
+
           // YO!!!
           definedCells.add(cell);
           cells.add(cell);
           modded.add(cell);
-          print("Defining Cell: " + cell);
+          print("Defined Cell: " + cell);
           cellInfo[cell] = CellProfile(name, desc);
           textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
           textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
@@ -731,6 +793,35 @@ class LuaScript {
   void pushDefinedCellProperty(String cell, String key) {
     ls.getGlobal("PROPS:$cell");
     ls.getField(-1, key);
+  }
+
+  T withDefinedCellProperty<T>(String cell, String key, T Function() fn) {
+    pushDefinedCellProperty(cell, key);
+    final r = fn();
+    ls.pop(2);
+    return r;
+  }
+
+  bool? canMove(Cell cell, int x, int y, int dir, int side, int force, String mt) {
+    if (definedCells.contains(cell.id)) {
+      return withDefinedCellProperty<bool>(cell.id, "movable", () {
+        if (ls.isFunction(-1)) {
+          pushCell(cell, ls);
+          ls.pushInteger(x);
+          ls.pushInteger(y);
+          ls.pushInteger(dir);
+          ls.pushInteger(side);
+          ls.pushInteger(force);
+          ls.pushString(mt);
+          ls.call(7, 1);
+          final b = ls.toBoolean(-1);
+          return b;
+        }
+        return true;
+      });
+    }
+
+    return null;
   }
 
   void pushGrid(Grid grid) {

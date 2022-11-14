@@ -10,8 +10,13 @@ final List<String> changes = [
   "Added themes",
   "Improved multiplayer performance",
   "Added some settings to limit bandwidth usage",
-  "Added a setting to *slightly* improve performance",
+  "Added a modding API",
   "Added Random Filler",
+  "Added Configurable Filler",
+  "Made selection area show size and position",
+  "Made Debug Mode also show cell position",
+  "Added Electrical",
+  "Moved Zoom In and Zoom Out out of tools",
 ];
 
 IconData getTrailing(String change) {

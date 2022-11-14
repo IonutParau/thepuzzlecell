@@ -32,6 +32,18 @@ class ScriptingManager {
   void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
     return;
   }
+
+  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+    return false;
+  }
+
+  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+    return;
+  }
+
+  bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
+    return true;
+  }
 }
 
 final scriptingManager = ScriptingManager();
