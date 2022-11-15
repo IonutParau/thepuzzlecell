@@ -143,6 +143,24 @@ class ScriptingManager {
 
     return true;
   }
+
+  String modOrigin(String id) {
+    for (var lua in luaScripts) {
+      if (lua.definedCells.contains(id)) return lua.id;
+    }
+
+    return "";
+  }
+
+  String modName(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        return lua.info['name'] ?? "Unnamed";
+      }
+    }
+
+    return "";
+  }
 }
 
 final scriptingManager = ScriptingManager();

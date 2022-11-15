@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import '../common/blueprints/add_blueprint_dialog.dart';
-import '../common/rename_blueprint_dialog.dart';
+import '../common/blueprints/rename_blueprint_dialog.dart';
 
 class SaveBlueprintDialog extends StatelessWidget {
   final String bpSave;

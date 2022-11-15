@@ -59,6 +59,15 @@ void biome() {
       final c = <String>[...cells];
       c.removeWhere((id) => id == "empty" || backgrounds.contains(id));
       cell.id = c[rng.nextInt(c.length)];
+
+      final p = props[cell.id];
+      if (p != null) {
+        for (var p in p) {
+          if (!cell.data.containsKey(p.key)) {
+            cell.data[p.key] = p.def;
+          }
+        }
+      }
       grid.setChunk(x, y, cell.id);
       cell.updated = false;
     }

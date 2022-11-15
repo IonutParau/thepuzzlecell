@@ -595,6 +595,7 @@ Future loadAllButtonTextures() {
     "math/math_block.png",
     "interface/chat.png",
     "interface/see_online.png",
+    "interface/search_cell.png",
   ]);
 }
 
@@ -1463,6 +1464,22 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           title: 'Property Editor',
           description: 'It looks like you have selected a cell with adjustable properties.\nClick on this button to edit them',
         )..startPos = Vector2(-90, 90),
+      );
+
+      buttonManager.setButton(
+        "search-cell-btn",
+        VirtualButton(
+          Vector2(20, 20),
+          Vector2.all(70),
+          "interface/search_cell.png",
+          ButtonAlignment.BOTTOMRIGHT,
+          () {
+            showDialog(context: context, builder: (ctx) => SearchCellDialog());
+          },
+          () => true,
+          title: 'Search Cell',
+          description: 'Search for a cell',
+        ),
       );
     }
 

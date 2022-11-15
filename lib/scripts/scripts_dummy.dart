@@ -44,6 +44,12 @@ class ScriptingManager {
   bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
     return true;
   }
+
+  String modOrigin(String id) => "";
+
+  String modName(String id) {
+    return "";
+  }
 }
 
 final scriptingManager = ScriptingManager();

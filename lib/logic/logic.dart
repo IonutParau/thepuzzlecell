@@ -249,6 +249,10 @@ String idToString(String id) {
   return lang("$id.title", (cellInfo[id] ?? defaultProfile).title);
 }
 
+String idToDesc(String id) {
+  return lang("$id.desc", (cellInfo[id] ?? defaultProfile).description);
+}
+
 String idToTexture(String id) {
   return "assets/images/${textureMap['$id.png'] ?? '$id.png'}";
 }

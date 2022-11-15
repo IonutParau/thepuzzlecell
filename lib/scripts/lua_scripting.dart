@@ -7,6 +7,16 @@ class LuaScript {
 
   String get id => path.split(dir.path).last;
 
+  Map<String, dynamic> get info {
+    final f = File(path.join(dir.path, 'info.json'));
+
+    if (f.existsSync()) {
+      return jsonDecode(f.readAsStringSync());
+    }
+
+    return {};
+  }
+
   int apiInvokes = 0;
 
   List<ScriptingError> errors = [];

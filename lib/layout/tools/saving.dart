@@ -798,13 +798,22 @@ List<String> fancySplit(String thing, String sep) {
 
   var things = [""];
 
+  var instring = false;
+
   for (var c in chars) {
-    if (c == "(") {
-      depth++;
-    } else if (c == ")") {
-      depth--;
+    if (c == "\"") {
+      instring = !instring;
+      things.last += c;
+      continue;
     }
-    if (depth == 0 && (c == sep || sep == "")) {
+    if (!instring) {
+      if (c == "(") {
+        depth++;
+      } else if (c == ")") {
+        depth--;
+      }
+    }
+    if (depth == 0 && (c == sep || sep == "") && !instring) {
       if (sep == "") {
         things.last += c;
       }
@@ -1241,18 +1250,18 @@ class P5 {
 class TPCML {
   static String encodeValue(dynamic value) {
     if (value is Set) {
-      value = value.toList();
+      return 's(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
     }
     if (value is List) {
-      return '(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
+      return 'l(' + value.map<String>((e) => encodeValue(e)).join(":") + ')';
     } else if (value is Map) {
       final keys = value.isEmpty ? ["="] : [];
 
       value.forEach((key, value) {
-        keys.add('$key=${encodeValue(value)}');
+        keys.add('"$key"=${encodeValue(value)}');
       });
 
-      return '(${keys.join(':')})';
+      return 'm(${keys.join(':')})';
     }
 
     if (value == double.infinity) {
@@ -1265,12 +1274,25 @@ class TPCML {
       return "-inf";
     }
 
+    if (value is int) {
+      return "ni$value";
+    }
+    if (value is double) {
+      return "nd$value";
+    }
+    if (value is String) {
+      return '"$value"';
+    }
+
     return value.toString();
   }
 
   static dynamic decodeValue(String str) {
     if (str == '{}') return <String>{};
     if (str == '()') return <String>{};
+    if (str == 's()') return <String>{};
+    if (str == 'l()') return <String>[];
+    if (str == 'm()') return <String, dynamic>{};
     if (str == "inf") return double.infinity;
     if (str == "nan") return double.nan;
     if (str == "-inf") return double.negativeInfinity;
@@ -1280,6 +1302,27 @@ class TPCML {
       return double.parse(str);
     } else if (str == "true" || str == "false") {
       return str == "true";
+    } else if (str.startsWith('l(') && str.endsWith(')')) {
+      final s = str.substring(2, str.length - 1);
+      return fancySplit(s, ':').map<dynamic>((e) => decodeValue(e)).toList();
+    } else if (str.startsWith('s(') && str.endsWith(')')) {
+      final s = str.substring(2, str.length - 1);
+      return fancySplit(s, ':').map<dynamic>((e) => decodeValue(e)).toSet();
+    } else if (str.startsWith('m(') && str.endsWith(')')) {
+      final s = str.substring(2, str.length - 1);
+      // It is a map, decode it as a map
+      final map = <String, dynamic>{};
+
+      final parts = fancySplit(s, ':');
+
+      for (var part in parts) {
+        final kv = fancySplit(part, '=');
+        final k = kv[0].startsWith('\"') && kv[0].endsWith('\"') ? kv[0].substring(1, kv[0].length - 1) : kv[0];
+        final v = decodeValue(kv[1]);
+
+        map[k] = v;
+      }
+      return map;
     } else if (str.startsWith('(') && str.endsWith(')')) {
       final s = str.substring(1, str.length - 1);
 
@@ -1301,6 +1344,12 @@ class TPCML {
         // It is a list, decode it as a list
         return fancySplit(s, ':').map<dynamic>((e) => decodeValue(e)).toSet();
       }
+    } else if (str.startsWith('\"') && str.endsWith('\"')) {
+      return str.substring(1, str.length - 1);
+    } else if (str.startsWith('ni') && int.tryParse(str.substring(2)) != null) {
+      return int.parse(str.substring(2));
+    } else if (str.startsWith('nd') && double.tryParse(str.substring(2)) != null) {
+      return double.parse(str.substring(2));
     }
 
     return str;

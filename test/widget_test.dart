@@ -6,18 +6,18 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_puzzle_cell/layout/tools/tools.dart' show P4;
+import 'package:the_puzzle_cell/layout/tools/tools.dart' show TPCML;
 import 'package:the_puzzle_cell/logic/logic.dart';
 
 void main() {
-  test('Test P4 decoding', () {
-    expect(P4.decodeValue('0'), 0);
-    expect(P4.decodeValue('Test'), 'Test');
-    expect(P4.decodeValue('true'), true);
-    expect(P4.decodeValue('false'), false);
-    expect(P4.decodeValue('1.5'), 1.5);
-    expect(P4.decodeValue('(true:false:1.5:0)'), [true, false, 1.5, 0]);
-    expect(P4.decodeValue('(key=value:test=(this:is:a:list):someMap=(someKey=someValue:someNumber=0:someDouble=5.3:someBoolean=false))'), {
+  test('Test TPCML decoding', () {
+    expect(TPCML.decodeValue('ni0'), 0);
+    expect(TPCML.decodeValue('"Test"'), 'Test');
+    expect(TPCML.decodeValue('true'), true);
+    expect(TPCML.decodeValue('false'), false);
+    expect(TPCML.decodeValue('nd1.5'), 1.5);
+    expect(TPCML.decodeValue('l(true:false:nd1.5:ni0)'), [true, false, 1.5, 0]);
+    expect(TPCML.decodeValue('m(key="value":test=l(this:is:a:list):someMap=m(someKey="someValue":someNumber=ni0:someDouble=nd5.3:someBoolean=false))'), {
       'key': 'value',
       'test': ['this', 'is', 'a', 'list'],
       'someMap': {'someKey': 'someValue', 'someNumber': 0, 'someDouble': 5.3, 'someBoolean': false}
@@ -25,18 +25,18 @@ void main() {
   });
 
   test('Test P4 encoding', () {
-    expect(P4.encodeValue(0), '0');
-    expect(P4.encodeValue(2.5), '2.5');
+    expect(TPCML.encodeValue(0), 'ni0');
+    expect(TPCML.encodeValue(2.5), 'nd2.5');
     expect(
-      P4.encodeValue([
+      TPCML.encodeValue([
         'help',
         {'test': 'thing'},
         ['hlep', 'test']
       ]),
-      '(help:(test=thing):(hlep:test))',
+      'l("help":m("test"="thing"):l("hlep":"test"))',
     );
     expect(
-      P4.encodeValue(<String, dynamic>{
+      TPCML.encodeValue(<String, dynamic>{
         'someList': [
           'help',
           {'test': 'thing'},
@@ -46,7 +46,7 @@ void main() {
           'key': 'value',
         },
       }),
-      '(someList=(help:(test=thing):(hlep:test)):someMap=(key=value))',
+      'm("someList"=l("help":m("test"="thing"):l("hlep":"test")):"someMap"=m("key"="value"))',
     );
   });
 
