@@ -17,6 +17,7 @@ final List<String> changes = [
   "Made Debug Mode also show cell position",
   "Added Electrical",
   "Moved Zoom In and Zoom Out out of tools",
+  "Addec Cell Searching",
 ];
 
 IconData getTrailing(String change) {

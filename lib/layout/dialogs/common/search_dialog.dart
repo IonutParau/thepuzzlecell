@@ -56,15 +56,22 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
     final parts = fancySplit(data, ' ');
 
     final results = <SearchQueryResult>[];
+    final visited = <String>[];
 
     for (var cat in categories) {
       if (cat.title != "Tools") {
         for (var item in cat.items) {
           if (item is String) {
-            results.add(SearchQueryResult(item, cat.title));
+            if (!visited.contains(item)) {
+              visited.add(item);
+              results.add(SearchQueryResult(item, cat.title));
+            }
           } else if (item is CellCategory) {
             for (var subitem in item.items) {
-              results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
+              if (!visited.contains(subitem)) {
+                visited.add(subitem);
+                results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
+              }
             }
           }
         }
@@ -79,6 +86,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
     final filters = <SearchFilter>[];
 
     while (true) {
+      if (parts.isEmpty) break;
       if (parts.first.startsWith('@')) {
         final str = parts.first.substring(1);
 
@@ -102,22 +110,41 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       parts.add("");
     }
 
-    bool searchedByDesc = false;
-    if (parts.length == 1) {
-      final part = parts[0];
-
-      if (part.startsWith('"') && part.endsWith('"')) {
-        final desc = part.substring(1, part.length - 1);
-        results.retainWhere((e) => idToDesc(e.cell).toLowerCase().contains(desc.toLowerCase()));
-        searchedByDesc = true;
+    var i = 0;
+    var descs = <String>[];
+    while (true) {
+      if (i >= parts.length) break;
+      if (parts[i].startsWith('\"') && parts[i].endsWith('\"')) {
+        descs.add(parts.removeAt(i));
+      } else {
+        i++;
       }
     }
 
-    if (!searchedByDesc && parts.isNotEmpty) {
-      final name = parts.join(" ");
-      results.retainWhere((result) => idToString(result.cell).toLowerCase().contains(name.toLowerCase()));
+    if (parts.isEmpty) {
+      parts.add("");
     }
 
+    results.retainWhere((result) {
+      final desc = idToDesc(result.cell).toLowerCase();
+
+      for (var d in descs) {
+        if (desc.contains(d.toLowerCase())) return true;
+      }
+
+      return descs.isEmpty;
+    });
+
+    final name = parts.join(" ");
+    if (name.replaceAll(' ', '') != "") {
+      results.retainWhere(
+        (result) => idToString(
+          result.cell,
+        ).toLowerCase().contains(
+              name.toLowerCase(),
+            ),
+      );
+    }
     for (var filter in filters) {
       if (filter.name == "modded") {
         results.retainWhere((result) => result.isModded);
@@ -142,7 +169,13 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
 
           return s;
         }).toList();
-        results.retainWhere((result) => stuff.every((category) => result.categoryPath.toLowerCase().contains(category.toLowerCase())));
+        results.retainWhere((result) {
+          for (var thing in stuff) {
+            if (result.categoryPath.contains(thing)) return true;
+          }
+
+          return stuff.isEmpty;
+        });
       }
 
       if (filter.name == "mod") {
