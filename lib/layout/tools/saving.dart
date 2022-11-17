@@ -1146,14 +1146,14 @@ class P5 {
             return;
           }
         }
-        cellDataList.add(TPCML.encodeValue({"cell": cstr, "count": 1}));
+        cellDataList.add(TPCML.encodeValue({"cell": TPCML.decodeValue(cstr), "count": 1}));
       },
     );
 
     final cellDataStr = baseEncoder.encode(
       Uint8List.fromList(zlib.encode(
         utf8.encode(
-          cellDataList.join(''),
+          cellDataList.join(':'),
         ),
       )),
     );
@@ -1170,80 +1170,80 @@ class P5 {
   }
 
   static Grid decodeString(String str, [bool handleCustomProps = true]) {
-    final segs = str.split(';');
+    try {
+      final segs = str.split(';');
 
-    final width = decodeNum(segs[3], valueString);
-    final height = decodeNum(segs[4], valueString);
+      final width = decodeNum(segs[3], valueString);
+      final height = decodeNum(segs[4], valueString);
 
-    final g = Grid(width, height);
+      final g = Grid(width, height);
 
-    g.title = segs[1];
-    g.desc = segs[2];
+      g.title = segs[1];
+      g.desc = segs[2];
 
-    final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
+      final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), ':');
 
-    while (rawCellDataList.first == "") {
-      rawCellDataList.removeAt(0);
-    }
-    while (rawCellDataList.last == "") {
-      rawCellDataList.removeLast();
-    }
+      final cellDataList = [];
 
-    final cellDataList = [];
+      for (var cellData in rawCellDataList) {
+        final m = TPCML.decodeValue(cellData);
 
-    for (var cellData in rawCellDataList) {
-      final m = TPCML.decodeValue(cellData);
+        final c = m['count'] ?? 1;
 
-      final c = m['count'] ?? 1;
-
-      for (var i = 0; i < c; i++) {
-        cellDataList.add(TPCML.encodeValue(m['cell']));
-      }
-    }
-
-    var i = 0;
-
-    g.forEach(
-      (cell, x, y) {
-        if (cellDataList.length > i) {
-          setCell(cellDataList[i], x, y, g);
+        for (var i = 0; i < c; i++) {
+          cellDataList.add(TPCML.encodeValue(m['cell']));
         }
-        i++;
-      },
-    );
-
-    final props = TPCML.decodeValue(segs[6]);
-    g.wrap = props['W'] ?? false;
-
-    if (handleCustomProps) {
-      if (props['update_delay'] is num) {
-        QueueManager.add("post-game-init", () {
-          game.delay = props['update_delay']!;
-        });
       }
-      if (props['viewbox'] != null) {
-        QueueManager.add("post-game-init", () {
-          final vb = props['viewbox'] as Map;
 
-          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
-        });
-      }
-      // We gotta decode le' RAM stick
-      if (props['memory'] != null) {
-        final m = props['memory'] as Map;
-        m.forEach((key, value) {
-          final c = <int, num>{};
+      var i = 0;
 
-          value.forEach((key, value) {
-            c[int.parse(key)] = TPCML.decodeValue(value);
+      g.forEach(
+        (cell, x, y) {
+          if (cellDataList.length > i) {
+            setCell(cellDataList[i], x, y, g);
+          }
+          i++;
+        },
+      );
+
+      final props = TPCML.decodeValue(segs[6]);
+      g.wrap = props['W'] ?? false;
+
+      if (handleCustomProps) {
+        if (props['update_delay'] is num) {
+          QueueManager.add("post-game-init", () {
+            game.delay = props['update_delay']!;
           });
+        }
+        if (props['viewbox'] != null) {
+          QueueManager.add("post-game-init", () {
+            final vb = props['viewbox'] as Map;
 
-          g.memory[int.parse(key)] = c;
-        });
+            game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
+          });
+        }
+        // We gotta decode le' RAM stick
+        if (props['memory'] != null) {
+          final m = props['memory'] as Map;
+          m.forEach((key, value) {
+            final c = <int, num>{};
+
+            value.forEach((key, value) {
+              c[int.parse(key)] = TPCML.decodeValue(value);
+            });
+
+            g.memory[int.parse(key)] = c;
+          });
+        }
       }
+
+      return g;
+    } catch (e, st) {
+      print(e);
+      print(st);
     }
 
-    return g;
+    return grid;
   }
 }
 
