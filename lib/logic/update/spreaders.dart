@@ -96,6 +96,8 @@ void doConfigurableFiller(Cell cell, int x, int y) {
 
   final rotate = cell.data['rotate'] as bool;
   final mutationChance = cell.data['mutationChance'] as num;
+  final attackChance = cell.data['attackChance'] as num;
+  final id = cell.data['id'] as int;
 
   Cell toSpread(int dir) {
     final c = filler.copy;
@@ -105,22 +107,30 @@ void doConfigurableFiller(Cell cell, int x, int y) {
       c.rot %= 4;
     }
 
-    cell.data.forEach(
-      (key, value) {
-        c.data[key] = value;
-        if (rng.nextDouble() <= mutationChance / 100) {
-          if (value is bool) {
-            c.data[key] = rng.nextBool();
+    try {
+      cell.data.forEach(
+        (key, value) {
+          c.data[key] = value;
+          if (rng.nextDouble() <= mutationChance / 100) {
+            if (value is bool) {
+              c.data[key] = rng.nextBool();
+            } else if (value is int) {
+              c.data[key] = value;
+            } else if (value is num) {
+              c.data[key] = value + (rng.nextDouble() * 2 - 1);
+            }
           }
-          if (value is num) {
-            c.data[key] = value += (rng.nextDouble() * 2 - 1);
-          }
-        }
-      },
-    );
+        },
+      );
+    } catch (e, st) {
+      print(e);
+      print(st);
+    }
 
     return c;
   }
+
+  bool died = false;
 
   for (var dir in [0, 1, 2, 3]) {
     final fx = frontX(x, dir);
@@ -140,10 +150,24 @@ void doConfigurableFiller(Cell cell, int x, int y) {
     if (dir == 3) {
       odds = cell.data['upSpread'] as num;
     }
-
     if (rng.nextDouble() <= odds / 100) {
-      if (safeAt(fx, fy)?.id == "empty") grid.set(fx, fy, toSpread(dir));
+      if (safeAt(fx, fy)?.id == "empty") {
+        grid.set(fx, fy, toSpread(dir));
+      } else {
+        if (safeAt(fx, fy)?.id == "configurable_filler" && safeAt(fx, fy)?.data['id'] != id) {
+          if (rng.nextDouble() <= attackChance / 100) {
+            grid.addBroken(grid.at(fx, fy), fx, fy, "silent");
+            grid.set(fx, fy, toSpread(dir));
+            if (rng.nextDouble() <= attackChance / 100) died = true;
+          }
+        }
+      }
     }
+  }
+
+  if (died) {
+    grid.addBroken(filler, x, y, "silent_shrinking");
+    grid.set(x, y, Cell(x, y));
   }
 }
 

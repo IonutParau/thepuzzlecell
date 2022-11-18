@@ -2993,8 +2993,10 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
   ],
   "configurable_filler": [
+    CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
     CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty("Attack Chance", "attackChance", CellPropertyType.number, 100),
     CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
     CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
     CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
