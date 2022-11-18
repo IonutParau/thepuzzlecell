@@ -3,22 +3,12 @@ part of logic;
 void doGear(int x, int y, RotationalType rt) {
   if (rt == RotationalType.clockwise) {
     // If we are jammed, stop ourselves
-    if (!canMoveAll(x + 1, y - 1, 0, 1, MoveType.gear)) return;
     if (!canMove(x, y - 1, 0, 1, MoveType.gear)) return;
-    if (!canMoveAll(x + 1, y + 1, 1, 1, MoveType.gear)) return;
     if (!canMove(x + 1, y, 1, 1, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y + 1, 2, 1, MoveType.gear)) return;
     if (!canMove(x, y + 1, 2, 1, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y - 1, 3, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y, 3, 1, MoveType.gear)) return;
 
     grid.rotate(x, y, 1); // Cool stuff
-
-    // Moves corners
-    push(x + 1, y - 1, 0, 1);
-    push(x + 1, y + 1, 1, 1);
-    push(x - 1, y + 1, 2, 1);
-    push(x - 1, y - 1, 3, 1);
 
     // Save cells
     final cells = [];
@@ -38,22 +28,12 @@ void doGear(int x, int y, RotationalType rt) {
     grid.rotate(x, y - 1, 1);
   } else if (rt == RotationalType.counter_clockwise) {
     // If we are jammed, stop ourselves
-    if (!canMoveAll(x + 1, y - 1, 3, 1, MoveType.gear)) return;
     if (!canMove(x, y - 1, 2, 1, MoveType.gear)) return;
-    if (!canMoveAll(x + 1, y + 1, 0, 1, MoveType.gear)) return;
     if (!canMove(x + 1, y, 3, 1, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y + 1, 1, 1, MoveType.gear)) return;
     if (!canMove(x, y + 1, 0, 1, MoveType.gear)) return;
-    if (!canMoveAll(x - 1, y - 1, 2, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y, 1, 1, MoveType.gear)) return;
 
     grid.rotate(x, y, -1); // Cool stuff
-
-    // Moves corners
-    push(x + 1, y - 1, 3, 1);
-    push(x + 1, y + 1, 0, 1);
-    push(x - 1, y + 1, 1, 1);
-    push(x - 1, y - 1, 2, 1);
 
     // Save cells
     final cells = [];
