@@ -800,20 +800,36 @@ List<String> fancySplit(String thing, String sep) {
 
   var instring = false;
 
+  var alt = false;
+
   for (var c in chars) {
-    if (c == "\"") {
-      instring = !instring;
-      things.last += c;
+    if (c == "\\") {
+      if (alt) {
+        alt = false;
+        things.last += c;
+      } else {
+        alt = true;
+      }
       continue;
     }
+    if (c == "\"") {
+      if (alt) {
+        things.last += c;
+        continue;
+      } else {
+        instring = !instring;
+        things.last += c;
+        continue;
+      }
+    }
     if (!instring) {
-      if (c == "(") {
+      if (c == "(" && !alt) {
         depth++;
-      } else if (c == ")") {
+      } else if (c == ")" && !alt) {
         depth--;
       }
     }
-    if (depth == 0 && (c == sep || sep == "") && !instring) {
+    if (depth == 0 && (c == sep || sep == "") && !instring && !alt) {
       if (sep == "") {
         things.last += c;
       }
@@ -1281,7 +1297,19 @@ class TPCML {
       return "nd$value";
     }
     if (value is String) {
-      return '"$value"';
+      var v = "";
+      var chars = value.split('');
+
+      for (var char in chars) {
+        if (char == "\\") {
+          v += "\\";
+        } else if (char == "\"") {
+          v += "\"";
+        } else {
+          v += char;
+        }
+      }
+      return '"$v"';
     }
 
     return value.toString();
@@ -1345,7 +1373,33 @@ class TPCML {
         return fancySplit(s, ':').map<dynamic>((e) => decodeValue(e)).toSet();
       }
     } else if (str.startsWith('\"') && str.endsWith('\"')) {
-      return str.substring(1, str.length - 1);
+      final chars = str.substring(1, str.length - 1).split('');
+
+      var s = "";
+      var alt = false;
+
+      for (var char in chars) {
+        if (char == "\\") {
+          if (alt) {
+            s += "\\";
+            alt = false;
+          } else {
+            alt = true;
+          }
+        } else {
+          if (alt) {
+            if (char == "\"") {
+              s += "\"";
+            }
+          } else {
+            s += char;
+          }
+        }
+      }
+
+      if (alt) s += "\\";
+
+      return s;
     } else if (str.startsWith('ni') && int.tryParse(str.substring(2)) != null) {
       return int.parse(str.substring(2));
     } else if (str.startsWith('nd') && double.tryParse(str.substring(2)) != null) {
