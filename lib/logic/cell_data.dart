@@ -335,6 +335,7 @@ final cells = {
   "master_get_height",
   "random_filler",
   "configurable_filler",
+  "sticky",
 }.toList();
 
 final modded = <String>[];
@@ -344,6 +345,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "sticky.png": "unique/sticky.png",
   "configurable_filler.png": "recreators/fillers/configurable_filler.png",
   "random_filler.png": "recreators/fillers/random_filler.png",
   "master_get_x.png": "master/getter/master_get_x.png",
@@ -1131,27 +1133,29 @@ final categories = [
     "Special cells that don't fit any other category",
     [
       "stopper",
+      "sticky",
       CellCategory(
-          "Quantum Cells",
-          "A whole new type of physics lies in this category",
-          [
-            "unstable_mover",
-            "unstable_gen",
-            "field",
-            "quantum_zypper",
-            "proton",
-            "neutron",
-            "electron",
-            "muon",
-            "tau",
-            "graviton",
-            "inverse_graviton",
-            "strangelet",
-            "orbital",
-            "quantum_destroyer",
-          ],
+        "Quantum Cells",
+        "A whole new type of physics lies in this category",
+        [
           "unstable_mover",
-          max: 4),
+          "unstable_gen",
+          "field",
+          "quantum_zypper",
+          "proton",
+          "neutron",
+          "electron",
+          "muon",
+          "tau",
+          "graviton",
+          "inverse_graviton",
+          "strangelet",
+          "orbital",
+          "quantum_destroyer",
+        ],
+        "unstable_mover",
+        max: 4,
+      ),
       CellCategory(
         "Time Travel",
         "Can send stuff, including time, back to the initial state. Make sure you don't make a time paradox!",
@@ -1202,7 +1206,7 @@ final categories = [
       "floppy",
       "spikefactory",
     ],
-    "unstable_mover",
+    "sticky",
   ),
   CellCategory(
     "Mathematical Cells",
@@ -2845,6 +2849,10 @@ final cellInfo = <String, CellProfile>{
   "configurable_filler": CellProfile(
     "Configurable Filler",
     "A filler with a lot of properties and capable of evolution",
+  ),
+  "sticky": CellProfile(
+    "Sticky",
+    "When pushed or pulled, it'll behave kind of like the original Sticky cell. It has been modified in how it works to prevent (most) bugs or catastrophic failure. Sometimes it seems to behave a little strange, but that's to prevent bugs!",
   ),
 };
 

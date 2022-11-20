@@ -279,7 +279,7 @@ void doAnchor(int x, int y, int amount) {
     final nv = Vector2.all(0);
     final dx = v.x.toInt() - x;
     final dy = v.y.toInt() - y;
-    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1, MoveType.unkown_move)) {
+    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1, MoveType.unknown_move)) {
       return;
     }
     if (amount == 1) {

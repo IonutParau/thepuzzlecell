@@ -20,7 +20,7 @@ void unstableMove(int x, int y, int dir) {
     if (c.id == "empty") {
       moveCell(x, y, cx, cy, dir);
       return;
-    } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unkown_move)) {
+    } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unknown_move)) {
       push(cx, cy, dir, 99999999999, replaceCell: self.copy);
     }
   }
@@ -44,7 +44,7 @@ void unstableGen(int x, int y, int dir, Cell self) {
     if (c.id == "empty") {
       grid.set(cx, cy, self);
       return;
-    } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unkown_move)) {
+    } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unknown_move)) {
       push(cx, cy, dir, 99999999999, replaceCell: self.copy);
     }
   }

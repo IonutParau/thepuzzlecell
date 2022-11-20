@@ -9,11 +9,10 @@ enum MoveType {
   grab,
   tunnel,
   sync,
-  sticky_push,
-  sticky_pull,
-  unkown_move,
+  unknown_move,
   transform,
   burn,
+  sticky_check,
 }
 
 int toSide(int dir, int rot) {
@@ -84,6 +83,14 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
 
     if (modded.contains(id)) {
       return scriptingManager.canMove(cell, x, y, dir, side, force, mt);
+    }
+
+    if (id == "sticky") {
+      if (mt == MoveType.push || mt == MoveType.pull) {
+        return canStickyNudge(cell, x, y, dir, true);
+      } else {
+        return true;
+      }
     }
 
     switch (id) {
@@ -570,7 +577,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   }
 }
 
-bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unkown_move, int force = 1]) {
+bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unknown_move, int force = 1]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (dir == null) {
@@ -860,13 +867,10 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     }
     if (mightMove) {
       genOptimizer.remove(x, y);
-      if (mt == MoveType.sync && c.id == "sync") {
-        c.tags.add("sync move");
-      }
 
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
       grid.set(ox, oy, replaceCell.copy);
-      postmove(c, ox, oy, dir, force, mt);
+      whenMoved(c, ox, oy, dir, force, mt);
     }
     if (depth == 0) QueueManager.runQueue("post-move");
     return mightMove;
@@ -954,16 +958,19 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
     if (force <= 0) return false;
     if (canMove(cx, cy, dir, force, mt)) {
       grid.at(cx, cy).rot = (grid.at(cx, cy).rot - addedrot) % 4;
+      final cell = grid.at(cx, cy);
       moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir, null, mt);
+      whenMoved(cell, cx, cy, dir, force, mt);
     } else {
       break;
     }
   }
+  QueueManager.runQueue("post-move");
 
   return true;
 }
 
-bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
+bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unknown_move}) {
   if (!canMove(x, y, rot, 0, mt)) return false;
   if (moveInsideOf(grid.at(x, y), x, y, rot, 1, mt)) return false;
   final fx = frontX(x, rot);
@@ -971,6 +978,7 @@ bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unkown_move}) {
   if (grid.inside(fx, fy)) {
     if (moveInsideOf(grid.at(fx, fy), fx, fy, rot, 1, mt)) {
       moveCell(x, y, fx, fy, rot, null, mt);
+      QueueManager.runQueue("post-move");
       return true;
     }
   }
@@ -1052,22 +1060,6 @@ NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
   }
 }
 
-void premove(Cell cell, int x, int y, int dir, MoveType mt) {}
-
-void postmove(Cell cell, int x, int y, int dir, int force, MoveType mt) {
-  if (cell.id == "push_glue") {
-    final lx = frontX(x, dir - 1);
-    final ly = frontY(y, dir - 1);
-    final rx = frontX(x, dir + 1);
-    final ry = frontY(y, dir + 1);
-
-    cell.tags.add("push_glued");
-
-    if (safeAt(lx, ly)?.tags.contains("push_glued") == false) push(lx, ly, dir, force);
-    if (safeAt(rx, ry)?.tags.contains("push_glued") == false) push(rx, ry, dir, force);
-  }
-}
-
 void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
   final radius = destroyer.data['radius'] ?? 1;
   final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
@@ -1116,5 +1108,131 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
         }
       }
     }
+  }
+}
+
+/// help
+bool canStickyNudge(Cell? cell, int x, int y, int dir, [bool base = false]) {
+  if (cell == null) return false;
+
+  if (!canMove(x, y, dir, 1, MoveType.sticky_check)) return false;
+
+  if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return true;
+
+  if (cell.tags.contains("stickyCheck")) return true;
+
+  cell.tags.add("stickyCheck");
+
+  final fx = frontX(x, dir);
+  final fy = frontY(y, dir);
+
+  final f = grid.get(fx, fy);
+
+  if (f == null) return false;
+
+  // Sticky chains with pushing causes duplication, so, we fix it here!
+  if (base && f.id == "sticky") {
+    return false;
+  }
+
+  if (f.id == "sticky" && !f.tags.contains("stickyCheck")) {
+    return canStickyNudge(f, x, y, dir);
+  }
+
+  var canMoveFront = false;
+
+  if (cell.id == "sticky") {
+    canMoveFront = canStickyNudge(f, fx, fy, dir);
+  } else {
+    canMoveFront = moveInsideOf(f, fx, fy, dir, 1, MoveType.unknown_move);
+  }
+
+  if (base || canMoveFront) {
+    if (cell.id == "sticky") {
+      final lx = frontX(x, dir - 1);
+      final ly = frontY(y, dir - 1);
+      final rx = frontX(x, dir + 1);
+      final ry = frontY(y, dir + 1);
+      final bx = frontX(x, dir + 2);
+      final by = frontY(y, dir + 2);
+      final b = grid.get(bx, by);
+      var l = canStickyNudge(grid.get(lx, ly), lx, ly, dir);
+      var r = canStickyNudge(grid.get(rx, ry), rx, ry, dir);
+
+      var res = false;
+
+      // final lid = grid.get(lx, ly)?.id;
+      // final rid = grid.get(lx, ly)?.id;
+
+      // if ((lid != "sticky" && lid != "empty") || (rid != "sticky" && rid != "empty")) {
+      //   res = l && r;
+      // } else {
+      //   res = l || r;
+      // }
+
+      res = l && r;
+
+      // We ONLY case about pulling stickies. We do not care about the cell behind if it is an average every day cell.
+      if (b?.id == "sticky") {
+        res = res && canStickyNudge(b, bx, by, dir);
+      }
+
+      cell.tags.remove("stickyCheck");
+      return res;
+    }
+
+    cell.tags.remove("stickyCheck");
+    return true;
+  }
+
+  cell.tags.remove("stickyCheck");
+  return false;
+}
+
+/// my brain hurts
+void stickyNudge(Cell? cell, int x, int y, int dir, [bool base = false]) {
+  if (cell == null) return;
+  if (cell.tags.contains("stickyMoving")) return;
+  if (cell.tags.contains("stickyMoved")) return;
+  cell.tags.add("stickyMoving");
+
+  var hasMoved = false;
+  if (base) {
+    hasMoved = true;
+  } else {
+    if (cell.id == "sticky") {
+      final fx = frontX(x, dir);
+      final fy = frontY(y, dir);
+      if (grid.inside(fx, fy)) {
+        if (!moveInsideOf(grid.at(fx, fy), x, y, dir, 1, MoveType.unknown_move)) {
+          stickyNudge(grid.get(fx, fy), fx, fy, dir);
+        }
+      }
+    }
+    hasMoved = nudge(x, y, dir);
+  }
+
+  if (hasMoved) {
+    cell.tags.add("stickyMoved");
+    if (cell.id == "sticky") {
+      final lx = frontX(x, dir - 1);
+      final ly = frontY(y, dir - 1);
+      final rx = frontX(x, dir + 1);
+      final ry = frontY(y, dir + 1);
+      final bx = frontX(x, dir + 2);
+      final by = frontY(y, dir + 2);
+
+      stickyNudge(grid.get(bx, by), bx, by, dir);
+      stickyNudge(grid.get(lx, ly), lx, ly, dir);
+      stickyNudge(grid.get(rx, ry), rx, ry, dir);
+    }
+  }
+
+  cell.tags.remove("stickyMoving");
+}
+
+void whenMoved(Cell cell, int x, int y, int dir, int force, MoveType mt) {
+  if (cell.id == "sticky") {
+    stickyNudge(cell, x, y, dir, true);
   }
 }
