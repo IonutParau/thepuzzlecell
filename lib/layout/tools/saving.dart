@@ -845,14 +845,37 @@ List<String> fancySplit(String thing, String sep) {
 bool stringContainsAtRoot(String thing, String char) {
   final chars = thing.split("");
   var depth = 0;
+  var instring = false;
+  var alt = false;
 
   for (var c in chars) {
-    if (c == "(") {
-      depth++;
-    } else if (c == ")") {
-      depth--;
+    if (c == "\\") {
+      if (alt) {
+        alt = false;
+        if (char == '\\') return true;
+      } else {
+        alt = true;
+      }
+      continue;
     }
-    if (depth == 0 && (c == char || char == "")) {
+    if (c == "\"") {
+      if (alt) {
+        if (char == "\"") return true;
+        continue;
+      } else {
+        instring = !instring;
+        if (char == "\"") return true;
+        continue;
+      }
+    }
+    if (!instring) {
+      if (c == "(") {
+        depth++;
+      } else if (c == ")") {
+        depth--;
+      }
+    }
+    if (depth == 0 && (c == char || char == "") && !instring) {
       return true;
     }
   }
@@ -1197,7 +1220,8 @@ class P5 {
       g.title = segs[1];
       g.desc = segs[2];
 
-      final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), ':');
+      final content = utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList());
+      final rawCellDataList = stringContainsAtRoot(content, ':') ? fancySplit(content, ':') : fancySplit(content, '');
 
       final cellDataList = [];
 
