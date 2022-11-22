@@ -38,17 +38,7 @@ List<File> get langs {
     langDir.createSync();
   }
 
-  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json"))).map<File>((item) => item as File).toList()..addAll(externalLangs);
-}
-
-List<File> get externalLangs {
-  if (!Platform.isWindows) return [];
-  final d = Directory('%APPDATA%\\The Puzzle Cell\\languages');
-  if (d.existsSync()) {
-    return d.listSync().map<File>((item) => item as File).toList();
-  } else {
-    return [];
-  }
+  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json"))).map<File>((item) => item as File).toList();
 }
 
 void loadLangByName(String name) {
