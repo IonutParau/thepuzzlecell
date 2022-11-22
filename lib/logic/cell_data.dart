@@ -336,6 +336,8 @@ final cells = {
   "random_filler",
   "configurable_filler",
   "sticky",
+  "code_program",
+  "code_instruction",
 }.toList();
 
 final modded = <String>[];
@@ -345,6 +347,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "code_program.png": "unique/code/code_program.png",
+  "code_instruction.png": "unique/code/code_instruction.png",
   "sticky.png": "unique/sticky.png",
   "configurable_filler.png": "recreators/fillers/configurable_filler.png",
   "random_filler.png": "recreators/fillers/random_filler.png",
@@ -757,6 +761,15 @@ final categories = [
         max: 3,
       ),
       CellCategory(
+        "Sticky Cells",
+        "Sticky like glue",
+        [
+          "sticky",
+        ],
+        "sticky",
+        max: 3,
+      ),
+      CellCategory(
         "Constraints",
         "Can only eat, be pushed, or not be pushed by a specific force",
         [
@@ -1133,7 +1146,6 @@ final categories = [
     "Special cells that don't fit any other category",
     [
       "stopper",
-      "sticky",
       CellCategory(
         "Quantum Cells",
         "A whole new type of physics lies in this category",
@@ -1168,6 +1180,15 @@ final categories = [
           "consistency",
         ],
         "time_trash",
+      ),
+      CellCategory(
+        "Code Cells",
+        "Cells that run or interact with programs. Yes, this means you can write and run code in TPC. No, you can't get hacked by this, it's fully sandboxed.",
+        [
+          "code_program",
+          "code_instruction",
+        ],
+        "code_program",
       ),
       CellCategory(
         "Heat Cells",
@@ -1206,7 +1227,7 @@ final categories = [
       "floppy",
       "spikefactory",
     ],
-    "sticky",
+    "code_program",
   ),
   CellCategory(
     "Mathematical Cells",
@@ -2854,6 +2875,14 @@ final cellInfo = <String, CellProfile>{
     "Sticky",
     "When pushed or pulled, it'll behave kind of like the original Sticky cell. It has been modified in how it works to prevent (most) bugs or catastrophic failure. Sometimes it seems to behave a little strange, but that's to prevent bugs!",
   ),
+  "code_program": CellProfile(
+    "Code Program",
+    "In the front should be a line of Code Instructions",
+  ),
+  "code_instruction": CellProfile(
+    "Code Instruction",
+    "Holds a line number (so the program knows where the code is meant to be) and raw instructions.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3010,5 +3039,14 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
     CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
     CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
+  ],
+  "code_instruction": [
+    CellProperty("Line", "line", CellPropertyType.integer, 0),
+    CellProperty("Code", "code", CellPropertyType.text, ""),
+  ],
+  "code_program": [
+    CellProperty("Program ID", "id", CellPropertyType.text, "default"),
+    CellProperty("Instructions Per Tick", "ipt", CellPropertyType.integer, 100),
+    CellProperty("Code Pointer", "codeptr", CellPropertyType.integer, 0),
   ],
 };

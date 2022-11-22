@@ -839,10 +839,12 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   var c = grid.at(ox, oy);
 
   if (c.id == "empty") {
+    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir, force, mt);
     grid.set(ox, oy, replaceCell);
     return true;
   }
   if (moveInsideOf(c, ox, oy, dir, force, mt)) {
+    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir, force, mt);
     handleInside(ox, oy, dir, force, replaceCell, mt);
     if (depth == 0) QueueManager.runQueue("post-move");
     return force > 0;
@@ -870,7 +872,6 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
 
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
       grid.set(ox, oy, replaceCell.copy);
-      whenMoved(c, ox, oy, dir, force, mt);
     }
     if (depth == 0) QueueManager.runQueue("post-move");
     return mightMove;
@@ -1129,11 +1130,6 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir, [bool base = false]) {
   final f = grid.get(fx, fy);
 
   if (f == null) return false;
-
-  // Sticky chains with pushing causes duplication, so, we fix it here!
-  if (base && f.id == "sticky") {
-    return false;
-  }
 
   if (f.id == "sticky" && !f.tags.contains("stickyCheck")) {
     return canStickyNudge(f, x, y, dir);

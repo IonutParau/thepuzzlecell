@@ -17,6 +17,7 @@ class Grid {
   late List<List<Set<String>>> chunks;
 
   late QuadChunk quadChunk;
+  final codeManager = CodeCellManager();
 
   Map<int, Map<int, num>> memory = {};
 

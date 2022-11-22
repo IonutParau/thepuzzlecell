@@ -101,6 +101,7 @@ flutter:
     - assets/images/unique/portal/
     - assets/images/unique/time_travel/
     - assets/images/unique/plant/
+    - assets/images/unique/code/
     - assets/audio/
     - languages/
     - mods/
