@@ -5,11 +5,15 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart' show TPCML;
 import 'package:the_puzzle_cell/logic/logic.dart';
 
 void main() {
+  jsonDecode(
+      r'[1968,"push|0|empty|A|B",200,"push|0|empty|A|B",500,"push|0|empty|A|B",345,"push|0|empty|A|B",202,"push|0|empty|A|B",151,"push|0|empty|A|B",351,"push|0|empty|A|B",447,"push|0|empty|A|B",156,"push|0|empty|A|B",442,"push|0|empty|A|B",362,"push|0|empty|A|B",235,"push|0|empty|A|B",398,"push|0|empty|A|B",70,"push|0|empty|A|B",504,"push|0|empty|A|B",18,"push|0|empty|A|B",185,"push|0|empty|A|B",99,"push|0|empty|A|B",104,"push|0|empty|A|B"]');
   test('Test TPCML decoding', () {
     expect(TPCML.decodeValue('ni0'), 0);
     expect(TPCML.decodeValue('"Test"'), 'Test');

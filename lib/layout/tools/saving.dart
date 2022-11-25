@@ -85,6 +85,7 @@ Grid loadStr(String str, [bool allowGameStateChanges = true]) {
   if (str.startsWith('P3;')) return P3.decodeString(str);
   if (str.startsWith('P4;')) return P4.decodeString(str, allowGameStateChanges);
   if (str.startsWith('P5;')) return P5.decodeString(str, allowGameStateChanges);
+  if (str.startsWith('P6;')) return P6.decodeString(str, allowGameStateChanges);
 
   throw "Unsupported saving format";
 }
@@ -1117,7 +1118,7 @@ class P4 {
 }
 
 // The current saving format
-typedef SavingFormat = P5;
+typedef SavingFormat = P6;
 
 class P5 {
   static final String valueString = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.={}";
@@ -1284,6 +1285,246 @@ class P5 {
     }
 
     return grid;
+  }
+}
+
+class P6 {
+  static String header = "P6;";
+
+  static final String base = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  static dynamic encodeCell(Cell cell, String bg, int count) {
+    var isSimple = true;
+
+    if (cell.data.isNotEmpty) isSimple = false;
+    if (cell.invisible) isSimple = false;
+
+    if (isSimple) {
+      if (cell.id == "empty" && bg == "empty") {
+        return count;
+      }
+
+      return "${cell.id}|${cell.rot}|$bg|${encodeNum(cell.lifespan, base)}|${encodeNum(count, base)}";
+    } else {
+      return [cell.id, cell.rot, bg, encodeNum(cell.lifespan, base), cell.data.isEmpty ? 0 : cell.data, cell.invisible ? 1 : 0, encodeNum(count, base)];
+    }
+  }
+
+  static List decodeCell(dynamic value) {
+    if (value is String) {
+      final segs = value.split("|");
+
+      final id = segs[0];
+      final rot = int.parse(segs[1]);
+      final bg = segs[2];
+      final lifespan = decodeNum(segs[3], base);
+      final count = decodeNum(segs[4], base);
+
+      final cell = Cell(0, 0, rot);
+
+      cell.id = id;
+      cell.lifespan = lifespan;
+
+      return [cell, bg, count];
+    } else if (value is num) {
+      final count = value.toInt();
+
+      return [Cell(0, 0), "empty", count];
+    } else if (value is List) {
+      final id = value[0];
+      final rot = value[1];
+      final bg = value[2];
+      final lifespan = decodeNum(value[3], base);
+      final Map<String, dynamic> data = value[4] is Map ? value[4] : <String, dynamic>{};
+      final invisible = value[5] == 1;
+      final count = decodeNum(value[6], base);
+
+      final cell = Cell(0, 0, rot);
+      cell.id = id;
+      cell.data = data;
+      cell.lifespan = lifespan;
+      cell.invisible = invisible;
+
+      return [cell, bg, count];
+    }
+
+    throw "P6 Error: No parser specified for $value";
+  }
+
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
+    var str = header + "$title;$description;";
+
+    str += "${encodeNum(grid.width, base)};";
+    str += "${encodeNum(grid.height, base)};";
+
+    final rawCellList = [];
+    final gridData = <String, dynamic>{};
+
+    grid.forEach(
+      (cell, x, y) {
+        rawCellList.add([cell, grid.placeable(x, y), 1]);
+      },
+    );
+
+    final cellList = [];
+
+    // Basic row compression algorithm
+    for (var rawCellData in rawCellList) {
+      if (cellList.isEmpty) {
+        cellList.add(rawCellData);
+      } else {
+        final old = cellList.last;
+
+        if (old[0] == rawCellData[0] && old[1] == rawCellData[1]) {
+          old[2]++;
+        } else {
+          cellList.add(rawCellData);
+        }
+      }
+    }
+
+    final encodedList = [];
+
+    for (var compressedCellList in cellList) {
+      encodedList.add(
+        encodeCell(
+          compressedCellList[0] as Cell,
+          compressedCellList[1] as String,
+          (compressedCellList[2] as num).toInt(),
+        ),
+      );
+    }
+
+    if (encodedList.isNotEmpty) {
+      if (encodedList.last is num) {
+        encodedList.removeLast(); // If last thing is just a bunch of empty cells, we don't care
+      }
+    }
+
+    var encodedStr = jsonEncode(encodedList);
+    encodedStr = encodedStr.substring(1, encodedStr.length - 1);
+
+    encodedStr = base64.encode(
+      Uint8List.fromList(
+        zlib.encode(
+          utf8.encode(encodedStr),
+        ),
+      ),
+    );
+
+    if (encodedList.isEmpty) encodedStr = "";
+
+    str += "$encodedStr;";
+
+    if (grid.wrap) gridData["W"] = true;
+
+    final memMap = <String, dynamic>{};
+
+    grid.memory.forEach((channel, memRow) {
+      final mem = <int, num>{};
+
+      memRow.forEach((id, val) {
+        mem[id] = val;
+      });
+
+      memMap[channel.toString()] = mem;
+    });
+
+    if (memMap.isNotEmpty) gridData["M"] = memMap;
+
+    str += "${gridData.isEmpty ? "" : base64.encode(
+        Uint8List.fromList(
+          zlib.encode(
+            utf8.encode(
+              jsonEncode(gridData),
+            ),
+          ),
+        ),
+      )};";
+
+    return str;
+  }
+
+  static Grid decodeString(String str, [bool handleCustomProps = true]) {
+    try {
+      final segs = str.split(';');
+
+      final title = segs[1];
+      final desc = segs[2];
+
+      final width = decodeNum(segs[3], base);
+      final height = decodeNum(segs[4], base);
+
+      final grid = Grid(width, height);
+
+      grid.title = title;
+      grid.desc = desc;
+
+      print(segs[5]);
+
+      final cellList = segs[5] == ""
+          ? []
+          : jsonDecode(
+              "[" +
+                  utf8
+                      .decode(
+                        zlib.decode(
+                          base64.decode(segs[5]),
+                        ),
+                      )
+                      .trim() +
+                  "]",
+            ) as List;
+
+      var i = 0;
+
+      for (var cellData in cellList) {
+        final cellInfo = decodeCell(cellData);
+
+        final cell = cellInfo[0] as Cell;
+        final bg = cellInfo[1] as String;
+        final count = (cellInfo[2] as num).toInt();
+
+        for (var c = 0; c < count; c++) {
+          final x = i ~/ grid.height;
+          final y = i % grid.height;
+
+          grid.set(x, y, cell);
+          grid.setPlace(x, y, bg);
+
+          i++;
+        }
+      }
+
+      final gridData = segs[6] == ""
+          ? <String, dynamic>{}
+          : jsonDecode(
+              utf8.decode(
+                zlib.decode(
+                  base64.decode(segs[6]),
+                ),
+              ),
+            ) as Map<String, dynamic>;
+
+      grid.wrap = gridData["W"] == 1;
+      if (gridData["M"] != null) {
+        final memMap = gridData["M"] as Map<String, dynamic>;
+
+        memMap.forEach((channel, memRow) {
+          grid.memory[int.parse(channel)] = {};
+
+          memRow.forEach((id, val) {
+            grid.memory[int.parse(channel)]![int.parse(id)] = val;
+          });
+        });
+      }
+
+      return grid;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      return grid;
+    }
   }
 }
 
