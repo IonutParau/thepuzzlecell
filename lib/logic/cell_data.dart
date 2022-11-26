@@ -762,7 +762,7 @@ final categories = [
       ),
       CellCategory(
         "Sticky Cells",
-        "Sticky like glue",
+        "Sticky like glue. Cells that stick to other cells and move with each other",
         [
           "sticky",
         ],
@@ -2873,7 +2873,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "sticky": CellProfile(
     "Sticky",
-    "When pushed or pulled, it'll behave kind of like the original Sticky cell. It has been modified in how it works to prevent (most) bugs or catastrophic failure. Sometimes it seems to behave a little strange, but that's to prevent bugs!",
+    "When pushed or pulled, it'll behave kind of like the original Sticky cell, sticking to adjacent cells.\nIt has been modified in how it works to prevent (most) bugs or catastrophic failure. Sometimes it seems to behave a little strange, but that's to prevent bugs!",
   ),
   "code_program": CellProfile(
     "Code Program",
