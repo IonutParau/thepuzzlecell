@@ -156,7 +156,7 @@ class CodeCellManager {
         final c = grid.at(cx, cy);
 
         if (c.id == "code_instruction") {
-          final i = c.data['idx'] as int;
+          final i = c.data['line'] as int;
           final code = c.data['code'] as String;
 
           final segs = code.split(" ");
