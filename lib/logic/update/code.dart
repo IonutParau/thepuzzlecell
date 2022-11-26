@@ -40,6 +40,7 @@ class CodeRuntimeContext {
   List stack = [];
   List allocated = [];
   List io = [];
+  List calls = [];
 
   dynamic getStack(dynamic idx) {
     if (stack.isEmpty) return null;
@@ -556,6 +557,69 @@ class CodeCellManager {
       context.setIO(context.getStack(dest), context.copy(context.getStack(src)));
     }
 
+    if (instruction.name == "isInteger") {
+      final src = int.parse(instruction.params[0]);
+      final dest = int.parse(instruction.params[1]);
+
+      context.setStack(dest, context.getStack(src) is int);
+    }
+
+    if (instruction.name == "isDouble") {
+      final src = int.parse(instruction.params[0]);
+      final dest = int.parse(instruction.params[1]);
+
+      context.setStack(dest, context.getStack(src) is double);
+    }
+
+    if (instruction.name == "isTable") {
+      final src = int.parse(instruction.params[0]);
+      final dest = int.parse(instruction.params[1]);
+
+      context.setStack(dest, context.getStack(src) is CodeTable);
+    }
+
+    if (instruction.name == "call") {
+      final location = int.parse(instruction.params[0]);
+      context.calls.add(i);
+      return location;
+    }
+
+    if (instruction.name == "ifcall") {
+      final code = int.parse(instruction.params[0]);
+      final val = context.getStack(int.parse(instruction.params[1]));
+
+      if (val is int && val > 0) {
+        context.calls.add(i);
+        return code;
+      }
+
+      if (val is double && val > 0) {
+        context.calls.add(i);
+        return code;
+      }
+
+      if (val is CodeTable && val.capacity > 0) {
+        context.calls.add(i);
+        return code;
+      }
+    }
+
+    if (instruction.name == "return") {
+      return context.calls.removeLast();
+    }
+
+    if (instruction.name == "returnN") {
+      final amount = int.parse(instruction.params[0]);
+
+      int last = i;
+
+      for (var i = 0; i < amount; i++) {
+        last = context.calls.removeLast();
+      }
+
+      return last;
+    }
+
     return i + 1;
   }
 
@@ -571,6 +635,7 @@ class CodeCellManager {
     context.stack = (program.data['stack'] ?? []) as List;
     context.allocated = (program.data['allocated'] ?? []) as List;
     context.io = (program.data['io'] ?? []) as List;
+    context.calls = (program.data['calls'] ?? []) as List;
 
     final ipt = program.data['ipt'];
 
@@ -582,6 +647,7 @@ class CodeCellManager {
         context.stack.clear();
         context.allocated.clear();
         context.io.clear();
+        context.calls.clear();
       }
 
       try {
@@ -592,6 +658,10 @@ class CodeCellManager {
         print("Faulty Instruction: ${instructions[idx]?.name} ${instructions[idx]?.params.join(" ")}");
       }
     }
+    program.data['stack'] = context.stack;
+    program.data['allocated'] = context.allocated;
+    program.data['io'] = context.io;
+    program.data['calls'] = context.calls;
   }
 }
 
