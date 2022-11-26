@@ -1489,7 +1489,7 @@ class P6 {
           final x = i ~/ grid.height;
           final y = i % grid.height;
 
-          grid.set(x, y, cell);
+          grid.set(x, y, cell.copy);
           grid.setPlace(x, y, bg);
 
           i++;
