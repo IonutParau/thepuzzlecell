@@ -1227,12 +1227,14 @@ class P5 {
       final cellDataList = [];
 
       for (var cellData in rawCellDataList) {
-        final m = TPCML.decodeValue(cellData);
+        if (cellData != "") {
+          final m = TPCML.decodeValue(cellData);
 
-        final c = m['count'] ?? 1;
+          final c = m['count'] ?? 1;
 
-        for (var i = 0; i < c; i++) {
-          cellDataList.add(TPCML.encodeValue(m['cell']));
+          for (var i = 0; i < c; i++) {
+            cellDataList.add(TPCML.encodeValue(m['cell']));
+          }
         }
       }
 
