@@ -1323,6 +1323,7 @@ class P6 {
       final cell = Cell(0, 0, rot);
 
       cell.id = id;
+      cell.rot = rot;
       cell.lifespan = lifespan;
 
       return [cell, bg, count];
@@ -1341,6 +1342,7 @@ class P6 {
 
       final cell = Cell(0, 0, rot);
       cell.id = id;
+      cell.rot = rot;
       cell.data = data;
       cell.lifespan = lifespan;
       cell.invisible = invisible;
@@ -1459,8 +1461,6 @@ class P6 {
 
       grid.title = title;
       grid.desc = desc;
-
-      print(segs[5]);
 
       final cellList = segs[5] == ""
           ? []
