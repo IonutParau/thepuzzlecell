@@ -78,6 +78,7 @@ flutter:
     - assets/images/push/
     - assets/images/push/restricted/
     - assets/images/push/restricted/Only/
+    - assets/images/push/sticky/
     - assets/images/destroyers/
     - assets/images/destroyers/trash/
     - assets/images/destroyers/enemy/
