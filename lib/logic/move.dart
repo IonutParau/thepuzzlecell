@@ -85,8 +85,7 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
       return scriptingManager.canMove(cell, x, y, dir, side, force, mt);
     }
 
-    if (id == "sticky") {
-      if (cell.tags.contains("stickyBase") && mt == MoveType.unknown_move) return false;
+    if (isSticky(cell, x, y, dir, true, false, x, y)) {
       if (mt == MoveType.push || mt == MoveType.pull) {
         return canStickyNudge(cell, x, y, dir, base: true, originX: x, originY: y);
       } else {
@@ -1123,14 +1122,14 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, bool 
 
   if (originX == x && originY == y) base = true;
 
-  if (cell.tags.contains("stickyChecked")) return true;
-
-  cell.tags.add("stickyChecked");
-
   if (sticker != null) {
     // Returns true so that the original one isn't stopped by this one
     if (!sticksTo(sticker, cell, dir, base, checkedAsBack, originX ?? x, originY ?? y)) return true;
   }
+
+  if (cell.tags.contains("stickyChecked")) return true;
+
+  cell.tags.add("stickyChecked");
 
   if (!canMove(x, y, dir, 0, MoveType.unknown_move)) return false;
   if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return true;
@@ -1205,7 +1204,7 @@ void stickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, int? ori
 }
 
 void whenMoved(Cell cell, int x, int y, int dir, int force, MoveType mt) {
-  if (cell.id == "sticky") {
+  if (isSticky(cell, x, y, dir, true, false, x, y)) {
     stickyNudge(cell, x, y, dir, base: true, originX: x, originY: y);
   }
 }
