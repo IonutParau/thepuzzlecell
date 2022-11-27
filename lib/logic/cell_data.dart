@@ -764,7 +764,7 @@ final categories = [
       ),
       CellCategory(
         "Sticky Cells",
-        "Sticky like glue",
+        "Sticky like glue. Cells that stick to other cells and move with each other",
         [
           "sticky",
           "carbon",
