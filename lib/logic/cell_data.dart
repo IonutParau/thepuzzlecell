@@ -338,6 +338,7 @@ final cells = {
   "sticky",
   "code_program",
   "code_instruction",
+  "carbon",
 }.toList();
 
 final modded = <String>[];
@@ -347,9 +348,10 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "carbon.png": "push/sticky/carbon.png",
   "code_program.png": "unique/code/code_program.png",
   "code_instruction.png": "unique/code/code_instruction.png",
-  "sticky.png": "unique/sticky.png",
+  "sticky.png": "push/sticky/sticky.png",
   "configurable_filler.png": "recreators/fillers/configurable_filler.png",
   "random_filler.png": "recreators/fillers/random_filler.png",
   "master_get_x.png": "master/getter/master_get_x.png",
@@ -765,6 +767,7 @@ final categories = [
         "Sticky like glue",
         [
           "sticky",
+          "carbon",
         ],
         "sticky",
         max: 3,
@@ -2873,7 +2876,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "sticky": CellProfile(
     "Sticky",
-    "When pushed or pulled, it'll behave kind of like the original Sticky cell. It has been modified in how it works to prevent (most) bugs or catastrophic failure. Sometimes it seems to behave a little strange, but that's to prevent bugs!",
+    "Only sticks when pushed or pulled. Added as a meme. If its buggy, I don't care, I tried my best!",
+  ),
+  "carbon": CellProfile(
+    "Carbon",
+    "A sticky that doesn't stick to other stickies.",
   ),
   "code_program": CellProfile(
     "Code Program",

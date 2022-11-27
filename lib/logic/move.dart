@@ -86,8 +86,9 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
     }
 
     if (id == "sticky") {
+      if (cell.tags.contains("stickyBase") && mt == MoveType.unknown_move) return false;
       if (mt == MoveType.push || mt == MoveType.pull) {
-        return canStickyNudge(cell, x, y, dir, true);
+        return canStickyNudge(cell, x, y, dir, base: true, originX: x, originY: y);
       } else {
         return true;
       }
@@ -585,26 +586,6 @@ bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveTyp
   }
   final movingTo = grid.at(nx, ny).copy;
 
-  final cx = (nx + grid.width) % grid.width;
-  final cy = (ny + grid.height) % grid.height;
-
-  var nlx = moving.lastvars.lastPos.dx.toInt();
-  var nly = moving.lastvars.lastPos.dy.toInt();
-
-  if (ox == 0 && cx == grid.width - 1) {
-    nlx = grid.width;
-  } else if (ox == grid.width - 1 && cx == 0) {
-    nlx = -1;
-  }
-
-  if (oy == 0 && cy == grid.height - 1) {
-    nly = grid.height;
-  } else if (oy == grid.height - 1 && cy == 0) {
-    nly = -1;
-  }
-
-  moving.lastvars.lastPos = Offset(nlx.toDouble(), nly.toDouble());
-
   if (moveInsideOf(movingTo, nx, ny, dir, force, mt) && movingTo.id != "empty") {
     handleInside(nx, ny, dir, force, moving, mt);
     grid.set(ox, oy, Cell(ox, oy));
@@ -864,7 +845,7 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
     final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c.copy);
     // If we have been modified, only allow the past one to move if we have been fully deleted
     final now = grid.at(ox, oy);
-    if (c != now) {
+    if (now.tags.contains("mutatedWhileMoved")) {
       return now.id == "empty";
     }
     if (mightMove) {
@@ -972,6 +953,7 @@ bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool s
 }
 
 bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unknown_move}) {
+  if (!grid.inside(x, y)) return false;
   if (!canMove(x, y, rot, 0, mt)) return false;
   if (moveInsideOf(grid.at(x, y), x, y, rot, 1, mt)) return false;
   final fx = frontX(x, rot);
@@ -1103,7 +1085,8 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
           // Confusing cascade operator stuffs
           final c = Cell(cx.toInt(), cy.toInt(), rot)
             ..id = id
-            ..rot = rot;
+            ..rot = rot
+            ..tags = {"mutatedWhileMoved"};
 
           grid.set(cx.toInt(), cy.toInt(), c);
         }
@@ -1112,123 +1095,117 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
   }
 }
 
-/// help
-bool canStickyNudge(Cell? cell, int x, int y, int dir, [bool base = false]) {
-  if (cell == null) return false;
+bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {
+  if (cell.id == "sticky") return true;
+  if (cell.id == "carbon") return true;
 
-  if (!canMove(x, y, dir, 1, MoveType.sticky_check)) return false;
-
-  if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return true;
-
-  if (cell.tags.contains("stickyCheck")) return true;
-
-  cell.tags.add("stickyCheck");
-
-  final fx = frontX(x, dir);
-  final fy = frontY(y, dir);
-
-  final f = grid.get(fx, fy);
-
-  if (f == null) return false;
-
-  if (f.id == "sticky" && !f.tags.contains("stickyCheck")) {
-    return canStickyNudge(f, x, y, dir);
-  }
-
-  var canMoveFront = false;
-
-  if (cell.id == "sticky") {
-    canMoveFront = canStickyNudge(f, fx, fy, dir);
-  } else {
-    canMoveFront = moveInsideOf(f, fx, fy, dir, 1, MoveType.unknown_move);
-  }
-
-  if (base || canMoveFront) {
-    if (cell.id == "sticky") {
-      final lx = frontX(x, dir - 1);
-      final ly = frontY(y, dir - 1);
-      final rx = frontX(x, dir + 1);
-      final ry = frontY(y, dir + 1);
-      final bx = frontX(x, dir + 2);
-      final by = frontY(y, dir + 2);
-      final b = grid.get(bx, by);
-      var l = canStickyNudge(grid.get(lx, ly), lx, ly, dir);
-      var r = canStickyNudge(grid.get(rx, ry), rx, ry, dir);
-
-      var res = false;
-
-      // final lid = grid.get(lx, ly)?.id;
-      // final rid = grid.get(lx, ly)?.id;
-
-      // if ((lid != "sticky" && lid != "empty") || (rid != "sticky" && rid != "empty")) {
-      //   res = l && r;
-      // } else {
-      //   res = l || r;
-      // }
-
-      res = l && r;
-
-      // We ONLY case about pulling stickies. We do not care about the cell behind if it is an average every day cell.
-      if (b?.id == "sticky") {
-        res = res && canStickyNudge(b, bx, by, dir);
-      }
-
-      cell.tags.remove("stickyCheck");
-      return res;
-    }
-
-    cell.tags.remove("stickyCheck");
-    return true;
-  }
-
-  cell.tags.remove("stickyCheck");
   return false;
 }
 
-/// my brain hurts
-void stickyNudge(Cell? cell, int x, int y, int dir, [bool base = false]) {
-  if (cell == null) return;
-  if (cell.tags.contains("stickyMoving")) return;
-  if (cell.tags.contains("stickyMoved")) return;
-  cell.tags.add("stickyMoving");
+bool sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack, int originX, int originY) {
+  if (sticker.id == "sticky") return true;
 
-  var hasMoved = false;
+  if (sticker.id == "carbon") {
+    return to.id == "carbon" || !isSticky(to, to.cx!, to.cy!, dir, base, checkedAsBack, originX, originY);
+  }
+
+  return false;
+}
+
+/// help
+bool canStickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, bool checkedAsBack = false, int? originX, int? originY, Cell? sticker}) {
+  if (cell == null) return true;
+
   if (base) {
-    hasMoved = true;
-  } else {
-    if (cell.id == "sticky") {
-      final fx = frontX(x, dir);
-      final fy = frontY(y, dir);
-      if (grid.inside(fx, fy)) {
-        if (!moveInsideOf(grid.at(fx, fy), x, y, dir, 1, MoveType.unknown_move)) {
-          stickyNudge(grid.get(fx, fy), fx, fy, dir);
-        }
-      }
-    }
-    hasMoved = nudge(x, y, dir);
+    originX = x;
+    originY = y;
   }
 
-  if (hasMoved) {
-    cell.tags.add("stickyMoved");
-    if (cell.id == "sticky") {
-      final lx = frontX(x, dir - 1);
-      final ly = frontY(y, dir - 1);
-      final rx = frontX(x, dir + 1);
-      final ry = frontY(y, dir + 1);
-      final bx = frontX(x, dir + 2);
-      final by = frontY(y, dir + 2);
+  if (originX == x && originY == y) base = true;
 
-      stickyNudge(grid.get(bx, by), bx, by, dir);
-      stickyNudge(grid.get(lx, ly), lx, ly, dir);
-      stickyNudge(grid.get(rx, ry), rx, ry, dir);
-    }
+  if (cell.tags.contains("stickyChecked")) return true;
+
+  cell.tags.add("stickyChecked");
+
+  if (sticker != null) {
+    // Returns true so that the original one isn't stopped by this one
+    if (!sticksTo(sticker, cell, dir, base, checkedAsBack, originX ?? x, originY ?? y)) return true;
   }
 
-  cell.tags.remove("stickyMoving");
+  if (!canMove(x, y, dir, 0, MoveType.unknown_move)) return false;
+  if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return true;
+
+  final f = grid.get(frontX(x, dir), frontY(y, dir));
+
+  if (f == null) return false;
+
+  final sticky = isSticky(cell, x, y, dir, base, checkedAsBack, originX ?? x, originY ?? y);
+
+  if (sticky) {
+    if (!canStickyNudge(f, f.cx ?? x, f.cy ?? y, dir, base: base, originX: originX, originY: originY, sticker: cell)) return false;
+  } else if (!base && !checkedAsBack && !moveInsideOf(f, x, y, dir, 1, MoveType.unknown_move)) {
+    return false;
+  }
+
+  // If we're not a sticky and we made it all the way here, we can def be sticky nudged.
+  if (!sticky) return true;
+
+  final lx = frontX(x, dir - 1);
+  final ly = frontY(y, dir - 1);
+
+  final rx = frontX(x, dir + 1);
+  final ry = frontY(y, dir + 1);
+
+  final l = canStickyNudge(grid.get(lx, ly), lx, ly, dir, base: false, originX: originX, originY: originY, sticker: cell);
+  final r = canStickyNudge(grid.get(rx, ry), rx, ry, dir, base: false, originX: originX, originY: originY, sticker: cell);
+
+  var res = l && r;
+
+  if (!base) {
+    final bx = frontX(x, dir + 2);
+    final by = frontY(y, dir + 2);
+
+    final b = canStickyNudge(grid.get(bx, by), bx, by, dir, base: base, checkedAsBack: true, originX: originX, originY: originY, sticker: cell);
+
+    res = res && b;
+  }
+
+  return res;
+}
+
+/// my brain hurts
+void stickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, int? originX, int? originY, Cell? sticker}) {
+  if (cell == null) return;
+  if (base) {
+    originX = x;
+    originY = y;
+  }
+  if (originX == x && originY == y) {
+    base = true;
+  }
+  if (sticker != null) {
+    if (!sticksTo(sticker, cell, dir, base, false, originX ?? x, originY ?? y)) return;
+  }
+  if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return;
+  if (!cell.tags.contains("stickyChecked")) return;
+  if (cell.tags.contains("stickyMoved")) return;
+  cell.tags.add("stickyMoved");
+
+  final sticky = isSticky(cell, x, y, dir, base, false, originX ?? x, originY ?? y);
+
+  if (sticky) {
+    if (!base) stickyNudge(grid.get(frontX(x, dir), frontY(y, dir)), frontX(x, dir), frontY(y, dir), dir, originX: x, originY: y);
+    stickyNudge(grid.get(frontX(x, dir - 1), frontY(y, dir - 1)), frontX(x, dir - 1), frontY(y, dir - 1), dir, originX: x, originY: y);
+    stickyNudge(grid.get(frontX(x, dir + 1), frontY(y, dir + 1)), frontX(x, dir + 1), frontY(y, dir + 1), dir, originX: x, originY: y);
+    if (!base) nudge(x, y, dir);
+    if (!base) stickyNudge(grid.get(frontX(x, dir + 2), frontY(y, dir + 2)), frontX(x, dir + 2), frontY(y, dir + 2), dir, base: base, originX: x, originY: y);
+  } else if (!base) {
+    nudge(x, y, dir);
+  }
 }
 
 void whenMoved(Cell cell, int x, int y, int dir, int force, MoveType mt) {
   if (cell.id == "sticky") {
-    stickyNudge(cell, x, y, dir, true);
+    stickyNudge(cell, x, y, dir, base: true, originX: x, originY: y);
   }
 }

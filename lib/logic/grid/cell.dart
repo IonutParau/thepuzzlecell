@@ -183,5 +183,5 @@ class Cell extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, rot, data, tags, lifespan, invisible];
+  List<Object?> get props => [id, rot, data, lifespan, invisible];
 }
