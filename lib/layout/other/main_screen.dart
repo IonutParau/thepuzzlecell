@@ -129,6 +129,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                       body: TexturePacksUI(),
                     ),
                     PaneItem(
+                      icon: Icon(FluentIcons.toolbox),
+                      title: Text(lang('mods', 'Mods')),
+                      body: ModsUI(),
+                    ),
+                    PaneItem(
                       icon: Icon(FluentIcons.locale_language),
                       title: Text(lang('languages', 'Languages')),
                       body: LangsUI(),

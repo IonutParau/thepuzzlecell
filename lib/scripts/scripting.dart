@@ -1,5 +1,15 @@
 part of scripts;
 
+class ModInfo {
+  String title;
+  String desc;
+  String author;
+  String icon;
+  Set<String> cells;
+
+  ModInfo(this.title, this.desc, this.author, this.icon, this.cells);
+}
+
 class ScriptingManager {
   final directory = Directory(path.join(assetsPath, 'mods'));
 
@@ -159,7 +169,50 @@ class ScriptingManager {
       }
     }
 
-    return "";
+    return "Unnamed";
+  }
+
+  String modDesc(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        return lua.info['desc'] ?? "No Description available";
+      }
+    }
+
+    return "No Description available";
+  }
+
+  String modAuthor(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        return lua.info['author'] ?? "Unknown Author";
+      }
+    }
+
+    return "Unknown Author";
+  }
+
+  String modIcon(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        final p = path.join(lua.dir.path, 'icon.png');
+        return File(p).existsSync() ? p : 'assets/images/modDefaultIcon.png';
+      }
+    }
+
+    return "assets/images/modDefaultIcon.png";
+  }
+
+  Set<String> modCells(String id) {
+    final l = <String>{};
+
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        l.addAll(lua.definedCells);
+      }
+    }
+
+    return l;
   }
 }
 

@@ -166,6 +166,8 @@ In the text, @variablename gets replaced with the variable.
 | editor_menu_button_opacity     | The name of the Editor Menu Button Opacity setting                                                                                      |                               |
 | editor_menu_slider_active      | The name of the Editor Menu Slider Active Color setting                                                                                 |                               |
 | editor_menu_slider_inactive    | The name of the Editor Menu Slider Inactive Color setting                                                                               |                               |
+| mods                           | The Mods title                                                                                                                          |                               |
+| view_cells                     | The name of the View Cells button                                                                                                       |                               |
 
 ## Button IDs:
 

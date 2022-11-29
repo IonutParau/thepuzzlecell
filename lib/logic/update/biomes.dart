@@ -60,11 +60,15 @@ void biome() {
       c.removeWhere((id) => id == "empty" || backgrounds.contains(id));
       cell.id = c[rng.nextInt(c.length)];
 
-      final p = props[cell.id];
-      if (p != null) {
-        for (var p in p) {
+      final prop = props[cell.id];
+      if (prop != null) {
+        for (var p in prop) {
           if (!cell.data.containsKey(p.key)) {
             cell.data[p.key] = p.def;
+          } else {
+            if ((cell.data[p.key]?.runtimeType ?? p.def.runtimeType) == p.def.runtimeType) {
+              cell.data[p.key] = p.def;
+            }
           }
         }
       }
