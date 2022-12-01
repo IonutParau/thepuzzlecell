@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "the_puzzle_cell")
+set(BINARY_NAME "The Puzzle Cell")
 set(APPLICATION_ID "com.example.the_puzzle_cell")
 
 cmake_policy(SET CMP0063 NEW)

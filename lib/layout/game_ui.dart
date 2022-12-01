@@ -2190,6 +2190,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     proxyMirror = storage.getBool("local_packet_mirror") ?? false;
     replaceBgWithRect = storage.getBool("background_rect") ?? false;
 
+    initial = grid.copy;
+
     if (worldIndex != null) gridTabIndex = worldIndex!;
 
     await loadAllButtonTextures();
@@ -3679,7 +3681,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     running = !running;
     if (edType == EditorType.loaded) {
       isinitial = true;
-      if (currentSelection != "empty") return;
+      //if (currentSelection != "empty") return;
     }
     if (running) {
       if (isinitial) {
