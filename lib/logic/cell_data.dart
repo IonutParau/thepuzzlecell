@@ -1240,6 +1240,7 @@ final categories = [
       "math_number",
       "math_safe_number",
       "math_to_mech",
+      "mech_to_math",
       "math_sync",
       CellCategory(
         "Core",
@@ -1340,6 +1341,7 @@ final categories = [
       "mech_toggle",
       "displayer",
       "mech_to_math",
+      "math_to_mech",
       CellCategory(
         "Power Givers",
         "They give cells mechanical power",
