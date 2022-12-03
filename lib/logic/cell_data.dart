@@ -2749,36 +2749,36 @@ final cellInfo = <String, CellProfile>{
     "Mirror but powered mechanically",
   ),
   "master_get_camx": CellProfile(
-    "Get Camera Central Point X",
-    "Holds the approximate X coordinate of the screen's center point",
+    "Get Camera X",
+    "Outputs the approximate X coordinate of the screen's center point (in relation to cell grid)",
   ),
   "master_get_camy": CellProfile(
-    "Get Camera Central Point Y",
-    "Holds the approximate Y coordinate of the screen's center point",
+    "Get Camera Y",
+    "Outputs the approximate Y coordinate of the screen's center point (in relation to cell grid)",
   ),
   "master_get_mousex": CellProfile(
     "Get Mouse X",
-    "Holds the approximate X coordinate of the mouse cursor",
+    "Outputs the approximate X coordinate of the mouse cursor (in relation to cell grid)",
   ),
   "master_get_mousey": CellProfile(
     "Get Mouse Y",
-    "Holds the approximate Y coordinate of the mouse cursor",
+    "Outputs the approximate Y coordinate of the mouse cursor (in relation to cell grid)",
   ),
   "master_get_rot": CellProfile(
     "Get Selected Cell Rotation",
-    "Holds the currently stored rotation of the selected cell",
+    "Outputs the rotation of the current master state's cell",
   ),
   "master_get_lastrot": CellProfile(
     "Get Selected Cell's Last Rotation",
-    "Holds the reported last rotation of the selected cell",
+    "Outputs the last rotation of the current master state's cell",
   ),
   "master_has_id": CellProfile(
-    "Check For Selected Cell ID Equality",
-    "Checks if the selected cell's ID is equal to the stored cell ID",
+    "Compare Selected Cell ID",
+    "Checks if the master state's cell ID is equal to this cell's ID property",
   ),
   "master_has_idx": CellProfile(
-    "Check For Selected Cell ID Equality To Index",
-    "Checks if the selected cell's ID is equal to the cell ID at the index specified as the input",
+    "Compare Selected Cell ID To Index",
+    "Checks if the the master state's cell ID is equal to the ID index specified as the numerical input",
   ),
   "unlock": CellProfile(
     "Unlocked Lock",
@@ -2786,59 +2786,59 @@ final cellInfo = <String, CellProfile>{
   ),
   "master_new_cell": CellProfile(
     "Set Master State to New Cell",
-    "Sets the current master state's cell to a brand new empty cell.",
+    "Sets the current master state's cell to a brand new empty cell facing right.\nThis does not reset position nor last position.",
   ),
   "master_place": CellProfile(
     "Place Cell from Master State",
-    "Places the cell stored in the current master state at the stored coordinates.",
+    "Places the current master state's cell at the stored position.",
   ),
   "master_pop_state": CellProfile(
     "Pop Master State",
-    "Removes the current master state from the master state stack.",
+    "Removes the current master state from the stack and sets the master state below it to the current one.",
   ),
   "master_push_state": CellProfile(
     "Push Master State",
-    "Adds on top of the master state stack a new empty master state and makes it the current one",
+    "Adds a new empty master state on top of the stack and makes it the current one.",
   ),
   "master_select_xy": CellProfile(
     "Select Cell at X and Y",
-    "Takes the X and Y and sets it to the Master State. Also sets the XY pair.",
+    "Takes XY coordinates as input,\nsets current master state's cell ID to cell's ID at the inputted coordinates and\n sets current master state's coordinates and last coordinates to the inputtedcoordinates.",
   ),
   "master_set_id": CellProfile(
     "Change to Constant ID",
-    "Sets the current master state's cell's ID to the ID configured by its properties.",
+    "Sets the current master state's cell ID to the ID configured by properties.",
   ),
   "master_set_idx": CellProfile(
     "Change to ID by index",
-    "Takes on the side a numerical input and turns it into an ID by index, then sets the current master state's cell's ID to said ID.",
+    "Sets the current master state's cell ID to the ID converted from the input number.",
   ),
   "master_set_xy": CellProfile(
     "Set Position to X and Y",
-    "Sets the current master state's cell's position to the XY pair specified by numbers.",
+    "Sets the current master state's position to the XY pair specified by the input numbers.",
   ),
   "master_set_last_xy": CellProfile(
     "Set Last Position to X and Y",
-    "Sets the current master state's cell's last position to the XY pair specified by numbers.",
+    "Sets the current master state's last position to the XY pair specified by the input numbers (which is only used for visual effects).",
   ),
   "master_set_rot": CellProfile(
     "Set Rotation to N",
-    "Sets the current master state's cell's rotation to the specified number.",
+    "Sets the current master state's cell's rotation to the specified number.\n0-right\n1-down\n2-left\n3-up",
   ),
   "master_set_lastrot": CellProfile(
     "Set Last Rotation to N",
-    "Sets the current master state's cell's last rotation to the specified number.",
+    "Sets the current master state's cell's last rotation to the specified number (which is only used for visual effects).\n0-right\n1-down\n2-left\n3-up",
   ),
   "master_fill_xy": CellProfile(
     "Fill until XY",
-    "Fills with the cell from the stored position to the specified XY",
+    "Fills with the cell from the stored position to the specified XY pair specified by the input numbers",
   ),
   "master_push": CellProfile(
     "Push cell",
-    "Pushes at the stored position in the specified rotation",
+    "Pushes the cell at the master state's position in the direction specified by the input number.\n0-right\n1-down\n2-left\n3-up",
   ),
   "master_add_fake": CellProfile(
     "Add as Fake Cell",
-    "Adds the stored cell as a fake cell. Fake cells don't actually exist, and are only a rendering effect. On the side, it takes the amount of ticks the fake cell should live. By default, 0 ticks (aka it doesn't exist)",
+    "Adds the master state's cell as a fake cell. Fake cells are visual only and don't affect the grid. It takes the fake cell lifetime (in ticks) as input. By default, 0 ticks (aka it doesn't exist)",
   ),
   "debt": CellProfile(
     "Debt",
@@ -2854,19 +2854,19 @@ final cellInfo = <String, CellProfile>{
   ),
   "master_get_x": CellProfile(
     "Get X",
-    "Gives its X coordinate",
+    "Outputs its X coordinate",
   ),
   "master_get_y": CellProfile(
     "Get Y",
-    "Gives its Y coordinate",
+    "Outputs its Y coordinate",
   ),
   "master_get_width": CellProfile(
     "Get Width",
-    "Gives the grid width",
+    "Outputs the grid width",
   ),
   "master_get_height": CellProfile(
     "Get Height",
-    "Gives the grid height",
+    "Outputs the grid height",
   ),
   "random_filler": CellProfile(
     "Random Filler",
@@ -3029,7 +3029,7 @@ Map<String, List<CellProperty>> props = {
     CellProperty("ID", "id", CellPropertyType.cellID, "empty"),
   ],
   "master_push": [
-    CellProperty("Force", "force", CellPropertyType.integer, 0),
+    CellProperty("Force", "force", CellPropertyType.integer, 1),
   ],
   "debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
