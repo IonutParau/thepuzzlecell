@@ -352,7 +352,7 @@ class CodeCellManager {
     }
 
     if (instruction.name == "ifgotoD") {
-      final code = int.parse(instruction.params[0]);
+      final code = context.getStack(int.parse(instruction.params[0]));
       final val = context.getStack(int.parse(instruction.params[1]));
 
       if (val is int && val > 0) {
@@ -508,7 +508,7 @@ class CodeCellManager {
       final key = int.parse(instruction.params[1]);
       final val = int.parse(instruction.params[2]);
 
-      (context.getAllocated(ptr) as CodeTable).set(key, context.copy(val));
+      (context.getAllocated(context.getStack(ptr)) as CodeTable).set(key, context.copy(val));
     }
 
     if (instruction.name == "mget") {
@@ -516,7 +516,7 @@ class CodeCellManager {
       final key = int.parse(instruction.params[1]);
       final out = int.parse(instruction.params[2]);
 
-      context.setStack(out, (context.getAllocated(ptr) as CodeTable).get(key));
+      context.setStack(out, (context.getAllocated(context.getStack(ptr)) as CodeTable).get(key));
     }
 
     if (instruction.name == "set") {
@@ -561,26 +561,26 @@ class CodeCellManager {
       final src = int.parse(instruction.params[0]);
       final dest = int.parse(instruction.params[1]);
 
-      context.setStack(dest, context.getStack(src) is int);
+      context.setStack(dest, context.getStack(src) is int ? 1 : 0);
     }
 
     if (instruction.name == "isDouble") {
       final src = int.parse(instruction.params[0]);
       final dest = int.parse(instruction.params[1]);
 
-      context.setStack(dest, context.getStack(src) is double);
+      context.setStack(dest, context.getStack(src) is double ? 1 : 0);
     }
 
     if (instruction.name == "isTable") {
       final src = int.parse(instruction.params[0]);
       final dest = int.parse(instruction.params[1]);
 
-      context.setStack(dest, context.getStack(src) is CodeTable);
+      context.setStack(dest, context.getStack(src) is CodeTable ? 1 : 0);
     }
 
     if (instruction.name == "call") {
       final location = int.parse(instruction.params[0]);
-      context.calls.add(i);
+      context.calls.add(i + 1);
       return location;
     }
 
@@ -589,17 +589,17 @@ class CodeCellManager {
       final val = context.getStack(int.parse(instruction.params[1]));
 
       if (val is int && val > 0) {
-        context.calls.add(i);
+        context.calls.add(i + 1);
         return code;
       }
 
       if (val is double && val > 0) {
-        context.calls.add(i);
+        context.calls.add(i + 1);
         return code;
       }
 
       if (val is CodeTable && val.capacity > 0) {
-        context.calls.add(i);
+        context.calls.add(i + 1);
         return code;
       }
     }
