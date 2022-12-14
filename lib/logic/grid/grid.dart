@@ -555,4 +555,59 @@ class GridClip {
       height = tmp;
     }
   }
+
+  bool isFullyEmpty(int i, bool isRow) {
+    if (isRow) {
+      for (var x = 0; x < width; x++) {
+        if (cells[x][i].id != "empty") {
+          return false;
+        }
+      }
+    } else {
+      for (var y = 0; y < height; y++) {
+        if (cells[i][y].id != "empty") {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  void optimize() {
+    var optimized = true;
+    while (optimized) {
+      print("Optimizing");
+      optimized = false;
+
+      if (isFullyEmpty(0, true)) {
+        print("Optimization 1");
+        for (var x = 0; x < width; x++) {
+          cells[x].removeAt(0);
+        }
+        height--;
+        optimized = true;
+      }
+      if (isFullyEmpty(0, false)) {
+        print("Optimization 2");
+        cells.removeAt(0);
+        width--;
+        optimized = true;
+      }
+      if (isFullyEmpty(height - 1, true)) {
+        print("Optimization 3");
+        for (var x = 0; x < width; x++) {
+          cells[x].removeAt(height - 1);
+        }
+        height--;
+        optimized = true;
+      }
+      if (isFullyEmpty(width - 1, false)) {
+        print("Optimization 4");
+        cells.removeAt(width - 1);
+        width--;
+        optimized = true;
+      }
+    }
+  }
 }

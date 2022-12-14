@@ -10,6 +10,7 @@ void loadBlueprint(int i) {
   final g = loadStr(blueprints[i], false);
   final gc = GridClip();
   gc.activate(g.width, g.height, g.grid);
+  gc.optimize();
 
   game.gridClip = gc;
 

@@ -547,7 +547,7 @@ Offset interpolate(Offset o1, Offset o2, double t) {
 }
 
 double lerp(num a, num b, double t) {
-  return a + (b - a) * min(t, 1);
+  return a + (b - a) * min(max(t, 0), 1);
 }
 
 double lerpRotation(num old, num newR, double t) {
@@ -1135,6 +1135,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     gridClip.activate(selW + 1, selH + 1, g);
+    gridClip.optimize();
 
     selecting = false;
     setPos = false;
@@ -2315,6 +2316,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
   }
 
+  double alltime = 0;
+
   @override
   // Main game rendering
   void render(Canvas canvas) {
@@ -2435,6 +2438,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
         var mx = cellMouseX; // shorter names
         var my = cellMouseY; // shorter names
+
         for (var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
           for (var cy = my - brushSize; cy <= my + brushSize; cy++) {
             if (grid.inside(cx, cy)) {
@@ -2461,6 +2465,56 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             }
           }
         }
+      }
+
+      if (edType == EditorType.making && interpolation && mouseInside && !selecting) {
+        final mx = cellMouseX;
+        final my = cellMouseY;
+
+        final coolOverlayThickness = cellSize / 8;
+        final coolOverlayWidth = (pasting ? gridClip.width : (brushSize + 1) * 2 - 1) * cellSize + coolOverlayThickness * 2;
+        final coolOverlayHeight = (pasting ? gridClip.height : (brushSize + 1) * 2 - 1) * cellSize + coolOverlayThickness * 2;
+        final coolOverlayAnimTime = 1;
+        final delta = lerp(0, 1, (sin(alltime / coolOverlayAnimTime).abs()));
+
+        final coolOverlaySpacingW = coolOverlayWidth + cellSize * delta;
+        final coolOverlaySpacingH = coolOverlayHeight + cellSize * delta;
+
+        final sx = mx * cellSize;
+        final sy = my * cellSize;
+
+        final rect = Offset(
+              sx - (coolOverlaySpacingW - cellSize) / 2 + (pasting ? (gridClip.width ~/ 2 + (gridClip.width % 2 - 1) / 2) * cellSize : 0),
+              sy - (coolOverlaySpacingH - cellSize) / 2 + (pasting ? (gridClip.height ~/ 2 + (gridClip.height % 2 - 1) / 2) * cellSize : 0),
+            ) &
+            Size(coolOverlaySpacingW, coolOverlaySpacingH);
+
+        var coolOverlayColor = settingsColor('cellbar_border', Colors.grey[60]);
+
+        if (pasting) {
+          for (var x = 0; x < gridClip.width; x++) {
+            for (var y = 0; y < gridClip.height; y++) {
+              if (grid.inside(mx + x, my + y)) {
+                if (gridClip.cells[x][y].id != "empty" && grid.at(mx + x, my + y).id != "empty") {
+                  final c = (grid.at(mx + x, my + y).copy)..lifespan = 0;
+                  if (c != gridClip.cells[x][y]) {
+                    coolOverlayColor = Colors.red;
+                  }
+                }
+              } else {
+                coolOverlayColor = Colors.red;
+              }
+            }
+          }
+        }
+
+        canvas.drawRect(
+          rect,
+          Paint()
+            ..color = coolOverlayColor
+            ..strokeWidth = coolOverlayThickness
+            ..style = PaintingStyle.stroke,
+        );
       }
 
       if (edType == EditorType.loaded && currentSelection != "empty" && mouseInside && !running) {
@@ -3071,6 +3125,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   // Main game update
   @override
   void update(double dt) {
+    alltime += dt;
     try {
       if (overlays.isActive("loading")) {
         return;
