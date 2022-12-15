@@ -3,14 +3,15 @@ part of logic;
 class LastVars {
   Offset lastPos;
   int lastRot;
+  String id;
 
-  LastVars(this.lastRot, num x, num y)
+  LastVars(this.lastRot, num x, num y, this.id)
       : lastPos = Offset(
           x.toDouble(),
           y.toDouble(),
         );
 
-  LastVars get copy => LastVars(lastRot, lastPos.dx, lastPos.dy);
+  LastVars get copy => LastVars(lastRot, lastPos.dx, lastPos.dy, id);
 
   @override
   String toString() {
@@ -29,7 +30,8 @@ class BrokenCell {
   Map<String, dynamic> data;
   bool invisible;
 
-  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data, this.invisible);
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data,
+      this.invisible);
 
   void render(Canvas canvas, double t) {
     final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
@@ -63,12 +65,20 @@ class BrokenCell {
       id = trickAs;
     }
 
-    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize, overridePaint: paint);
+    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(
+        canvas,
+        position: screenPos,
+        size: screenSize,
+        overridePaint: paint);
 
     if (trickAs != null && game.edType == EditorType.making) {
-      final texture = textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
+      final texture =
+          textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
       final rotoff = (data["trick_rot"] ?? 0) * halfPi;
-      var trick_off = rotateOff(Offset(screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2), -rotoff);
+      var trick_off = rotateOff(
+          Offset(
+              screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2),
+          -rotoff);
 
       canvas.rotate(rotoff);
 
@@ -97,7 +107,8 @@ class FakeCell {
   num sy;
   num rot;
 
-  FakeCell(this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
+  FakeCell(
+      this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
 
   void render(Canvas canvas) {
     game.renderCell(cell, x, y, null, sx, sy, rot);
@@ -124,7 +135,7 @@ class Cell extends Equatable {
   int? cy;
 
   Cell(int x, int y, [int rot = 0])
-      : lastvars = LastVars(rot, x, y),
+      : lastvars = LastVars(rot, x, y, "empty"),
         cx = x,
         cy = y;
 
@@ -148,7 +159,7 @@ class Cell extends Equatable {
     cell.tags = map["tags"] ?? {};
     cell.lifespan = map["lifespan"] ?? 0;
     cell.invisible = map["invisible"] ?? false;
-    cell.lastvars = LastVars(cell.rot, x, y);
+    cell.lastvars = LastVars(cell.rot, x, y, cell.id);
     cell.cx = x;
     cell.cy = y;
 
@@ -161,7 +172,7 @@ class Cell extends Equatable {
     c.id = id;
     c.rot = rot;
     c.updated = updated;
-    c.lastvars.lastRot = lastvars.lastRot;
+    c.lastvars = lastvars.copy;
     c.lifespan = lifespan;
     c.invisible = invisible;
 
@@ -173,7 +184,8 @@ class Cell extends Equatable {
     return c;
   }
 
-  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
+  String toString() =>
+      "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
 
   void rotate(int amount) {
     lastvars.lastRot = rot;

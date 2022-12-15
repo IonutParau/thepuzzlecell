@@ -28,13 +28,16 @@ class Grid {
 
   List<FakeCell> fakeCells = [];
 
-  void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
+  void addBroken(Cell cell, int dx, int dy,
+      [String type = "normal", int? rlvx, int? rlvy]) {
     if (cell.invisible && game.edType == EditorType.loaded) return;
     if (cell.id == "empty") return;
 
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data, cell.invisible);
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type,
+        cell.data, cell.invisible);
 
-    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
+    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx,
+        rlvy?.toDouble() ?? b.lv.lastPos.dy);
 
     brokenCells.add(b);
   }
@@ -173,7 +176,9 @@ class Grid {
     return false;
   }
 
-  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
+  void updateCell(
+      void Function(Cell cell, int x, int y) callback, int? rot, String id,
+      {bool invertOrder = false}) {
     //if (!cells.contains(id)) return;
 
     if (rot == null) {
@@ -205,7 +210,10 @@ class Grid {
     return chunks[cx(x)][cy(y)].contains(id);
   }
 
-  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter, bool shouldUpdate = true}) {
+  void loopChunks(String chunkID, GridAlignment alignment,
+      void Function(Cell cell, int x, int y) callback,
+      {bool Function(Cell cell, int x, int y)? filter,
+      bool shouldUpdate = true}) {
     if (filter == null) {
       filter = (Cell c, int x, int y) {
         if (chunkID == "all") return true;
@@ -337,14 +345,16 @@ class Grid {
 
     final cellPos = quadChunk.fetch("all");
 
-    if (cellPos.length < width * height) cells.add("empty"); // If we skipped some its guaranteed we have some empties
+    if (cellPos.length < width * height)
+      cells.add(
+          "empty"); // If we skipped some its guaranteed we have some empties
 
     for (var p in cellPos) {
       var x = p[0];
       var y = p[1];
       var cell = at(x, y);
       cell.updated = false;
-      cell.lastvars = LastVars(cell.rot, x, y);
+      cell.lastvars = LastVars(cell.rot, x, y, cell.id);
       cell.tags.clear();
       cell.cx = x;
       cell.cy = y;
@@ -366,7 +376,8 @@ class Grid {
       doAnchor(x, y, rot);
       return;
     }
-    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
+    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
+      return;
     if (!breakable(
       at(x, y),
       x,
@@ -411,7 +422,8 @@ class Grid {
       }
     } else {
       for (var subtick in subticks) {
-        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
+        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded)
+          return;
         if (subtick is void Function(Set<String>)) {
           // QueueManager.add("subticks", () => subtick(cells));
           subtick(cells);
@@ -456,7 +468,8 @@ class GridClip {
         final sx = cx + x;
         final sy = cy + y;
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
-          cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy);
+          cells[cx][cy].lastvars =
+              LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
           if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
           game.sendToServer(
             "place $sx $sy ${cells[cx][cy].id} ${cells[cx][cy].rot} ${game.cellDataStr(cells[cx][cy].data)}",
@@ -482,7 +495,8 @@ class GridClip {
               sy %= grid.height;
             }
             final off = rotateOff(
-                  Offset(sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
+                  Offset(sx * cellSize + cellSize / 2,
+                      sy * cellSize + cellSize / 2),
                   -rot,
                 ) -
                 Offset(
@@ -491,8 +505,11 @@ class GridClip {
                     ) /
                     2;
             canvas.rotate(rot);
-            final file = textureMap['${cells[cx][cy].id}.png'] ?? '${cells[cx][cy].id}.png';
-            (Sprite(Flame.images.fromCache(file))..paint = (Paint()..color = Colors.white.withOpacity(0.2))).render(
+            final file = textureMap['${cells[cx][cy].id}.png'] ??
+                '${cells[cx][cy].id}.png';
+            (Sprite(Flame.images.fromCache(file))
+                  ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
+                .render(
               canvas,
               position: Vector2(off.dx, off.dy),
               size: Vector2.all(
