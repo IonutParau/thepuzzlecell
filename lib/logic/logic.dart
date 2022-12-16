@@ -152,6 +152,10 @@ String findAssetDirPath() {
     );
   }
 
+  if (Directory(path.absolute('Resources', 'flutter_assets')).existsSync()) {
+    return path.absolute('Resources', 'flutter_assets');
+  }
+
   return path.absolute('data', 'flutter_assets');
 }
 
