@@ -366,6 +366,9 @@ class MechanicalManager {
           grid.addBroken(cell, x, y, "silent_shrinking");
         }
       }
+    } else if (cell.id == "mech_win") {
+      puzzleWin = true;
+      if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
 
     onMasterPowered(cell, x, y);
