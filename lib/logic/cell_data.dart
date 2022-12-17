@@ -339,7 +339,8 @@ final cells = {
   "code_program",
   "code_instruction",
   "carbon",
-  "math_nroot"
+  "math_nroot",
+  "mech_win"
 }.toList();
 
 final modded = <String>[];
@@ -349,6 +350,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "mech_win.png": "mechanical/users/mech_win.png",
   "math_nroot.png": "math/core/math_nroot.png",
   "carbon.png": "push/sticky/carbon.png",
   "code_program.png": "unique/code/code_program.png",
@@ -1383,6 +1385,7 @@ final categories = [
           "keylimit",
           "keyforce",
           "keyfake",
+          "mech_win",
         ],
         "mech_mover",
         max: 6,
@@ -2898,6 +2901,10 @@ final cellInfo = <String, CellProfile>{
   "math_nroot": CellProfile(
     "NRoot",
     "Takes right input as n. Outputs the nth root of the left input.",
+  ),
+  "mech_win": CellProfile(
+    "Mechanically Powered Trophy",
+    "When powered, you win!",
   ),
 };
 
