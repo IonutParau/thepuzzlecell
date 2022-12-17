@@ -339,6 +339,7 @@ final cells = {
   "code_program",
   "code_instruction",
   "carbon",
+  "math_nroot"
 }.toList();
 
 final modded = <String>[];
@@ -348,6 +349,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "math_nroot.png": "math/core/math_nroot.png",
   "carbon.png": "push/sticky/carbon.png",
   "code_program.png": "unique/code/code_program.png",
   "code_instruction.png": "unique/code/code_instruction.png",
@@ -1253,6 +1255,7 @@ final categories = [
           "math_mod",
           "math_exp",
           "math_sqrt",
+          "math_nroot",
         ],
         "math_plus",
         max: 4,
@@ -2891,6 +2894,10 @@ final cellInfo = <String, CellProfile>{
   "code_instruction": CellProfile(
     "Code Instruction",
     "Holds a line number (so the program knows where the code is meant to be) and raw instructions.",
+  ),
+  "math_nroot": CellProfile(
+    "NRoot",
+    "Takes right input as n. Outputs the nth root of the left input.",
   ),
 };
 
