@@ -2669,30 +2669,42 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         var coolOverlayColor = settingsColor('cellbar_border', Colors.grey[60]);
 
         if (pasting) {
-          for (var x = 0; x < gridClip.width; x++) {
-            for (var y = 0; y < gridClip.height; y++) {
-              if (grid.inside(mx + x, my + y)) {
-                if (gridClip.cells[x][y].id != "empty" &&
-                    grid.at(mx + x, my + y).id != "empty") {
-                  final c = (grid.at(mx + x, my + y).copy)..lifespan = 0;
-                  if (c != gridClip.cells[x][y]) {
-                    coolOverlayColor = Colors.red;
+          if (grid.inside(mx, my) ||
+             grid.inside(mx + gridClip.width, my) ||
+             grid.inside(mx, my + gridClip.height) ||
+             grid.inside(mx + gridClip.width, my + gridClip.height)) {
+            for (var x = 0; x < gridClip.width; x++) {
+              for (var y = 0; y < gridClip.height; y++) {
+                if (grid.inside(mx + x, my + y)) {
+                  if (gridClip.cells[x][y].id != "empty" &&
+                      grid.at(mx + x, my + y).id != "empty") {
+                    final c = (grid.at(mx + x, my + y).copy)..lifespan = 0;
+                    if (c != gridClip.cells[x][y]) {
+                      coolOverlayColor = Colors.red;
+                    }
                   }
-                }
-              } else {
+                } else {
                 coolOverlayColor = Colors.red;
+                }
               }
             }
+            canvas.drawRect(
+              rect,
+              Paint()
+                ..color = coolOverlayColor
+                ..strokeWidth = coolOverlayThickness
+                ..style = PaintingStyle.stroke,
+            );
           }
+        } else if (grid.inside(mx, my)) {
+          canvas.drawRect(
+            rect,
+            Paint()
+              ..color = coolOverlayColor
+              ..strokeWidth = coolOverlayThickness
+              ..style = PaintingStyle.stroke,
+          );
         }
-
-        canvas.drawRect(
-          rect,
-          Paint()
-            ..color = coolOverlayColor
-            ..strokeWidth = coolOverlayThickness
-            ..style = PaintingStyle.stroke,
-        );
       }
 
       if (edType == EditorType.loaded &&
