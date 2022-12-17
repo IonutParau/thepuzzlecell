@@ -236,6 +236,14 @@ class MathManager {
 
       output(x, y, cell.rot, sqrt(i));
     }, null, "math_sqrt");
+    
+    // NRoot
+    grid.updateCell((cell, x, y) {
+      final i1 = input(x, y, cell.rot - 1);
+      final i2 = input(x, y, cell.rot + 1);
+      
+      output(x, y, cell.rot, pow(i1, 1/i2));
+    }, null, "math_nroot");
   }
 
   void setGlobal(num channel, num index, num value) {
@@ -401,7 +409,7 @@ class MathManager {
     // Memory outputs
     if (["math_memget", "math_memreader", "math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) return true;
     // Core outputs
-    if (["math_div", "math_exp", "math_minus", "math_mod", "math_mult", "math_plus", "math_sqrt"].contains(cell.id) && dir == cell.rot) return true;
+    if (["math_div", "math_exp", "math_minus", "math_mod", "math_mult", "math_plus", "math_sqrt", "math_nroot"].contains(cell.id) && dir == cell.rot) return true;
     // Function outputs
     if (["math_abs", "math_ceil", "math_floor", "math_log", "math_logn", "math_max", "math_min", "math_prng", "math_rng", "math_sin", "math_cos", "math_tan"].contains(cell.id) && dir == cell.rot)
       return true;
