@@ -11,7 +11,7 @@ A remake of Cell Machine meant to add a wide range of possibilities to make very
 
 # What is unique about this remake?
 
-It has cells specifically made for fun puzzles or complex creations.
+It has cells specifically made for fun puzzles or very complex creations.
 It also has:
 
 - Many QoL improvements (renaming level when saving, blueprints, grid history, invisibility and trickster tool, etc.)
@@ -21,6 +21,7 @@ It also has:
 - Support for having multiple texture packs at once
 - Languages (tho the translators haven't updated their translations in forever so they're very out-of-date)
 - An update checker to tell you when you need to install a newer version of the game
+- Themes
 
 ## What do some of these do?
 
@@ -64,3 +65,9 @@ There is also Session History for Multiplayer, which is the same thing but unsav
 ### Blueprints
 
 Blueprints allow you to save creations and reuse them. They are a huge time-saver, and there are some built-in ones to show some of the TPC community's accomplishments or just fun things you can make.
+
+### Themes
+
+In settings, there is a "theme" category.
+The settings in there will allow you to customize UI colors and make some boxes opaque.
+The possibilities of making themes is almost endless!
