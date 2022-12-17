@@ -180,7 +180,7 @@ void onMasterPowered(Cell cell, int x, int y) {
         frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
   if (cell.id == "master_set_rot") {
-    final rot = mathManager.input(x, y, cell.rot - 1);
+    final rot = mathManager.input(x, y, cell.rot - 1) % 4;
     if (rot.isInfinite || rot.isNaN || rot.isNegative) return;
 
     MasterState.current.cell['rot'] = rot.toInt();
