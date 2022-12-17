@@ -1,6 +1,6 @@
 mkdir AppDir
 
-cp -r build/linux/x64/release/bundle/* ./AppDir
+cp -r build/linux/x64/debug/bundle/* ./AppDir
 
 ./appimage_builder.AppImage
 

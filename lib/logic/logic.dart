@@ -111,7 +111,7 @@ String findAssetDirPath() {
   // ));
 
   if (Directory(
-    path.absolute(
+    path.join(
       'build',
       'windows',
       'runner',
@@ -120,7 +120,7 @@ String findAssetDirPath() {
       'flutter_assets',
     ),
   ).existsSync()) {
-    return path.absolute(
+    return path.join(
       'build',
       'windows',
       'runner',
@@ -131,7 +131,7 @@ String findAssetDirPath() {
   }
 
   if (Directory(
-    path.absolute(
+    path.join(
       'build',
       'linux',
       'x64',
@@ -141,7 +141,7 @@ String findAssetDirPath() {
       'flutter_assets',
     ),
   ).existsSync()) {
-    return path.absolute(
+    return path.join(
       'build',
       'linux',
       'x64',
@@ -152,11 +152,11 @@ String findAssetDirPath() {
     );
   }
 
-  if (Directory(path.absolute('Resources', 'flutter_assets')).existsSync()) {
-    return path.absolute('Resources', 'flutter_assets');
+  if (Directory(path.join('Resources', 'flutter_assets')).existsSync()) {
+    return path.join('Resources', 'flutter_assets');
   }
 
-  return path.absolute('data', 'flutter_assets');
+  return path.join('data', 'flutter_assets');
 }
 
 late SharedPreferences storage;

@@ -107,3 +107,4 @@ flutter:
     - languages/
     - mods/
     - mods/testmod/
+    - modules/

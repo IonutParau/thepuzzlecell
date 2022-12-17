@@ -15,3 +15,4 @@ export 'multiplayer/see_online_dialog.dart' show SeeOnlineDialog;
 export 'multiplayer/edit_user_dialog.dart' show EditUserDialog;
 export 'search_dialog.dart' show SearchCellDialog;
 export 'see_mod_cells_dialog.dart' show ViewModCellsDialog;
+export 'modules_dialog.dart' show ModulesDialog;

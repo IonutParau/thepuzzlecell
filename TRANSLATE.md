@@ -168,6 +168,8 @@ In the text, @variablename gets replaced with the variable.
 | editor_menu_slider_inactive    | The name of the Editor Menu Slider Inactive Color setting                                                                               |                               |
 | mods                           | The Mods title                                                                                                                          |                               |
 | view_cells                     | The name of the View Cells button                                                                                                       |                               |
+| pick_texture_zip               | The name of the File Picker when picking texture files ZIPs to install                                                                  |                               |
+| pick_modules_files             | The name of the File Picker when picking lua files to install as modules                                                                |                               |
 
 ## Button IDs:
 

@@ -204,7 +204,6 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print(searchResults.length);
     return ContentDialog(
       title: Text(lang("search-cell-btn.title", "Search Cell")),
       content: SizedBox(

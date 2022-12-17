@@ -196,7 +196,7 @@ class ScriptingManager {
     for (var lua in luaScripts) {
       if (lua.id == id) {
         final p = path.join(lua.dir.path, 'icon.png');
-        return File(p).existsSync() ? p : 'assets/images/modDefaultIcon.png';
+        return File(p).existsSync() ? "mods/${id}/icon.png" : 'assets/images/modDefaultIcon.png';
       }
     }
 

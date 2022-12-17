@@ -1,8 +1,6 @@
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/scripts/scripts_real.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart' show Icons, MaterialButton, MaterialPageRoute;
 import 'package:fluent_ui/fluent_ui.dart';
 
 import '../../logic/logic.dart';
@@ -83,6 +81,26 @@ class _ModsUIState extends State<ModsUI> {
             ),
           );
         },
+      ),
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Button(
+            child: Text(
+              lang('view_modules', 'View Modules'),
+              style: TextStyle(
+                fontSize: 10.sp,
+              ),
+            ),
+            onPressed: () async {
+              await showDialog(
+                context: context,
+                builder: (ctx) => ModulesDialog(),
+              );
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }

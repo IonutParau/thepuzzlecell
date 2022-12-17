@@ -37,8 +37,7 @@ class LuaScript {
     }
   }
 
-  void defineFunc(String name, DartFunction func, int returns,
-      [int minArgs = 0]) {
+  void defineFunc(String name, DartFunction func, int returns, [int minArgs = 0]) {
     ls.pushDartFunction((ls) {
       int result = 0;
 
@@ -276,8 +275,7 @@ class LuaScript {
           ls.pushNumber(val.toDouble());
           return 1;
         }
-        if (val is bool &&
-            (type == "bool" || type == "boolean" || type == "auto")) {
+        if (val is bool && (type == "bool" || type == "boolean" || type == "auto")) {
           ls.pushBoolean(val);
           return 1;
         }
@@ -290,8 +288,7 @@ class LuaScript {
     // x
     ls.pushDartFunction((ls) {
       if (ls.getTop() == 1) {
-        cell.lastvars.lastPos =
-            Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+        cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
         return 0;
       }
       ls.pushNumber(cell.lastvars.lastPos.dx);
@@ -302,8 +299,7 @@ class LuaScript {
     // y
     ls.pushDartFunction((ls) {
       if (ls.getTop() == 1) {
-        cell.lastvars.lastPos =
-            Offset(cell.lastvars.lastPos.dx, ls.toNumber(-1));
+        cell.lastvars.lastPos = Offset(cell.lastvars.lastPos.dx, ls.toNumber(-1));
         return 0;
       }
       ls.pushNumber(cell.lastvars.lastPos.dy);
@@ -543,8 +539,7 @@ class LuaScript {
     }
   }
 
-  bool? isAcidic(
-      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  bool? isAcidic(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       bool? result;
@@ -569,8 +564,7 @@ class LuaScript {
     return null;
   }
 
-  void handleAcid(
-      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  void handleAcid(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       collected(ls, () {
@@ -696,9 +690,7 @@ class LuaScript {
                   for (var rot in [0, 1]) {
                     grid.loopChunks(
                       cell,
-                      i == 0
-                          ? GridAlignment.bottomleft
-                          : GridAlignment.bottomright,
+                      i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
                       (cell, x, y) {
                         cell.updated = true;
                         collected(ls, () {
@@ -711,10 +703,7 @@ class LuaScript {
                           }
                         });
                       },
-                      filter: (cell, x, y) =>
-                          cell.id == cell &&
-                          (cell.rot % 2 == rot) &&
-                          !cell.updated,
+                      filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
                     );
                   }
                 }
@@ -815,8 +804,7 @@ class LuaScript {
           modded.add(cell);
           print("Defined Cell: " + cell);
           cellInfo[cell] = CellProfile(name, desc);
-          textureMap['$cell.png'] =
-              "../../mods/$id/${texture.split("/").join(path.separator)}";
+          textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
           textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
           ls.setGlobal("PROPS:$cell");
         }
@@ -840,8 +828,7 @@ class LuaScript {
     return r;
   }
 
-  bool? canMove(
-      Cell cell, int x, int y, int dir, int side, int force, String mt) {
+  bool? canMove(Cell cell, int x, int y, int dir, int side, int force, String mt) {
     if (definedCells.contains(cell.id)) {
       return withDefinedCellProperty<bool>(cell.id, "movable", () {
         if (ls.isFunction(-1)) {
@@ -1106,5 +1093,17 @@ class LuaScript {
     loadAPI();
     print(path.joinAll([dir.path, 'main.lua']));
     ls.doFile(path.joinAll([dir.path, 'main.lua']));
+
+    List modules = info["modules"] ?? [];
+
+    for (var module in modules) {
+      if (module is String) {
+        loadModule(module);
+      }
+    }
+  }
+
+  void loadModule(String module) {
+    ls.doFile(path.joinAll([assetsPath, 'modules', '$module.lua']));
   }
 }
