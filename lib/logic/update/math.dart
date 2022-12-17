@@ -243,7 +243,7 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
       
       output(x, y, cell.rot, pow(i1, 1/i2));
-    }
+    }, null, "math_nroot");
   }
 
   void setGlobal(num channel, num index, num value) {
