@@ -510,7 +510,6 @@ class LuaScript {
 
   int defineCell(LuaState ls) {
     try {
-      print(ls.type(-1));
       if (ls.isTable(-1)) {
         ls.pushString("id");
         ls.getTable(-2);
@@ -564,7 +563,7 @@ class LuaScript {
         if (ls.isTable(-1)) {
           ls.pushString("mode");
           ls.getTable(-2);
-          final mode = ls.toStr(-1) ?? "4-way";
+          final mode = ls.isStr(-1) ? ls.toStr(-1)! : "4-way";
           ls.pop(1);
 
           ls.pushString("index");
@@ -646,9 +645,9 @@ class LuaScript {
         ls.getTable(-2);
         if (ls.isFunction(-1)) {
           ls.setGlobal("ADDED_FORCE:$cell");
-          ls.pushNil();
+        } else {
+          ls.pop(1);
         }
-        ls.pop(1);
 
         ls.pushString("handleInside");
         ls.getTable(-2);
@@ -1049,7 +1048,8 @@ class LuaScript {
           }
         }
 
-        return moveInsideOf(cell, x, y, dir, force, mt);
+        ls.pushBoolean(moveInsideOf(cell, x, y, dir, force, mt));
+        return 1;
       },
       "handleInside": (LuaState ls) {
         final x = ls.toInteger(-6);
@@ -1138,7 +1138,28 @@ class LuaScript {
         handleAcid(cell, dir, force, mt, melting, mx, my);
 
         return 0;
-      }
+      },
+      "Push": (LuaState ls) {
+        final x = ls.toInteger(-6);
+        final y = ls.toInteger(-5);
+        final dir = ls.toInteger(-4);
+        final force = ls.toInteger(-3);
+        final mt = strToMoveType(ls.toStr(-2));
+        final replaceCell = ls.isTable(-1) ? popCell(ls, false) : null;
+
+        ls.pushBoolean(push(x, y, dir, force, mt: mt, replaceCell: replaceCell));
+        return 1;
+      },
+      "Pull": (LuaState ls) {
+        final x = ls.toInteger(-5);
+        final y = ls.toInteger(-4);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final mt = strToMoveType(ls.toStr(-1));
+
+        ls.pushBoolean(pull(x, y, dir, force, mt));
+        return 1;
+      },
     };
   }
 
@@ -1157,7 +1178,8 @@ class LuaScript {
       "enemyParticleCount": (LuaState ls) {
         ls.pushNumber(enemyParticleCounts.toDouble());
         return 1;
-      }
+      },
+      "Move": moveAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);
