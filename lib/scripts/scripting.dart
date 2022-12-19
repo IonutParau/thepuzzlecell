@@ -24,27 +24,18 @@ class ScriptingManager {
 
       if (!blocked.contains(id)) {
         final luaFile = File(path.join(subdir.path, 'main.lua'));
-        final arrowFile = File(path.join(subdir.path, 'main.arrow'));
 
         if (luaFile.existsSync()) {
           luaScripts.add(LuaScript(subdir));
-        }
-        if (arrowFile.existsSync()) {
-          throw "Arrow is not supported yet.";
         }
       }
     }
   }
 
   String scriptType(String id) {
-    bool isArrow = false;
     bool isLua = luaScripts.where((e) => e.id == id).isNotEmpty;
 
-    if (isLua && !isArrow) return "lua";
-    if (isArrow && !isLua) return "arrow";
-    if (isArrow && isLua) return "hybrid";
-
-    return "unknown";
+    return isLua ? "Lua" : "unknown";
   }
 
   Set<String> getScripts() {
@@ -55,6 +46,7 @@ class ScriptingManager {
   }
 
   void initScripts() {
+    LuaState.loadLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib');
     for (var script in luaScripts) {
       script.init();
     }
@@ -73,7 +65,7 @@ class ScriptingManager {
     final side = toSide(dir, cell.rot);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(id)) {
-        return lua.addedForce(cell, dir, force, side, moveType.name) ?? 0;
+        return lua.addedForceModded(cell, dir, force, side, moveType.name) ?? 0;
       }
     }
 
@@ -83,7 +75,7 @@ class ScriptingManager {
   bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(into.id)) {
-        return lua.moveInsideOf(into, x, y, dir, force, mt.name) ?? false;
+        return lua.moveInsideOfModded(into, x, y, dir, force, mt.name) ?? false;
       }
     }
 
@@ -94,7 +86,7 @@ class ScriptingManager {
     final destroyer = grid.at(x, y);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(destroyer.id)) {
-        return lua.handleInside(x, y, dir, force, moving, mt.name);
+        return lua.handleInsideModded(x, y, dir, force, moving, mt.name);
       }
     }
   }
@@ -102,7 +94,7 @@ class ScriptingManager {
   bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
-        return lua.isAcidic(cell, dir, force, mt.name, melting, mx, my) ?? false;
+        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ?? false;
       }
     }
 
@@ -112,7 +104,7 @@ class ScriptingManager {
   void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
-        return lua.handleAcid(cell, dir, force, mt.name, melting, mx, my);
+        return lua.handleAcidModded(cell, dir, force, mt.name, melting, mx, my);
       }
     }
   }
@@ -148,7 +140,7 @@ class ScriptingManager {
 
   bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
     for (var lua in luaScripts) {
-      return lua.canMove(cell, x, y, dir, side, force, mt.name) ?? true;
+      return lua.canMoveModded(cell, x, y, dir, side, force, mt.name) ?? true;
     }
 
     return true;
@@ -217,10 +209,3 @@ class ScriptingManager {
 }
 
 final scriptingManager = ScriptingManager();
-
-class ScriptingError {
-  String errorMsg;
-  List<String> stackTrace;
-
-  ScriptingError(this.errorMsg, this.stackTrace);
-}

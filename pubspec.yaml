@@ -35,7 +35,10 @@ dependencies:
   file_picker: ^5.2.0+1
   intl: ^0.17.0
   equatable: ^2.0.5
-  lua_dardo: ^0.0.4
+  lua_vm_bindings:
+    git:
+      url: https://github.com/IonutParau/lua_vm_bindings
+      ref: main
 
 dev_dependencies:
   flutter_test:

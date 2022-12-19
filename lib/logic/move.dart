@@ -61,19 +61,6 @@ int frontY(int y, int dir, [int amount = 1]) {
   return y - (dir % 2 == 1 ? dir - 2 : 0) * amount;
 }
 
-enum DestinationType { DIRECTIONAL, FIXED }
-
-class DestinationInfo {
-  DestinationType dt;
-  int dir = 0;
-  int x = 0;
-  int y = 0;
-
-  DestinationInfo.directional(this.dir) : dt = DestinationType.DIRECTIONAL;
-
-  DestinationInfo.fixed(this.x, this.y) : dt = DestinationType.FIXED;
-}
-
 bool canMove(int x, int y, int dir, int force, MoveType mt) {
   if (grid.inside(x, y)) {
     final cell = grid.at(x, y);

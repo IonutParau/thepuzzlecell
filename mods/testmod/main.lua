@@ -3,13 +3,13 @@ local cell = {
   name = "Test Cell",
   desc = "Never touch this ever",
   moveInsideOf = function(cell, x, y, dir, side, force, mt)
-    return ((cell.data("remaining", "integer") or 0) > 0)
+    return ((cell.field("remaining") or 0) > 0)
   end,
   handleInside = function(cell, x, y, moving, dir, side, force, mt)
-    cell.data("remaining", (cell.data("remaining", "integer") or 0) - 1, "integer")
+    cell.field("remaining", (cell.field("remaining") or 0) - 1)
 
     local brokenType = "normal"
-    if cell.data("silent", "boolean") then
+    if cell.field("silent") == true then
       brokenType = "silent"
     end
 

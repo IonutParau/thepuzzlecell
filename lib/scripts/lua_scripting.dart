@@ -2,7 +2,7 @@ part of scripts;
 
 // Container for all things with Lua modding
 class LuaScript {
-  LuaState ls;
+  late LuaState ls;
   Directory dir;
 
   String get id => path.split(dir.path).last;
@@ -17,66 +17,13 @@ class LuaScript {
     return {};
   }
 
-  int apiInvokes = 0;
-
-  List<ScriptingError> errors = [];
-
-  LuaScript(this.dir) : ls = LuaState.newState();
-
-  // Handle memory safety
-  void collected(LuaState ls, void Function() func, [int expectedReturns = 0]) {
-    // Get size of stack
-    final original = ls.getTop();
-
-    // Run out epic code that MIGHT leak memory on the stack
-    func();
-
-    // Auto-remove waste
-    while (ls.getTop() - expectedReturns > original) {
-      ls.remove(ls.getTop() - expectedReturns);
+  LuaScript(this.dir) {
+    final ver = info['lua_ver'] ?? 'lua-latest';
+    if (ver == 'lua-latest') {
+      ls = LuaState(dll: LuaState.toLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib'));
+    } else if (ver == 'lua-jit') {
+      throw "LuaJIT is not yet supported.";
     }
-  }
-
-  void defineFunc(String name, DartFunction func, int returns, [int minArgs = 0]) {
-    ls.pushDartFunction((ls) {
-      int result = 0;
-
-      collected(ls, () {
-        while (ls.getTop() < minArgs) {
-          ls.pushNil();
-        }
-
-        try {
-          result = func(ls);
-        } catch (e) {
-          // This can cause UB!!!
-          result = returns;
-
-          errors.add(ScriptingError(e.toString(), []));
-        }
-      }, returns);
-
-      if (result != returns) {
-        throw "INTERNAL API ERROR: API wants to return $returns but instead returned $result!!!";
-      }
-
-      return returns;
-    });
-    ls.setField(-2, name);
-  }
-
-  void defineGroup(String name, void Function() toRun, [bool global = false]) {
-    collected(ls, () {
-      ls.newTable();
-
-      toRun();
-
-      if (global) {
-        ls.setGlobal(name);
-      } else {
-        ls.setField(-1, name);
-      }
-    });
   }
 
   void OnMsg(String msg) {
@@ -91,78 +38,59 @@ class LuaScript {
   bool hasDefinedCell(String cell) => definedCells.contains(cell);
 
   void pushCell(Cell cell, LuaState ls) {
-    ls.newTable();
+    final releaser = LuaDartFunctionReleaser();
 
-    // id
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.pushString(cell.id);
+    final cellLib = <String, dynamic>{
+      "id": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushString(cell.id);
+          return 1;
+        }
+        final id = ls.toStr(-1);
+        cell.id = id!;
+        return 0;
+      },
+      "lifespan": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushInteger(cell.lifespan);
+          return 1;
+        }
+        final lifespan = ls.toInteger(-1);
+        cell.lifespan = lifespan;
+        return 0;
+      },
+      "rot": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushInteger(cell.rot);
+          return 1;
+        }
+        final rot = ls.toInteger(-1);
+        cell.rot = rot % 4;
+        return 0;
+      },
+      "updated": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushBoolean(cell.updated);
+          return 1;
+        }
+        cell.updated = ls.toBoolean(-1);
+        return 0;
+      },
+      "copy": (LuaState ls) {
+        pushCell(cell.copy, ls);
         return 1;
-      }
-      final id = ls.toStr(-1)!;
-      cell.id = id;
-      return 0;
-    });
-    ls.setField(-2, "id");
-
-    // lifespan
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.pushInteger(cell.lifespan);
-        return 1;
-      }
-      final lifespan = ls.toNumber(-1);
-      cell.lifespan = lifespan.toInt();
-      return 0;
-    });
-    ls.setField(-2, "lifespan");
-
-    // rot
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.pushInteger(cell.rot);
-        return 1;
-      }
-      final rot = ls.toNumber(-1);
-      cell.rot = rot.toInt();
-      return 0;
-    });
-    ls.setField(-2, "rot");
-
-    // updated
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.pushBoolean(cell.updated);
-        return 1;
-      }
-      cell.updated = ls.toBoolean(-1);
-      return 0;
-    });
-    ls.setField(-2, "updated");
-
-    // copy
-    ls.pushDartFunction((ls) {
-      pushCell(cell.copy, ls);
-      return 1;
-    });
-    ls.setField(-2, "copy");
-
-    // invisible
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.pushBoolean(cell.invisible);
-        return 1;
-      }
-      final invisible = ls.toBoolean(-1);
-      cell.invisible = invisible;
-      return 0;
-    });
-    ls.setField(-2, "invisible");
-
-    // tags
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.newTable();
+      },
+      "invisible": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushBoolean(cell.invisible);
+          return 1;
+        }
+        final invisible = ls.toBoolean(-1);
+        cell.invisible = invisible;
+        return 0;
+      },
+      "tags": (LuaState ls) {
+        ls.createTable(cell.tags.length, cell.tags.length);
         var i = 0;
         for (var tag in cell.tags) {
           i++;
@@ -171,495 +99,531 @@ class LuaScript {
           ls.setTable(-3);
         }
         return 1;
-      }
-      return 0;
-    });
-    ls.setField(-2, "tags");
-
-    // tag
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        cell.tags.add(ls.toStr(-1)!);
-      }
-      return 0;
-    });
-    ls.setField(-2, "tag");
-
-    // tagged
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        ls.pushBoolean(cell.tags.contains(ls.toStr(-1)!));
+      },
+      "tag": (LuaState ls) {
+        if (ls.top == 1) {
+          cell.tags.add(ls.toStr(-1)!);
+        }
+        return 0;
+      },
+      "tagged": (LuaState ls) {
+        if (ls.top == 1) {
+          ls.pushBoolean(cell.tags.contains(ls.toStr(-1)!));
+          return 1;
+        }
+        return 0;
+      },
+      "cx": (LuaState ls) {
+        ls.pushInteger(cell.cx ?? 0);
         return 1;
-      }
-      return 0;
-    });
-    ls.setField(-2, "tagged");
+      },
+      "cy": (LuaState ls) {
+        ls.pushInteger(cell.cy ?? 0);
+        return 1;
+      },
+      "field": (LuaState ls) {
+        if (ls.top == 1) {
+          final field = ls.toStr(-1);
 
-    // cx
-    ls.pushDartFunction((ls) {
-      ls.pushInteger(cell.cx);
-      return 1;
-    });
-    ls.setField(-2, "cx");
+          final val = cell.data[field];
 
-    // cy
-    ls.pushDartFunction((ls) {
-      ls.pushInteger(cell.cy);
-      return 1;
-    });
-    ls.setField(-2, "cy");
+          if (val is String) {
+            ls.pushString(val);
+          } else if (val is int) {
+            ls.pushInteger(val);
+          } else if (val is double) {
+            ls.pushNumber(val);
+          } else if (val is bool) {
+            ls.pushBoolean(val);
+          } else {
+            ls.pushNil();
+          }
 
-    // data
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 0) {
-        ls.newTable();
-        cell.data.forEach(
-          (key, value) {
-            if (value is String) {
-              ls.pushString(value);
-            } else if (value is int) {
-              ls.pushInteger(value);
-            } else if (value is double) {
-              ls.pushNumber(value.toDouble());
-            } else if (value is bool) {
-              ls.pushBoolean(value);
-            } else {
-              ls.pushNil();
+          return 1;
+        } else if (ls.top == 2) {
+          final field = ls.toStr(-2)!;
+
+          if (ls.type(-1) == LuaType.nil) {
+            cell.data.remove(field);
+            return 0;
+          }
+
+          if (field == "heat") {
+            cell.data["heat"] = ls.toInteger(-1);
+            return 0;
+          }
+
+          final properties = props[cell.id] ?? <CellProperty>[];
+
+          for (var prop in properties) {
+            if (prop.key == field) {
+              if (prop.type == CellPropertyType.boolean) {
+                cell.data[field] = ls.toBoolean(-1);
+                return 0;
+              } else if (prop.type == CellPropertyType.integer) {
+                cell.data[field] = ls.toInteger(-1);
+                return 0;
+              } else if (prop.type == CellPropertyType.number) {
+                cell.data[field] = ls.toNumber(-1);
+                return 0;
+              } else if (prop.type == CellPropertyType.cellRot) {
+                cell.data[field] = ls.toInteger(-1) % 4;
+                return 0;
+              } else {
+                cell.data[field] = ls.toStr(-1);
+                return 0;
+              }
             }
-            ls.setField(-2, key);
-          },
-        );
-        return 1;
-      }
-      if (ls.getTop() == 3) {
-        final field = ls.toStr(-3)!;
-        final type = ls.toStr(-1) ?? "auto";
-        if (ls.isString(-2) && (type == "auto" || type == "string")) {
-          cell.data[field] = ls.toStr(-2);
-        }
-        if (ls.isBoolean(-2) && (type == "auto" || type == "bool")) {
-          cell.data[field] = ls.toBoolean(-2);
-        }
-        if (ls.isInteger(-2) && (type == "auto" || type == "integer")) {
-          cell.data[field] = ls.toNumber(-2);
-        }
-        if (ls.isNumber(-2) && (type == "auto" || type == "number")) {
-          cell.data[field] = ls.toNumber(-2);
-        }
-        if (ls.isNil(-2) && type == "auto") {
-          cell.data.remove(field);
-        }
-      }
-      if (ls.getTop() == 2) {
-        final field = ls.toStr(-2)!;
-        final type = ls.toStr(-1) ?? "auto";
-        final val = cell.data[field];
+          }
 
-        if (val == null) {
-          ls.pushNil();
-          return 1;
-        }
-        if (val is String && (type == "string" || type == "auto")) {
-          ls.pushNil();
-          return 1;
-        }
-        if (val is int && (type == "integer" || type == "auto")) {
-          ls.pushInteger(val);
-          return 1;
-        }
-        if (val is num && type == "integer") {
-          ls.pushInteger(val.toInt());
-          return 1;
-        }
-        if (val is num && (type == "number" || type == "auto")) {
-          ls.pushNumber(val.toDouble());
-          return 1;
-        }
-        if (val is bool && (type == "bool" || type == "boolean" || type == "auto")) {
-          ls.pushBoolean(val);
-          return 1;
-        }
-      }
-      return 0;
-    });
-    ls.setField(-2, "data");
+          final type = ls.type(-1);
 
-    ls.newTable();
-    // x
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+          if (type == LuaType.boolean) {
+            cell.data[field] = ls.toBoolean(-1);
+          }
+          if (type == LuaType.number) {
+            cell.data[field] = ls.toNumber(-1);
+          }
+          if (type == LuaType.string) {
+            cell.data[field] = ls.toStr(-1);
+          }
+        }
+        return 0;
+      },
+      "data": (LuaState ls) {
+        if (ls.top == 0) {
+          ls.pushString(jsonEncode(cell.data));
+          return 1;
+        }
+        final data = jsonDecode(ls.toStr(-1)!);
+        cell.data = data;
+
+        return 0;
+      },
+      "last": <String, dynamic>{
+        "x": (LuaState ls) {
+          if (ls.top == 1) {
+            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            return 0;
+          }
+          ls.pushNumber(cell.lastvars.lastPos.dy);
+          return 1;
+        },
+        "y": (LuaState ls) {
+          if (ls.top == 1) {
+            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            return 0;
+          }
+          ls.pushNumber(cell.lastvars.lastPos.dy);
+          return 1;
+        },
+        "rot": (LuaState ls) {
+          if (ls.top == 1) {
+            cell.lastvars.lastRot = ls.toInteger(-1) % 4;
+            return 0;
+          }
+          ls.pushInteger(cell.lastvars.lastRot);
+          return 1;
+        },
+        "id": (LuaState ls) {
+          if (ls.top == 1) {
+            cell.lastvars.id = ls.toStr(-1)!;
+            return 0;
+          }
+          ls.pushString(cell.lastvars.id);
+          return 1;
+        },
+      },
+      "release": (LuaState ls) {
+        releaser.release();
         return 0;
       }
-      ls.pushNumber(cell.lastvars.lastPos.dx);
-      return 1;
-    });
-    ls.setField(-2, "x");
+    };
 
-    // y
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        cell.lastvars.lastPos = Offset(cell.lastvars.lastPos.dx, ls.toNumber(-1));
-        return 0;
-      }
-      ls.pushNumber(cell.lastvars.lastPos.dy);
-      return 1;
-    });
-    ls.setField(-2, "y");
-
-    // rot
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        cell.lastvars.lastRot = ls.toInteger(-1);
-        return 0;
-      }
-      ls.pushInteger(cell.lastvars.lastRot);
-      return 1;
-    });
-    ls.setField(-2, "rot");
-
-    // id
-    ls.pushDartFunction((ls) {
-      if (ls.getTop() == 1) {
-        cell.lastvars.id = ls.toString2(-1)!;
-        return 0;
-      }
-      ls.pushString(cell.lastvars.id);
-      return 1;
-    });
-    ls.setField(-2, "id");
-    ls.setField(-2, "last");
+    ls.pushLib(cellLib, releaser);
   }
 
   Cell popCell(LuaState ls, [bool pop = true]) {
     Cell cell = Cell(0, 0);
 
-    collected(ls, () {
-      ls.getField(-1, "id");
+    // Get ID
+    {
+      ls.pushString("id");
+      ls.getTable(-2);
       ls.call(0, 1);
       cell.id = ls.toStr(-1)!;
       ls.pop(1);
+    }
 
-      ls.getField(-1, "rot");
+    // Get Rotation
+    {
+      ls.pushString("rot");
+      ls.getTable(-2);
       ls.call(0, 1);
-      cell.rot = ls.toInteger(-1);
+      cell.rot = ls.toInteger(-1) % 4;
       ls.pop(1);
+    }
 
-      ls.getField(-1, "data");
-      ls.call(0, 1);
-
-      String? lastKey;
-
-      // Why Lua
-      while (true) {
-        ls.pushString(lastKey);
-        if (ls.next(-2)) {
-          if (ls.isString(-2)) {
-            final key = ls.toStr(-2)!;
-            lastKey = key;
-            final prop = props[cell.id]?.where((e) => e.key == key);
-            if (prop == null || prop.isEmpty) {
-              // Auto inferrence
-              if (ls.isBoolean(-1)) {
-                cell.data[key] = ls.toBoolean(-1);
-              }
-              if (ls.isInteger(-1)) {
-                cell.data[key] = ls.toInteger(-1);
-              }
-              if (ls.isNumber(-1)) {
-                cell.data[key] = ls.toNumber(-1);
-              }
-              if (ls.isString(-1)) {
-                cell.data[key] = ls.toStr(-1);
-              }
-            } else {
-              final p = prop.first;
-
-              if (p.type == CellPropertyType.number) {
-                cell.data[key] = ls.toNumber(-1);
-              } else if (p.type == CellPropertyType.integer) {
-                cell.data[key] = ls.toNumber(-1).toInt();
-              } else if (p.type == CellPropertyType.boolean) {
-                cell.data[key] = ls.toBoolean(-1);
-              } else {
-                cell.data[key] = ls.toStr(-1);
-              }
-            }
-          }
-          ls.pop(2);
-        } else {
-          break;
-        }
-      }
-      ls.pop(1);
-
-      ls.getField(-1, "lifespan");
+    // Get Lifespan
+    {
+      ls.pushString("lifespan");
+      ls.getTable(-2);
       ls.call(0, 1);
       cell.lifespan = ls.toInteger(-1);
       ls.pop(1);
+    }
 
-      ls.getField(-1, "updated");
+    // Get Updated
+    {
+      ls.pushString("updated");
+      ls.getTable(-2);
       ls.call(0, 1);
       cell.updated = ls.toBoolean(-1);
       ls.pop(1);
+    }
 
-      ls.getField(-1, "cx");
+    // Get Invsibile
+    {
+      ls.pushString("invisible");
+      ls.getTable(-2);
       ls.call(0, 1);
-      cell.cx = ls.toInteger(-1);
+      cell.invisible = ls.toBoolean(-1);
       ls.pop(1);
+    }
 
-      ls.getField(-1, "cy");
+    // Get Tags
+    {
+      ls.pushString("tags");
+      ls.getTable(-2);
       ls.call(0, 1);
-      cell.cy = ls.toInteger(-1);
-      ls.pop(1);
 
-      ls.getField(-1, "tags");
-      ls.call(0, 1);
       var i = 0;
       while (true) {
         i++;
         ls.pushInteger(i);
         ls.getTable(-2);
-        if (ls.isString(-1)) {
-          cell.tags.add(ls.toStr(-1)!);
-        } else if (ls.isNil(-1)) {
-          ls.pop(1);
+        if (ls.type(-1) == LuaType.nil || ls.type(-1) == LuaType.none) {
+          ls.pop();
           break;
+        } else if (ls.type(-1) == LuaType.string) {
+          cell.tags.add(ls.toStr(-1)!);
         }
-        ls.pop(1);
+        ls.pop();
       }
-      ls.pop(1);
 
-      ls.getField(-1, "invisible");
+      ls.pop();
+    }
+
+    // CX
+    {
+      ls.pushString("cx");
+      ls.getTable(-2);
       ls.call(0, 1);
-      cell.invisible = ls.toBoolean(-1);
-      ls.pop(1);
+      cell.cx = ls.toInteger(-1);
+      ls.pop();
+    }
 
-      ls.getField(-1, "last");
-
-      double lastX = 0;
-      double lastY = 0;
-      int lastRot = 0;
-
-      ls.getField(-1, "x");
+    // CY
+    {
+      ls.pushString("cy");
+      ls.getTable(-2);
       ls.call(0, 1);
-      lastX = ls.toNumber(-1);
-      ls.pop(1);
+      cell.cy = ls.toInteger(-1);
+      ls.pop();
+    }
 
-      ls.getField(-1, "y");
+    // Data
+    {
+      ls.pushString("data");
+      ls.getTable(-2);
       ls.call(0, 1);
-      lastY = ls.toNumber(-1);
-      ls.pop(1);
+      cell.data = jsonDecode(ls.toStr(-1)!);
+      ls.pop();
+    }
 
-      ls.getField(-1, "rot");
-      ls.call(0, 1);
-      lastRot = ls.toInteger(-1);
-      ls.pop(1);
+    // Lastvars
+    {
+      ls.pushString("last");
+      ls.getTable(-2);
 
-      ls.getField(-1, "id");
-      ls.call(0, 1);
-      final lastID = ls.toString2(-1)!;
-      ls.pop(1);
+      late int cx;
+      late int cy;
+      late int rot;
+      late String id;
 
-      ls.pop(1);
+      // X
+      {
+        ls.pushString("x");
+        ls.getTable(-2);
+        ls.call(0, 1);
+        cx = ls.toInteger(-1);
+        ls.pop();
+      }
 
-      cell.lastvars = LastVars(lastRot, lastX, lastY, lastID);
-    });
+      // Y
+      {
+        ls.pushString("y");
+        ls.getTable(-2);
+        ls.call(0, 1);
+        cy = ls.toInteger(-1);
+        ls.pop();
+      }
 
-    if (pop) ls.pop(1);
+      // Rot
+      {
+        ls.pushString("rot");
+        ls.getTable(-2);
+        ls.call(0, 1);
+        rot = ls.toInteger(-1) % 4;
+        ls.pop();
+      }
+
+      // ID
+      {
+        ls.pushString("id");
+        ls.getTable(-2);
+        ls.call(0, 1);
+        id = ls.toStr(-1)!;
+        ls.pop();
+      }
+
+      cell.lastvars = LastVars(rot, cx, cy, id);
+
+      ls.pop();
+    }
+
+    if (pop) ls.pop();
 
     return cell;
   }
 
-  int? addedForce(Cell cell, int dir, int force, int side, String moveType) {
+  int? addedForceModded(Cell cell, int dir, int force, int side, String moveType) {
     if (definedCells.contains(cell.id)) {
       // We getting into low level Lua VM stuff, we need garbage collection
       final id = cell.id;
       int? result;
-      collected(ls, () {
-        ls.getGlobal("ADDED_FORCE:$id");
-        if (ls.isFunction(-1)) {
-          pushCell(cell, ls);
-          ls.pushInteger(dir);
-          ls.pushInteger(side);
-          ls.pushInteger(force);
-          ls.pushString(moveType);
-          ls.call(5, 1);
-          result = ls.toIntegerX(-1);
-        }
-      });
+      ls.getGlobal("ADDED_FORCE:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(dir);
+        ls.pushInteger(side);
+        ls.pushInteger(force);
+        ls.pushString(moveType);
+        ls.call(5, 1);
+        result = ls.toInteger(-1);
+        ls.pop();
+      }
+      ls.pop();
       return result;
     }
     return null;
   }
 
-  bool? moveInsideOf(Cell into, int x, int y, int dir, int force, String mt) {
+  bool? moveInsideOfModded(Cell into, int x, int y, int dir, int force, String mt) {
     if (definedCells.contains(into.id)) {
       final id = into.id;
       bool? result;
 
-      collected(ls, () {
-        ls.getGlobal("MOVE_INSIDE_OF:$id");
-        if (ls.isFunction(-1)) {
-          pushCell(into, ls);
-          ls.pushInteger(x);
-          ls.pushInteger(y);
-          ls.pushInteger(dir);
-          ls.pushInteger(toSide(dir, into.rot));
-          ls.pushInteger(force);
-          ls.pushString(mt);
-          ls.call(7, 1);
-          result = ls.toBoolean(-1);
-        }
-      });
+      ls.getGlobal("MOVE_INSIDE_OF:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(into, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.pushInteger(toSide(dir, into.rot));
+        ls.pushInteger(force);
+        ls.pushString(mt);
+        ls.call(7, 1);
+        result = ls.toBoolean(-1);
+        ls.pop();
+      }
+      ls.pop();
 
       return result;
     }
     return null;
   }
 
-  void handleInside(int x, int y, int dir, int force, Cell moving, String mt) {
+  void handleInsideModded(int x, int y, int dir, int force, Cell moving, String mt) {
     final destroyer = grid.at(x, y);
     if (definedCells.contains(destroyer.id)) {
       final id = destroyer.id;
-      collected(ls, () {
-        ls.getGlobal("HANDLE_INSIDE:$id");
-        if (ls.isFunction(-1)) {
-          pushCell(destroyer, ls);
-          ls.pushInteger(x);
-          ls.pushInteger(y);
-          pushCell(moving, ls);
-          ls.pushInteger(dir);
-          ls.pushInteger(toSide(dir, moving.rot));
-          ls.pushInteger(force);
-          ls.pushString(mt);
-          ls.call(8, 0);
-        }
-      });
+      ls.getGlobal("HANDLE_INSIDE:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(destroyer, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        pushCell(moving, ls);
+        ls.pushInteger(dir);
+        ls.pushInteger(toSide(dir, moving.rot));
+        ls.pushInteger(force);
+        ls.pushString(mt);
+        ls.call(8, 0);
+      }
+      ls.pop();
     }
   }
 
-  bool? isAcidic(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  bool? isAcidicModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       bool? result;
-      collected(ls, () {
-        ls.getGlobal("IS_ACIDIC:$id");
-        if (ls.isFunction(-1)) {
-          pushCell(cell, ls);
-          ls.pushInteger(dir);
-          ls.pushInteger(toSide(dir, cell.rot));
-          ls.pushInteger(force);
-          ls.pushString(mt);
-          pushCell(melting, ls);
-          ls.pushInteger(mx);
-          ls.pushInteger(my);
-          ls.call(8, 1);
-          result = ls.toBoolean(-1);
-        }
-      });
+      ls.getGlobal("IS_ACIDIC:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(dir);
+        ls.pushInteger(toSide(dir, cell.rot));
+        ls.pushInteger(force);
+        ls.pushString(mt);
+        pushCell(melting, ls);
+        ls.pushInteger(mx);
+        ls.pushInteger(my);
+        ls.call(8, 1);
+        result = ls.toBoolean(-1);
+        ls.pop();
+      }
+      ls.pop();
       return result;
     }
 
     return null;
   }
 
-  void handleAcid(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  void handleAcidModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
-      collected(ls, () {
-        ls.getGlobal("HANDLE_ACID:$id");
-        if (ls.isFunction(-1)) {
-          pushCell(cell, ls);
-          ls.pushInteger(dir);
-          ls.pushInteger(toSide(dir, cell.rot));
-          ls.pushInteger(force);
-          ls.pushString(mt);
-          pushCell(melting, ls);
-          ls.pushInteger(mx);
-          ls.pushInteger(my);
-          ls.call(8, 0);
-        }
-      });
+      ls.getGlobal("HANDLE_ACID:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(dir);
+        ls.pushInteger(toSide(dir, cell.rot));
+        ls.pushInteger(force);
+        ls.pushString(mt);
+        pushCell(melting, ls);
+        ls.pushInteger(mx);
+        ls.pushInteger(my);
+        ls.call(8, 0);
+      }
+      ls.pop();
     }
   }
 
   int defineCell(LuaState ls) {
     try {
-      collected(ls, () {
+      print(ls.type(-1));
+      if (ls.isTable(-1)) {
+        ls.pushString("id");
+        ls.getTable(-2);
+        final cell = ls.toStr(-1)!;
+        ls.pop(1);
+        if (cells.contains(cell)) return 0;
+
+        ls.pushString("name");
+        ls.getTable(-2);
+        final name = ls.toStr(-1) ?? defaultProfile.title;
+        ls.pop(1);
+
+        ls.pushString("desc");
+        ls.getTable(-2);
+        final desc = ls.toStr(-1) ?? defaultProfile.description;
+        ls.pop(1);
+
+        ls.pushString("category");
+        ls.getTable(-2);
         if (ls.isTable(-1)) {
-          ls.getField(-1, "id");
-          final cell = ls.toStr(-1)!;
-          if (cells.contains(cell)) return;
-          ls.pop(1);
+          final cats = <String>[];
 
-          ls.getField(-1, "name");
-          final name = ls.toStr(-1) ?? defaultProfile.title;
-          ls.pop(1);
-
-          ls.getField(-1, "desc");
-          final desc = ls.toStr(-1) ?? defaultProfile.description;
-          ls.pop(1);
-
-          ls.getField(-1, "category");
-          if (ls.isTable(-1)) {
-            final cats = <String>[];
-
-            var i = 0;
-            var run = true;
-            while (run) {
-              i++;
-              ls.pushInteger(i);
-              ls.getTable(-2);
-              if (ls.isNil(-1)) {
-                ls.pop(1);
-                run = false;
-              } else {
-                cats.add(ls.toStr(-1)!);
-                ls.pop(1);
-              }
+          var i = 0;
+          var run = true;
+          while (run) {
+            i++;
+            ls.pushInteger(i);
+            ls.getTable(-2);
+            if (ls.isNilOrNone(-1)) {
+              ls.pop(1);
+              run = false;
+            } else {
+              cats.add(ls.toStr(-1)!);
+              ls.pop(1);
             }
-
-            scriptingManager.addToCats(cats, cell);
-          } else if (ls.isString(-1)) {
-            scriptingManager.addToCat(ls.toStr(-1)!, cell);
           }
+
+          scriptingManager.addToCats(cats, cell);
+        } else if (ls.isStr(-1)) {
+          scriptingManager.addToCat(ls.toStr(-1)!, cell);
+        }
+        ls.pop(1);
+
+        ls.pushString("texture");
+        ls.getTable(-2);
+        final texture = ls.toStr(-1) ?? "default.png";
+        ls.pop(1);
+
+        ls.pushString("update");
+        ls.getTable(-2);
+        if (ls.isTable(-1)) {
+          ls.pushString("mode");
+          ls.getTable(-2);
+          final mode = ls.toStr(-1) ?? "4-way";
           ls.pop(1);
 
-          ls.getField(-1, "texture");
-          final texture = ls.toStr(-1) ?? "default.png";
+          ls.pushString("index");
+          ls.getTable(-2);
+          final index = ls.isNumber(-1) ? ls.toNumber(-1) : -1;
           ls.pop(1);
 
-          ls.getField(-1, "update");
-          if (ls.isTable(-1)) {
-            ls.getField(-1, "mode");
-            final mode = ls.toStr(-1) ?? "4-way";
-            ls.pop(1);
+          ls.pushString("fn");
+          ls.getTable(-2);
+          if (ls.isFunction(-1)) {
+            ls.setGlobal("CELL_UPDATE_FUNCS:$cell");
+          } else {
+            ls.pop();
+          }
 
-            ls.getField(-1, "index");
-            final index = ls.toNumberX(-1) ?? -1;
-            ls.pop(1);
+          int i = subticks.length;
 
-            ls.getField(-1, "fn");
-            if (ls.isFunction(-1)) {
-              ls.setGlobal("CELL_UPDATE_FUNCS:$cell");
-              ls.pushNil();
-            }
-            ls.pop(1);
+          if (index >= 0) {
+            i = index.toInt();
+          }
 
-            int i = subticks.length;
-
-            if (index >= 0) {
-              i = index.toInt();
-            }
-
-            subticks.insert(i, () {
-              // Optimization!!!
-              if (grid.cells.contains(cell)) {
-                if (mode == "static") {
+          subticks.insert(i, () {
+            // Optimization!!!
+            if (grid.cells.contains(cell)) {
+              if (mode == "static") {
+                grid.updateCell((cell, x, y) {
+                  cell.updated = true;
+                  ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
+                  if (ls.isFunction(-1)) {
+                    pushCell(cell, ls);
+                    ls.pushNumber(x.toDouble());
+                    ls.pushNumber(y.toDouble());
+                    ls.call(3, 0);
+                  }
+                  ls.pop();
+                }, null, cell);
+              }
+              if (mode == "4-way") {
+                for (var rot in rotOrder) {
                   grid.updateCell((cell, x, y) {
                     cell.updated = true;
-                    collected(ls, () {
+                    ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
+                    if (ls.isFunction(-1)) {
+                      pushCell(cell, ls);
+                      ls.pushNumber(x.toDouble());
+                      ls.pushNumber(y.toDouble());
+                      ls.call(3, 0);
+                    }
+                    ls.pop();
+                  }, rot, cell);
+                }
+              }
+              if (mode == "2-way") {
+                for (var rot in [0, 1]) {
+                  grid.loopChunks(
+                    cell,
+                    i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
+                    (cell, x, y) {
+                      cell.updated = true;
                       ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
                       if (ls.isFunction(-1)) {
                         pushCell(cell, ls);
@@ -667,148 +631,125 @@ class LuaScript {
                         ls.pushNumber(y.toDouble());
                         ls.call(3, 0);
                       }
-                    });
-                  }, null, cell);
-                }
-                if (mode == "4-way") {
-                  for (var rot in rotOrder) {
-                    grid.updateCell((cell, x, y) {
-                      cell.updated = true;
-                      collected(ls, () {
-                        ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
-                        if (ls.isFunction(-1)) {
-                          pushCell(cell, ls);
-                          ls.pushNumber(x.toDouble());
-                          ls.pushNumber(y.toDouble());
-                          ls.call(3, 0);
-                        }
-                      });
-                    }, rot, cell);
-                  }
-                }
-                if (mode == "2-way") {
-                  for (var rot in [0, 1]) {
-                    grid.loopChunks(
-                      cell,
-                      i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
-                      (cell, x, y) {
-                        cell.updated = true;
-                        collected(ls, () {
-                          ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
-                          if (ls.isFunction(-1)) {
-                            pushCell(cell, ls);
-                            ls.pushNumber(x.toDouble());
-                            ls.pushNumber(y.toDouble());
-                            ls.call(3, 0);
-                          }
-                        });
-                      },
-                      filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
-                    );
-                  }
+                      ls.pop();
+                    },
+                    filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
+                  );
                 }
               }
-            });
-          }
-          ls.pop(1);
+            }
+          });
+        }
+        ls.pop();
 
-          ls.getField(-1, "addedForce");
-          if (ls.isFunction(-1)) {
-            ls.setGlobal("ADDED_FORCE:$cell");
-            ls.pushNil();
-          }
-          ls.pop(1);
+        ls.pushString("addedForce");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("ADDED_FORCE:$cell");
+          ls.pushNil();
+        }
+        ls.pop(1);
 
-          ls.getField(-1, "handleInside");
-          if (ls.isFunction(-1)) {
-            ls.setGlobal("HANDLE_INSIDE:$cell");
-            ls.pushNil();
-          }
-          ls.pop(1);
+        ls.pushString("handleInside");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("HANDLE_INSIDE:$cell");
+          ls.pushNil();
+        }
+        ls.pop(1);
 
-          ls.getField(-1, "moveInsideOf");
-          if (ls.isFunction(-1)) {
-            ls.setGlobal("MOVE_INSIDE_OF:$cell");
-            ls.pushNil();
-          }
-          ls.pop(1);
+        ls.pushString("moveInsideOf");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("MOVE_INSIDE_OF:$cell");
+          ls.pushNil();
+        }
+        ls.pop(1);
 
-          ls.getField(-1, "acidic");
-          if (ls.isFunction(-1)) {
-            ls.setGlobal("IS_ACIDIC:$cell");
-            ls.pushNil();
-          }
-          ls.pop(1);
+        ls.pushString("acidic");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("IS_ACIDIC:$cell");
+          ls.pushNil();
+        }
+        ls.pop(1);
 
-          ls.getField(-1, "handleAcid");
-          if (ls.isFunction(-1)) {
-            ls.setGlobal("HANDLE_ACID:$cell");
-            ls.pushNil();
-          }
-          ls.pop(1);
+        ls.pushString("handleAcid");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("HANDLE_ACID:$cell");
+          ls.pushNil();
+        }
+        ls.pop(1);
 
-          ls.getField(-1, "properties");
-          if (ls.isTable(-1)) {
-            final cellProps = <CellProperty>[];
+        ls.pushString("properties");
+        ls.getTable(-2);
+        if (ls.isTable(-1)) {
+          final cellProps = <CellProperty>[];
 
-            var i = 0;
-            var stopped = false;
-            while (!stopped) {
-              i++;
-              ls.pushInteger(i);
+          var i = 0;
+          var stopped = false;
+          while (!stopped) {
+            i++;
+            ls.pushInteger(i);
+            ls.getTable(-2);
+            if (ls.isNilOrNone(-1)) {
+              stopped = true;
+            } else if (ls.isTable(-1)) {
+              ls.pushString("name");
               ls.getTable(-2);
-              if (ls.isNil(-1)) {
-                stopped = true;
-              } else if (ls.isTable(-1)) {
-                ls.getField(-1, "name");
-                final name = ls.toStr(-1)!;
-                ls.pop(1);
+              final name = ls.toStr(-1)!;
+              ls.pop(1);
 
-                ls.getField(-1, "field");
-                final field = ls.toStr(-1)!;
-                ls.pop(1);
+              ls.pushString("field");
+              ls.getTable(-2);
+              final field = ls.toStr(-1)!;
+              ls.pop(1);
 
-                ls.getField(-1, "type");
-                final type = ls.toStr(-1)!;
-                ls.pop(1);
+              ls.pushString("type");
+              ls.getTable(-2);
+              final type = ls.toStr(-1)!;
+              ls.pop(1);
 
-                ls.getField(-1, "default");
-                for (var propType in CellPropertyType.values) {
-                  if (propType.name == type) {
-                    dynamic val;
+              ls.pushString("default");
+              ls.getTable(-2);
+              for (var propType in CellPropertyType.values) {
+                if (propType.name == type) {
+                  dynamic val;
 
-                    if (propType == CellPropertyType.number) {
-                      val = ls.toNumber(-1);
-                    } else if (propType == CellPropertyType.integer) {
-                      val = ls.toNumber(-1).toInt();
-                    } else if (propType == CellPropertyType.boolean) {
-                      val = ls.toBoolean(-1);
-                    } else {
-                      val = ls.toStr(-1);
-                    }
-                    cellProps.add(CellProperty(name, field, propType, val));
+                  if (propType == CellPropertyType.number) {
+                    val = ls.toNumber(-1);
+                  } else if (propType == CellPropertyType.integer) {
+                    val = ls.toNumber(-1).toInt();
+                  } else if (propType == CellPropertyType.boolean) {
+                    val = ls.toBoolean(-1);
+                  } else {
+                    val = ls.toStr(-1);
                   }
+                  cellProps.add(CellProperty(name, field, propType, val));
                 }
-                ls.pop(1);
               }
               ls.pop(1);
             }
-
-            props[cell] = cellProps;
+            ls.pop(1);
           }
-          ls.pop(1);
 
-          // YO!!!
-          definedCells.add(cell);
-          cells.add(cell);
-          modded.add(cell);
-          print("Defined Cell: " + cell);
-          cellInfo[cell] = CellProfile(name, desc);
-          textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
-          textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
-          ls.setGlobal("PROPS:$cell");
+          props[cell] = cellProps;
         }
-      });
+        ls.pop(1);
+
+        print("PROPS!!!");
+
+        // YO!!!
+        definedCells.add(cell);
+        cells.add(cell);
+        modded.add(cell);
+        print("Defined Cell: " + cell);
+        cellInfo[cell] = CellProfile(name, desc);
+        textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
+        textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
+        ls.setGlobal("PROPS:$cell");
+      }
     } catch (e, st) {
       print(e);
       print(st);
@@ -828,7 +769,7 @@ class LuaScript {
     return r;
   }
 
-  bool? canMove(Cell cell, int x, int y, int dir, int side, int force, String mt) {
+  bool? canMoveModded(Cell cell, int x, int y, int dir, int side, int force, String mt) {
     if (definedCells.contains(cell.id)) {
       return withDefinedCellProperty<bool>(cell.id, "movable", () {
         if (ls.isFunction(-1)) {
@@ -853,246 +794,391 @@ class LuaScript {
   void pushGrid(Grid grid) {
     ls.newTable();
 
-    defineFunc("width", (ls) {
-      ls.pushInteger(grid.width);
-      return 1;
-    }, 1, 0);
+    final releaser = LuaDartFunctionReleaser();
 
-    defineFunc("height", (ls) {
-      ls.pushInteger(grid.height);
-      return 1;
-    }, 1, 0);
+    final gridAPI = <String, dynamic>{
+      "width": (LuaState ls) {
+        ls.pushInteger(grid.width);
+        return 1;
+      },
+      "height": (LuaState ls) {
+        ls.pushInteger(grid.height);
+        return 1;
+      },
+      "get": (LuaState ls) {
+        final x = ls.toInteger(-2);
+        final y = ls.toInteger(-1);
 
-    defineFunc("get", (ls) {
-      final x = ls.toNumber(-2).toInt();
-      final y = ls.toNumber(-1).toInt();
+        final c = grid.get(x, y);
 
-      final c = grid.get(x, y);
+        if (c == null) {
+          ls.pushNil();
+        } else {
+          pushCell(c, ls);
+        }
+        return 1;
+      },
+      "set": (LuaState ls) {
+        try {
+          final x = ls.toNumber(-3).toInt();
+          final y = ls.toNumber(-2).toInt();
+          final cell = popCell(ls, false);
 
-      if (c == null) {
-        ls.pushNil();
-      } else {
-        pushCell(c, ls);
-      }
-      return 1;
-    }, 1, 2);
+          grid.set(x, y, cell);
+          return 0;
+        } catch (e, st) {
+          print(e);
+          print(st);
+          return 0;
+        }
+      },
+      "inside": (LuaState ls) {
+        final x = ls.toNumber(-2).toInt();
+        final y = ls.toNumber(-1).toInt();
 
-    defineFunc("set", (ls) {
-      try {
-        final x = ls.toNumber(-3).toInt();
-        final y = ls.toNumber(-2).toInt();
+        ls.pushBoolean(grid.inside(x, y));
+        return 1;
+      },
+      "copyCell": (LuaState ls) {
+        final cx = ls.toNumber(-5).toInt();
+        final cy = ls.toNumber(-4).toInt();
+        final nx = ls.toNumber(-3).toInt();
+        final ny = ls.toNumber(-2).toInt();
+        final update = ls.toBoolean(-1);
+
+        final c = grid.get(cx, cy)?.copy;
+        if (c != null) {
+          c.updated = c.updated || update;
+
+          grid.set(nx, ny, c);
+        }
+
+        return 0;
+      },
+      "spawn": (LuaState ls) {
+        final cx = ls.toNumber(-3).toInt();
+        final cy = ls.toNumber(-2).toInt();
         final cell = popCell(ls, false);
 
-        grid.set(x, y, cell);
+        final c = grid.get(cx, cy);
+        if (c != null && c.id == "empty") {
+          grid.set(cx, cy, cell);
+        }
+
         return 0;
-      } catch (e, st) {
-        print(e);
-        print(st);
+      },
+      "chunkSize": (LuaState ls) {
+        ls.pushInteger(grid.chunkSize);
+        return 1;
+      },
+      "tickCount": (LuaState ls) {
+        ls.pushInteger(grid.tickCount);
+        return 1;
+      },
+      "title": (LuaState ls) {
+        if (ls.top == 1) {
+          grid.title = ls.toStr(-1)!;
+          return 0;
+        }
+        ls.pushString(grid.title);
+        return 1;
+      },
+      "desc": (LuaState ls) {
+        if (ls.top == 1) {
+          grid.desc = ls.toStr(-1)!;
+          return 0;
+        }
+        ls.pushString(grid.desc);
+        return 1;
+      },
+      "wrap": (LuaState ls) {
+        if (ls.top == 1) {
+          grid.wrap = ls.toBoolean(-1);
+          ls.pushNil();
+          return 1;
+        }
+
+        ls.pushBoolean(grid.wrap);
+        return 1;
+      },
+      "clearChunks": (LuaState ls) {
+        grid.clearChunks();
+        return 0;
+      },
+      "rotate": (LuaState ls) {
+        final x = ls.toNumber(-3).toInt();
+        final y = ls.toNumber(-2).toInt();
+        final rot = ls.toNumber(-1).toInt();
+        grid.rotate(x, y, rot);
+        return 0;
+      },
+      "placeable": (LuaState ls) {
+        final x = ls.toNumber(-2).toInt();
+        final y = ls.toNumber(-1).toInt();
+        ls.pushString(grid.placeable(x, y));
+        return 1;
+      },
+      "setPlace": (LuaState ls) {
+        final x = ls.toNumber(-3).toInt();
+        final y = ls.toNumber(-2).toInt();
+        final place = ls.toStr(-1)!;
+
+        grid.setPlace(x, y, place);
+        return 0;
+      },
+      "setChunk": (LuaState ls) {
+        final x = ls.toNumber(-3).toInt();
+        final y = ls.toNumber(-2).toInt();
+        final chunk = ls.toStr(-1)!;
+
+        grid.setChunk(x, y, chunk);
+      },
+      "addBroken": (LuaState ls) {
+        while (ls.top < 6) {
+          ls.pushNil();
+        }
+
+        // Grab cell from -6
+        ls.pushNil();
+        ls.copy(-7, -1);
+        final cell = popCell(ls);
+
+        // Grab rest of args
+        final dx = ls.toNumber(-5).toInt();
+        final dy = ls.toNumber(-4).toInt();
+        final type = ls.toStr(-3)!;
+        final rlvx = ls.isNumber(-2) ? ls.toNumber(-2).toInt() : null;
+        final rlvy = ls.isNumber(-1) ? ls.toNumber(-1).toInt() : null;
+
+        grid.addBroken(cell, dx, dy, type, rlvx, rlvy);
+        return 0;
+      },
+      "memory": (LuaState ls) {
+        if (ls.top == 3) {
+          final channel = ls.toInteger(-3);
+          final idx = ls.toInteger(-2);
+          final val = ls.toNumber(-1);
+          grid.memory[channel]?[idx] = val;
+          return 0;
+        }
+        final channel = ls.toNumber(-2).toInt();
+        final idx = ls.toNumber(-1).toInt();
+        ls.pushNumber(grid.memory[channel]?[idx]?.toDouble() ?? 0);
+        return 1;
+      },
+      "release": (LuaState ls) {
+        releaser.release();
         return 0;
       }
-    }, 0, 3);
+    };
 
-    defineFunc("inside", (ls) {
-      final x = ls.toNumber(-2).toInt();
-      final y = ls.toNumber(-1).toInt();
+    ls.pushLib(gridAPI, releaser);
+  }
 
-      ls.pushBoolean(grid.inside(x, y));
-      return 1;
-    }, 1, 2);
+  Map<String, dynamic> helperLib() {
+    return {
+      "toSide": (LuaState ls) {
+        final dir = ls.toInteger(-2);
+        final rot = ls.toInteger(-1);
 
-    defineFunc("copyCell", (ls) {
-      final cx = ls.toNumber(-5).toInt();
-      final cy = ls.toNumber(-4).toInt();
-      final nx = ls.toNumber(-3).toInt();
-      final ny = ls.toNumber(-2).toInt();
-      final update = ls.toBoolean(-1);
+        ls.pushInteger(toSide(dir, rot));
 
-      final c = grid.get(cx, cy)?.copy;
-      if (c != null) {
-        c.updated = c.updated || update;
-
-        grid.set(nx, ny, c);
-      }
-
-      return 0;
-    }, 0, 5);
-
-    defineFunc("copyCell", (ls) {
-      final cx = ls.toNumber(-5).toInt();
-      final cy = ls.toNumber(-4).toInt();
-      final nx = ls.toNumber(-3).toInt();
-      final ny = ls.toNumber(-2).toInt();
-      final update = ls.toBoolean(-1);
-
-      final c = grid.get(cx, cy)?.copy;
-      if (c != null) {
-        c.updated = c.updated || update;
-
-        grid.set(nx, ny, c);
-      }
-
-      return 0;
-    }, 0, 5);
-
-    defineFunc("spawn", (ls) {
-      final cx = ls.toNumber(-3).toInt();
-      final cy = ls.toNumber(-2).toInt();
-      final cell = popCell(ls, false);
-
-      final c = grid.get(cx, cy);
-      if (c != null && c.id == "empty") {
-        grid.set(cx, cy, cell);
-      }
-
-      return 0;
-    }, 0, 3);
-
-    defineFunc("chunkSize", (ls) {
-      ls.pushInteger(grid.chunkSize);
-      return 1;
-    }, 1, 0);
-
-    defineFunc("tickCount", (ls) {
-      ls.pushInteger(grid.tickCount);
-      return 1;
-    }, 1, 0);
-
-    defineFunc("title", (ls) {
-      if (ls.getTop() == 1) {
-        grid.title = ls.toStr(-1)!;
-        ls.pushNil();
         return 1;
-      }
+      },
+      "frontX": (LuaState ls) {
+        final x = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
 
-      ls.pushString(grid.title);
-      return 1;
-    }, 1, 0);
+        ls.pushInteger(frontX(x, dir));
 
-    defineFunc("desc", (ls) {
-      if (ls.getTop() == 1) {
-        grid.title = ls.toStr(-1)!;
-        ls.pushNil();
         return 1;
-      }
+      },
+      "frontY": (LuaState ls) {
+        final y = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
 
-      ls.pushString(grid.title);
-      return 1;
-    }, 1, 0);
+        ls.pushInteger(frontY(y, dir));
 
-    defineFunc("wrap", (ls) {
-      if (ls.getTop() == 1) {
-        grid.wrap = ls.toBoolean(-1);
-        ls.pushNil();
         return 1;
+      },
+    };
+  }
+
+  Map<String, dynamic> moveAPI() {
+    return {
+      "canMove": (LuaState ls) {
+        final x = ls.toInteger(-5);
+        final y = ls.toInteger(-4);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final moveTypeName = ls.toStr(-1);
+
+        var mt = MoveType.unknown_move;
+
+        for (var moveType in MoveType.values) {
+          if (moveType.name == moveTypeName) {
+            mt = moveType;
+          }
+        }
+
+        if (!grid.inside(x, y)) {
+          ls.pushBoolean(false);
+          return 1;
+        }
+
+        ls.pushBoolean(canMove(x, y, dir, force, mt));
+        return 1;
+      },
+      "moveInsideOf": (LuaState ls) {
+        // Cell is -6
+        ls.pushNil();
+        ls.copy(-7, -1);
+        final cell = popCell(ls);
+
+        final x = ls.toInteger(-5);
+        final y = ls.toInteger(-4);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final mtn = ls.toStr(-1)!;
+
+        var mt = MoveType.unknown_move;
+
+        for (var movetype in MoveType.values) {
+          if (movetype.name == mtn) {
+            mt = movetype;
+          }
+        }
+
+        return moveInsideOf(cell, x, y, dir, force, mt);
+      },
+      "handleInside": (LuaState ls) {
+        final x = ls.toInteger(-6);
+        final y = ls.toInteger(-5);
+        final dir = ls.toInteger(-4);
+        final force = ls.toInteger(-3);
+        ls.pushNil();
+        ls.copy(-3, -1);
+        final moving = popCell(ls);
+        final mt = strToMoveType(ls.toStr(-1));
+
+        handleInside(x, y, dir, force, moving, mt);
+
+        return 0;
+      },
+      "moveCell": (LuaState ls) {
+        final ox = ls.toInteger(-8);
+        final oy = ls.toInteger(-7);
+        final nx = ls.toInteger(-6);
+        final ny = ls.toInteger(-5);
+        final dir = ls.isNumber(-4) ? ls.toInteger(-4) : null;
+
+        ls.pushNil();
+        ls.copy(-4, -1);
+        final cell = ls.isTable(-1) ? popCell(ls, false) : null;
+        ls.pop();
+
+        final mt = strToMoveType(ls.toStr(-2));
+        final force = ls.toInteger(-1);
+
+        ls.pushBoolean(moveCell(ox, oy, nx, ny, dir, cell, mt, force));
+        return 1;
+      },
+      "swap": (LuaState ls) {
+        final x1 = ls.toInteger(-4);
+        final y1 = ls.toInteger(-3);
+        final x2 = ls.toInteger(-2);
+        final y2 = ls.toInteger(-1);
+
+        swapCells(x1, y1, x2, y2);
+
+        return 0;
+      },
+      "addedForce": (LuaState ls) {
+        ls.pushNil();
+        ls.copy(-5, -1);
+        final cell = popCell(ls);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final mt = strToMoveType(ls.toStr(-1));
+
+        ls.pushInteger(addedForce(cell, dir, force, mt));
+        return 1;
+      },
+      "acidic": (LuaState ls) {
+        ls.pushNil();
+        ls.copy(-8, -1);
+
+        final cell = popCell(ls);
+
+        final dir = ls.toInteger(-6);
+        final force = ls.toInteger(-5);
+        final mt = strToMoveType(ls.toStr(-4));
+        ls.pushNil();
+        ls.copy(-4, -1);
+        final melting = popCell(ls);
+        final mx = ls.toInteger(-2);
+        final my = ls.toInteger(-1);
+
+        ls.pushBoolean(acidic(cell, dir, force, mt, melting, mx, my));
+        return 1;
+      },
+      "handleAcid": (LuaState ls) {
+        ls.pushNil();
+        ls.copy(-8, -1);
+        final cell = popCell(ls);
+        final dir = ls.toInteger(-6);
+        final force = ls.toInteger(-5);
+        final mt = strToMoveType(ls.toStr(-4));
+        ls.pushNil();
+        ls.copy(-4, -1);
+        final melting = popCell(ls);
+        final mx = ls.toInteger(-2);
+        final my = ls.toInteger(-1);
+
+        handleAcid(cell, dir, force, mt, melting, mx, my);
+
+        return 0;
       }
-
-      ls.pushBoolean(grid.wrap);
-      return 1;
-    }, 1, 0);
-
-    defineFunc("clearChunks", (ls) {
-      grid.clearChunks();
-      return 0;
-    }, 0, 0);
-
-    defineFunc("rotate", (ls) {
-      final x = ls.toNumber(-3).toInt();
-      final y = ls.toNumber(-2).toInt();
-      final rot = ls.toNumber(-1).toInt();
-      grid.rotate(x, y, rot);
-      return 0;
-    }, 0, 3);
-
-    defineFunc("addBroken", (ls) {
-      final x = ls.toNumber(-3).toInt();
-      final y = ls.toNumber(-2).toInt();
-      final rot = ls.toNumber(-1).toInt();
-      grid.rotate(x, y, rot);
-      return 0;
-    }, 0, 3);
-
-    defineFunc("placeable", (ls) {
-      final x = ls.toNumber(-2).toInt();
-      final y = ls.toNumber(-1).toInt();
-      ls.pushString(grid.placeable(x, y));
-      return 1;
-    }, 1, 2);
-
-    defineFunc("setPlace", (ls) {
-      final x = ls.toNumber(-3).toInt();
-      final y = ls.toNumber(-2).toInt();
-      final place = ls.toStr(-1)!;
-
-      grid.setPlace(x, y, place);
-      return 0;
-    }, 0, 3);
-
-    defineFunc("setChunk", (ls) {
-      final x = ls.toNumber(-3).toInt();
-      final y = ls.toNumber(-2).toInt();
-      final chunk = ls.toStr(-1)!;
-
-      grid.setChunk(x, y, chunk);
-      return 0;
-    }, 0, 3);
-
-    defineFunc("addBroken", (ls) {
-      // Grab cell from -6
-      ls.pushNil();
-      ls.copy(-7, -1);
-      final cell = popCell(ls);
-
-      // Grab rest of args
-      final dx = ls.toNumber(-5).toInt();
-      final dy = ls.toNumber(-4).toInt();
-      final type = ls.toStr(-3)!;
-      final rlvx = ls.toNumberX(-2)?.toInt();
-      final rlvy = ls.toNumberX(-1)?.toInt();
-
-      grid.addBroken(cell, dx, dy, type, rlvx, rlvy);
-      return 0;
-    }, 0, 6);
-
-    defineFunc("memory", (ls) {
-      final channel = ls.toNumber(-2).toInt();
-      final idx = ls.toNumber(-1).toInt();
-      ls.pushNumber(grid.memory[channel]?[idx]?.toDouble() ?? 0);
-      return 1;
-    }, 1, 2);
+    };
   }
 
   void loadAPI() {
     ls.openLibs();
 
-    defineGroup("TPC", () {
-      defineFunc("OnMsg", (ls) => 0, 0);
-
-      defineFunc("DefineCell", defineCell, 0, 1);
-
-      defineFunc("Import", importOther, 0, 1);
-
-      defineFunc("Grid", (ls) {
+    final tpcAPI = <String, dynamic>{
+      "OnMsg": ((LuaState ls) => 0),
+      "DefineCell": defineCell,
+      "Import": importOther,
+      "Module": loadModuleLua,
+      "Grid": (LuaState ls) {
         pushGrid(grid);
         return 1;
-      }, 1, 0);
-
-      defineFunc("enemyParticleCount", (ls) {
+      },
+      "enemyParticleCount": (LuaState ls) {
         ls.pushNumber(enemyParticleCounts.toDouble());
         return 1;
-      }, 1);
-    }, true);
+      }
+    };
+
+    ls.makeLib("TPC", tpcAPI);
   }
 
   int importOther(LuaState ls) {
-    final str = ls.checkString(1) ?? "";
-    ls.doFile(path.joinAll([dir.path, ...str.split('/')]));
+    final str = ls.toStr(-1) ?? "";
+    ls.loadFile(path.joinAll([dir.path, ...str.split('/')]));
+    ls.call(0, 0);
     return 0;
   }
 
   void init() {
     loadAPI();
     print(path.joinAll([dir.path, 'main.lua']));
-    ls.doFile(path.joinAll([dir.path, 'main.lua']));
+    final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
+    if (status != LuaThreadStatus.ok) {
+      print("[ Crash ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}");
+      exit(0);
+    }
+    ls.call(0, 0);
 
     List modules = info["modules"] ?? [];
 
@@ -1103,7 +1189,25 @@ class LuaScript {
     }
   }
 
+  int loadModuleLua(LuaState ls) {
+    final module = ls.toStr(-1)!;
+    ls.loadFile(path.joinAll([assetsPath, 'modules', '$module.lua']));
+    ls.call(0, 1);
+    return 1;
+  }
+
   void loadModule(String module) {
-    ls.doFile(path.joinAll([assetsPath, 'modules', '$module.lua']));
+    ls.loadFile(path.joinAll([assetsPath, 'modules', '$module.lua']));
+    ls.call(0, 0);
+  }
+
+  MoveType strToMoveType(String? str) {
+    for (var mt in MoveType.values) {
+      if (mt.name == str) {
+        return mt;
+      }
+    }
+
+    return MoveType.unknown_move;
   }
 }

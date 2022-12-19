@@ -2,7 +2,6 @@ import 'dart:io' if (dart.library.html) 'dart:html';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:the_puzzle_cell/scripts/scripts_real.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as path;

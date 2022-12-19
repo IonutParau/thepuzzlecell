@@ -12,6 +12,8 @@ jobs:
       - run: flutter pub get
       - run: flutter build windows
       - run: xcopy ".\external_dependencies\windows" ".\build\windows\runner\Release\" /y /s
+      - run: mkdir ".\build\windows\runner\Release\dlls"
+      - run: xcopy ".\dlls" ".\build\windows\runner\Release\dlls" /y /s
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-windows
