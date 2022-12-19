@@ -848,95 +848,133 @@ bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int de
   }
 }
 
-bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool shifted = false]) {
+bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, int depth = 0]) {
+  if (depth > grid.width * grid.height) return false;
   if (!grid.inside(x, y)) return false;
-  if (moveInsideOf(grid.at(x, y), x, y, dir, force, mt)) return true;
+
+  final cell = grid.at(x, y);
+
+  if (cell.id == "empty") return false;
+
+  if (moveInsideOf(cell, x, y, dir, force, mt)) return false;
+
   if (!canMove(x, y, dir, force, mt)) return false;
 
-  if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
-    final nc = nextCell(x, y, (dir + 2) % 4);
-    if (nc.broken) {
-      return false;
-    } else {
-      return pull(nc.x, nc.y, (nc.dir + 2) % 4, force, mt, true);
-    }
-  }
+  force += addedForce(cell, dir, force, mt);
 
-  final ox = x;
-  final oy = y;
+  if (force <= 0) return false;
 
-  final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
-  final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+  final fx = frontX(x, dir);
+  final fy = frontY(y, dir);
+
+  final bx = frontX(x, dir, -1);
+  final by = frontY(y, dir, -1);
 
   if (!grid.inside(fx, fy)) return false;
 
-  if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir, force, mt)) {
-    return false;
-  }
+  if (!canMove(fx, fy, dir, force, mt)) return false;
 
-  var cx = ox + frontX(0, dir);
-  var cy = oy + frontY(0, dir);
-  var odir = dir;
-  var depth = 0;
+  final f = grid.at(fx, fy);
 
-  while (true) {
-    depth++;
-    if (depth == 9999) return false;
-    cx -= frontX(0, dir);
-    cy -= frontY(0, dir);
-    if (!grid.inside(cx, cy)) break;
-    final nc = nextCell(cx, cy, (dir + 2) % 4);
-    if (nc.broken) break;
-    cx = nc.x;
-    cy = nc.y;
-    dir = (nc.dir + 2) % 4;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
-    force += addedForce(grid.at(cx, cy), dir, force, mt);
-    if (force <= 0) return false;
-    final lastrot = grid.at(cx, cy).rot;
-    grid.at(cx, cy).rot -= nc.addedrot;
-    grid.at(cx, cy).rot %= 4;
-    if (canMove(cx, cy, dir, force, mt)) {
-      //moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
-    } else {
-      grid.at(cx, cy).rot = lastrot;
-      break;
-    }
-  }
+  final isAcid = acidic(cell, dir, force, mt, f, fx, fy);
 
-  cx = ox + frontX(0, dir);
-  cy = oy + frontY(0, dir);
-  depth = 0;
-  dir = odir;
+  if (!isAcid && !moveInsideOf(f, fx, fy, dir, force, mt)) return false;
 
-  while (true) {
-    depth++;
-    if (depth == 9999) break;
-    cx -= frontX(0, dir);
-    cy -= frontY(0, dir);
-    final nc = nextCell(cx, cy, (dir + 2) % 4);
-    if (nc.broken) break;
-    cx = nc.x;
-    cy = nc.y;
-    dir = (nc.dir + 2) % 4;
-    final addedrot = nc.addedrot;
-    if (!grid.inside(cx, cy)) break;
-    if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
-    force += addedForce(grid.at(cx, cy), dir, force, mt);
-    if (force <= 0) return false;
-    if (canMove(cx, cy, dir, force, mt)) {
-      grid.at(cx, cy).rot = (grid.at(cx, cy).rot - addedrot) % 4;
-      final cell = grid.at(cx, cy);
-      moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir, null, mt);
-      whenMoved(cell, cx, cy, dir, force, mt);
-    } else {
-      break;
-    }
-  }
-  QueueManager.runQueue("post-move");
+  moveCell(x, y, fx, fy);
+  pull(bx, by, dir, force, mt, depth + 1);
 
   return true;
 }
+
+// bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, bool shifted = false]) {
+//   if (!grid.inside(x, y)) return false;
+//   if (moveInsideOf(grid.at(x, y), x, y, dir, force, mt)) return true;
+//   if (!canMove(x, y, dir, force, mt)) return false;
+
+//   if (CellTypeManager.curves.contains(grid.at(x, y).id) && !shifted) {
+//     final nc = nextCell(x, y, (dir + 2) % 4);
+//     if (nc.broken) {
+//       return false;
+//     } else {
+//       return pull(nc.x, nc.y, (nc.dir + 2) % 4, force, mt, true);
+//     }
+//   }
+
+//   final ox = x;
+//   final oy = y;
+
+//   final fx = x - (dir % 2 == 0 ? dir - 1 : 0);
+//   final fy = y - (dir % 2 == 1 ? dir - 2 : 0);
+
+//   if (!grid.inside(fx, fy)) return false;
+
+//   if (!moveInsideOf(grid.at(fx, fy), fx, fy, dir, force, mt)) {
+//     return false;
+//   }
+
+//   var cx = ox + frontX(0, dir);
+//   var cy = oy + frontY(0, dir);
+//   var odir = dir;
+//   var depth = 0;
+
+//   while (true) {
+//     depth++;
+//     if (depth == 9999) return false;
+//     cx -= frontX(0, dir);
+//     cy -= frontY(0, dir);
+//     if (!grid.inside(cx, cy)) break;
+//     final nc = nextCell(cx, cy, (dir + 2) % 4);
+//     if (nc.broken) break;
+//     cx = nc.x;
+//     cy = nc.y;
+//     dir = (nc.dir + 2) % 4;
+//     if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
+//     force += addedForce(grid.at(cx, cy), dir, force, mt);
+//     if (force <= 0) return false;
+//     final lastrot = grid.at(cx, cy).rot;
+//     grid.at(cx, cy).rot -= nc.addedrot;
+//     grid.at(cx, cy).rot %= 4;
+//     if (canMove(cx, cy, dir, force, mt)) {
+//       //moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir);
+//     } else {
+//       grid.at(cx, cy).rot = lastrot;
+//       break;
+//     }
+//   }
+
+//   cx = ox + frontX(0, dir);
+//   cy = oy + frontY(0, dir);
+//   depth = 0;
+//   dir = odir;
+
+//   while (true) {
+//     depth++;
+//     if (depth == 9999) break;
+//     cx -= frontX(0, dir);
+//     cy -= frontY(0, dir);
+//     final nc = nextCell(cx, cy, (dir + 2) % 4);
+//     if (nc.broken) break;
+//     cx = nc.x;
+//     cy = nc.y;
+//     dir = (nc.dir + 2) % 4;
+//     final addedrot = nc.addedrot;
+//     if (!grid.inside(cx, cy)) break;
+//     if (moveInsideOf(grid.at(cx, cy), cx, cy, dir, force, mt)) break;
+//     force += addedForce(grid.at(cx, cy), dir, force, mt);
+//     if (force <= 0) return false;
+//     if (canMove(cx, cy, dir, force, mt)) {
+//       grid.at(cx, cy).rot = (grid.at(cx, cy).rot - addedrot) % 4;
+//       final cell = grid.at(cx, cy);
+//       moveCell(cx, cy, frontX(cx, dir), frontY(cy, dir), dir, null, mt);
+//       whenMoved(cell, cx, cy, dir, force, mt);
+//     } else {
+//       break;
+//     }
+//   }
+//   QueueManager.runQueue("post-move");
+
+//   return true;
+// }
 
 bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unknown_move}) {
   if (!grid.inside(x, y)) return false;

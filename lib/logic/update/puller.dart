@@ -6,7 +6,7 @@ void pullers() {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        doSpeedPuller(x, y, rot, 2, 2);
+        doSpeedPuller(x, y, rot, 1, 2);
       },
       rot,
       "fast_puller",
@@ -14,7 +14,7 @@ void pullers() {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        if (pull(x, y, rot, 1)) {
+        if (pull(x, y, rot, 0)) {
           grid.at(x, y).updated = true;
         }
       },
@@ -24,7 +24,7 @@ void pullers() {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        pull(x, y, rot, 1);
+        pull(x, y, rot, 0);
       },
       rot,
       "puller",
@@ -33,7 +33,7 @@ void pullers() {
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (cell.lifespan % 2 == 0) {
-          pull(x, y, rot, 1);
+          pull(x, y, rot, 0);
         }
       },
       rot,
