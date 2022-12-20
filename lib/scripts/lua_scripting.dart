@@ -20,7 +20,11 @@ class LuaScript {
   LuaScript(this.dir) {
     final ver = info['lua_ver'] ?? 'lua-latest';
     if (ver == 'lua-latest') {
-      ls = LuaState(dll: LuaState.toLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib'));
+      ls = LuaState(
+          dll: LuaState.toLibLua(
+              windows: 'dlls/lua54.dll',
+              linux: 'dlls/liblua54.so',
+              macos: 'dlls/liblua52.dylib'));
     } else if (ver == 'lua-jit') {
       throw "LuaJIT is not yet supported.";
     }
@@ -203,7 +207,8 @@ class LuaScript {
       "last": <String, dynamic>{
         "x": (LuaState ls) {
           if (ls.top == 1) {
-            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            cell.lastvars.lastPos =
+                Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
             return 0;
           }
           ls.pushNumber(cell.lastvars.lastPos.dy);
@@ -211,7 +216,8 @@ class LuaScript {
         },
         "y": (LuaState ls) {
           if (ls.top == 1) {
-            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            cell.lastvars.lastPos =
+                Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
             return 0;
           }
           ls.pushNumber(cell.lastvars.lastPos.dy);
@@ -397,7 +403,8 @@ class LuaScript {
     return cell;
   }
 
-  int? addedForceModded(Cell cell, int dir, int force, int side, String moveType) {
+  int? addedForceModded(
+      Cell cell, int dir, int force, int side, String moveType) {
     if (definedCells.contains(cell.id)) {
       // We getting into low level Lua VM stuff, we need garbage collection
       final id = cell.id;
@@ -419,7 +426,8 @@ class LuaScript {
     return null;
   }
 
-  bool? moveInsideOfModded(Cell into, int x, int y, int dir, int force, String mt) {
+  bool? moveInsideOfModded(
+      Cell into, int x, int y, int dir, int force, String mt) {
     if (definedCells.contains(into.id)) {
       final id = into.id;
       bool? result;
@@ -444,7 +452,8 @@ class LuaScript {
     return null;
   }
 
-  void handleInsideModded(int x, int y, int dir, int force, Cell moving, String mt) {
+  void handleInsideModded(
+      int x, int y, int dir, int force, Cell moving, String mt) {
     final destroyer = grid.at(x, y);
     if (definedCells.contains(destroyer.id)) {
       final id = destroyer.id;
@@ -464,7 +473,8 @@ class LuaScript {
     }
   }
 
-  bool? isAcidicModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  bool? isAcidicModded(
+      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       bool? result;
@@ -489,7 +499,8 @@ class LuaScript {
     return null;
   }
 
-  void handleAcidModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  void handleAcidModded(
+      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       ls.getGlobal("HANDLE_ACID:$id");
@@ -620,7 +631,9 @@ class LuaScript {
                 for (var rot in [0, 1]) {
                   grid.loopChunks(
                     cell,
-                    i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
+                    i == 0
+                        ? GridAlignment.bottomleft
+                        : GridAlignment.bottomright,
                     (cell, x, y) {
                       cell.updated = true;
                       ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
@@ -632,7 +645,10 @@ class LuaScript {
                       }
                       ls.pop();
                     },
-                    filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
+                    filter: (cell, x, y) =>
+                        cell.id == cell &&
+                        (cell.rot % 2 == rot) &&
+                        !cell.updated,
                   );
                 }
               }
@@ -745,7 +761,8 @@ class LuaScript {
         modded.add(cell);
         print("Defined Cell: " + cell);
         cellInfo[cell] = CellProfile(name, desc);
-        textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
+        textureMap['$cell.png'] =
+            "../../mods/$id/${texture.split("/").join(path.separator)}";
         textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
         ls.setGlobal("PROPS:$cell");
       }
@@ -768,7 +785,8 @@ class LuaScript {
     return r;
   }
 
-  bool? canMoveModded(Cell cell, int x, int y, int dir, int side, int force, String mt) {
+  bool? canMoveModded(
+      Cell cell, int x, int y, int dir, int side, int force, String mt) {
     if (definedCells.contains(cell.id)) {
       return withDefinedCellProperty<bool>(cell.id, "movable", () {
         if (ls.isFunction(-1)) {
@@ -1147,7 +1165,8 @@ class LuaScript {
         final mt = strToMoveType(ls.toStr(-2));
         final replaceCell = ls.isTable(-1) ? popCell(ls, false) : null;
 
-        ls.pushBoolean(push(x, y, dir, force, mt: mt, replaceCell: replaceCell));
+        ls.pushBoolean(
+            push(x, y, dir, force, mt: mt, replaceCell: replaceCell));
         return 1;
       },
       "Pull": (LuaState ls) {
@@ -1158,6 +1177,14 @@ class LuaScript {
         final mt = strToMoveType(ls.toStr(-1));
 
         ls.pushBoolean(pull(x, y, dir, force, mt));
+        return 1;
+      },
+      "Nudge": (LuaState ls) {
+        final x = ls.toInteger(-4);
+        final y = ls.toInteger(-3);
+        final dir = ls.toInteger(-2);
+        final mt = strToMoveType(ls.toStr(-1));
+        ls.pushBoolean(nudge(x, y, dir, mt: mt));
         return 1;
       },
     };
@@ -1197,7 +1224,8 @@ class LuaScript {
     print(path.joinAll([dir.path, 'main.lua']));
     final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
     if (status != LuaThreadStatus.ok) {
-      print("[ Crash ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}");
+      print(
+          "[ Crash ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}");
       exit(0);
     }
     ls.call(0, 0);
