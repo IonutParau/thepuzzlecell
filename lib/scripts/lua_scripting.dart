@@ -1134,6 +1134,46 @@ class LuaScript {
     };
   }
 
+  Map<String, dynamic> mathAPI() {
+    return {
+      "phi": mathManager.phi.toDouble(),
+      "setGlobal": (LuaState ls) {
+        final channel = ls.toNumber(-3);
+        final idx = ls.toNumber(-2);
+        final val = ls.toNumber(-1);
+        mathManager.setGlobal(channel, idx, val);
+        return 0;
+      },
+      "getGlobal": (LuaState ls) {
+        final channel = ls.toNumber(-2);
+        final idx = ls.toNumber(-1);
+        ls.pushNumber(mathManager.getGlobal(channel, idx).toDouble());
+        return 0;
+      },
+      "input": (LuaState ls) {
+        final x = ls.toInteger(-3);
+        final y = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
+        ls.pushNumber(mathManager.input(x, y, dir).toDouble());
+        return 1;
+      },
+      "output": (LuaState ls) {
+        final x = ls.toInteger(-4);
+        final y = ls.toInteger(-3);
+        final dir = ls.toInteger(-2);
+        final count = ls.toNumber(-1);
+        mathManager.output(x, y, dir, count);
+        return 0;
+      },
+      "logn": (LuaState ls) {
+        final x = ls.toInteger(-2);
+        final n = ls.toInteger(-1);
+        ls.pushNumber(mathManager.logn(x, n));
+        return 1;
+      },
+    };
+  }
+
   Map<String, dynamic> moveAPI() {
     return {
       "canMove": (LuaState ls) {
@@ -1532,6 +1572,7 @@ class LuaScript {
       "Helper": helperLib(),
       "Queues": queuesAPI(),
       "FS": fsAPI(),
+      "Math": mathAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);
