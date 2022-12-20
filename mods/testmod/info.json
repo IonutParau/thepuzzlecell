@@ -4,5 +4,6 @@
   "author": "A Monitor#1595",
   "remoteFiles": {
     "README.md": "https://raw.githubusercontent.com/IonutParau/thepuzzlecell/main/README.md"
-  }
+  },
+  "remoteUpdates": "manual"
 }

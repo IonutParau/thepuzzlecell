@@ -1523,7 +1523,8 @@ class LuaScript {
   Future<void> init() async {
     loadAPI();
 
-    await asyncUpdateRemotes();
+    final remoteUpdates = info["remoteUpdates"] ?? "auto";
+    if (remoteUpdates == "auto") await asyncUpdateRemotes();
 
     final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
     if (status != LuaThreadStatus.ok) {
