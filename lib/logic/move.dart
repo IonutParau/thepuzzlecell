@@ -547,7 +547,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       QueueManager.add("post-move", () => doExplosive(destroyer, x, y));
       grid.set(x, y, Cell(x, y));
       grid.addBroken(moving, x, y, "shrinking");
-      game.yellowparticles.emit(enemyParticleCounts, x, y);
+      game.purpleparticles.emit(enemyParticleCounts, x, y);
     } else if (destroyer.id == "friend") {
       grid.set(x, y, Cell(x, y));
       grid.addBroken(destroyer, x, y, "shrinking");

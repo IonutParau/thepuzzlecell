@@ -966,6 +966,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   final blueparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.blue);
   final greenparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.green);
   final yellowparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.yellow);
+  final purpleparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.purple);
+  final tealparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.teal);
+  final blackparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.black);
+  final magentaparticles = ParticleSystem(5, 2, 0.25, 0.125, 1, Colors.magenta);
 
   Rect? viewbox = null;
 
@@ -2670,9 +2674,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
         if (pasting) {
           if (grid.inside(mx, my) ||
-             grid.inside(mx + gridClip.width, my) ||
-             grid.inside(mx, my + gridClip.height) ||
-             grid.inside(mx + gridClip.width, my + gridClip.height)) {
+              grid.inside(mx + gridClip.width, my) ||
+              grid.inside(mx, my + gridClip.height) ||
+              grid.inside(mx + gridClip.width, my + gridClip.height)) {
             for (var x = 0; x < gridClip.width; x++) {
               for (var y = 0; y < gridClip.height; y++) {
                 if (grid.inside(mx + x, my + y)) {
@@ -2684,7 +2688,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     }
                   }
                 } else {
-                coolOverlayColor = Colors.red;
+                  coolOverlayColor = Colors.red;
                 }
               }
             }
@@ -2781,6 +2785,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       blueparticles.render(canvas);
       greenparticles.render(canvas);
       yellowparticles.render(canvas);
+      purpleparticles.render(canvas);
+      tealparticles.render(canvas);
+      blackparticles.render(canvas);
+      magentaparticles.render(canvas);
 
       //grid.forEach(renderCell);
 
@@ -3434,6 +3442,10 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       blueparticles.update(dt);
       greenparticles.update(dt);
       yellowparticles.update(dt);
+      purpleparticles.update(dt);
+      tealparticles.update(dt);
+      blackparticles.update(dt);
+      magentaparticles.update(dt);
 
       AchievementRenderer.update(dt);
       buttonManager.forEach(

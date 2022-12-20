@@ -1250,6 +1250,24 @@ class LuaScript {
         ls.pushBoolean(nudge(x, y, dir, mt: mt));
         return 1;
       },
+      "speedMover": (LuaState ls) {
+        final x = ls.toInteger(-5);
+        final y = ls.toInteger(-4);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final speed = ls.toInteger(-1);
+        doSpeedMover(x, y, dir, force, speed);
+        return 0;
+      },
+      "speedPuller": (LuaState ls) {
+        final x = ls.toInteger(-5);
+        final y = ls.toInteger(-4);
+        final dir = ls.toInteger(-3);
+        final force = ls.toInteger(-2);
+        final speed = ls.toInteger(-1);
+        doSpeedPuller(x, y, dir, force, speed);
+        return 0;
+      },
     };
   }
 
@@ -1269,7 +1287,25 @@ class LuaScript {
         ls.pushNumber(enemyParticleCounts.toDouble());
         return 1;
       },
+      "emitParticles": (LuaState ls) {
+        final amount = ls.toInteger(-4);
+        final x = ls.toInteger(-3);
+        final y = ls.toInteger(-2);
+        final color = ls.toStr(-1)!;
+
+        if (color == "red") game.redparticles.emit(amount, x, y);
+        if (color == "blue") game.blueparticles.emit(amount, x, y);
+        if (color == "green") game.greenparticles.emit(amount, x, y);
+        if (color == "yellow") game.yellowparticles.emit(amount, x, y);
+        if (color == "purple") game.purpleparticles.emit(amount, x, y);
+        if (color == "teal") game.tealparticles.emit(amount, x, y);
+        if (color == "black") game.blackparticles.emit(amount, x, y);
+        if (color == "magenta") game.magentaparticles.emit(amount, x, y);
+
+        return 0;
+      },
       "Move": moveAPI(),
+      "Helper": helperLib(),
     };
 
     ls.makeLib("TPC", tpcAPI);

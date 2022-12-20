@@ -5,6 +5,7 @@ local cell = {
   update = {
     mode = "4-way",
     fn = function(cell, x, y)
+      TPC.emitParticles(50, x, y, "teal")
       TPC.Move.Push(x, y, cell.rot(), 0, "push", nil)
     end,
   },
