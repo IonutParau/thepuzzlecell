@@ -45,11 +45,17 @@ class ScriptingManager {
     return {...luas, ...arrows};
   }
 
-  void initScripts() {
-    LuaState.loadLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib');
+  Future<void> initScripts() async {
+    LuaState.loadLibLua(
+      windows: 'dlls/lua54.dll',
+      linux: 'dlls/liblua54.so',
+      macos: 'dlls/liblua52.dylib',
+    );
     for (var script in luaScripts) {
-      script.init();
+      await script.init();
     }
+
+    return;
   }
 
   void OnMsg(String id, String msg) {
@@ -82,7 +88,8 @@ class ScriptingManager {
     return false;
   }
 
-  void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
+  void handleInside(
+      int x, int y, int dir, int force, Cell moving, MoveType mt) {
     final destroyer = grid.at(x, y);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(destroyer.id)) {
@@ -91,17 +98,20 @@ class ScriptingManager {
     }
   }
 
-  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx,
+      int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
-        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ?? false;
+        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ??
+            false;
       }
     }
 
     return false;
   }
 
-  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting,
+      int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
         return lua.handleAcidModded(cell, dir, force, mt.name, melting, mx, my);
@@ -122,7 +132,8 @@ class ScriptingManager {
         }
         current = found.first;
       } else {
-        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
+        final found = current.items
+            .where((cat) => cat is CellCategory && cat.title == parts.first);
         if (found.isEmpty) {
           return;
         }
@@ -138,7 +149,8 @@ class ScriptingManager {
     cats.forEach((cat) => addToCat(cat, cell));
   }
 
-  bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
+  bool canMove(
+      Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
     for (var lua in luaScripts) {
       return lua.canMoveModded(cell, x, y, dir, side, force, mt.name) ?? true;
     }
@@ -188,7 +200,9 @@ class ScriptingManager {
     for (var lua in luaScripts) {
       if (lua.id == id) {
         final p = path.join(lua.dir.path, 'icon.png');
-        return File(p).existsSync() ? "mods/${id}/icon.png" : 'assets/images/modDefaultIcon.png';
+        return File(p).existsSync()
+            ? "mods/${id}/icon.png"
+            : 'assets/images/modDefaultIcon.png';
       }
     }
 

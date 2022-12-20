@@ -1271,6 +1271,65 @@ class LuaScript {
     };
   }
 
+  Map<String, dynamic> queuesAPI() {
+    return {
+      "create": (LuaState ls) {
+        QueueManager.create(ls.toStr(-1)!);
+
+        return 0;
+      },
+      "delete": (LuaState ls) {
+        QueueManager.delete(ls.toStr(-1)!);
+
+        return 0;
+      },
+      "add": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final funcName = "QUEUE-FUNC:${Uuid().v4()}";
+        ls.pushNil();
+        ls.copy(-2, -1);
+        ls.setGlobal(funcName);
+        QueueManager.add(key, () {
+          ls.getGlobal(funcName);
+          ls.call(0, 0);
+          ls.pushNil();
+          ls.setGlobal(funcName);
+        });
+
+        return 0;
+      },
+      "empty": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+
+        QueueManager.empty(key);
+
+        return 0;
+      },
+      "hasQueue": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+
+        ls.pushBoolean(QueueManager.hasInQueue(key));
+
+        return 1;
+      },
+      "runQueue": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+
+        QueueManager.runQueue(key);
+
+        return 0;
+      },
+      "runLimitedQueue": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final limit = ls.toInteger(-1);
+
+        QueueManager.runQueue(key, limit);
+
+        return 0;
+      },
+    };
+  }
+
   void loadAPI() {
     ls.openLibs();
 
@@ -1306,6 +1365,7 @@ class LuaScript {
       },
       "Move": moveAPI(),
       "Helper": helperLib(),
+      "Queues": queuesAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);
@@ -1318,13 +1378,52 @@ class LuaScript {
     return 0;
   }
 
-  void init() {
+  Future<void> init() async {
     loadAPI();
-    print(path.joinAll([dir.path, 'main.lua']));
+
+    final Map<String, dynamic> remote =
+        info['remoteFiles'] ?? <String, dynamic>{};
+
+    final remoteFiles = remote.entries.toList();
+
+    for (var remoteFile in remoteFiles) {
+      final fileName = path.joinAll([dir.path, ...remoteFile.key.split('/')]);
+
+      if (remoteFile.value is Map<String, dynamic>) {
+        final data = remoteFile.value;
+
+        final response =
+            await http.get(Uri.parse(data['url']), headers: data['headers']);
+
+        if (response.statusCode == 200) {
+          final f = File(fileName);
+          f.createSync();
+          f.writeAsBytesSync(response.bodyBytes);
+        } else {
+          print(
+            "[ Warning ]\nRemote file download failed! Might be problematic!\nStatus Code: ${response.statusCode}\nBody: ${response.body}\nURL: ${data['url']}",
+          );
+        }
+      } else if (remoteFile.value is String) {
+        final response = await http.get(Uri.parse(remoteFile.value));
+
+        if (response.statusCode == 200) {
+          final f = File(fileName);
+          f.createSync();
+          f.writeAsBytesSync(response.bodyBytes);
+        } else {
+          print(
+            "[ Warning ]\nRemote file download failed! Might be problematic!\nStatus Code: ${response.statusCode}\nBody: ${response.body}\nURL: ${remoteFile.key}",
+          );
+        }
+      }
+    }
+
     final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
     if (status != LuaThreadStatus.ok) {
       print(
-          "[ Crash ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}");
+        "[ Crash ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}",
+      );
       exit(0);
     }
     ls.call(0, 0);
@@ -1336,6 +1435,8 @@ class LuaScript {
         loadModule(module);
       }
     }
+
+    return;
   }
 
   int loadModuleLua(LuaState ls) {

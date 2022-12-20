@@ -1,5 +1,8 @@
 {
   "name": "Test Mod",
   "desc": "A mod used to test the modding API. Don't worry, will be removed in the last release!",
-  "author": "A Monitor#1595"
+  "author": "A Monitor#1595",
+  "remoteFiles": {
+    "README.md": "https://raw.githubusercontent.com/IonutParau/thepuzzlecell/main/README.md"
+  }
 }
