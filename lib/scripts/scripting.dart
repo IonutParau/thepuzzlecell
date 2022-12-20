@@ -220,6 +220,32 @@ class ScriptingManager {
 
     return l;
   }
+
+  bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack,
+      int originX, int originY) {
+    for (var lua in luaScripts) {
+      if (lua.hasDefinedCell(cell.id)) {
+        return lua.isSticky(
+                cell, x, y, dir, base, checkedAsBack, originX, originY) ??
+            false;
+      }
+    }
+
+    return false;
+  }
+
+  bool sticksTo(Cell cell, Cell to, int dir, bool base, bool checkedAsBack,
+      int originX, int originY) {
+    for (var lua in luaScripts) {
+      if (lua.hasDefinedCell(cell.id)) {
+        return lua.sticksTo(
+                cell, to, dir, base, checkedAsBack, originX, originY) ??
+            false;
+      }
+    }
+
+    return false;
+  }
 }
 
 final scriptingManager = ScriptingManager();
