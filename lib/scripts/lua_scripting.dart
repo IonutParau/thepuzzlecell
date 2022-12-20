@@ -1330,6 +1330,105 @@ class LuaScript {
     };
   }
 
+  String fixPath(String p) {
+    return path.normalize(path.joinAll([dir.path, ...p.split('/')]));
+  }
+
+  Map<String, dynamic> fsAPI() {
+    return {
+      "create": (LuaState ls) {
+        final path = fixPath(ls.toStr(-1)!);
+
+        if (path.startsWith(dir.path)) {
+          final f = File(path);
+          f.createSync();
+        }
+
+        return 0;
+      },
+      "delete": (LuaState ls) {
+        final path = fixPath(ls.toStr(-1)!);
+
+        if (path.startsWith(dir.path)) {
+          final f = File(path);
+          f.deleteSync();
+        }
+
+        return 0;
+      },
+      "writeTo": (LuaState ls) {
+        final path = fixPath(ls.toStr(-2)!);
+        final content = ls.toStr(-1)!;
+
+        if (path.startsWith(dir.path)) {
+          final f = File(path);
+          f.writeAsStringSync(content);
+        }
+
+        return 0;
+      },
+      "readFrom": (LuaState ls) {
+        final path = fixPath(ls.toStr(-1)!);
+
+        if (path.startsWith(dir.path)) {
+          final f = File(path);
+          ls.pushString(f.readAsStringSync());
+          return 1;
+        }
+
+        return 0;
+      },
+      "createDir": (LuaState ls) {
+        final path = fixPath(ls.toStr(-1)!);
+
+        if (path.startsWith(dir.path)) {
+          final f = Directory(path);
+          f.createSync();
+        }
+
+        return 0;
+      },
+      "deleteDir": (LuaState ls) {
+        final path = fixPath(ls.toStr(-1)!);
+
+        if (path.startsWith(dir.path)) {
+          final f = Directory(path);
+          f.deleteSync();
+        }
+
+        return 0;
+      },
+      "listDir": (LuaState ls) {
+        final p = fixPath(ls.toStr(-1)!);
+
+        if (p.startsWith(dir.path)) {
+          final f = Directory(p);
+          final files = f.listSync();
+
+          ls.newTable();
+          var i = 0;
+          for (var file in files) {
+            i++;
+            ls.pushInteger(i);
+            ls.pushString(path.relative(file.path, from: dir.path));
+            ls.setTable(-3);
+          }
+
+          return 1;
+        }
+
+        return 0;
+      },
+      // Lua is sync btw, meaning that there is no way for this Lua file to know when this completes lol
+      // The best chance it has is track file changes lol
+      "asyncUpdateRemotes": (LuaState ls) {
+        asyncUpdateRemotes();
+
+        return 0;
+      },
+    };
+  }
+
   void loadAPI() {
     ls.openLibs();
 
@@ -1366,6 +1465,7 @@ class LuaScript {
       "Move": moveAPI(),
       "Helper": helperLib(),
       "Queues": queuesAPI(),
+      "FS": fsAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);
@@ -1378,9 +1478,7 @@ class LuaScript {
     return 0;
   }
 
-  Future<void> init() async {
-    loadAPI();
-
+  Future<void> asyncUpdateRemotes() async {
     final Map<String, dynamic> remote =
         info['remoteFiles'] ?? <String, dynamic>{};
 
@@ -1418,6 +1516,14 @@ class LuaScript {
         }
       }
     }
+
+    return;
+  }
+
+  Future<void> init() async {
+    loadAPI();
+
+    await asyncUpdateRemotes();
 
     final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
     if (status != LuaThreadStatus.ok) {
