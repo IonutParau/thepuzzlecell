@@ -697,6 +697,22 @@ class LuaScript {
         }
         ls.pop(1);
 
+        ls.pushString("isSticky");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("IS_STICKY:$id");
+        } else {
+          ls.pop();
+        }
+
+        ls.pushString("sticksTo");
+        ls.getTable(-2);
+        if (ls.isFunction(-1)) {
+          ls.setGlobal("STICKS_TO:$id");
+        } else {
+          ls.pop();
+        }
+
         ls.pushString("properties");
         ls.getTable(-2);
         if (ls.isTable(-1)) {
@@ -753,8 +769,6 @@ class LuaScript {
         }
         ls.pop(1);
 
-        print("PROPS!!!");
-
         // YO!!!
         definedCells.add(cell);
         cells.add(cell);
@@ -803,6 +817,55 @@ class LuaScript {
         }
         return true;
       });
+    }
+
+    return null;
+  }
+
+  bool? isSticky(Cell cell, int x, int y, int dir, bool base,
+      bool checkedAsBack, int originX, int originY) {
+    if (definedCells.contains(cell.id)) {
+      final id = cell.id;
+      ls.getGlobal("IS_STICKY:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.pushBoolean(base);
+        ls.pushBoolean(checkedAsBack);
+        ls.pushInteger(originX);
+        ls.pushInteger(originY);
+        ls.call(8, 1);
+        final res = ls.toBoolean(-1);
+        ls.pop();
+        return res;
+      }
+      ls.pop();
+    }
+
+    return null;
+  }
+
+  bool? sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack,
+      int originX, int originY) {
+    final id = sticker.id;
+    if (definedCells.contains(id)) {
+      ls.getGlobal("STICKS_TO:$id");
+      if (ls.isFunction(-1)) {
+        pushCell(sticker, ls);
+        pushCell(to, ls);
+        ls.pushInteger(dir);
+        ls.pushBoolean(base);
+        ls.pushBoolean(checkedAsBack);
+        ls.pushInteger(originX);
+        ls.pushInteger(originY);
+        ls.call(7, 1);
+        final res = ls.toBoolean(-1);
+        ls.pop();
+        return res;
+      }
+      ls.pop();
     }
 
     return null;
