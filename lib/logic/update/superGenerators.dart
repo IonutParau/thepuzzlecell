@@ -36,7 +36,7 @@ void doSupGen(int x, int y, int dir, int gendir,
 
     final s = grid.at(sx, sy);
 
-    if (ungennable.contains(s.id)) break;
+    if (isUngennable(s, sx, sy, gendir)) break;
     if (s.tags.contains("gend $gendir")) break;
     final c = s.copy;
     c.tags.add("gend $gendir");

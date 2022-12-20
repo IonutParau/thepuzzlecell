@@ -14,3 +14,5 @@ import '../logic/logic.dart';
 
 part 'scripting.dart';
 part 'lua_scripting.dart';
+
+final moddedEnemy = <String>[];

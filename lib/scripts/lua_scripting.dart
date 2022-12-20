@@ -1081,6 +1081,56 @@ class LuaScript {
 
         return 1;
       },
+      "ungennable": (LuaState ls) {
+        ls.pushNil();
+        ls.copy(-5, -1);
+        final cell = popCell(ls);
+        final x = ls.toInteger(-3);
+        final y = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
+
+        ls.pushBoolean(isUngennable(cell, x, y, dir));
+        return 1;
+      },
+      "generate": (LuaState ls) {
+        final x = ls.toInteger(-11);
+        final y = ls.toInteger(-10);
+        final dir = ls.toInteger(-9);
+        final gendir = ls.toInteger(-8);
+        final offX = ls.isNumber(-7) ? ls.toInteger(-7) : null;
+        final offY = ls.isNumber(-6) ? ls.toInteger(-6) : null;
+        final preaddedRot = ls.toInteger(-5);
+        final physical = ls.toBoolean(-4);
+        final lvxo = ls.toInteger(-3);
+        final lvyo = ls.toInteger(-2);
+        final ignoreOptimization = ls.toBoolean(-1);
+        doGen(x, y, dir, gendir, offX, offY, preaddedRot, physical, lvxo, lvyo,
+            ignoreOptimization);
+        return 0;
+      },
+      "superGenerate": (LuaState ls) {
+        final x = ls.toInteger(-7);
+        final y = ls.toInteger(-6);
+        final dir = ls.toInteger(-5);
+        final gendir = ls.toInteger(-4);
+        final offX = ls.toInteger(-3);
+        final offY = ls.toInteger(-2);
+        final preaddedRot = ls.toInteger(-1);
+        doSupGen(x, y, dir, gendir, offX, offY, preaddedRot);
+        return 0;
+      },
+      "triggerWin": (LuaState ls) {
+        puzzleWin = true;
+        return 0;
+      },
+      "triggerLoss": (LuaState ls) {
+        puzzleLost = true;
+        return 0;
+      },
+      "markAsEnemy": (LuaState ls) {
+        moddedEnemy.add(ls.toStr(-1)!);
+        return 0;
+      },
     };
   }
 
@@ -1267,6 +1317,22 @@ class LuaScript {
         final speed = ls.toInteger(-1);
         doSpeedPuller(x, y, dir, force, speed);
         return 0;
+      },
+      "grabSide": (LuaState ls) {
+        final x = ls.toInteger(-4);
+        final y = ls.toInteger(-3);
+        final mdir = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
+
+        ls.pushBoolean(grabSide(x, y, mdir, dir));
+        return 1;
+      },
+      "drill": (LuaState ls) {
+        final x = ls.toInteger(-3);
+        final y = ls.toInteger(-2);
+        final dir = ls.toInteger(-1);
+        ls.pushBoolean(doDriller(x, y, dir));
+        return 1;
       },
     };
   }
