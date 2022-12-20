@@ -170,6 +170,7 @@ In the text, @variablename gets replaced with the variable.
 | view_cells                     | The name of the View Cells button                                                                                                       |                               |
 | pick_texture_zip               | The name of the File Picker when picking texture files ZIPs to install                                                                  |                               |
 | pick_modules_files             | The name of the File Picker when picking lua files to install as modules                                                                |                               |
+| view_modules                   | The name of the View Modules dialog                                                                                                     |                               |
 
 ## Button IDs:
 
