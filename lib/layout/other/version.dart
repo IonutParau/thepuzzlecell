@@ -108,7 +108,7 @@ class VersionPage extends StatelessWidget {
 
     parts.add("Foregrounds: ${cells.length - backgrounds.length}");
     parts.add("Backgrounds: ${backgrounds.length - biomes.length}");
-    parts.add("Backgrounds: ${biomes.length}");
+    parts.add("Biomes: ${biomes.length}");
 
     if (modded.isNotEmpty) {
       parts.add("Modded: ${modded.length}");
