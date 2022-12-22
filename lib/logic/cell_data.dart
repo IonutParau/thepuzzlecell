@@ -2808,7 +2808,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "master_select_xy": CellProfile(
     "Select Cell at X and Y",
-    "Takes XY coordinates as input,\nsets current master state's cell ID to cell's ID at the inputted coordinates and\n sets current master state's coordinates and last coordinates to the inputtedcoordinates.",
+    "Takes XY coordinates as input,\nsets current master state's cell ID to cell's ID at the inputted coordinates and\nsets current master state's coordinates and last coordinates to the inputted coordinates.",
   ),
   "master_set_id": CellProfile(
     "Change to Constant ID",
