@@ -101,7 +101,6 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               FilePickerResult? result = await FilePicker.platform.pickFiles(
                 type: FileType.custom,
                 allowedExtensions: ['zip'],
-                dialogTitle: lang('pick_texture_zip', 'Pick Texture Pack ZIPs'),
               );
 
               // Result is null if user cancelled the file picking attempt
