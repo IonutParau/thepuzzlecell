@@ -39,7 +39,13 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               }
             },
           ),
-          Image.asset(tp.icon),
+          Image.asset(
+            tp.icon,
+            width: 5.w,
+            height: 5.w,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.none,
+          ),
         ],
       ),
       trailing: Row(

@@ -38,6 +38,10 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
                   child: ListTile(
                     leading: Image.asset(
                       idToTexture(cell),
+                      width: 5.w,
+                      height: 5.w,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.none,
                     ),
                     title: Text(idToString(cell)),
                     trailing: Button(
