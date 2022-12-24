@@ -8,22 +8,24 @@ A texture pack is how you can change textures of cells
 
 # How do I install a texture pack?
 
-If it's a ZIP file, step 0 is to extract it into a folder.
-Make sure that folder contains a `pack.json` file!
+Go to the Texture Packs UI and click Install from File.
+Then select a zip containing the contents of the texture pack.
 
-Then, simply move that folder in the folder for texture packs.
+# Where are they stored?
 
-# Where is this folder for texture packs?
+Next to the executable of the game there is a `data` folder, inside is a `flutter_assets` folder, inside of that is an `assets` folder, inside of that is an `images` folder, and then, finally, the `texture_packs` folder inside is where texture packs are stored.
 
-Next to the executable of the game there is a `data` folder, inside is a `flutter_assets` folder, inside of that is an `assets` folder, inside of that is an `images` folder, and then, finally, the `texture_packs` folder inside is where you gotta move the folder.
+If you create a texture pack, it'll also be located there.
 
 # How do I enable it?
 
-You don't, the game will automatically load all the texture packs together.
+You don't, the game will automatically load all the texture packs together (except for the disabled ones).
+You can disable it in the Texture Packs menu if you so choose.
 
 # How do I make one?
 
-"I have epic texture style I wanna make"
+You can go to the Texture Packs menu and click "Create".
+You can specify an ID and then a title.
 
 There are 2 ways, the simple way and advanced way.
 
@@ -32,9 +34,8 @@ There are 2 ways, the simple way and advanced way.
 "I don't want it to be hard, I wanna do the simple way"
 
 Ok, remember that `images` folder? Copy it.
-Then, paste it somewhere. We're gonna turn it into a texture pack.
 
-Inside of it, we're gonna make a `pack.json` file.
+Then, paste it in your texture pack folder (its located where texture packs are stored, and its name should be the texture pack's ID)
 
 Inside of that `pack.json` file, add this code:
 
@@ -63,6 +64,8 @@ Make a folder, make the textures, name the files whatever you want, then in your
   "id of cell": "path/to/texture.png"
 }
 ```
+
+(Please note: The Modify button next to texture packs can automate this step by copying over the file and putting it into the pack.json)
 
 ### What are the issues with this method?
 
