@@ -33,9 +33,39 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
   }
 
+  String splashScreen = "";
+
   @override
   void initState() {
     super.initState();
+    final splashes = [
+      "Also try CelLua!",
+      "My brain hurts",
+      ":skull:",
+      ":nerd:",
+      "Remember Arrow?",
+      "Too many cells!!1!1",
+      if (Platform.isLinux) "Hope ur running this on X11",
+      if (Platform.isWindows) "Hope audio works now",
+      if (Platform.isMacOS) '"No way, it works!!!" - Me',
+      "Hungry Trash hasn't been fed in years",
+      "Hey Assistant, bring me a key",
+      "Plant is evil btw",
+      "Also known as Puzzly",
+      "Try out Kell Machine (once it releases)!",
+      "Web build is no more",
+      "potato",
+      "TPC Chemistry confusing!!1!",
+      "Unstable betas do be kinda unstable",
+      "Is String Theory Right?",
+      "Assistant didn't bring me the key",
+      "Sticky? More like, buggy!!11!",
+      "Dart moment",
+      "VSync is on btw",
+      "50x43 recommended size btw",
+      "Try out ModularCM! (you will regret it!)",
+    ]..shuffle();
+    splashScreen = splashes[0];
   }
 
   late final AnimationController _controller = AnimationController(
@@ -65,24 +95,46 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 displayMode: PaneDisplayMode.auto,
                 header: Padding(
                   padding: EdgeInsets.all(0.1.w),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Spacer(flex: 10),
-                      Image.asset(
-                        'assets/images/logo.png',
-                        filterQuality: FilterQuality.none,
-                        width: 2.w,
-                        height: 2.w,
-                        fit: BoxFit.fill,
+                      Row(
+                        children: [
+                          Spacer(flex: 10),
+                          Image.asset(
+                            'assets/images/logo.png',
+                            filterQuality: FilterQuality.none,
+                            width: 2.w,
+                            height: 2.w,
+                            fit: BoxFit.fill,
+                          ),
+                          Spacer(),
+                          Text(
+                            "The Puzzle Cell",
+                            style: fontSize(
+                              6.sp,
+                            ),
+                          ),
+                          Spacer(flex: 10),
+                        ],
                       ),
-                      Spacer(),
-                      Text(
-                        "The Puzzle Cell",
-                        style: fontSize(
-                          6.sp,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Row(
+                              children: [
+                                Spacer(),
+                                Text(
+                                  splashScreen,
+                                  style: fontSize(
+                                    4.sp,
+                                  ),
+                                ),
+                                Spacer(),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Spacer(flex: 10),
                     ],
                   ),
                 ),
