@@ -99,61 +99,23 @@ extension SetX on Set<String> {
   }
 }
 
-String findAssetDirPath() {
-  // print(path.absolute(
-  //   'build',
-  //   'linux',
-  //   'x64',
-  //   'debug',
-  //   'bundle',
-  //   'data',
-  //   'flutter_assets',
-  // ));
-
-  if (Directory(
-    path.join(
-      'build',
-      'windows',
-      'runner',
-      'Debug',
-      'data',
-      'flutter_assets',
-    ),
-  ).existsSync()) {
-    return path.join(
-      'build',
-      'windows',
-      'runner',
-      'Debug',
-      'data',
-      'flutter_assets',
-    );
+String findAssetDirPath({String? p}) {
+  String computePath(List<String> paths) {
+    return p == null ? path.joinAll(paths) : path.joinAll([p, ...paths]);
   }
 
-  if (Directory(
-    path.join(
-      'build',
-      'linux',
-      'x64',
-      'debug',
-      'bundle',
-      'data',
-      'flutter_assets',
-    ),
-  ).existsSync()) {
-    return path.join(
-      'build',
-      'linux',
-      'x64',
-      'debug',
-      'bundle',
-      'data',
-      'flutter_assets',
-    );
+  bool dirExists(List<String> paths) {
+    return Directory(computePath(paths)).existsSync();
   }
 
-  if (Directory(path.join('Resources', 'flutter_assets')).existsSync()) {
-    return path.join('Resources', 'flutter_assets');
+  final toCheck = <List<String>>[
+    ['build', 'windows', 'runner', 'Debug', 'data', 'flutter_assets'],
+    ['build', 'linux', 'x64', 'debug', 'bundle', 'data', 'flutter_assets'],
+    ['Resources', 'flutter_assets'],
+  ];
+
+  for (var checking in toCheck) {
+    if (dirExists(checking)) return computePath(checking);
   }
 
   return path.join('data', 'flutter_assets');
@@ -269,4 +231,111 @@ String cornerToString(int rot) {
   if (rot == 3) return lang("bottom_left", "Bottom Left");
 
   return "Unknown";
+}
+
+String getAssetPathOfOtherGame(Directory dir) {
+  final assetPath = findAssetDirPath(p: dir.path);
+  return path.join(dir.path, assetPath);
+}
+
+// Async so we can have epic loading thing
+Future<void> transferTexturePacks(Directory game, [bool destructive = false]) async {
+  final gameAssetPath = getAssetPathOfOtherGame(game);
+
+  final gameTp = Directory(path.join(gameAssetPath, 'assets', 'images', 'texture_packs'));
+  final ourTp = Directory(path.join(assetsPath, 'assets', 'images', 'texture_packs'));
+  final files = await gameTp.list(recursive: true);
+
+  await for (var file in files) {
+    final p = path.join(ourTp.path, path.relative(file.path, from: gameTp.path));
+
+    if (file is File) {
+      if (!destructive) {
+        if (await File(p).exists()) continue;
+      }
+      await File(p).copy(p);
+    } else if (file is Directory) {
+      await Directory(p).create(recursive: true);
+    }
+  }
+
+  return;
+}
+
+// Hippity hoppity those blueprints
+Future<void> transferBlueprints(Directory game) async {
+  final gameAssets = getAssetPathOfOtherGame(game);
+
+  final bpFile = File(path.join(gameAssets, 'assets', 'blueprints.txt'));
+
+  final gameBlueprints = (await bpFile.readAsString()).split('\n');
+
+  blueprints.addAll(gameBlueprints);
+  // Remove duplicate entries
+  blueprints = blueprints.toSet().toList();
+
+  await saveBlueprints();
+
+  return;
+}
+
+Future<void> transferModules(Directory game) async {
+  final gameAssets = getAssetPathOfOtherGame(game);
+
+  final modules = Directory(path.join(gameAssets, 'modules'));
+
+  final ourModules = Directory(path.join(assetsPath, 'modules'));
+
+  final files = modules.list(recursive: false);
+
+  await for (var file in files) {
+    if (file is File) {
+      final p = path.join(ourModules.path, path.relative(file.path, from: modules.path));
+      await file.copy(p);
+    }
+  }
+
+  return;
+}
+
+Future<void> transferGameMods(Directory game, [bool destructive = false]) async {
+  final gameAssetPath = getAssetPathOfOtherGame(game);
+
+  final gameMods = Directory(path.join(gameAssetPath, 'mods'));
+  final ourMods = Directory(path.join(assetsPath, 'mods'));
+  final files = await gameMods.list(recursive: true);
+
+  await for (var file in files) {
+    final p = path.join(ourMods.path, path.relative(file.path, from: gameMods.path));
+
+    if (file is File) {
+      if (!destructive) {
+        if (await File(p).exists()) continue;
+      }
+      await File(p).copy(p);
+    } else if (file is Directory) {
+      await Directory(p).create(recursive: true);
+    }
+  }
+
+  return;
+}
+
+Stream<String> transferGame(Directory game) async* {
+  yield lang("transfering_blueprints", "Transfering Blueprints...");
+  await transferBlueprints(game);
+  await Future.delayed(Duration(milliseconds: 500));
+
+  yield lang("transfering_texture_packs", "Transfering Texture Packs...");
+  await transferTexturePacks(game);
+  await Future.delayed(Duration(milliseconds: 500));
+
+  yield lang("transfering_mods", "Transfering Game Mods...");
+  await transferGameMods(game);
+  await Future.delayed(Duration(milliseconds: 500));
+
+  yield lang("transfering_modules", "Transfering Modules...");
+  await transferModules(game);
+
+  yield lang("transfer_success", "Successfully Transfered Game Data");
 }

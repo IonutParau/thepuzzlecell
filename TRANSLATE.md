@@ -169,6 +169,12 @@ In the text, @variablename gets replaced with the variable.
 | mods                           | The Mods title                                                                                                                          |                               |
 | view_cells                     | The name of the View Cells button                                                                                                       |                               |
 | view_modules                   | The name of the View Modules dialog                                                                                                     |                               |
+| copy_old_instance              | The name of the Copy Old Instance button and dialog                                                                                     |                               |
+| transfering_blueprints         | The Transfering Blueprints event (for Copy Old Instance)                                                                                |                               |
+| transfering_texture_packs      | The Transfering Texture Packs event (for Copy Old Instance)                                                                             |                               |
+| transfering_mods               | The Transfering Game Mods event (for Copy Old Instance)                                                                                 |                               |
+| transfering_modules            | The Transfering Modules event (for Copy Old Instance)                                                                                   |                               |
+| transfer_success               | The Successfully Transfered Game Data event (for Copy Old Instance)                                                                     |                               |
 
 ## Button IDs:
 

@@ -8,7 +8,6 @@ export 'property_editor_dialog.dart' show PropertyEditorDialog;
 export 'multiplayer/add_server_dialog.dart' show AddServerDialog;
 export 'multiplayer/edit_server_dialog.dart' show EditServerDialog;
 export 'add_world_dialog.dart' show AddWorldDialog;
-export 'loading_dialog.dart' show LoadingDialog;
 export 'level_history_dialog.dart' show LevelHistoryDialog;
 export 'multiplayer/chat_dialog.dart' show ChatDialog;
 export 'multiplayer/see_online_dialog.dart' show SeeOnlineDialog;

@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' show MaterialButton, CircularProgressIndicator;
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:the_puzzle_cell/layout/dialogs/core/streaming_dialog.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../logic/logic.dart' show getVersion, higherVersion, lang, versionToCheck;
+import '../../logic/logic.dart' show getAssetPathOfOtherGame, getVersion, higherVersion, lang, transferGame, versionToCheck;
 import '../../utils/ScaleAssist.dart';
 
 class UpdateUI extends StatefulWidget {
@@ -125,6 +129,30 @@ class _UpdateUIState extends State<UpdateUI> {
             return updateBtn;
           },
         ),
+      ),
+      bottomBar: Row(
+        children: [
+          Spacer(),
+          Button(
+            child: Text(lang("copy_old_instance", "Copy Old Instance"), style: TextStyle(fontSize: 7.sp)),
+            onPressed: () async {
+              final fpResult = await FilePicker.platform.getDirectoryPath();
+
+              if (fpResult == null) return;
+
+              final dir = Directory(fpResult);
+
+              if (!dir.existsSync()) return;
+
+              final transfer = transferGame(dir);
+
+              await showDialog(
+                context: context,
+                builder: (ctx) => StreamingDialog(stream: transfer, title: lang("copy_old_instance", "Copy Old Instance")),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
