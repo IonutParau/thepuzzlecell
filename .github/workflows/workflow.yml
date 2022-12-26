@@ -19,7 +19,7 @@ jobs:
           name: thepuzzlecell-windows
           path: build/windows/runner/Release
   build_linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
