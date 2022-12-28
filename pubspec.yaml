@@ -39,6 +39,10 @@ dependencies:
     git:
       url: https://github.com/IonutParau/lua_vm_bindings
       ref: main
+  glue_lang:
+    git:
+      url: https://github.com/IonutParau/glue_lang
+      ref: stable
 
 dev_dependencies:
   flutter_test:
