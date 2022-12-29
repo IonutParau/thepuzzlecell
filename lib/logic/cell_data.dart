@@ -340,7 +340,9 @@ final cells = {
   "code_instruction",
   "carbon",
   "math_nroot",
-  "mech_win"
+  "mech_win",
+  "megagear_cw",
+  "megagear_ccw"
 }.toList();
 
 final modded = <String>[];
@@ -350,6 +352,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "megagear_cw.png": "movers/megagear_cw.png",
+  "megagear_ccw.png": "movers/megagear_ccw.png",
   "mech_win.png": "mechanical/users/mech_win.png",
   "math_nroot.png": "math/core/math_nroot.png",
   "carbon.png": "push/sticky/carbon.png",
@@ -944,8 +948,18 @@ final categories = [
         ["mirror", "super_mirror"],
         "mirror",
       ),
-      "gear_cw",
-      "gear_ccw",
+      CellCategory(
+        "Gears",
+        "They both move and rotate cells around themselves",
+        [
+          "gear_cw",
+          "gear_ccw",
+          "megagear_cw",
+          "megagear_ccw",
+        ],
+        "gear_cw",
+        max: 2,
+      ),
       "ant_cw",
       "ant_ccw",
       "anchor",
@@ -2905,6 +2919,14 @@ final cellInfo = <String, CellProfile>{
   "mech_win": CellProfile(
     "Mechanically Powered Trophy",
     "When powered, you win!",
+  ),
+  "megagear_cw": CellProfile(
+    "Megagear CW",
+    "Spins 8 nearest cells around itself in a clockwise fashion."
+  ),
+  "megagear_ccw": CellProfile(
+    "Megagear CCW",
+    "Spins 8 nearest cells around itself in a counter-clockwise fashion."
   ),
 };
 
