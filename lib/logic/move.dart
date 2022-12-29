@@ -125,6 +125,10 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
         return mt != MoveType.gear;
       case "gear_ccw":
         return mt != MoveType.gear;
+      case "megagear_cw":
+        return mt != MoveType.gear;
+      case "megagear_ccw":
+        return mt != MoveType.gear;
       case "ghost":
         return false;
       case "antipuzzle":

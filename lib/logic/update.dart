@@ -155,6 +155,8 @@ class CellTypeManager {
   static List<String> gears = [
     "gear_cw",
     "gear_ccw",
+    "megagear_cw",
+    "megagear_ccw",
   ];
 
   static List<String> puzzles = [
