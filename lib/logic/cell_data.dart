@@ -342,7 +342,9 @@ final cells = {
   "math_nroot",
   "mech_win",
   "megagear_cw",
-  "megagear_ccw"
+  "megagear_ccw",
+  "biome_180",
+  "biome_rand"
 }.toList();
 
 final modded = <String>[];
@@ -352,6 +354,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "biome_180.png": "backgrounds/biomes/biome_180.png",
+  "biome_rand.png": "backgrounds/biomes/biome_rand.png",
   "megagear_cw.png": "movers/megagear_cw.png",
   "megagear_ccw.png": "movers/megagear_ccw.png",
   "mech_win.png": "mechanical/users/mech_win.png",
@@ -830,6 +834,8 @@ final categories = [
         [
           "biome_cw",
           "biome_ccw",
+          "biome_180",
+          "biome_rand",
           "biome_norot",
           "desert",
           "snowy",
@@ -2927,6 +2933,14 @@ final cellInfo = <String, CellProfile>{
   "megagear_ccw": CellProfile(
     "Megagear CCW",
     "Spins 8 nearest cells around itself in a counter-clockwise fashion."
+  ),
+  "biome_180": CellProfile(
+    "180 Degree Biome",
+    "A biome that rotates the cell above it by 180 degrees."
+  ),
+  "biome_rand": CellProfile(
+    "Random Biome",
+    "A biome that rotates the cell above it either CW or CCW at random."
   ),
 };
 
