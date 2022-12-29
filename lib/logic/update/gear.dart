@@ -125,6 +125,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     grid.rotate(x, y - 1, -1);
     grid.rotate(x + 1, y, -1);
     grid.rotate(x, y + 1, -1);
+  }
 }
 
 void gears(cells) {
