@@ -2,7 +2,7 @@ part of logic;
 
 void doAxis(int x, int y, int dir) {
   if (push(x, y, dir, 0)) {
-    pull(frontX(x, cell.rot + 2), frontY(y, cell.rot + 2), dir, 1);
+    pull(frontX(x, dir + 2), frontY(y, dir + 2), dir, 1);
     grabSide(x, y, dir - 1, dir);
     grabSide(x, y, dir + 1, dir);
   }
