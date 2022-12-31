@@ -37,18 +37,13 @@ void doThief(int x, int y, int dir) {
 }
 
 bool doGrabber(int x, int y, int dir) {
-  grid.at(x, y).updated = true;
-  var fx = frontX(x, dir);
-  var fy = frontY(y, dir);
-  if (grid.inside(fx, fy)) {
-    final f = grid.at(fx, fy);
-    if (!moveInsideOf(f, fx, fy, dir, 1, MoveType.grab)) return false;
-  } else
+  if (nudge(x, y, dir, mt: MoveType.grab)) {
+    grabSide(x, y, dir - 1, dir);
+    grabSide(x, y, dir + 1, dir);
+    return true;
+  } else {
     return false;
-  moveCell(x, y, frontX(x, dir), frontY(y, dir), dir, null, MoveType.grab);
-  grabSide(x, y, dir - 1, dir);
-  grabSide(x, y, dir + 1, dir);
-  return true;
+  }
 }
 
 bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
