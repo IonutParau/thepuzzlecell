@@ -4,9 +4,9 @@ void bringers() {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        doDriller(x, y, dir);
-        grabSide(x, y, dir - 1, dir);
-        grabSide(x, y, dir + 1, dir);
+        doDriller(x, y, cell.rot);
+        grabSide(x, y, cell.rot - 1, cell.rot);
+        grabSide(x, y, cell.rot + 1, cell.rot);
       },
       rot,
       "bringer",
