@@ -4,10 +4,10 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_cw")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(x + 1, y, 1);
-        grid.rotate(x, y + 1, 1);
-        grid.rotate(x - 1, y, 1);
-        grid.rotate(x, y - 1, 1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x + 1, y, 1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y + 1, 1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x - 1, y, 1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y - 1, 1);
       },
       null,
       "rotator_cw",
@@ -16,10 +16,10 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_ccw")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(x + 1, y, -1);
-        grid.rotate(x, y + 1, -1);
-        grid.rotate(x - 1, y, -1);
-        grid.rotate(x, y - 1, -1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x + 1, y, -1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y + 1, -1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x - 1, y, -1);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y - 1, -1);
       },
       null,
       "rotator_ccw",
@@ -42,10 +42,10 @@ void rots(Set<String> cells) {
       "rotator_rand",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        grid.rotate(x + 1, y, randRot());
-        grid.rotate(x, y + 1, randRot());
-        grid.rotate(x - 1, y, randRot());
-        grid.rotate(x, y - 1, randRot());
+        if (!cell.tags.contains("anchored")) grid.rotate(x + 1, y, randRot());
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y + 1, randRot());
+        if (!cell.tags.contains("anchored")) grid.rotate(x - 1, y, randRot());
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y - 1, randRot());
       },
       filter: (cell, x, y) => cell.id == "rotator_rand" && !cell.updated,
     );
@@ -53,10 +53,10 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_180")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(x + 1, y, 2);
-        grid.rotate(x, y + 1, 2);
-        grid.rotate(x - 1, y, 2);
-        grid.rotate(x, y - 1, 2);
+        if (!cell.tags.contains("anchored")) grid.rotate(x + 1, y, 2);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y + 1, 2);
+        if (!cell.tags.contains("anchored")) grid.rotate(x - 1, y, 2);
+        if (!cell.tags.contains("anchored")) grid.rotate(x, y - 1, 2);
       },
       null,
       "rotator_180",
