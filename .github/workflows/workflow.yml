@@ -56,7 +56,7 @@ jobs:
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: brew install xcode
-      - run: flutter build macos -v --analyze-size
+      - run: flutter build macos -v
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-macos
