@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/dialogs/dialogs.dart';
 import 'package:the_puzzle_cell/logic/performance/unzip_on_thread.dart';
+import 'package:the_puzzle_cell/logic/performance/zip_on_thread.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
@@ -69,6 +70,24 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
             child: Text(lang("open", "Open")),
             onPressed: () {
               openFileManager(tp.dir);
+            },
+          ),
+          Button(
+            child: Text(lang("package", "Package")),
+            onPressed: () async {
+              final whereToSave = await FilePicker.platform.saveFile(
+                initialDirectory: tpDir.path,
+                allowedExtensions: ['.zip'],
+                fileName: path.split(tp.dir.path).last + '.zip',
+              );
+
+              if (whereToSave == null) return;
+
+              final events = packageDirectory(whereToSave, tp.dir);
+              showDialog(
+                context: context,
+                builder: (ctx) => StreamingDialog(stream: events, title: "Packaging... (may take a while)"),
+              );
             },
           ),
           Button(
