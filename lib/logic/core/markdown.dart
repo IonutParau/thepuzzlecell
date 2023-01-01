@@ -28,7 +28,9 @@ class MarkdownManager {
   }
 
   void init() {
-    addFromAssets('Installing a Texture pack', 'install_texture_packs.md');
+    addFromAssets('Installing a Texture Pack', 'install_texture_packs.md');
+    addFromAssets('Creating a Texture Pack', 'create_texture_packs.md');
+    addFromAssets('How to make a Translation', 'translation.md');
   }
 }
 

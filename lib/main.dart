@@ -36,6 +36,8 @@ void main() async {
 
   initSound();
 
+  markdownManager.init();
+
   runApp(const MyApp());
 }
 

@@ -43,7 +43,7 @@ class _ViewModCellsDialog extends State<ViewModCellsDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(widget.info.title),
+      title: Text(widget.info.title + ' (${widget.info.cells.length})'),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(
