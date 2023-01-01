@@ -148,6 +148,53 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     title: Text(lang('puzzles', 'Puzzles')),
                     body: Puzzles(),
                   ),
+                  PaneItemAction(
+                    icon: Icon(FluentIcons.clipboard_list),
+                    title: Text(lang('loadLevel', 'Load Level')),
+                    onTap: () {
+                      final now = DateTime.now();
+                      if (now.millisecondsSinceEpoch - lastLoadTime.millisecondsSinceEpoch < 500) {
+                        return;
+                      }
+                      lastLoadTime = now;
+                      try {
+                        FlutterClipboard.controlV().then(
+                          (str) {
+                            if (str is ClipboardData) {
+                              try {
+                                grid = loadStr(str.text ?? "");
+                                game = PuzzleGame();
+                                Navigator.pushNamed(context, '/game-loaded');
+                              } catch (e) {
+                                print(e);
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) {
+                                    return LoadSaveErrorDialog(e.toString());
+                                  },
+                                );
+                              }
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) {
+                                  return LoadSaveErrorDialog("Clipboard does not contain text");
+                                },
+                              );
+                            }
+                          },
+                        );
+                      } catch (e) {
+                        print(e.toString());
+                        showDialog(
+                          context: context,
+                          builder: (ctx) {
+                            return LoadSaveErrorDialog(e.toString());
+                          },
+                        );
+                      }
+                    },
+                  ),
                   PaneItem(
                     icon: Icon(FontAwesomeIcons.earthEurope),
                     title: Text(lang('worlds', 'Worlds')),
@@ -205,52 +252,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     title: Text(lang('update', 'Update')),
                     body: UpdateUI(),
                   ),
-                  PaneItemAction(
-                    icon: Icon(FluentIcons.clipboard_list),
-                    title: Text(lang('loadLevel', 'Load Level')),
-                    onTap: () {
-                      final now = DateTime.now();
-                      if (now.millisecondsSinceEpoch - lastLoadTime.millisecondsSinceEpoch < 500) {
-                        return;
-                      }
-                      lastLoadTime = now;
-                      try {
-                        FlutterClipboard.controlV().then(
-                          (str) {
-                            if (str is ClipboardData) {
-                              try {
-                                grid = loadStr(str.text ?? "");
-                                game = PuzzleGame();
-                                Navigator.pushNamed(context, '/game-loaded');
-                              } catch (e) {
-                                print(e);
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) {
-                                    return LoadSaveErrorDialog(e.toString());
-                                  },
-                                );
-                              }
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) {
-                                  return LoadSaveErrorDialog("Clipboard does not contain text");
-                                },
-                              );
-                            }
-                          },
-                        );
-                      } catch (e) {
-                        print(e.toString());
-                        showDialog(
-                          context: context,
-                          builder: (ctx) {
-                            return LoadSaveErrorDialog(e.toString());
-                          },
-                        );
-                      }
-                    },
+                  PaneItem(
+                    icon: Icon(FluentIcons.help),
+                    title: Text(lang('help', 'Help')),
+                    body: HelpUI(),
                   ),
                   if (isDesktop)
                     PaneItemAction(
