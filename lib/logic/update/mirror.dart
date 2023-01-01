@@ -46,7 +46,6 @@ void mirrors() {
       "mirror",
       i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
       (cell, x, y) {
-        //print("e");
         doMirror(x, y, i);
       },
       filter: (c, x, y) => c.id == "mirror" && c.rot % 2 == i && !c.updated,
