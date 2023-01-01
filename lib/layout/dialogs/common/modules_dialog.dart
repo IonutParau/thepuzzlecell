@@ -83,6 +83,12 @@ class _ModulesDialogState extends State<ModulesDialog> {
           },
         ),
         Button(
+          child: Text(lang("open", "Open")),
+          onPressed: () {
+            openFileManager(Directory(path.join(assetsPath, 'modules')));
+          },
+        ),
+        Button(
           child: Text("Ok"),
           onPressed: () {
             Navigator.pop(context);

@@ -1477,7 +1477,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       buttonManager.setButton(
         "search-cell-btn",
         VirtualButton(
-          Vector2(20, 20),
+          Vector2(15, 15),
           Vector2.all(70),
           "interface/search_cell.png",
           ButtonAlignment.BOTTOMRIGHT,
