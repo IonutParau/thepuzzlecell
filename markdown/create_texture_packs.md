@@ -33,3 +33,13 @@ You click "Open", and it'll open the texture pack's folder.
 ## How do I send my texture pack to others?
 
 You click "Package", and it'll create a ZIP archive and ask where you'd like to save it. Then, simply upload that ZIP!
+
+## Techincal stuff
+
+### How are texture packs sorted in-game?
+
+Texture packs are sorted by their ID in alphabetical order.
+
+### If multiple enabled texture packs change the look of the same cell, which texture pack will be prioritized?
+
+The one whose ID comes latest in alphabetical order.
