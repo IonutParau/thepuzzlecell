@@ -21,6 +21,15 @@ class MarkdownManager {
 
     addDocument(title, f.readAsStringSync());
   }
+
+  void addFromAssets(String title, String file) {
+    final fp = path.join(assetsPath, 'markdown', file);
+    addFromFile(title, fp);
+  }
+
+  void init() {
+    addFromAssets('Installing a Texture pack', 'install_texture_packs.md');
+  }
 }
 
 final markdownManager = MarkdownManager();

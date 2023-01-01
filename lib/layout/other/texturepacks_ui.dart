@@ -25,7 +25,7 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
 
   Widget tile(TexturePack tp) {
     return ListTile(
-      title: Text(tp.title),
+      title: Text(tp.title, style: TextStyle(fontSize: 6.sp)),
       leading: Row(
         children: [
           Checkbox(
@@ -41,8 +41,8 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
           ),
           Image.asset(
             tp.icon,
-            width: 5.w,
-            height: 5.w,
+            width: 2.w,
+            height: 2.w,
             fit: BoxFit.contain,
             filterQuality: FilterQuality.none,
           ),
@@ -63,6 +63,12 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               await applyTexturePackSettings();
               applyTexturePacks();
               setState(() {});
+            },
+          ),
+          Button(
+            child: Text(lang("open", "Open")),
+            onPressed: () {
+              openFileManager(tp.dir);
             },
           ),
           Button(

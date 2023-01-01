@@ -342,3 +342,22 @@ Stream<String> transferGame(Directory game) async* {
 
   yield lang("transfer_success", "Successfully Transfered Game Data");
 }
+
+String get fileManagerCommand {
+  // File Explorer's GUI may have changed name, but it's executable hasn't.
+  if (Platform.isWindows) return 'explorer';
+
+  // xdg-open tells the Desktop Environment to open the file manager.
+  if (Platform.isLinux) return 'xdg-open';
+
+  // MacOS is very creative with its naming, as you can see.
+  if (Platform.isMacOS) return 'open';
+
+  return "";
+}
+
+// This opens the file manager on all desktop platforms.
+// You have no idea how much I googled to find out I can do this
+void openFileManager(Directory dir) {
+  Process.start(fileManagerCommand, [dir.path], runInShell: true, includeParentEnvironment: true, mode: ProcessStartMode.detached);
+}

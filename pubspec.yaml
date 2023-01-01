@@ -116,3 +116,4 @@ flutter:
     - mods/
     - mods/testmod/
     - modules/
+    - markdown/
