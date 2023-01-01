@@ -463,5 +463,4 @@ int? pathFindToCell(int x, int y, List<String> targets, int maxDepth) {
   final cy = cell.dy.toInt();
 
   return getPathFindingDirection(x, y, cx, cy, true, {});
-  ;
 }

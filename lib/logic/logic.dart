@@ -22,23 +22,26 @@ import 'package:path/path.dart' as path;
 import 'package:toml/toml.dart';
 import 'package:window_manager/window_manager.dart';
 
-// Stuffz
+// Grid stuff
 part 'grid/grid.dart';
 part 'grid/cell.dart';
 part 'grid/subticks.dart';
 part 'performance/quad_chunks.dart';
+
+// Custom stuff
 part 'update.dart';
 part 'move.dart';
 part 'cell_data.dart';
-part 'world.dart';
-part 'blueprints.dart';
+part 'core/world.dart';
+part 'core/blueprints.dart';
 part 'lang.dart';
-part 'coins.dart';
+part 'core/coins.dart';
 part 'skins.dart';
-part 'texturepack.dart';
-part 'achievements.dart';
+part 'core/texturepack.dart';
+part 'core/achievements.dart';
 part 'updatechecker.dart';
 part 'queue.dart';
+part 'core/markdown.dart';
 
 // Update methods
 part 'update/mover.dart';
