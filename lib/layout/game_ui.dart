@@ -1381,6 +1381,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   String clientID = "";
 
+  void toggleWrap() {
+    grid.wrap = !grid.wrap;
+    buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+  }
+
   Map<String, CellHover> hovers = {};
   Map<String, UserRole> roles = {};
 
@@ -2312,6 +2317,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   int pixelToCellX(int px) => (px - offX) ~/ cellSize;
   int pixelToCellY(int py) => (py - offY) ~/ cellSize;
+
+  double cellToPixelX(int cx) => (cx * cellSize) + offX;
+  double cellToPixelY(int cy) => (cy * cellSize) + offY;
 
   Map<String, CellCursor> cursors = {};
 

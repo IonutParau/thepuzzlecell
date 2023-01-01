@@ -141,6 +141,31 @@ class ScriptingManager {
     current?.items.add(cell);
   }
 
+  CellCategory? catByName(String cat) {
+    final parts = cat.split('/');
+
+    CellCategory? current;
+
+    while (parts.isNotEmpty) {
+      if (current == null) {
+        final found = categories.where((cat) => cat.title == parts.first);
+        if (found.isEmpty) {
+          return null;
+        }
+        current = found.first;
+      } else {
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
+        if (found.isEmpty) {
+          return null;
+        }
+        current = found.first;
+      }
+      parts.removeAt(0);
+    }
+
+    return current;
+  }
+
   void addToCats(List<String> cats, String cell) {
     cats.forEach((cat) => addToCat(cat, cell));
   }
