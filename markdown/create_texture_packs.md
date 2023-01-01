@@ -3,7 +3,6 @@
 ## Making the folder
 
 Go to the Texture Packs menu and click on Create.
-
 Then, specify the ID and Title.
 
 ### What is ID for?
@@ -18,7 +17,6 @@ It's the title the texture pack is going to be displayed with.
 
 Because TPC supports multiple texture packs existing at once, each texture pack must specify which cells they wish to modify.
 They also need to specify where the files are.
-
 This can be complicated to do manually, however, TPC has a way to do it automatically.
 
 Click next to your texture pack the button called "Modify" and then you can modify the texture pack.

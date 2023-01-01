@@ -1,9 +1,7 @@
 # Install Texture Packs
 
 To install a texture pack, first download its ZIP file.
-
 After you have that, go to the Texture Packs menu and click on the "Install From File" button.
-
 After that, you can click Reload to see those changes.
 
 ## How to disable it

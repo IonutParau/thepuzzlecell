@@ -24,7 +24,7 @@ class _HelpUIState extends State<HelpUI> {
           }
         },
         styleSheet: MarkdownStyleSheet(
-          blockSpacing: 5.h,
+          blockSpacing: 3.2.h,
           textScaleFactor: 2.3,
         ),
       );
