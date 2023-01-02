@@ -200,7 +200,8 @@ In the text, @variablename gets replaced with the variable.
 - Load as Blueprint button - `load-blueprint-btn`
 - Delete Blueprints button - `del-blueprint-btn`
 - Property Editor button - `prop-edit-btn`
-- Chat Editor button - `chat-btn`
+- Chat button - `chat-btn`
+- Terminal button - `terminal-btn`
 
 ## Example of JSON
 

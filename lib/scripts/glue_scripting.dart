@@ -9,16 +9,23 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/scripts/scripts.dart';
 
 class GlueScript {
-  File f;
+  File? f;
   String id;
   var vm = GlueVM();
   var printController = StreamController<String>();
+  String writeBuffer = "";
 
   GlueScript(this.id, this.f) {
     init();
   }
 
+  GlueScript.noFile(this.id) : f = null {
+    init();
+  }
+
   void sandbox() {
+    vm.globals.remove('print');
+    vm.globals.remove('write');
     vm.globals.remove('read');
     vm.globals.remove('exit');
     vm.globals.remove('list-dir');
@@ -43,10 +50,19 @@ class GlueScript {
       final lines = <String>[];
 
       for (var arg in args) {
-        lines.add(arg.asString(vm, stack));
+        lines.add(writeBuffer + arg.asString(vm, stack));
+        writeBuffer = "";
       }
 
-      printController.sink.add(lines.join(" "));
+      var toWrite = lines.join(" ").split("");
+
+      for (var char in toWrite) {
+        if (char == '\n') {
+          printController.sink.add(writeBuffer);
+        } else {
+          writeBuffer += char;
+        }
+      }
 
       return GlueNull();
     });
@@ -465,7 +481,16 @@ class GlueScript {
     reset();
     printController = StreamController<String>();
     vm.globals['@cmdargs'] = GlueList(args.map((a) => GlueString(a)).toList());
-    vm.evaluate(f.readAsStringSync());
+    if (f != null) {
+      vm.evaluate(f!.readAsStringSync());
+    }
+    return printController.stream;
+  }
+
+  Stream<String> runCode(String code, [GlueStack? stack]) {
+    final s = stack ?? GlueStack();
+    final val = GlueValue.fromString(code);
+    val.toValue(vm, s);
     return printController.stream;
   }
 }

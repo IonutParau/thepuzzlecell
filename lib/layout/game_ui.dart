@@ -599,6 +599,7 @@ Future loadAllButtonTextures() {
     "interface/chat.png",
     "interface/see_online.png",
     "interface/search_cell.png",
+    "interface/terminal.png",
   ]);
 }
 
@@ -1492,6 +1493,22 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           () => true,
           title: 'Search Cell',
           description: 'Search for a cell',
+        ),
+      );
+
+      buttonManager.setButton(
+        "terminal-btn",
+        VirtualButton(
+          Vector2(95, 15),
+          Vector2.all(70),
+          "interface/terminal.png",
+          ButtonAlignment.BOTTOMRIGHT,
+          () {
+            showDialog(context: context, builder: (ctx) => TerminalDialog());
+          },
+          () => true,
+          title: 'Terminal',
+          description: 'Open a very simple Terminal with a LISP-based shell language.',
         ),
       );
     }
