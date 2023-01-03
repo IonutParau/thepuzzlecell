@@ -12,8 +12,9 @@ class GlueScript {
   File? f;
   String id;
   var vm = GlueVM();
-  var printController = StreamController<String>();
+  var printController = StreamController<bool>();
   String writeBuffer = "";
+  var output = <String>[];
 
   GlueScript(this.id, this.f) {
     init();
@@ -40,8 +41,10 @@ class GlueScript {
   void loadAPI() {
     vm.globals['print'] = GlueExternalFunction((vm, stack, args) {
       for (var arg in args) {
-        printController.sink.add(arg.asString(vm, stack));
+        output.add(arg.asString(vm, stack));
       }
+
+      printController.sink.add(true);
 
       return GlueNull();
     });
@@ -58,11 +61,13 @@ class GlueScript {
 
       for (var char in toWrite) {
         if (char == '\n') {
-          printController.sink.add(writeBuffer);
+          output.add(writeBuffer);
         } else {
           writeBuffer += char;
         }
       }
+
+      printController.sink.add(true);
 
       return GlueNull();
     });
@@ -90,7 +95,7 @@ class GlueScript {
       }
 
       if (!covered.contains("rot")) {
-        m["id"] = GlueNumber(0);
+        m["rot"] = GlueNumber(0);
       }
 
       if (!covered.contains("lifespan")) {
@@ -98,7 +103,7 @@ class GlueScript {
       }
 
       if (!covered.contains("invisible")) {
-        m["invisible"] = GlueNumber(0);
+        m["invisible"] = GlueBool(false);
       }
 
       if (!covered.contains("last-rot")) {
@@ -477,9 +482,9 @@ class GlueScript {
     init();
   }
 
-  Stream<String> run(List<String> args) {
+  Stream<bool> run(List<String> args) {
     reset();
-    printController = StreamController<String>();
+    printController = StreamController<bool>();
     vm.globals['@cmdargs'] = GlueList(args.map((a) => GlueString(a)).toList());
     if (f != null) {
       vm.evaluate(f!.readAsStringSync());
@@ -487,7 +492,7 @@ class GlueScript {
     return printController.stream;
   }
 
-  Stream<String> runCode(String code, [GlueStack? stack]) {
+  Stream<bool> runCode(String code, [GlueStack? stack]) {
     final s = stack ?? GlueStack();
     final val = GlueValue.fromString(code);
     val.toValue(vm, s);

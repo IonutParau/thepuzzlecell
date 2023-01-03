@@ -16,7 +16,6 @@ class _TerminalDialogState extends State<TerminalDialog> {
   final inputController = TextEditingController();
   final scrollController = ScrollController();
 
-  List<String> output = [];
   final terminalSession = GlueScript.noFile("terminal");
   final terminalStack = GlueStack();
 
@@ -28,7 +27,7 @@ class _TerminalDialogState extends State<TerminalDialog> {
   }
 
   void jumpToEnd() {
-    if (game.msgs.isEmpty) return;
+    if (terminalSession.output.isEmpty) return;
     Future.delayed(Duration(milliseconds: 250)).then((v) {
       try {
         scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
@@ -48,12 +47,9 @@ class _TerminalDialogState extends State<TerminalDialog> {
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(lang("terminal-btn.title", "Terminal")),
-      content: StreamBuilder<String>(
+      content: StreamBuilder<bool>(
           stream: terminalSession.printController.stream,
           builder: (context, snapshot) {
-            if (snapshot.data != null) {
-              output.add(snapshot.data!);
-            }
             return SizedBox(
               height: 30.h,
               child: LayoutBuilder(builder: (ctx, constraints) {
@@ -67,19 +63,19 @@ class _TerminalDialogState extends State<TerminalDialog> {
                         height: 21.h,
                         color: Colors.grey[150],
                         child: Center(
-                          child: (output.isNotEmpty)
+                          child: (terminalSession.output.isNotEmpty)
                               ? SizedBox(
                                   width: constraints.maxWidth,
                                   height: 20.h,
                                   child: ListView.builder(
                                     controller: scrollController,
-                                    itemCount: output.length,
+                                    itemCount: terminalSession.output.length,
                                     padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                                     itemBuilder: (context, index) {
                                       return SizedBox(
                                         width: constraints.maxWidth * 0.8,
                                         child: ListTile(
-                                          title: Text(output[index]),
+                                          title: Text(terminalSession.output[index]),
                                           tileColor: ConstantColorButtonState(Colors.grey[130]),
                                         ),
                                       );
@@ -102,12 +98,13 @@ class _TerminalDialogState extends State<TerminalDialog> {
                             controller: inputController,
                             header: lang('run_command', 'Run Command'),
                             onSubmitted: (val) {
-                              terminalSession.printController.sink.add("Command > $val");
+                              terminalSession.output.add("Command > $val");
                               try {
                                 terminalSession.runCode(val, terminalStack);
                               } catch (e) {
-                                terminalSession.printController.sink.add(e.toString());
+                                terminalSession.output.add(e.toString());
                               }
+                              terminalSession.printController.sink.add(true);
                               inputController.clear();
                             },
                           ),
@@ -124,7 +121,7 @@ class _TerminalDialogState extends State<TerminalDialog> {
         Button(
           child: Text(lang("clear", "Clear")),
           onPressed: () {
-            output.clear();
+            terminalSession.output.clear();
             setState(() {});
           },
         ),
