@@ -965,19 +965,6 @@ NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
     final c = grid.at(x, y);
 
     final side = toSide(dir, c.rot);
-    if (CellTypeManager.curves.contains(c.id)) {
-      if (c.id == "curve") {
-        if (side == 0) {
-          dir = (dir + 1) % 4;
-          addedrot++;
-          completed = false;
-        } else if (side == 3) {
-          dir = (dir + 3) % 4;
-          addedrot += 3;
-          completed = false;
-        }
-      }
-    }
     if (completed) return NextCell(x, y, dir, addedrot, false);
     x = frontX(x, dir);
     y = frontY(y, dir);
