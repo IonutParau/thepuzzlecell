@@ -309,7 +309,7 @@ class MathManager {
           }
           break;
         case "math_wireless_tunnel":
-          if (!side == 0) return [x, y];
+          if (side != 0) return [x, y];
           final targetID = (grid.at(x, y).data['target'] ?? 0);
           Cell? target;
           double? best;
