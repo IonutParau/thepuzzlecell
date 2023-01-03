@@ -309,40 +309,37 @@ class MathManager {
           }
           break;
         case "math_wireless_tunnel":
-          if (side == 0) {
-            final targetID = (grid.at(x, y).data['target'] ?? 0);
-            Cell? target;
-            double? best;
+          if (side != 0) return [x, y];
+          final targetID = (grid.at(x, y).data['target'] ?? 0);
+          Cell? target;
+          double? best;
 
-            final cells = grid.quadChunk.fetch("math_wireless_tunnel");
+          final cells = grid.quadChunk.fetch("math_wireless_tunnel");
 
-            for (var pos in cells) {
-              final cx = pos[0];
-              final cy = pos[1];
-              final c = grid.at(cx, cy);
+          for (var pos in cells) {
+            final cx = pos[0];
+            final cy = pos[1];
+            final c = grid.at(cx, cy);
 
-              if (c.id == "math_wireless_tunnel" && (c.data['id'] == targetID)) {
-                final dx = cx - x;
-                final dy = cy - y;
-                // Distance squared
-                final dsqr = (dx * dx + dy * dy).toDouble();
+            if (c.id == "math_wireless_tunnel" && (c.data['id'] == targetID)) {
+              final dx = cx - x;
+              final dy = cy - y;
+              // Distance squared
+              final dsqr = (dx * dx + dy * dy).toDouble();
 
-                // Check if its the best one we've got, but not us
-                if (((best == null) || dsqr < best) && dsqr > 0) {
-                  best = dsqr;
-                  target = c;
-                }
+              // Check if its the best one we've got, but not us
+              if (((best == null) || dsqr < best) && dsqr > 0) {
+                best = dsqr;
+                target = c;
               }
             }
-
-            if (target == null) return [x, y];
-            x = target.cx!;
-            y = target.cy!;
-            dir = (target.rot + 2) % 4;
-            break;
-          } else {
-            return [x, y];
           }
+
+          if (target == null) return [x, y];
+          x = target.cx!;
+          y = target.cy!;
+          dir = (target.rot + 2) % 4;
+          break;
         case "math_cross_tunnel":
           break;
         default:
