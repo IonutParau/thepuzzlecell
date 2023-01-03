@@ -58,12 +58,6 @@ class CellTypeManager {
     "mem_gen_triple",
   ];
 
-  static List<String> rockets = [
-    "rocket",
-    "rocket_cw",
-    "rocket_ccw",
-  ];
-
   static List<String> movers = ["mover", "slow_mover", "fast_mover", "releaser"];
 
   static List<String> puller = [
@@ -202,13 +196,6 @@ class CellTypeManager {
     "speed",
     "slow",
     "fast",
-  ];
-
-  static List<String> curves = [
-    "curve",
-    "straight_curve",
-    "cross_curve",
-    "cross_straight_curve",
   ];
 
   static List<String> quantum = ["unstable_mover", "field"];
