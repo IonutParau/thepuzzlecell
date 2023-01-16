@@ -32,11 +32,8 @@ void doSuperMirror(int x, int y, int dir) {
 
     if (c1.id == "empty" && c2.id == "empty") return;
 
-    if (canMove(x1, y1, odir, 1, MoveType.mirror) && canMove(x2, y2, dir, 1, MoveType.mirror)) {
-      swapCells(x1, y1, x2, y2);
-    } else {
-      return;
-    }
+    if (!canMove(x1, y1, odir, 1, MoveType.mirror) || !canMove(x2, y2, dir, 1, MoveType.mirror)) return;
+    swapCells(x1, y1, x2, y2);
   }
 }
 
@@ -46,7 +43,6 @@ void mirrors() {
       "mirror",
       i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
       (cell, x, y) {
-        //print("e");
         doMirror(x, y, i);
       },
       filter: (c, x, y) => c.id == "mirror" && c.rot % 2 == i && !c.updated,

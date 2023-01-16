@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
@@ -7,7 +5,7 @@ import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
 class EditUserDialog extends StatefulWidget {
-  String user;
+  final String user;
   EditUserDialog(this.user, {Key? key}) : super(key: key);
 
   @override

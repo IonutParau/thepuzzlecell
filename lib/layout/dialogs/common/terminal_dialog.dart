@@ -1,28 +1,33 @@
 import 'dart:async';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:glue_lang/vm.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/scripts/glue_scripting.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-class ChatDialog extends StatefulWidget {
+class TerminalDialog extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _ChatDialogState();
+  State<StatefulWidget> createState() => _TerminalDialogState();
 }
 
-class _ChatDialogState extends State<ChatDialog> {
-  final msgController = TextEditingController();
+class _TerminalDialogState extends State<TerminalDialog> {
+  final inputController = TextEditingController();
   final scrollController = ScrollController();
+
+  final terminalSession = GlueScript.noFile("terminal");
+  final terminalStack = GlueStack();
 
   @override
   void dispose() {
-    msgController.dispose();
+    inputController.dispose();
     scrollController.dispose();
     super.dispose();
   }
 
   void jumpToEnd() {
-    if (game.msgs.isEmpty) return;
+    if (terminalSession.output.isEmpty) return;
     Future.delayed(Duration(milliseconds: 250)).then((v) {
       try {
         scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
@@ -40,11 +45,10 @@ class _ChatDialogState extends State<ChatDialog> {
 
   @override
   Widget build(BuildContext context) {
-    game.msgsListener = StreamController<String>();
     return ContentDialog(
-      title: Text(lang("chat_msg", "Send Chat Message")),
-      content: StreamBuilder(
-          stream: game.msgsListener.stream,
+      title: Text(lang("terminal-btn.title", "Terminal")),
+      content: StreamBuilder<bool>(
+          stream: terminalSession.printController.stream,
           builder: (context, snapshot) {
             return SizedBox(
               height: 30.h,
@@ -59,31 +63,27 @@ class _ChatDialogState extends State<ChatDialog> {
                         height: 21.h,
                         color: Colors.grey[150],
                         child: Center(
-                          child: (game.msgs.isNotEmpty)
+                          child: (terminalSession.output.isNotEmpty)
                               ? SizedBox(
                                   width: constraints.maxWidth,
                                   height: 20.h,
                                   child: ListView.builder(
                                     controller: scrollController,
-                                    itemCount: game.msgs.length,
+                                    itemCount: terminalSession.output.length,
                                     padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                                     itemBuilder: (context, index) {
                                       return SizedBox(
                                         width: constraints.maxWidth * 0.8,
                                         child: ListTile(
-                                          title: Text(game.msgs[index]),
+                                          title: Text(terminalSession.output[index]),
                                           tileColor: ConstantColorButtonState(Colors.grey[130]),
-                                          onPressed: () {
-                                            final i = game.msgs[index].indexOf("] > ");
-                                            msgController.text += "@[${game.msgs[index].substring(1, i)}]";
-                                          },
                                         ),
                                       );
                                     },
                                   ),
                                 )
                               : Center(
-                                  child: Text(lang("no_msgs", "No Messages")),
+                                  child: Text(""),
                                 ),
                         ),
                       ),
@@ -95,11 +95,17 @@ class _ChatDialogState extends State<ChatDialog> {
                           width: constraints.maxWidth * 0.7,
                           height: 7.h,
                           child: TextBox(
-                            controller: msgController,
-                            header: lang('msg', 'Message'),
+                            controller: inputController,
+                            header: lang('run_command', 'Run Command'),
                             onSubmitted: (val) {
-                              game.sendMessageToServer(val);
-                              msgController.clear();
+                              terminalSession.output.add("Command > $val");
+                              try {
+                                terminalSession.runCode(val, terminalStack);
+                              } catch (e) {
+                                terminalSession.output.add(e.toString());
+                              }
+                              terminalSession.printController.sink.add(true);
+                              inputController.clear();
                             },
                           ),
                         ),
@@ -113,17 +119,10 @@ class _ChatDialogState extends State<ChatDialog> {
           }),
       actions: [
         Button(
-          child: Text(lang("send", "Send")),
-          onPressed: () {
-            game.sendMessageToServer(msgController.text);
-            msgController.clear();
-          },
-        ),
-        Button(
           child: Text(lang("clear", "Clear")),
           onPressed: () {
-            game.msgs.clear();
-            game.msgsListener.sink.add("");
+            terminalSession.output.clear();
+            setState(() {});
           },
         ),
         Button(

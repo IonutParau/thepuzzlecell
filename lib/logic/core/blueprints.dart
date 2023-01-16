@@ -2,8 +2,14 @@ part of logic;
 
 var blueprints = <String>[];
 
-Future loadBlueprints() async {
-  blueprints = (await loadJsonData("assets/blueprints.txt")).split('\n');
+Future<void> loadBlueprints() async {
+  blueprints = (await loadFileData("assets/blueprints.txt")).split('\n');
+  return;
+}
+
+Future<void> saveBlueprints() async {
+  File(path.join(assetsPath, 'assets', 'blueprints.txt')).writeAsStringSync(blueprints.join('\n'));
+  return;
 }
 
 void loadBlueprint(int i) {

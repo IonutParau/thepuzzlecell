@@ -45,16 +45,10 @@ void doFactory(Cell cell, int x, int y) {
     if (quantized) {
       unstableGen(x, y, cell.rot, output.copy);
     } else if (!push(ox, oy, cell.rot, 1, replaceCell: output)) {
-      if (physical) {
-        if (push(x, y, (cell.rot + 2) % 4, 1)) {
-          output.lastvars.lastPos = cell.lastvars.lastPos.scale(1, 1);
-          if (!push(x, y, cell.rot, 1, replaceCell: output)) return;
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
+      if (!physical) return;
+      if (!push(x, y, (cell.rot + 2) % 4, 1)) return;
+      output.lastvars.lastPos = cell.lastvars.lastPos.scale(1, 1);
+      if (!push(x, y, cell.rot, 1, replaceCell: output)) return;
     }
     x = cell.cx ?? x;
     y = cell.cy ?? y;

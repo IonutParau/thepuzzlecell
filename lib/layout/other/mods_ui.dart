@@ -33,6 +33,7 @@ class _ModsUIState extends State<ModsUI> {
           scriptingManager.modDesc(mod),
           scriptingManager.modAuthor(mod),
           scriptingManager.modIcon(mod),
+          scriptingManager.modDir(mod),
           scriptingManager.modCells(mod),
         ),
       );
@@ -72,12 +73,22 @@ class _ModsUIState extends State<ModsUI> {
               width: 5.w,
               height: 5.w,
             ),
-            trailing: Button(
-              child: Text(lang('view_cells', 'View Cells'), style: fontSize(7.sp)),
-              onPressed: () async {
-                await showDialog(context: context, builder: (ctx) => ViewModCellsDialog(info));
-                setState(() {});
-              },
+            trailing: Row(
+              children: [
+                Button(
+                  child: Text(lang('view_cells', 'View Cells'), style: fontSize(7.sp)),
+                  onPressed: () async {
+                    await showDialog(context: context, builder: (ctx) => ViewModCellsDialog(info));
+                    setState(() {});
+                  },
+                ),
+                Button(
+                  child: Text(lang('open', 'Open'), style: fontSize(7.sp)),
+                  onPressed: () {
+                    openFileManager(info.dir);
+                  },
+                ),
+              ],
             ),
           );
         },

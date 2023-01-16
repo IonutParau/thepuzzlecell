@@ -15,11 +15,13 @@ final List<String> changes = [
   "Added Configurable Filler",
   "Made selection area show size and position",
   "Made Debug Mode also show cell position",
-  "Added Electrical",
   "Moved Zoom In and Zoom Out out of tools",
   "Added Cell Searching",
   "Added Sticky Cell (real)",
-  "Added Electric Cells!",
+  "Added modules",
+  "Added a fancy hover effect for cells",
+  "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
+  "Added Electric Cells! (this is placeholder)",
 ];
 
 IconData getTrailing(String change) {
@@ -108,7 +110,7 @@ class VersionPage extends StatelessWidget {
 
     parts.add("Foregrounds: ${cells.length - backgrounds.length}");
     parts.add("Backgrounds: ${backgrounds.length - biomes.length}");
-    parts.add("Backgrounds: ${biomes.length}");
+    parts.add("Biomes: ${biomes.length}");
 
     if (modded.isNotEmpty) {
       parts.add("Modded: ${modded.length}");

@@ -5,9 +5,10 @@ class ModInfo {
   String desc;
   String author;
   String icon;
+  Directory dir;
   Set<String> cells;
 
-  ModInfo(this.title, this.desc, this.author, this.icon, this.cells);
+  ModInfo(this.title, this.desc, this.author, this.icon, this.dir, this.cells);
 }
 
 class ScriptingManager {
@@ -88,8 +89,7 @@ class ScriptingManager {
     return false;
   }
 
-  void handleInside(
-      int x, int y, int dir, int force, Cell moving, MoveType mt) {
+  void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
     final destroyer = grid.at(x, y);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(destroyer.id)) {
@@ -98,20 +98,17 @@ class ScriptingManager {
     }
   }
 
-  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx,
-      int my) {
+  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
-        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ??
-            false;
+        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ?? false;
       }
     }
 
     return false;
   }
 
-  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting,
-      int mx, int my) {
+  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
         return lua.handleAcidModded(cell, dir, force, mt.name, melting, mx, my);
@@ -132,8 +129,7 @@ class ScriptingManager {
         }
         current = found.first;
       } else {
-        final found = current.items
-            .where((cat) => cat is CellCategory && cat.title == parts.first);
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
         if (found.isEmpty) {
           return;
         }
@@ -145,12 +141,36 @@ class ScriptingManager {
     current?.items.add(cell);
   }
 
+  CellCategory? catByName(String cat) {
+    final parts = cat.split('/');
+
+    CellCategory? current;
+
+    while (parts.isNotEmpty) {
+      if (current == null) {
+        final found = categories.where((cat) => cat.title == parts.first);
+        if (found.isEmpty) {
+          return null;
+        }
+        current = found.first;
+      } else {
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
+        if (found.isEmpty) {
+          return null;
+        }
+        current = found.first;
+      }
+      parts.removeAt(0);
+    }
+
+    return current;
+  }
+
   void addToCats(List<String> cats, String cell) {
     cats.forEach((cat) => addToCat(cat, cell));
   }
 
-  bool canMove(
-      Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
+  bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
     for (var lua in luaScripts) {
       return lua.canMoveModded(cell, x, y, dir, side, force, mt.name) ?? true;
     }
@@ -200,13 +220,21 @@ class ScriptingManager {
     for (var lua in luaScripts) {
       if (lua.id == id) {
         final p = path.join(lua.dir.path, 'icon.png');
-        return File(p).existsSync()
-            ? "mods/${id}/icon.png"
-            : 'assets/images/modDefaultIcon.png';
+        return File(p).existsSync() ? "mods/${id}/icon.png" : 'assets/images/modDefaultIcon.png';
       }
     }
 
     return "assets/images/modDefaultIcon.png";
+  }
+
+  Directory modDir(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        return lua.dir;
+      }
+    }
+
+    return Directory.current;
   }
 
   Set<String> modCells(String id) {
@@ -221,26 +249,20 @@ class ScriptingManager {
     return l;
   }
 
-  bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack,
-      int originX, int originY) {
+  bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {
     for (var lua in luaScripts) {
       if (lua.hasDefinedCell(cell.id)) {
-        return lua.isSticky(
-                cell, x, y, dir, base, checkedAsBack, originX, originY) ??
-            false;
+        return lua.isSticky(cell, x, y, dir, base, checkedAsBack, originX, originY) ?? false;
       }
     }
 
     return false;
   }
 
-  bool sticksTo(Cell cell, Cell to, int dir, bool base, bool checkedAsBack,
-      int originX, int originY) {
+  bool sticksTo(Cell cell, Cell to, int dir, bool base, bool checkedAsBack, int originX, int originY) {
     for (var lua in luaScripts) {
       if (lua.hasDefinedCell(cell.id)) {
-        return lua.sticksTo(
-                cell, to, dir, base, checkedAsBack, originX, originY) ??
-            false;
+        return lua.sticksTo(cell, to, dir, base, checkedAsBack, originX, originY) ?? false;
       }
     }
 

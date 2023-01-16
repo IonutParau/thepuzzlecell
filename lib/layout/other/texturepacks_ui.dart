@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/dialogs/dialogs.dart';
 import 'package:the_puzzle_cell/logic/performance/unzip_on_thread.dart';
+import 'package:the_puzzle_cell/logic/performance/zip_on_thread.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
@@ -25,7 +26,7 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
 
   Widget tile(TexturePack tp) {
     return ListTile(
-      title: Text(tp.title),
+      title: Text(tp.title, style: TextStyle(fontSize: 6.sp)),
       leading: Row(
         children: [
           Checkbox(
@@ -39,7 +40,13 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               }
             },
           ),
-          Image.asset(tp.icon),
+          Image.asset(
+            tp.icon,
+            width: 2.w,
+            height: 2.w,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.none,
+          ),
         ],
       ),
       trailing: Row(
@@ -57,6 +64,30 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               await applyTexturePackSettings();
               applyTexturePacks();
               setState(() {});
+            },
+          ),
+          Button(
+            child: Text(lang("open", "Open")),
+            onPressed: () {
+              openFileManager(tp.dir);
+            },
+          ),
+          Button(
+            child: Text(lang("package", "Package")),
+            onPressed: () async {
+              final whereToSave = await FilePicker.platform.saveFile(
+                initialDirectory: tpDir.path,
+                allowedExtensions: ['.zip'],
+                fileName: path.split(tp.dir.path).last + '.zip',
+              );
+
+              if (whereToSave == null) return;
+
+              final events = packageDirectory(whereToSave, tp.dir);
+              showDialog(
+                context: context,
+                builder: (ctx) => StreamingDialog(stream: events, title: "Packaging... (may take a while)"),
+              );
             },
           ),
           Button(
@@ -101,7 +132,6 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               FilePickerResult? result = await FilePicker.platform.pickFiles(
                 type: FileType.custom,
                 allowedExtensions: ['zip'],
-                dialogTitle: lang('pick_texture_zip', 'Pick Texture Pack ZIPs'),
               );
 
               // Result is null if user cancelled the file picking attempt

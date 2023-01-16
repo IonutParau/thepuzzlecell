@@ -175,6 +175,8 @@ In the text, @variablename gets replaced with the variable.
 | transfering_mods               | The Transfering Game Mods event (for Copy Old Instance)                                                                                 |                               |
 | transfering_modules            | The Transfering Modules event (for Copy Old Instance)                                                                                   |                               |
 | transfer_success               | The Successfully Transfered Game Data event (for Copy Old Instance)                                                                     |                               |
+| open                           | The name of the Open button                                                                                                             |                               |
+| back                           | The name of the Back button                                                                                                             |                               |
 
 ## Button IDs:
 
@@ -198,7 +200,8 @@ In the text, @variablename gets replaced with the variable.
 - Load as Blueprint button - `load-blueprint-btn`
 - Delete Blueprints button - `del-blueprint-btn`
 - Property Editor button - `prop-edit-btn`
-- Chat Editor button - `chat-btn`
+- Chat button - `chat-btn`
+- Terminal button - `terminal-btn`
 
 ## Example of JSON
 

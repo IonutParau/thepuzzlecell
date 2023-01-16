@@ -8,19 +8,11 @@ void liners() {
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (push(x, y, cell.rot, 0)) {
-          final bx = x + (cell.rot % 2 == 0 ? cell.rot - 1 : 0);
-          final by = y + (cell.rot % 2 == 1 ? cell.rot - 2 : 0);
-          pull(bx, by, cell.rot, 1);
+          pull(frontX(x, cell.rot, -1), frontY(y, cell.rot, -1), cell.rot, 1);
         }
       },
       rot,
       "liner",
     );
   }
-}
-
-void doBringer(int x, int y, int dir) {
-  doDriller(x, y, dir);
-  grabSide(x, y, dir - 1, dir);
-  grabSide(x, y, dir + 1, dir);
 }

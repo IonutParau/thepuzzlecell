@@ -74,8 +74,7 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
 
     if (isSticky(cell, x, y, dir, true, false, x, y)) {
       if (mt == MoveType.push || mt == MoveType.pull) {
-        return canStickyNudge(cell, x, y, dir,
-            base: true, originX: x, originY: y);
+        return canStickyNudge(cell, x, y, dir, base: true, originX: x, originY: y);
       } else {
         return true;
       }
@@ -125,6 +124,10 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
       case "gear_cw":
         return mt != MoveType.gear;
       case "gear_ccw":
+        return mt != MoveType.gear;
+      case "megagear_cw":
+        return mt != MoveType.gear;
+      case "megagear_ccw":
         return mt != MoveType.gear;
       case "ghost":
         return false;
@@ -233,8 +236,7 @@ bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
 
   if (trashes.contains(into.id) && !into.tags.contains("stopped")) return true;
 
-  if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"]
-      .contains(into.id)) {
+  if (["forker", "forker_cw", "forker_ccw", "triple_forker", "double_forker"].contains(into.id)) {
     return (dir == into.rot);
   }
 
@@ -304,8 +306,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
 
       final digging = grid.at(dx, dy);
       if (digging.id == "wormhole") return;
-      QueueManager.add("post-move",
-          () => push(dx, dy, dir, 9999999999999, replaceCell: moving));
+      QueueManager.add("post-move", () => push(dx, dy, dir, 9999999999999, replaceCell: moving));
       // If not empty attempt destruction
     } else {
       grid.addBroken(moving, x, y);
@@ -505,8 +506,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
     } else if (destroyer.id == "time_reset") {
       mustTimeTravel = true;
     } else if (destroyer.id == "mech_trash") {
-      grid.addBroken(moving, x, y,
-          (destroyer.data['silent'] ?? false) ? "silent" : "normal");
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
       if ((destroyer.data['countdown'] ?? 0) > 0) {
         destroyer.data['countdown']--;
       } else {
@@ -523,11 +523,9 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
         push(frontX(x, dir), frontY(y, dir), dir, 1);
       }
     } else if (destroyer.id == "counter") {
-      grid.addBroken(moving, x, y,
-          (destroyer.data['silent'] ?? false) ? "silent" : "normal");
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
       var amount = 1;
-      if (moving.id == "counter" || moving.id == "math_number")
-        amount = (moving.data['count'] ?? 0);
+      if (moving.id == "counter" || moving.id == "math_number") amount = (moving.data['count'] ?? 0);
       destroyer.data['count'] = (destroyer.data['count'] ?? 0) + amount;
     } else if (destroyer.id == "trash_can") {
       destroyer.data['remaining'] ??= 10;
@@ -536,8 +534,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       } else {
         destroyer.data['remaining']--;
       }
-      grid.addBroken(moving, x, y,
-          (destroyer.data['silent'] ?? false) ? "silent" : "normal");
+      grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(moving, x, y, silent == true ? "silent" : "normal");
@@ -563,21 +560,15 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       QueueManager.add("post-move", () => puzzleLost = true);
     } else {
       final silent = destroyer.data['silent'] ?? false;
-      grid.addBroken(
-          destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
-      grid.addBroken(
-          moving, x, y, silent == true ? "silent_shrinking" : "shrinking");
+      grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
+      grid.addBroken(moving, x, y, silent == true ? "silent_shrinking" : "shrinking");
       grid.set(x, y, Cell(x, y));
       game.redparticles.emit(enemyParticleCounts, x, y);
     }
   }
 }
 
-bool moveCell(int ox, int oy, int nx, int ny,
-    [int? dir,
-    Cell? isMoving,
-    MoveType mt = MoveType.unknown_move,
-    int force = 1]) {
+bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unknown_move, int force = 1]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
   if (dir == null) {
@@ -585,8 +576,7 @@ bool moveCell(int ox, int oy, int nx, int ny,
   }
   final movingTo = grid.at(nx, ny).copy;
 
-  if (moveInsideOf(movingTo, nx, ny, dir, force, mt) &&
-      movingTo.id != "empty") {
+  if (moveInsideOf(movingTo, nx, ny, dir, force, mt) && movingTo.id != "empty") {
     handleInside(nx, ny, dir, force, moving, mt);
     grid.set(ox, oy, Cell(ox, oy));
     QueueManager.runQueue("post-move");
@@ -609,8 +599,7 @@ bool moveCell(int ox, int oy, int nx, int ny,
 }
 
 bool wouldWrap(int x, int y) {
-  return (((x + grid.width) % grid.width) != x ||
-      ((y + grid.height) % grid.height) != y);
+  return (((x + grid.width) % grid.width) != x || ((y + grid.height) % grid.height) != y);
 }
 
 int wrapX(int x) => (x + grid.width) % grid.width;
@@ -755,12 +744,7 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
     }
   }
 
-  if ((cell.id == "fan" ||
-          cell.id == "superfan" ||
-          cell.id == "airflow" ||
-          (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) &&
-      cell.rot == odir &&
-      mt == MoveType.push) {
+  if ((cell.id == "fan" || cell.id == "superfan" || cell.id == "airflow" || (cell.id == "mech_fan" && MechanicalManager.on(cell, true))) && cell.rot == odir && mt == MoveType.push) {
     return -1;
   }
 
@@ -768,8 +752,7 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
 }
 
 // The term "acidic" comes from CelLua's "Acid" cell.
-bool acidic(
-    Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
   if (modded.contains(cell.id)) {
     return scriptingManager.acidic(cell, dir, force, mt, melting, mx, my);
   }
@@ -789,8 +772,7 @@ bool acidic(
   return false;
 }
 
-void handleAcid(
-    Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
+void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
   if (modded.contains(cell.id)) {
     return scriptingManager.handleAcid(cell, dir, force, mt, melting, mx, my);
   }
@@ -800,9 +782,7 @@ void handleAcid(
     grid.set(mx, my, cell);
   }
 
-  if (cell.id == "mobile_enemy" ||
-      cell.id == "mover_enemy" ||
-      cell.id == "explosive") {
+  if (cell.id == "mobile_enemy" || cell.id == "mover_enemy" || cell.id == "explosive") {
     grid.addBroken(melting, mx, my, "shrinking");
     grid.addBroken(cell, mx, my, "shrinking");
     if (cell.id == "explosive") {
@@ -813,15 +793,10 @@ void handleAcid(
   }
 }
 
-bool push(int x, int y, int dir, int force,
-    {MoveType mt = MoveType.push,
-    int depth = 0,
-    Cell? replaceCell,
-    bool shifted = false}) {
+bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell, bool shifted = false}) {
   replaceCell ??= Cell(x, y);
   if (!grid.inside(x, y)) return false;
-  if (((dir % 2 == 0) && (depth > grid.width)) ||
-      ((dir % 2 == 1) && (depth > grid.height))) {
+  if (((dir % 2 == 0) && (depth > grid.width)) || ((dir % 2 == 1) && (depth > grid.height))) {
     return false;
   }
   dir %= 4;
@@ -835,14 +810,12 @@ bool push(int x, int y, int dir, int force,
   var c = grid.at(ox, oy);
 
   if (c.id == "empty") {
-    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir,
-        force, mt);
+    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir, force, mt);
     grid.set(ox, oy, replaceCell);
     return true;
   }
   if (moveInsideOf(c, ox, oy, dir, force, mt)) {
-    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir,
-        force, mt);
+    whenMoved(replaceCell, replaceCell.cx ?? ox, replaceCell.cy ?? oy, dir, force, mt);
     handleInside(ox, oy, dir, force, replaceCell, mt);
     if (depth == 0) QueueManager.runQueue("post-move");
     return force > 0;
@@ -859,8 +832,7 @@ bool push(int x, int y, int dir, int force,
     }
     force += addedForce(c, dir, force, mt);
     if (force <= 0) return false;
-    final mightMove =
-        push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c.copy);
+    final mightMove = push(x, y, dir, force, mt: mt, depth: depth + 1, replaceCell: c.copy);
     // If we have been modified, only allow the past one to move if we have been fully deleted
     final now = grid.at(ox, oy);
     if (now.tags.contains("mutatedWhileMoved")) {
@@ -871,6 +843,7 @@ bool push(int x, int y, int dir, int force,
 
       grid.at(ox, oy).rot = (grid.at(ox, oy).rot + addedRot) % 4;
       grid.set(ox, oy, replaceCell.copy);
+      whenMoved(replaceCell, x, y, dir, force, mt);
     }
     if (depth == 0) QueueManager.runQueue("post-move");
     return mightMove;
@@ -880,8 +853,7 @@ bool push(int x, int y, int dir, int force,
   }
 }
 
-bool pull(int x, int y, int dir, int force,
-    [MoveType mt = MoveType.pull, int depth = 0]) {
+bool pull(int x, int y, int dir, int force, [MoveType mt = MoveType.pull, int depth = 0]) {
   if (depth > grid.width * grid.height) return false;
   if (!grid.inside(x, y)) return false;
 
@@ -993,19 +965,6 @@ NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
     final c = grid.at(x, y);
 
     final side = toSide(dir, c.rot);
-    if (CellTypeManager.curves.contains(c.id)) {
-      if (c.id == "curve") {
-        if (side == 0) {
-          dir = (dir + 1) % 4;
-          addedrot++;
-          completed = false;
-        } else if (side == 3) {
-          dir = (dir + 3) % 4;
-          addedrot += 3;
-          completed = false;
-        }
-      }
-    }
     if (completed) return NextCell(x, y, dir, addedrot, false);
     x = frontX(x, dir);
     y = frontY(y, dir);
@@ -1034,8 +993,7 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
 
       final c = grid.at(cx.toInt(), cy.toInt());
 
-      if (!breakable(c, cx.toInt(), cy.toInt(),
-          dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
+      if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
         return;
       }
       if ((circular && d <= radius) || !circular || (cx == x && cy == y)) {
@@ -1065,44 +1023,33 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
   }
 }
 
-bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack,
-    int originX, int originY) {
+bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {
   if (cell.id == "sticky") return true;
   if (cell.id == "carbon") return true;
 
   if (modded.contains(cell.id)) {
-    return scriptingManager.isSticky(
-        cell, x, y, dir, base, checkedAsBack, originX, originY);
+    return scriptingManager.isSticky(cell, x, y, dir, base, checkedAsBack, originX, originY);
   }
 
   return false;
 }
 
-bool sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack,
-    int originX, int originY) {
+bool sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack, int originX, int originY) {
   if (sticker.id == "sticky") return true;
 
   if (sticker.id == "carbon") {
-    return to.id == "carbon" ||
-        !isSticky(
-            to, to.cx!, to.cy!, dir, base, checkedAsBack, originX, originY);
+    return to.id == "carbon" || !isSticky(to, to.cx!, to.cy!, dir, base, checkedAsBack, originX, originY);
   }
 
   if (modded.contains(sticker.id)) {
-    return scriptingManager.sticksTo(
-        sticker, to, dir, base, checkedAsBack, originX, originY);
+    return scriptingManager.sticksTo(sticker, to, dir, base, checkedAsBack, originX, originY);
   }
 
   return false;
 }
 
 /// help
-bool canStickyNudge(Cell? cell, int x, int y, int dir,
-    {bool base = false,
-    bool checkedAsBack = false,
-    int? originX,
-    int? originY,
-    Cell? sticker}) {
+bool canStickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, bool checkedAsBack = false, int? originX, int? originY, Cell? sticker}) {
   if (cell == null) return true;
 
   if (base) {
@@ -1114,9 +1061,7 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir,
 
   if (sticker != null) {
     // Returns true so that the original one isn't stopped by this one
-    if (!sticksTo(
-        sticker, cell, dir, base, checkedAsBack, originX ?? x, originY ?? y))
-      return true;
+    if (!sticksTo(sticker, cell, dir, base, checkedAsBack, originX ?? x, originY ?? y)) return true;
   }
 
   if (cell.tags.contains("stickyChecked")) return true;
@@ -1130,18 +1075,11 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir,
 
   if (f == null) return false;
 
-  final sticky = isSticky(
-      cell, x, y, dir, base, checkedAsBack, originX ?? x, originY ?? y);
+  final sticky = isSticky(cell, x, y, dir, base, checkedAsBack, originX ?? x, originY ?? y);
 
   if (sticky) {
-    if (!canStickyNudge(f, f.cx ?? x, f.cy ?? y, dir,
-        base: base,
-        originX: originX,
-        originY: originY,
-        sticker: cell)) return false;
-  } else if (!base &&
-      !checkedAsBack &&
-      !moveInsideOf(f, x, y, dir, 1, MoveType.unknown_move)) {
+    if (!canStickyNudge(f, f.cx ?? x, f.cy ?? y, dir, base: base, originX: originX, originY: originY, sticker: cell)) return false;
+  } else if (!base && !checkedAsBack && !moveInsideOf(f, x, y, dir, 1, MoveType.unknown_move)) {
     return false;
   }
 
@@ -1154,10 +1092,8 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir,
   final rx = frontX(x, dir + 1);
   final ry = frontY(y, dir + 1);
 
-  final l = canStickyNudge(grid.get(lx, ly), lx, ly, dir,
-      base: false, originX: originX, originY: originY, sticker: cell);
-  final r = canStickyNudge(grid.get(rx, ry), rx, ry, dir,
-      base: false, originX: originX, originY: originY, sticker: cell);
+  final l = canStickyNudge(grid.get(lx, ly), lx, ly, dir, base: false, originX: originX, originY: originY, sticker: cell);
+  final r = canStickyNudge(grid.get(rx, ry), rx, ry, dir, base: false, originX: originX, originY: originY, sticker: cell);
 
   var res = l && r;
 
@@ -1165,12 +1101,7 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir,
     final bx = frontX(x, dir + 2);
     final by = frontY(y, dir + 2);
 
-    final b = canStickyNudge(grid.get(bx, by), bx, by, dir,
-        base: base,
-        checkedAsBack: true,
-        originX: originX,
-        originY: originY,
-        sticker: cell);
+    final b = canStickyNudge(grid.get(bx, by), bx, by, dir, base: base, checkedAsBack: true, originX: originX, originY: originY, sticker: cell);
 
     res = res && b;
   }
@@ -1179,8 +1110,7 @@ bool canStickyNudge(Cell? cell, int x, int y, int dir,
 }
 
 /// my brain hurts
-void stickyNudge(Cell? cell, int x, int y, int dir,
-    {bool base = false, int? originX, int? originY, Cell? sticker}) {
+void stickyNudge(Cell? cell, int x, int y, int dir, {bool base = false, int? originX, int? originY, Cell? sticker}) {
   if (cell == null) return;
   if (base) {
     originX = x;
@@ -1190,33 +1120,21 @@ void stickyNudge(Cell? cell, int x, int y, int dir,
     base = true;
   }
   if (sticker != null) {
-    if (!sticksTo(sticker, cell, dir, base, false, originX ?? x, originY ?? y))
-      return;
+    if (!sticksTo(sticker, cell, dir, base, false, originX ?? x, originY ?? y)) return;
   }
   if (moveInsideOf(cell, x, y, dir, 1, MoveType.unknown_move)) return;
   if (!cell.tags.contains("stickyChecked")) return;
   if (cell.tags.contains("stickyMoved")) return;
   cell.tags.add("stickyMoved");
 
-  final sticky =
-      isSticky(cell, x, y, dir, base, false, originX ?? x, originY ?? y);
+  final sticky = isSticky(cell, x, y, dir, base, false, originX ?? x, originY ?? y);
 
   if (sticky) {
-    if (!base)
-      stickyNudge(grid.get(frontX(x, dir), frontY(y, dir)), frontX(x, dir),
-          frontY(y, dir), dir,
-          originX: x, originY: y);
-    stickyNudge(grid.get(frontX(x, dir - 1), frontY(y, dir - 1)),
-        frontX(x, dir - 1), frontY(y, dir - 1), dir,
-        originX: x, originY: y);
-    stickyNudge(grid.get(frontX(x, dir + 1), frontY(y, dir + 1)),
-        frontX(x, dir + 1), frontY(y, dir + 1), dir,
-        originX: x, originY: y);
+    if (!base) stickyNudge(grid.get(frontX(x, dir), frontY(y, dir)), frontX(x, dir), frontY(y, dir), dir, originX: x, originY: y);
+    stickyNudge(grid.get(frontX(x, dir - 1), frontY(y, dir - 1)), frontX(x, dir - 1), frontY(y, dir - 1), dir, originX: x, originY: y);
+    stickyNudge(grid.get(frontX(x, dir + 1), frontY(y, dir + 1)), frontX(x, dir + 1), frontY(y, dir + 1), dir, originX: x, originY: y);
     if (!base) nudge(x, y, dir);
-    if (!base)
-      stickyNudge(grid.get(frontX(x, dir + 2), frontY(y, dir + 2)),
-          frontX(x, dir + 2), frontY(y, dir + 2), dir,
-          base: base, originX: x, originY: y);
+    if (!base) stickyNudge(grid.get(frontX(x, dir + 2), frontY(y, dir + 2)), frontX(x, dir + 2), frontY(y, dir + 2), dir, base: base, originX: x, originY: y);
   } else if (!base) {
     nudge(x, y, dir);
   }

@@ -5,3 +5,5 @@ export 'save_level_dialog.dart';
 export 'export_level_dialog.dart';
 export 'modify_texturepack_dialog.dart';
 export 'create_texturepack_dialog.dart';
+export 'loading_dialog.dart' show LoadingDialog;
+export 'streaming_dialog.dart' show StreamingDialog;

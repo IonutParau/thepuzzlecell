@@ -58,12 +58,6 @@ class CellTypeManager {
     "mem_gen_triple",
   ];
 
-  static List<String> rockets = [
-    "rocket",
-    "rocket_cw",
-    "rocket_ccw",
-  ];
-
   static List<String> movers = ["mover", "slow_mover", "fast_mover", "releaser"];
 
   static List<String> puller = [
@@ -155,6 +149,8 @@ class CellTypeManager {
   static List<String> gears = [
     "gear_cw",
     "gear_ccw",
+    "megagear_cw",
+    "megagear_ccw",
   ];
 
   static List<String> puzzles = [
@@ -200,13 +196,6 @@ class CellTypeManager {
     "speed",
     "slow",
     "fast",
-  ];
-
-  static List<String> curves = [
-    "curve",
-    "straight_curve",
-    "cross_curve",
-    "cross_straight_curve",
   ];
 
   static List<String> quantum = ["unstable_mover", "field"];
@@ -461,5 +450,4 @@ int? pathFindToCell(int x, int y, List<String> targets, int maxDepth) {
   final cy = cell.dy.toInt();
 
   return getPathFindingDirection(x, y, cx, cy, true, {});
-  ;
 }

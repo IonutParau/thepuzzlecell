@@ -5,10 +5,10 @@ var puzzles = <String>[];
 int? puzzleIndex;
 
 Future loadAllPuzzles() async {
-  puzzles = (await loadJsonData('assets/puzzles.txt')).split('\n');
+  puzzles = (await loadFileData('assets/puzzles.txt')).split('\n');
 }
 
-Future<String> loadJsonData(String path) async {
+Future<String> loadFileData(String path) async {
   var jsonText = await rootBundle.loadString(path);
   return jsonText;
 }

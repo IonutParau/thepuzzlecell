@@ -14,6 +14,8 @@ final biomes = [
   "mechanical_halting",
   "spiketrap_biome",
   "biome_norot",
+  "biome_180",
+  "biome_rand",
 ];
 
 // Biomes
@@ -25,6 +27,16 @@ void biome() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 3);
   }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_ccw");
+  
+  grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    grid.rotate(x, y, 2);
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_180");
+  
+  grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
+    final rng = Random();
+    int randRot() => rng.nextBool() ? 1 : 3;
+    grid.rotate(x, y, randRot());
+  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_rand");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data['heat'] = (cell.data['heat'] ?? 0) + 1;

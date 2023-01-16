@@ -32,13 +32,18 @@ dependencies:
   yaml: ^3.1.1
   quiver: ^3.1.0
   archive: ^3.3.1
-  file_picker: ^5.2.0+1
+  file_picker: ^5.2.4
   intl: ^0.17.0
   equatable: ^2.0.5
   lua_vm_bindings:
     git:
       url: https://github.com/IonutParau/lua_vm_bindings
       ref: main
+  glue_lang:
+    git:
+      url: https://github.com/IonutParau/glue_lang
+      ref: stable
+  flutter_markdown: ^0.6.13
 
 dev_dependencies:
   flutter_test:
@@ -111,3 +116,4 @@ flutter:
     - mods/
     - mods/testmod/
     - modules/
+    - markdown/

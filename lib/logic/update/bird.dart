@@ -31,7 +31,6 @@ void birds() {
 
 void doBird(int x, int y, int dir) {
   final force = 0;
-  final c = grid.at(x, y); // Fix to a weird bug
   if (dir % 2 == 1) {
     if (!push(x, y, dir, force + 1)) {
       grid.rotate(x, y, 1);

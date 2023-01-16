@@ -105,13 +105,23 @@ void doSandbox(Cell cell, int x, int y) {
   final r = rng.nextInt(4);
   final t = cells[rng.nextInt(cells.length)];
 
+  final c = Cell(cx, cy)
+    ..rot = r
+    ..lastvars.lastRot = r
+    ..id = t;
+
+  final p = props[t];
+
+  if (p != null) {
+    for (var prop in p) {
+      c.data[prop.key] = prop.def;
+    }
+  }
+
   grid.set(
     cx,
     cy,
-    Cell(cx, cy)
-      ..rot = r
-      ..lastvars.lastRot = r
-      ..id = t,
+    c,
   );
 }
 

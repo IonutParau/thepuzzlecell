@@ -28,8 +28,8 @@ void rots(Set<String> cells) {
   if (cells.contains("opposite_rotator")) {
     grid.updateCell(
       (cell, x, y) {
-        if (!cell.tags.contains("anchored")) grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-        if (!cell.tags.contains("anchored")) grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
       },
       null,
       "opposite_rotator",

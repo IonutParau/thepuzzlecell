@@ -1,20 +1,14 @@
 part of logic;
 
-void doAxis(int x, int y, int dir) {
-  if (push(x, y, dir, 0)) {
-    final bx = x + (dir % 2 == 0 ? dir - 1 : 0);
-    final by = y + (dir % 2 == 1 ? dir - 2 : 0);
-    pull(bx, by, dir, 1);
-    grabSide(x, y, dir - 1, dir);
-    grabSide(x, y, dir + 1, dir);
-  }
-}
-
 void axis() {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        doAxis(x, y, cell.rot);
+        if (push(x, y, cell.rot, 0)) {
+          pull(frontX(x, cell.rot, -1), frontY(y, cell.rot, -1), cell.rot, 1);
+          grabSide(x, y, cell.rot - 1, cell.rot);
+          grabSide(x, y, cell.rot + 1, cell.rot);
+        }
       },
       rot,
       "axis",
