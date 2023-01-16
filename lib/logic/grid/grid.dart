@@ -14,12 +14,12 @@ List<String> backgrounds = [
 class Grid {
   late List<List<Cell>> grid;
   late List<List<String>> place;
-  late List<List<Set<String>>> chunks;
+  late List<List<HashSet<String>>> chunks;
 
   late QuadChunk quadChunk;
   final codeManager = CodeCellManager();
 
-  Map<int, Map<int, num>> memory = {};
+  HashMap<int, HashMap<int, num>> memory = HashMap<int, HashMap<int, num>>();
 
   String title = "";
   String desc = "";
@@ -67,7 +67,7 @@ class Grid {
     for (var x = 0; x < cx; x++) {
       chunks.add([]);
       for (var y = 0; y < cy; y++) {
-        chunks.last.add({});
+        chunks.last.add(HashSet<String>());
       }
     }
 
@@ -161,7 +161,7 @@ class Grid {
       },
     );
     memory.forEach((key, value) {
-      grid.memory[key] = {...value};
+      grid.memory[key] = HashMap.from(value);
     });
     return grid;
   }
