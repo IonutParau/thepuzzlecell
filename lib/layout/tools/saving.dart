@@ -1041,7 +1041,7 @@ class P4 {
             c[int.parse(key)] = decodeValue(value);
           });
 
-          g.memory[int.parse(key)] = c;
+          g.memory[int.parse(key)] = HashMap<int, num>.from(m);
         });
       }
     }
@@ -1269,7 +1269,7 @@ class P5 {
         if (props['memory'] != null) {
           final m = props['memory'] as Map;
           m.forEach((key, value) {
-            final c = <int, num>{};
+            final c = HashMap<int, num>();
 
             value.forEach((key, value) {
               c[int.parse(key)] = TPCML.decodeValue(value);
@@ -1518,7 +1518,7 @@ class P6 {
         final memMap = gridData["M"] as Map<String, dynamic>;
 
         memMap.forEach((channel, memRow) {
-          grid.memory[int.parse(channel)] = {};
+          grid.memory[int.parse(channel)] = HashMap<int, num>();
 
           memRow.forEach((id, val) {
             grid.memory[int.parse(channel)]![int.parse(id)] = val;
