@@ -111,6 +111,7 @@ flutter:
     - assets/images/unique/time_travel/
     - assets/images/unique/plant/
     - assets/images/unique/code/
+    - assets/images/references/
     - assets/audio/
     - languages/
     - mods/

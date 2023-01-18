@@ -22,6 +22,7 @@ final List<String> changes = [
   "Added a fancy hover effect for cells",
   "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
   "Added Electric Cells! (this is placeholder)",
+  "Added Secret Cells (check cell searching)",
 ];
 
 IconData getTrailing(String change) {

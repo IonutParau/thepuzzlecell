@@ -78,6 +78,17 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       }
     }
 
+    // References
+    results.addAll([
+      SearchQueryResult("nuke", "References"),
+      // SearchQueryResult("monitor", "References"), // TODO: Add A Monitor reference
+      // SearchQueryResult("kyyay", "References"), // TODO: Add KyYay reference
+      SearchQueryResult("bread", "References"),
+      SearchQueryResult("cellua", "References"),
+      SearchQueryResult("poly", "References"),
+      SearchQueryResult("mystic_x", "References"),
+    ]);
+
     if (parts.first == "") {
       searchResults = results;
       return;
@@ -207,12 +218,12 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
     return ContentDialog(
       title: Text(lang("search-cell-btn.title", "Search Cell")),
       content: SizedBox(
-        height: 20.h,
+        height: 30.h,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return Column(
               children: [
-                SizedBox(
+                Container(
                   width: constraints.maxWidth,
                   height: 3.h,
                   child: TextBox(
@@ -224,9 +235,10 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                     },
                   ),
                 ),
+                Spacer(),
                 SizedBox(
                   width: constraints.maxWidth,
-                  height: 15.h,
+                  height: 25.h,
                   child: ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (ctx, i) {

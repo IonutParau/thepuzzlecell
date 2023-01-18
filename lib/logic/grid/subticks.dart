@@ -9,6 +9,7 @@ final subticks = [
   math,
   master,
   gates,
+  references,
   automata,
   spikefactories,
   spreaders,

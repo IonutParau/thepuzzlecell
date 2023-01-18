@@ -344,7 +344,12 @@ final cells = {
   "megagear_cw",
   "megagear_ccw",
   "biome_180",
-  "biome_rand"
+  "biome_rand",
+  "nuke",
+  "bread",
+  "cellua",
+  "poly",
+  "mystic_x",
 }.toList();
 
 final modded = <String>[];
@@ -354,6 +359,11 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "bread.png": "references/bread.png",
+  "cellua.png": "references/cellua.png",
+  "poly.png": "references/poly.png",
+  "mystic_x.png": "references/mystic_x.png",
+  "nuke.png": "references/nuke.png",
   "biome_180.png": "backgrounds/biomes/biome_180.png",
   "biome_rand.png": "backgrounds/biomes/biome_rand.png",
   "megagear_cw.png": "movers/megagear_cw.png",
@@ -2928,19 +2938,39 @@ final cellInfo = <String, CellProfile>{
   ),
   "megagear_cw": CellProfile(
     "Megagear CW",
-    "Spins 8 nearest cells around itself in a clockwise fashion."
+    "Spins 8 nearest cells around itself in a clockwise fashion.",
   ),
   "megagear_ccw": CellProfile(
     "Megagear CCW",
-    "Spins 8 nearest cells around itself in a counter-clockwise fashion."
+    "Spins 8 nearest cells around itself in a counter-clockwise fashion.",
   ),
   "biome_180": CellProfile(
     "180 Degree Biome",
-    "A biome that rotates the cell above it by 180 degrees."
+    "A biome that rotates the cell above it by 180 degrees.",
   ),
   "biome_rand": CellProfile(
     "Random Biome",
-    "A biome that rotates the cell above it either CW or CCW at random."
+    "A biome that rotates the cell above it either CW or CCW at random.",
+  ),
+  "nuke": CellProfile(
+    "The Nuke Cell",
+    "A suggestion that became a youtuber. He makes good videos, check him out!",
+  ),
+  "bread": CellProfile(
+    "Bread",
+    "A reference to a really good mod I never played.\nMake sure to try out the actual mod once it releases too!",
+  ),
+  "cellua": CellProfile(
+    "CelLua",
+    "CelLua ok",
+  ),
+  "poly": CellProfile(
+    "PolyMachine Push",
+    "A 6-way push cell from PolyMachine. Due to the differences in their laws of physics, this one acts just like a slide rather than a push cell.",
+  ),
+  "mystic_x": CellProfile(
+    "Cell Machine Mystic Mod X Icon",
+    "I'm still surprised Trash Cell made that great of a mod with 0 prior coding knowledge. (He did use a lot of help but he still did it)",
   ),
 };
 

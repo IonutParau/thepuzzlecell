@@ -115,6 +115,8 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
         return side == 0 || side == 1 || side == 2;
       case "slide":
         return side == 0 || side == 2;
+      case "poly":
+        return side == 0 || side == 2;
       case "mirror":
         return ((dir - rot) % 2 == 1 || mt != MoveType.puzzle);
       case "wall":
@@ -133,6 +135,8 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
         return false;
       case "antipuzzle":
         return mt != MoveType.puzzle;
+      case "bread":
+        return force > 2;
       default:
         return true;
     }
@@ -188,6 +192,7 @@ final enemies = [
   "explosive",
   "mech_enemy",
   "friend",
+  "bread",
 ].toSet().toList();
 
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
@@ -196,6 +201,10 @@ bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
 
   if (modded.contains(into.id)) {
     return scriptingManager.moveInsideOf(into, x, y, dir, force, mt);
+  }
+
+  if (into.id == "bread") {
+    return force > 2;
   }
 
   if (into.id == "explosive") {
@@ -558,6 +567,11 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       grid.addBroken(moving, x, y, "shrinking");
       game.greenparticles.emit(enemyParticleCounts, x, y);
       QueueManager.add("post-move", () => puzzleLost = true);
+    } else if (destroyer.id == "bread") {
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.addBroken(moving, x, y, "shrinking");
+      grid.set(x, y, Cell(x, y));
+      game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
@@ -629,6 +643,8 @@ final withBias = [
   "mover_trash",
   "mover_enemy",
   "lofter",
+  "cellua",
+  "mystic_x",
 ];
 
 int addedForce(Cell cell, int dir, int force, MoveType mt) {

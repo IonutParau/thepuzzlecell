@@ -39,6 +39,7 @@ final ungennable = [
 ];
 
 bool isUngennable(Cell cell, int x, int y, int dir) {
+  dir %= 4;
   /* Special code here */
 
   return ungennable.contains(cell.id);
