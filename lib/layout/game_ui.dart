@@ -3535,9 +3535,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               }
               if (mouseButton == kSecondaryMouseButton) {
                 if (backgrounds.contains(currentSelection)) {
-                  sendToServer('bg', {"x": mx, "y": my, "bg": currentSelection, "size": brushSize});
+                  sendToServer('bg', {"x": mx, "y": my, "bg": "empty", "size": brushSize});
                 } else {
-                  sendToServer('place', {"x": mx, "y": my, "id": currentSelection, "rot": currentRotation, "data": currentData, "size": brushSize});
+                  sendToServer('place', {"x": mx, "y": my, "id": "empty", "rot": currentRotation, "data": currentData, "size": brushSize});
                 }
               }
             } else {
@@ -3685,7 +3685,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         sendToServer("bg", {"x": cx, "y": cy, "bg": "empty"});
       } else {
         if (backgrounds.contains(id)) {
-          sendToServer("bg", {"x": cx, "y": cy, "bg": "empty"});
+          sendToServer("bg", {"x": cx, "y": cy, "bg": id});
         } else {
           sendToServer('place', {
             "x": cx,
