@@ -33,7 +33,6 @@ dependencies:
   quiver: ^3.1.0
   archive: ^3.3.1
   file_picker: ^5.2.5
-  intl: ^0.18.0
   equatable: ^2.0.5
   lua_vm_bindings:
     git:
