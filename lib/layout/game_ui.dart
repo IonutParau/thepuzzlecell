@@ -1564,7 +1564,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       "author": clientID,
     };
 
-    sendToServer('chat ${jsonEncode(payload)}');
+    sendToServer("chat", payload);
   }
 
   List<String> packetQueue = [];
@@ -1572,9 +1572,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   int get packetQueueLimit => storage.getInt("packet_queue_limit")!;
 
-  void sendToServer(String packet) {
+  void sendToServer(String pt, Map<String, dynamic> packet) {
     if (isMultiplayer && isinitial) {
-      packetQueue.add(packet);
+      packetQueue.add(jsonEncode({"pt": pt, ...packet}));
     }
   }
 
@@ -1718,11 +1718,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     running = false;
                     isinitial = true;
 
-                    sendToServer('setinit ${SavingFormat.encodeGrid(grid)}');
+                    sendToServer('setinit', {"code": SavingFormat.encodeGrid(grid)});
 
                     hovers.forEach(
                       (key, value) {
-                        sendToServer('drop-hover $key');
+                        sendToServer('drop-hover', {"uuid": key});
                       },
                     );
 
@@ -1884,7 +1884,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0 0');
+                  sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
                 }
               }
             }
@@ -1924,7 +1924,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0 0');
+                  sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
                 }
               }
             }
@@ -2157,7 +2157,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
                     if (isMultiplayer) {
                       final g = loadStr(str.text!, false);
-                      sendToServer('setinit ${SavingFormat.encodeGrid(g, title: g.title, description: g.desc)}');
+                      sendToServer('setinit', {"code": SavingFormat.encodeGrid(g, title: g.title, description: g.desc)});
                     } else {
                       saveGridToHistory(grid);
                       try {
@@ -2199,8 +2199,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           "interface/wrap.png",
           ButtonAlignment.TOPRIGHT,
           () {
-            if (isMultiplayer) {
-              sendToServer('wrap');
+            if (isMultiplayer && isinitial) {
+              sendToServer('wrap', {"v": !grid.wrap});
             } else {
               grid.wrap = !grid.wrap;
               buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
@@ -2453,10 +2453,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         clientID = clientID.replaceFirst('@uuid', Uuid().v4());
       }
       //sendToServer('version ${currentVersion.split(' ').first}');
-      sendToServer('token ${jsonEncode({
-            "version": currentVersion.split(' ').first,
-            "clientID": clientID,
-          })}');
+      sendToServer('token', {"version": currentVersion.split(' ').first, "clientID": clientID});
 
       Flame.images.load('interface/cursor.png');
 
@@ -3415,9 +3412,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         my /= n;
         if (hovers[clientID] != null) {
           if (hovers[clientID]!.x != mx || hovers[clientID]!.y != my) {
-            sendToServer(
-              'set-hover $clientID $mx $my',
-            );
+            sendToServer('set-hover', {"uuid": clientID, "x": mx, "y": my});
           }
         }
         var shouldCursor = false;
@@ -3428,9 +3423,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           shouldCursor = (c.x != mx || c.y != my || c.selection != currentSelection || c.rotation != currentRotation || c.texture != cursorTexture || (c.data.toString() != currentData.toString()));
         }
         if (shouldCursor) {
-          sendToServer(
-            'set-cursor $clientID $mx $my $currentSelection $currentRotation $cursorTexture ${cellDataStr(currentData)}',
-          );
+          sendToServer('set-cursor', {"id": clientID, "x": mx, "y": my, "selection": currentSelection, "rot": currentRotation, "texture": cursorTexture, "data": currentData});
         }
       }
       if (realisticRendering) {
@@ -3535,16 +3528,16 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             if (isMultiplayer) {
               if (mouseButton == kPrimaryMouseButton) {
                 if (backgrounds.contains(currentSelection)) {
-                  sendToServer('bg $mx $my $currentSelection $brushSize');
+                  sendToServer('bg', {"x": mx, "y": my, "bg": currentSelection, "size": brushSize});
                 } else {
-                  sendToServer('place $mx $my $currentSelection $currentRotation ${cellDataStr(currentData)} $brushSize');
+                  sendToServer('place', {"x": mx, "y": my, "id": currentSelection, "rot": currentRotation, "data": currentData, "size": brushSize});
                 }
               }
               if (mouseButton == kSecondaryMouseButton) {
                 if (backgrounds.contains(currentSelection)) {
-                  sendToServer('bg $mx $my empty $brushSize');
+                  sendToServer('bg', {"x": mx, "y": my, "bg": currentSelection, "size": brushSize});
                 } else {
-                  sendToServer('place $mx $my empty 0 0 $brushSize');
+                  sendToServer('place', {"x": mx, "y": my, "id": currentSelection, "rot": currentRotation, "data": currentData, "size": brushSize});
                 }
               }
             } else {
@@ -3647,7 +3640,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       mouseDown = false;
       if (grid.inside(cx, cy) && grid.at(cx, cy).id != "empty") {
         if (isinitial && isMultiplayer) {
-          sendToServer("toggle-invis $cx $cy");
+          sendToServer("invis", {"x": cx, "y": cy, "v": !grid.at(cx, cy).invisible});
         } else {
           grid.at(cx, cy).invisible = !grid.at(cx, cy).invisible;
         }
@@ -3663,7 +3656,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           final d = Map<String, dynamic>.from(grid.at(cx, cy).data);
           d["trick_as"] = trickAs;
           d["trick_rot"] = trickRotOff;
-          sendToServer("place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${cellDataStr(d)}");
+          sendToServer('place', {"x": cx, "y": cy, "id": grid.at(cx, cy).id, "rot": grid.at(cx, cy).rot, "data": d, "size": 1});
         } else {
           grid.at(cx, cy).data["trick_as"] = trickAs;
           grid.at(cx, cy).data["trick_rot"] = trickRotOff;
@@ -3689,16 +3682,19 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       }
       if (id == "empty" && backgrounds.contains(currentSelection)) {
         if (!isMultiplayer) grid.setPlace(cx, cy, "empty");
-        sendToServer("bg $cx $cy empty");
+        sendToServer("bg", {"x": cx, "y": cy, "bg": "empty"});
       } else {
         if (backgrounds.contains(id)) {
-          sendToServer(
-            "bg $cx $cy $id",
-          );
+          sendToServer("bg", {"x": cx, "y": cy, "bg": "empty"});
         } else {
-          sendToServer(
-            "place $cx $cy $id $rot ${cellDataStr({...currentData, "heat": brushTemp})}",
-          );
+          sendToServer('place', {
+            "x": cx,
+            "y": cy,
+            "id": id,
+            "rot": rot,
+            "data": {...currentData, "heat": brushTemp},
+            "size": 1
+          });
         }
       }
     } else if (edType == EditorType.loaded) {
@@ -3707,9 +3703,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           grid.at(cx, cy).rot++;
           grid.at(cx, cy).rot %= 4;
         }
-        sendToServer(
-          'place $cx $cy ${grid.at(cx, cy).id} ${grid.at(cx, cy).rot} ${cellDataStr(grid.at(cx, cy).data)}',
-        );
+        sendToServer('place', {"x": cx, "y": cy, "id": grid.at(cx, cy).id, "rot": grid.at(cx, cy).rot, "data": grid.at(cx, cy).data, "size": 1});
         return;
       }
       if (biomes.contains(grid.placeable(cx, cy))) return;
@@ -3720,9 +3714,17 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         originalPlace = grid.placeable(cx, cy);
         currentData = grid.at(cx, cy).data;
         if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-        sendToServer('place $cx $cy empty 0 0');
+        sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
         sendToServer(
-          'new-hover $clientID $cx $cy $currentSelection $currentRotation ${TPCML.encodeValue(currentData)}',
+          'new-hover',
+          {
+            "uuid": clientID,
+            "x": cx,
+            "y": cy,
+            "id": currentSelection,
+            "rot": currentRotation,
+            "data": currentData,
+          },
         );
       } else if (grid.at(cx, cy).id == "empty" && grid.placeable(cx, cy) == originalPlace) {
         if (!isMultiplayer) {
@@ -3740,10 +3742,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         animatePropertyEditor();
         currentRotation = 0;
         sendToServer(
-          'place $cx $cy $id $rot ${cellDataStr(currentData)}',
+          'place',
+          {"x": cx, "y": cy, "id": id, "rot": rot, "data": currentData},
         );
         currentData = {};
-        sendToServer('drop-hover $clientID');
+        sendToServer('drop-hover', {"uuid": clientID});
       }
     }
   }
@@ -3829,7 +3832,15 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 if (gmx >= hover.x - 0.5 && gmx <= hover.x + 0.5 && gmy >= hover.y - 0.5 && gmy < hover.y + 0.5) {
                   hijacked = true;
                   sendToServer(
-                    'new-hover $clientID $cellMouseX $cellMouseY ${hover.id} ${hover.rot} ${TPCML.encodeValue(hover.data)}',
+                    'new-hover',
+                    {
+                      "uuid": clientID,
+                      "x": cellMouseX,
+                      "y": cellMouseY,
+                      "id": hover.id,
+                      "rot": hover.rot,
+                      "data": hover.data,
+                    },
                   );
                   currentSelection = hover.id;
                   currentRotation = hover.rot;
@@ -3841,7 +3852,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             );
           }
           if (hijackedHover != "") {
-            sendToServer('drop-hover $hijackedHover');
+            sendToServer('drop-hover', {"uuid": hijackedHover});
           }
           if (hijacked) return;
           if (grid.inside(cellMouseX, cellMouseY) && grid.placeable(cellMouseX, cellMouseY) != "empty") {
@@ -3920,7 +3931,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons["play-btn"]!.texture = "mover.png";
     buttonManager.buttons["play-btn"]!.rotation = 0;
     timeGrid = null;
-    if (isMultiplayer) sendToServer('setinit ${SavingFormat.encodeGrid(grid)}');
+    if (isMultiplayer) sendToServer('setinit', {"code": SavingFormat.encodeGrid(grid)});
     grid.tickCount = 0;
   }
 
@@ -4129,7 +4140,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 final cy = selY + y;
                 if (grid.inside(cx, cy)) {
                   if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                  sendToServer('place $cx $cy empty 0 0');
+                  sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
                 }
               }
             }
@@ -4220,7 +4231,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   if (grid.inside(cx, cy)) {
                     s.add(grid.at(cx, cy).copy);
                     if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                    sendToServer('place $cx $cy empty 0 0');
+                    sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
                   }
                 }
               }
@@ -4234,8 +4245,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     final c = s[i];
                     i++;
                     if (!isMultiplayer) grid.set(cx, cy, c);
-                    sendToServer('place $cx $cy ${c.id} ${c.rot} ${cellDataStr(c.data)}');
-                    if (c.invisible) sendToServer('toggle-invis $cx $cy');
+                    sendToServer('place', {"x": cx, "y": cy, "id": c.id, "rot": c.rot, "data": c.data, "size": 1});
+                    if (c.invisible) sendToServer('invis', {"x": cx, "y": cy, "v": true});
                   }
                 }
               }

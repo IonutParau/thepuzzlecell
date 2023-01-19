@@ -206,7 +206,8 @@ class _ResizeDialogState extends State<ResizeDialog> {
 
             if (game.isMultiplayer) {
               game.sendToServer(
-                'setinit ${SavingFormat.encodeGrid(g, title: g.title, description: g.desc)}',
+                'setinit',
+                {"code": SavingFormat.encodeGrid(g, title: g.title, description: g.desc)},
               );
             } else {
               grid = g;

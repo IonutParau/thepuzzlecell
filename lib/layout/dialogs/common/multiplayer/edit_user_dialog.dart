@@ -63,7 +63,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                               setState(
                                 () {
                                   role = userRole;
-                                  game.sendToServer('set-role ${widget.user} ${role.toString().replaceAll('UserRole.', '')}');
+                                  game.sendToServer('set-role', {"id": widget.user, "role": role.toString().replaceAll('UserRole.', '')});
                                 },
                               );
                             },
@@ -78,7 +78,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
         Button(
           child: Text('Kick'),
           onPressed: () {
-            game.sendToServer('kick ${widget.user}');
+            game.sendToServer('kick', {"id": widget.user});
             Navigator.of(context).pop();
           },
         ),

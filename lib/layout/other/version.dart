@@ -23,6 +23,11 @@ final List<String> changes = [
   "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
   "Added Electric Cells! (this is placeholder)",
   "Added Secret Cells (check cell searching)",
+  "Reworked the multiplayer packet format (more robust, but may require more bandwidth)",
+  "NOT YET: Added support for TPC Content Hubs",
+  "NOT YET: Removed Worlds in favor of Workspaces",
+  "NOT YET: Added Macros (buttons that run little scripts)",
+  "Added support for theming",
 ];
 
 IconData getTrailing(String change) {

@@ -82,7 +82,8 @@ class _ClearDialogState extends State<ClearDialog> {
             game.itime = 0;
             if (game.isMultiplayer) {
               game.sendToServer(
-                'setinit ${P4.encodeGrid(Grid(w, h))}',
+                'setinit',
+                {"code": SavingFormat.encodeGrid(Grid(w, h))},
               );
             } else {
               grid = Grid(w, h);
