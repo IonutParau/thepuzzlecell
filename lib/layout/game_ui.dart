@@ -3743,7 +3743,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         currentRotation = 0;
         sendToServer(
           'place',
-          {"x": cx, "y": cy, "id": id, "rot": rot, "data": currentData},
+          {
+            "x": cx,
+            "y": cy,
+            "id": id,
+            "rot": rot,
+            "data": currentData,
+            "size": 1,
+          },
         );
         currentData = {};
         sendToServer('drop-hover', {"uuid": clientID});
