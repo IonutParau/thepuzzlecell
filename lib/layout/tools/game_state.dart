@@ -34,3 +34,13 @@ enum UserRole {
   admin,
   owner,
 }
+
+UserRole? getRoleStr(String role) {
+  for (var r in UserRole.values) {
+    if (r.toString() == ("UserRole." + role.toLowerCase())) {
+      return r;
+    }
+  }
+
+  return null;
+}

@@ -31,16 +31,8 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
 
   int page = 0;
 
-  // late final AnimationController _rotcontroller = AnimationController(
-  //   duration: const Duration(seconds: 5),
-  //   vsync: this,
-  // )..repeat();
-
   void dispose() {
-    //game.dispose();
     timeGrid = null;
-    // _rotcontroller.stop();
-    // _rotcontroller.dispose();
     scrollController.dispose();
 
     if (game.isMultiplayer) {
@@ -1203,6 +1195,179 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void multiplayerCallback(data) {
+    if (data is String) {
+      if (!data.startsWith('{') || !data.endsWith('}')) return legacyMultiplayerCallback(data);
+
+      final packet = jsonDecode(data) as Map<String, dynamic>;
+
+      final packetType = packet["pt"].toString();
+
+      final g = isinitial ? grid : initial;
+
+      if (packetType == "place") {
+        final x = (packet["x"] as num).toInt();
+        final y = (packet["y"] as num).toInt();
+        final id = packet["id"] as String;
+        final rot = (packet["rot"] as num).toInt();
+        final data = packet["data"] as Map<String, dynamic>;
+        final size = (packet["size"] as num).toInt();
+
+        for (var cx = x - size; cx <= x + size; cx++) {
+          for (var cy = y - size; cy <= y + size; cy++) {
+            final wcx = grid.wrap ? cx % grid.width : cx;
+            final wcy = grid.wrap ? cy % grid.height : cy;
+            if (!g.inside(wcx, wcy)) continue;
+            final cell = Cell(wcx, wcy);
+            cell.id = id;
+            cell.rot = rot;
+            cell.data = data;
+            cell.invisible = false;
+            cell.tags = {};
+            cell.lifespan = 0;
+            g.set(wcx, wcy, cell);
+          }
+        }
+      }
+      if (packetType == "bg") {
+        final x = (packet["x"] as num).toInt();
+        final y = (packet["y"] as num).toInt();
+        final bg = packet["bg"] as String;
+        final size = (packet["size"] as num).toInt();
+
+        for (var cx = x - size; cx <= x + size; cx++) {
+          for (var cy = y - size; cy <= y + size; cy++) {
+            final wcx = grid.wrap ? cx % grid.width : cx;
+            final wcy = grid.wrap ? cy % grid.height : cy;
+            if (!g.inside(wcx, wcy)) continue;
+            g.setPlace(wcx, wcy, bg);
+          }
+        }
+      }
+      if (packetType == "wrap") {
+        g.wrap = packet["v"];
+      }
+      if (packetType == "setinit") {
+        final levelCode = packet["code"] as String;
+        if (isinitial) {
+          grid = loadStr(levelCode);
+        } else {
+          initial = loadStr(levelCode);
+        }
+      }
+      if (packetType == "new-hover") {
+        final String uuid = packet["uuid"];
+        final x = (packet["x"] as num).toDouble();
+        final y = (packet["y"] as num).toDouble();
+        final String id = packet["id"];
+        final rot = (packet["rot"] as num).toInt();
+        final Map<String, dynamic> data = packet["data"];
+
+        hovers[uuid] = CellHover(x, y, id, rot, data);
+      }
+      if (packetType == "set-hover") {
+        final String uuid = packet["uuid"];
+        final x = (packet["x"] as num).toDouble();
+        final y = (packet["y"] as num).toDouble();
+
+        hovers[uuid]?.x = x;
+        hovers[uuid]?.y = y;
+      }
+      if (packetType == "drop-hover") {
+        final String uuid = packet["uuid"];
+        hovers.remove(uuid);
+      }
+      if (packetType == "set-cursor") {
+        final String id = packet["id"];
+        final x = (packet["x"] as num).toDouble();
+        final y = (packet["y"] as num).toDouble();
+        final String selection = packet["selection"];
+        final String texture = packet["texture"];
+        final rot = (packet["rot"] as num).toInt();
+        final data = packet["data"] as Map<String, dynamic>;
+
+        if (cursors[id] == null) {
+          cursors[id] = CellCursor(x, y, selection, rot, texture, data);
+        } else {
+          cursors[id]?.x = x;
+          cursors[id]?.y = y;
+          cursors[id]?.selection = selection;
+          cursors[id]?.texture = texture;
+          cursors[id]?.rotation = rot;
+          cursors[id]?.data = data;
+        }
+      }
+      if (packetType == "invis") {
+        final x = (packet["x"] as int).toInt();
+        final y = (packet["y"] as int).toInt();
+        final bool v = packet["v"];
+
+        final cx = g.cx(x);
+        final cy = g.cy(y);
+
+        if (g.inside(cx, cy)) {
+          g.at(cx, cy).invisible = v;
+        }
+      }
+      if (packetType == "chat") {
+        final String signed = packet["author"];
+        final String content = packet["content"];
+
+        if (content.contains("@[$clientID]")) {
+          playSound(pingSound);
+        }
+
+        final msgStr = "[$signed] > $content";
+
+        msgs.add(msgStr);
+
+        msgsListener.sink.add(msgStr);
+      }
+      if (packetType == "set-role") {
+        final String id = packet["id"];
+        final role = getRoleStr(packet["role"]);
+
+        if (role == null) return;
+
+        roles[id] = role;
+      }
+      if (packetType == "del-role") {
+        final String id = packet["id"];
+        roles.remove(id);
+      }
+      if (packetType == "remove-cursor") {
+        final String id = packet["id"];
+        cursors.remove(id);
+      }
+      if (packetType == "grid") {
+        final String code = packet["code"];
+        if (overlays.isActive("loading")) {
+          overlays.remove("loading");
+          AchievementManager.complete("friends");
+        }
+        if (isinitial) {
+          grid = loadStr(code);
+          initial = grid.copy;
+          isinitial = true;
+          running = false;
+          buttonManager.buttons['play-btn']?.texture = 'mover.png';
+          buttonManager.buttons['play-btn']?.rotation = 0;
+          buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+
+          buildEmpty();
+        } else {
+          initial = loadStr(code);
+        }
+      }
+      if (packetType == "edtype") {
+        final String et = packet["et"];
+        edType = et == "puzzle" ? EditorType.loaded : EditorType.making;
+
+        loadAllButtons();
+      }
+    }
+  }
+
+  void legacyMultiplayerCallback(data) {
     if (data is String) {
       final cmd = data.split(' ').first;
       final args = data.split(' ').sublist(1);
