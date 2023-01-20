@@ -1759,8 +1759,8 @@ class VX {
       final data = {...rawData};
       data.remove("@life");
       data.remove("@invis");
-      c.lifespan = (rawData["@life"] as num).toInt();
-      c.invisible = rawData["@invis"];
+      c.lifespan = ((rawData["@life"] as num?) ?? 0).toInt();
+      c.invisible = rawData["@invis"] ?? false;
 
       l.add(c);
     }
@@ -1772,12 +1772,32 @@ class VX {
     return [
       cell.id,
       cell.rot,
-      {...cell.data, "@life": cell.lifespan, "@invis": cell.invisible}
+      {
+        ...cell.data,
+        if (cell.lifespan != 0) "@life": cell.lifespan,
+        if (cell.invisible) "@invis": cell.invisible
+      }
     ];
   }
 
-  static List<List> encodeLayers(List<Cell> cells) {
-    return cells.map(encodeCell).toList();
+  static dynamic encodeLayers(List<Cell> cells) {
+    final l = [];
+
+    var isAllSimple = true;
+
+    for (var cell in cells) {
+      if (cell.data.isNotEmpty) isAllSimple = false;
+      if (cell.invisible) isAllSimple = false;
+      if (cell.lifespan != 0) isAllSimple = false;
+    }
+
+    if (isAllSimple) {
+      return l.map((cell) => "${cell.id}${cell.rot}").join("|");
+    }
+
+    for (var cell in cells) l.addAll(encodeCell(cell));
+
+    return l;
   }
 
   static List<List> parseEncodedLayers(dynamic val) {
@@ -1805,5 +1825,30 @@ class VX {
     } else {
       return [];
     }
+  }
+
+  static String encodeGrid(Grid grid, {String title = "", String desc = ""}) {
+    var str = header + "$title;$desc;";
+
+    var rawCellData = [];
+    final Map<String, dynamic> gridData = {"GT": "fixed", "A": "tpc"};
+
+    grid.forEach((cell, x, y) {
+      final bg = Cell(0, 0, 0)..id = grid.placeable(x, y);
+      final v = encodeLayers([cell, bg]);
+      rawCellData.add(v);
+    });
+
+    var compressedCellData =
+        base64.encode(deflate.encode(utf8.encode(json.encode(rawCellData))));
+
+    var compressedGridData =
+        base64.encode(deflate.encode(utf8.encode(json.encode(gridData))));
+
+    str += "$compressedCellData;$compressedGridData";
+
+    str += "${grid.width};${grid.height};";
+
+    return str;
   }
 }
