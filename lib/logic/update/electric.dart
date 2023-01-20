@@ -36,7 +36,7 @@ class ElectricPath {
 
       l.add(p);
     }
-    l.removeWhere((p) => p.isOffGrid);
+    l.removeWhere((p) => p.isOffGrid || !p.valid);
     return l;
   }
 
@@ -49,6 +49,15 @@ class ElectricPath {
       : false;
 
   Cell? get host => grid.get(x, y);
+
+  bool get valid => host == null
+      ? false
+      : electricManager.canHost(
+          host!,
+          x,
+          y,
+          source,
+        );
 }
 
 class ElectricManager {
@@ -67,6 +76,12 @@ class ElectricManager {
   }
 
   bool blockedByHost(Cell host, int x, int y, int dir, Cell source) {
+    return false;
+  }
+
+  bool canHost(Cell host, int x, int y, Cell source) {
+    if (host.id == "electric_wire") return true;
+
     return false;
   }
 
@@ -117,6 +132,14 @@ class ElectricManager {
     setPower(cell, x, y, max(power - amount, 0));
 
     return min(power, amount);
+  }
+
+  void removePower(Cell cell, int x, int y, double amount) {
+    final power = readPower(cell, x, y);
+
+    if (power < amount) return;
+
+    setPower(cell, x, y, power - amount);
   }
 
   void givePower(Cell cell, int x, int y, double amount) {
