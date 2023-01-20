@@ -89,6 +89,7 @@ class ElectricManager {
   }
 
   List<ElectricPath> optimalDirections(Cell source, int x, int y) {
+    if (!canHost(source, x, y, source)) return [];
     var l = ElectricPath([], x, y, source).next;
     int? lastHash;
 
