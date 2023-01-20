@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' hide Colors, ListTile;
-import 'package:fluent_ui/fluent_ui.dart'
-    show Colors, FluentIcons, ScaffoldPage, ListTile;
+import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage, ListTile;
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
@@ -24,6 +23,7 @@ final List<String> changes = [
   "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
   "Added Secret Cells (check cell searching)",
   "Reworked the multiplayer packet format (more robust, but may require more bandwidth)",
+  "Added VX support (VX is a saving format made by ModularCM)",
   "NOT YET: Added Electric Cells!",
   "NOT YET: Added support for TPC Content Hubs",
   "NOT YET: Removed Worlds in favor of Workspaces",
