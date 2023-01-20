@@ -58,6 +58,9 @@ class ElectricPath {
           y,
           source,
         );
+
+  @override
+  int get hashCode => Object.hashAll([source.hashCode, x, y, ...fullPath]);
 }
 
 class ElectricManager {
@@ -87,6 +90,7 @@ class ElectricManager {
 
   List<ElectricPath> optimalDirections(Cell source, int x, int y) {
     var l = ElectricPath([], x, y, source).next;
+    int? lastHash;
 
     while (l.isNotEmpty) {
       var nl = <ElectricPath>[];
@@ -99,7 +103,14 @@ class ElectricManager {
         }
       }
 
+      final nh = Object.hashAll(nl);
+
+      if (lastHash != null) {
+        if (Object.hashAll(l) == nh) return [];
+      }
+
       l = nl;
+      lastHash = nh;
     }
 
     return [];
