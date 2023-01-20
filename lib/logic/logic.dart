@@ -374,3 +374,31 @@ void openFileManager(Directory dir) {
       includeParentEnvironment: true,
       mode: ProcessStartMode.detached);
 }
+
+enum CurrentSavingFormat {
+  P6,
+  VX,
+}
+
+void setCurrentSavingFormat(CurrentSavingFormat format) {
+  storage.setString("current_saving_format", format.name);
+}
+
+Map<String, CurrentSavingFormat> _csfCache = {};
+
+CurrentSavingFormat get currentSavingFormat {
+  final setting = storage.getString("current_saving_format");
+
+  if (setting == null) return CurrentSavingFormat.P6;
+
+  if (setting != null && _csfCache[setting] != null) return _csfCache[setting]!;
+
+  for (var format in CurrentSavingFormat.values) {
+    if (format.name == setting) {
+      _csfCache[setting!] = format;
+      return format;
+    }
+  }
+
+  return CurrentSavingFormat.P6;
+}
