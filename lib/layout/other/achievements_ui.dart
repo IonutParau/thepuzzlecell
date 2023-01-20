@@ -6,7 +6,9 @@ import '../../logic/logic.dart';
 class AchievementsUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final completed = achievementData.keys.where((id) => AchievementManager.hasAchievement(id)).toList();
+    final completed = achievementData.keys
+        .where((id) => AchievementManager.hasAchievement(id))
+        .toList();
     return ScaffoldPage(
       header: Container(
         color: Colors.grey[100],
@@ -30,7 +32,7 @@ class AchievementsUI extends StatelessWidget {
           final id = completed[i];
           final data = achievementData[id]!;
           return Container(
-            height: 7.h,
+            height: 9.h,
             color: Colors.grey[100],
             margin: EdgeInsets.symmetric(vertical: 1.h),
             child: ListTile(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Colors, ListTile;
-import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage, ListTile;
+import 'package:fluent_ui/fluent_ui.dart'
+    show Colors, FluentIcons, ScaffoldPage, ListTile;
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
@@ -21,13 +22,12 @@ final List<String> changes = [
   "Added modules",
   "Added a fancy hover effect for cells",
   "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
-  "Added Electric Cells! (this is placeholder)",
   "Added Secret Cells (check cell searching)",
   "Reworked the multiplayer packet format (more robust, but may require more bandwidth)",
+  "NOT YET: Added Electric Cells!",
   "NOT YET: Added support for TPC Content Hubs",
   "NOT YET: Removed Worlds in favor of Workspaces",
   "NOT YET: Added Macros (buttons that run little scripts)",
-  "Added support for theming",
 ];
 
 IconData getTrailing(String change) {
