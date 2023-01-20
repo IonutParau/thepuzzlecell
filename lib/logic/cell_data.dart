@@ -1229,7 +1229,7 @@ final categories = [
       ),
       CellCategory(
         "Heat Cells",
-        "Cells that heats up or cools down other cells",
+        "Cells that heats up or cools down other cells.\nHot cells update \"chaotically\".\nIf lifespan % max(heat / 3, 3) is equal to 0 (where lifespan is how many ticks the cell has been alive for and heat is its heat counter), the cell will not update.",
         [
           "magma",
           "snow",
