@@ -177,6 +177,7 @@ In the text, @variablename gets replaced with the variable.
 | transfer_success               | The Successfully Transfered Game Data event (for Copy Old Instance)                                                                     |                               |
 | open                           | The name of the Open button                                                                                                             |                               |
 | back                           | The name of the Back button                                                                                                             |                               |
+| current_saving_format          | The name of the Current Saving Format setting                                                                                           |                               |
 
 ## Button IDs:
 

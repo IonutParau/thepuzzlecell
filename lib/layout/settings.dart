@@ -229,6 +229,36 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       "Save Grid In History Upon Exit",
                       false,
                     ),
+                    SizedBox(
+                      width: 60.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            lang('current_saving_format', 'Current Saving Format') + ': ',
+                            style: textStyle,
+                          ),
+                          SizedBox(
+                            height: 5.h,
+                            child: DropDownButton(
+                              leading: Icon(FluentIcons.save),
+                              title: Text(currentSavingFormat.name),
+                              placement: FlyoutPlacement.start,
+                              items: [
+                                for (var format in CurrentSavingFormat.values)
+                                  MenuFlyoutItem(
+                                    text: Text(format.name),
+                                    leading: Icon(FluentIcons.save),
+                                    onPressed: () async {
+                                      await setCurrentSavingFormat(format);
+                                      setState(() {});
+                                    },
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 ListView(
@@ -287,7 +317,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       child: Row(
                         children: [
                           Text(
-                            lang('music_type', 'Music: '),
+                            lang('music_type', 'Music') + ': ',
                             style: textStyle,
                           ),
                           SizedBox(
