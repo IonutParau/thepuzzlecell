@@ -2954,15 +2954,15 @@ final cellInfo = <String, CellProfile>{
   ),
   "nuke": CellProfile(
     "The Nuke Cell",
-    "A suggestion that became a youtuber. He makes good videos, check him out!",
+    "A suggestion that became a youtuber. He makes good videos, check him out!\nActs like a rotator and a generator on all sides.",
   ),
   "bread": CellProfile(
     "Bread",
-    "A reference to a really good mod I never played.\nMake sure to try out the actual mod once it releases too!",
+    "A reference to a really good mod I never played.\nMake sure to try out the actual mod once it releases too!\nAn enemy that is strong enough to resist a force of 2 cells.",
   ),
   "cellua": CellProfile(
     "CelLua",
-    "CelLua ok",
+    "CelLua ok\nActs like a puller.",
   ),
   "poly": CellProfile(
     "PolyMachine Push",
@@ -2970,7 +2970,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "mystic_x": CellProfile(
     "Cell Machine Mystic Mod X Icon",
-    "I'm still surprised Trash Cell made that great of a mod with 0 prior coding knowledge. (He did use a lot of help but he still did it)",
+    "I'm still surprised The Trash Cell made that great of a mod with 0 prior coding knowledge. (He did use a lot of help but he still did it)\nActs like a mover.",
   ),
 };
 
