@@ -86,6 +86,7 @@ Grid loadStr(String str, [bool allowGameStateChanges = true]) {
   if (str.startsWith('P4;')) return P4.decodeString(str, allowGameStateChanges);
   if (str.startsWith('P5;')) return P5.decodeString(str, allowGameStateChanges);
   if (str.startsWith('P6;')) return P6.decodeString(str, allowGameStateChanges);
+  if (str.startsWith('VX;')) return VX.decodeString(str);
 
   throw "Unsupported saving format";
 }
@@ -1718,18 +1719,6 @@ class VX {
   static dynamic encodeLayers(List<Cell> cells) {
     final l = [];
 
-    var isAllSimple = true;
-
-    for (var cell in cells) {
-      if (cell.data.isNotEmpty) isAllSimple = false;
-      if (cell.invisible) isAllSimple = false;
-      if (cell.lifespan != 0) isAllSimple = false;
-    }
-
-    if (isAllSimple) {
-      return l.map((cell) => "${cell.id}${cell.rot}").join("|");
-    }
-
     for (var cell in cells) l.addAll(encodeCell(cell));
 
     return l;
@@ -1746,6 +1735,8 @@ class VX {
       return cells;
     } else if (val is String) {
       final parts = val.split('|');
+
+      print(val);
 
       final cells = <List>[];
 
@@ -1778,7 +1769,7 @@ class VX {
 
     var compressedGridData = base64.encode(deflate.encode(utf8.encode(json.encode(gridData))));
 
-    str += "$compressedCellData;$compressedGridData";
+    str += "$compressedCellData;$compressedGridData;";
 
     str += "${grid.width};${grid.height};";
 
@@ -1786,43 +1777,49 @@ class VX {
   }
 
   static Grid decodeString(String str) {
-    final segs = str.split(';');
+    try {
+      final segs = str.split(';');
 
-    final title = segs[1];
-    final desc = segs[2];
+      final title = segs[1];
+      final desc = segs[2];
 
-    final List rawCellData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[3]))));
-    final Map<String, dynamic> rawGridData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[4]))));
+      final List rawCellData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[3]))));
+      final Map<String, dynamic> rawGridData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[4]))));
 
-    if (rawGridData['GT'] != "fixed") throw "Dynamic Grids are not supported by The Puzzle Cell.";
+      if (rawGridData['GT'] != "fixed") throw "Dynamic Grids are not supported by The Puzzle Cell.";
 
-    final author = rawGridData['A'];
+      final author = rawGridData['A'];
 
-    // Optionally preprocess
-    final preprocessor = preprocessors[author];
-    if (preprocessor != null) {
-      for (var i = 0; i < rawCellData.length; i++) {
-        rawCellData[i] = preprocessor(rawCellData[i]);
+      // Optionally preprocess
+      final preprocessor = preprocessors[author];
+      if (preprocessor != null) {
+        for (var i = 0; i < rawCellData.length; i++) {
+          rawCellData[i] = preprocessor(rawCellData[i]);
+        }
       }
+
+      final width = int.parse(segs[5]);
+      final height = int.parse(segs[6]);
+
+      final grid = Grid(width, height);
+      grid.title = title;
+      grid.desc = desc;
+
+      var i = -1;
+      grid.forEach((cell, x, y) {
+        i++;
+        final cells = parseCellsFromLayers(parseEncodedLayers(rawCellData[i]));
+
+        grid.set(x, y, cells[0]);
+        grid.setPlace(x, y, cells[1].id);
+      });
+
+      return grid;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      return Grid(1, 1);
     }
-
-    final width = int.parse(segs[5]);
-    final height = int.parse(segs[6]);
-
-    final grid = Grid(width, height);
-    grid.title = title;
-    grid.desc = desc;
-
-    var i = -1;
-    grid.forEach((cell, x, y) {
-      i++;
-      final cells = parseCellsFromLayers(parseEncodedLayers(rawCellData[i]));
-
-      grid.set(x, y, cells[0]);
-      grid.setPlace(x, y, cells[1].id);
-    });
-
-    return grid;
   }
 
   static Map<String, dynamic Function(dynamic val)> preprocessors = {};
