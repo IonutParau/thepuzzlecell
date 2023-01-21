@@ -3242,71 +3242,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     // Custom cell stuff
 
-    var text = "";
-
-    String countToString(num? count) {
-      if (count == double.infinity) return "inf";
-      if (count == double.negativeInfinity) return "-inf";
-      if (count == double.nan) return "nan";
-
-      return count.toString();
-    }
-
-    if (cell.id == "counter" || cell.id == "math_number" || cell.id == "math_safe_number") {
-      text = countToString(cell.data['count']);
-    }
-
-    if (cell.id == "bulldozer" && (cell.data['bias'] != 1)) {
-      text = countToString(cell.data['bias']);
-    }
-
-    if ((cell.id == "debt" || cell.id == "mech_debt") && (cell.data['debt'] != 1)) {
-      text = (cell.data['debt'] ?? 1).toString();
-    }
-
-    if (cell.id == "mech_trash") {
-      text = "${cell.data['countdown'] ?? 0}";
-      if (text == "0") text = "";
-    }
-
-    if (cell.id == "math_memwriter" || cell.id == "math_memreader") {
-      text = "${cell.data['channel'] ?? 0}\n\n${cell.data['index'] ?? 0}";
-    }
-
-    if (cell.id == "math_to_mech") {
-      text = "${countToString(cell.data['offset'])}";
-      if ((cell.data['offset'] ?? 0) == 0) {
-        text = "";
-      }
-    }
-    if (cell.id == "mech_to_math") {
-      text = "x${countToString(cell.data['scale'] ?? 1)}";
-      if ((cell.data['scale'] ?? 1) == 1) {
-        text = "";
-      }
-    }
-    if (cell.id == "math_wireless_tunnel") {
-      text = "${cell.data['id'] ?? 0}\n\n${cell.data['target']}";
-    }
-
-    if (cell.id == "spikefactory") {
-      text = "${countToString(cell.data['interval'] ?? 1)}\n${cell.data['radius'] ?? 1}";
-      if ((cell.data['interval'] ?? 1) == 1 || (cell.data['radius'] ?? 1) == 1) {
-        text = "";
-      }
-    }
-
-    if (cell.id == "trash_can") {
-      text = "${cell.data['remaining'] ?? 10}";
-    }
-
-    if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id) && (cell.data['id'] ?? 0) != 0) {
-      text = "${cell.data['id'] ?? 0}";
-    }
-
-    if (["transformer", "transformer_cw", "transformer_ccw", "triple_transformer", "mech_comparator", "mech_sensor", "transform_puzzle"].contains(cell.id) && (cell.data['offset'] ?? 1) != 1) {
-      text = "${cell.data['offset'] ?? 1}";
-    }
+    var text = textToRenderOnCell(cell);
 
     if (text != "") {
       final tp = TextPainter(
