@@ -3,6 +3,7 @@ part of logic;
 final subticks = [
   biome,
   stoppers,
+  shield,
   codeCellsSubtick,
   heat,
   mechs,

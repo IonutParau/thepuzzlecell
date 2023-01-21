@@ -254,5 +254,17 @@ String textToRenderOnCell(Cell cell) {
     text = "${cell.data['offset'] ?? 1}";
   }
 
+  if (cell.id == "text") {
+    text = "${cell.data['text'] ?? ""}";
+  }
+
+  if (cell.id == "custom_weight") {
+    text = "${cell.data['mass'] ?? 1}";
+  }
+
+  if (cell.id == "portal_c") {
+    text = "${cell.data["id"] ?? ""} -> ${cell.data["target_id"] ?? ""}";
+  }
+
   return text;
 }

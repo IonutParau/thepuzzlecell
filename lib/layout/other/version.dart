@@ -28,6 +28,11 @@ final List<String> changes = [
   "NOT YET: Added support for TPC Content Hubs",
   "NOT YET: Removed Worlds in favor of Workspaces",
   "NOT YET: Added Macros (buttons that run little scripts)",
+  "Added Text Cell",
+  "Added Shield",
+  "Added Debt Enemy",
+  "Added Portal C",
+  "Added Custom Weight",
 ];
 
 IconData getTrailing(String change) {

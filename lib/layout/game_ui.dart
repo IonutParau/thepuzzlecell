@@ -2401,6 +2401,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       "effects/heat.png",
       "effects/cold.png",
       "effects/consistent.png",
+      "effects/shield.png",
     ]);
 
     await loadSkinTextures();
@@ -3225,6 +3226,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
     if (cell.tags.contains("stopped")) {
       effects.add("stopped");
+    }
+    if (cell.tags.contains("shielded")) {
+      effects.add("shield");
     }
 
     for (var effect in effects) {

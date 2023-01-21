@@ -137,6 +137,8 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
         return mt != MoveType.puzzle;
       case "bread":
         return force > 2;
+      case "debt_enemy":
+        return playerKeys >= (cell.data['debt'] ?? 1);
       default:
         return true;
     }
@@ -160,6 +162,7 @@ final justMoveInsideOf = [
   "time_reset",
   "portal_a",
   "portal_b",
+  "portal_c",
 ].toSet().toList();
 
 final trashes = [
@@ -193,14 +196,21 @@ final enemies = [
   "mech_enemy",
   "friend",
   "bread",
+  "debt_enemy",
 ].toSet().toList();
 
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
   dir %= 4;
+  if (into.tags.contains("shielded")) return false;
+
   if (enemies.contains(into.id) && into.tags.contains("stopped")) return false;
 
   if (modded.contains(into.id)) {
     return scriptingManager.moveInsideOf(into, x, y, dir, force, mt);
+  }
+
+  if (into.id == "debt_enemy") {
+    return playerKeys >= (into.data['debt'] ?? 1);
   }
 
   if (into.id == "bread") {
@@ -406,6 +416,49 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
     return;
   }
 
+  if (destroyer.id == "portal_c") {
+    var foundOutput = false;
+    var outputX = 0;
+    var outputY = 0;
+    var closestDist = double.infinity;
+    var extraRot = 0;
+    var target = destroyer.data['target_id'] ?? "";
+
+    grid.loopChunks("portal_c", GridAlignment.bottomright, (cell, cx, cy) {
+      var dx = cx - x;
+      var dy = cy - y;
+      var d = dx * dx + dy * dy;
+
+      if ((cell.data['id'] ?? "") == target && closestDist > d) {
+        closestDist = d.toDouble();
+        outputX = cx;
+        outputY = cy;
+        foundOutput = true;
+
+        extraRot = (cell.rot - destroyer.rot + 2) % 4;
+      }
+    }, shouldUpdate: false, filter: (cell, x, y) => cell.id == "portal_c");
+
+    if (foundOutput) {
+      final odir = (dir + extraRot) % 4;
+      final fx = frontX(outputX, odir);
+      final fy = frontY(outputY, odir);
+      final sending = moving.copy;
+      sending.rot += extraRot;
+      sending.rot %= 4;
+
+      if (grid.inside(fx, fy)) {
+        QueueManager.add("post-move", () {
+          if (destroyer.tags.contains("portal_c_working")) return;
+          destroyer.tags.add("portal_c_working");
+          push(fx, fy, odir, 1, replaceCell: sending);
+          destroyer.tags.remove("portal_c_working");
+        });
+      }
+    }
+    return;
+  }
+
   if (destroyer.id == "forker") {
     grid.addBroken(moving, x, y);
     final r = destroyer.rot;
@@ -572,6 +625,12 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       grid.addBroken(moving, x, y, "shrinking");
       grid.set(x, y, Cell(x, y));
       game.yellowparticles.emit(enemyParticleCounts, x, y);
+    } else if (destroyer.id == "debt_enemy") {
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.addBroken(moving, x, y, "shrinking");
+      grid.set(x, y, Cell(x, y));
+      game.yellowparticles.emit(enemyParticleCounts, x, y);
+      playerKeys -= (destroyer.data['debt'] as num? ?? 1).toInt();
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
@@ -656,6 +715,9 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
 
   if (cell.id == "weight") {
     return -1;
+  }
+  if (cell.id == "custom_weight") {
+    return -(cell.data['mass'] ?? 1);
   }
   final odir = (dir + 2) % 4; // Opposite direction
 

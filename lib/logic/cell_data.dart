@@ -350,6 +350,11 @@ final cells = {
   "cellua",
   "poly",
   "mystic_x",
+  "text",
+  "shield",
+  "custom_weight",
+  "debt_enemy",
+  "portal_c",
 }.toList();
 
 final modded = <String>[];
@@ -359,6 +364,11 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "portal_c.png": "unique/portal/portal_c.png",
+  "debt_enemy.png": "destroyers/enemy/debt_enemy.png",
+  "custom_weight.png": "push/custom_weight.png",
+  "shield.png": "unique/shield.png",
+  "text.png": "unique/text.png",
   "bread.png": "references/bread.png",
   "cellua.png": "references/cellua.png",
   "poly.png": "references/poly.png",
@@ -780,6 +790,7 @@ final categories = [
           "threedir",
           "mobile_trash",
           "weight",
+          "custom_weight",
         ],
         "push",
         max: 3,
@@ -1126,6 +1137,7 @@ final categories = [
           "explosive",
           "mech_enemy",
           "friend",
+          "debt_enemy",
         ],
         "enemy",
       ),
@@ -1159,6 +1171,7 @@ final categories = [
         [
           "portal_a",
           "portal_b",
+          "portal_c",
           "wormhole",
         ],
         "wormhole",
@@ -1263,6 +1276,8 @@ final categories = [
       "crystal",
       "floppy",
       "spikefactory",
+      "text",
+      "shield",
     ],
     "code_program",
   ),
@@ -1549,6 +1564,7 @@ final categories = [
       "robot",
       "assistant",
       "debt",
+      "debt_enemy",
     ],
     "puzzle",
   ),
@@ -1923,6 +1939,10 @@ final cellInfo = <String, CellProfile>{
   "weight": CellProfile(
     "Weight",
     "A push cell but with a mass of 1. This means it can stop 1 mover, but 2 would still push it",
+  ),
+  "custom_weight": CellProfile(
+    "Custom Weight",
+    "A weight with a mass specified in its property menu.",
   ),
   "cross_replicator": CellProfile(
     "Cross Replicator",
@@ -2972,6 +2992,22 @@ final cellInfo = <String, CellProfile>{
     "Cell Machine Mystic Mod X Icon",
     "I'm still surprised The Trash Cell made that great of a mod with 0 prior coding knowledge. (He did use a lot of help but he still did it)\nActs like a mover.",
   ),
+  "text": CellProfile(
+    "Text",
+    "This cell displays the text specified in its properties.",
+  ),
+  "shield": CellProfile(
+    "Shield",
+    "Blocks Enemies from dying and trashes from eating",
+  ),
+  "debt_enemy": CellProfile(
+    "Debt Enemy",
+    "An enemy, but needs a specific amount of keys to be killable, and also takes away that amount of keys",
+  ),
+  "portal_c": CellProfile(
+    "Portal C",
+    "Like Portal A and Portal B, but it has an ID and TargetID, and teleports to a Portal C with the ID equal to this ones Target ID.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3118,6 +3154,9 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
     CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
   ],
+  "debt_enemy": [
+    CellProperty("Debt", "debt", CellPropertyType.integer, 1),
+  ],
   "configurable_filler": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
@@ -3137,5 +3176,15 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Program ID", "id", CellPropertyType.text, "default"),
     CellProperty("Instructions Per Tick", "ipt", CellPropertyType.integer, 100),
     CellProperty("Code Pointer", "codeptr", CellPropertyType.integer, 0),
+  ],
+  "text": [
+    CellProperty("Text", "text", CellPropertyType.text, ""),
+  ],
+  "custom_weight": [
+    CellProperty("Mass", "mass", CellPropertyType.integer, 1),
+  ],
+  "portal_c": [
+    CellProperty("ID", "id", CellPropertyType.text, ""),
+    CellProperty("Target ID", "target_id", CellPropertyType.text, ""),
   ],
 };
