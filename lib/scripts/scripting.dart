@@ -7,8 +7,9 @@ class ModInfo {
   String icon;
   Directory dir;
   Set<String> cells;
+  String? readme;
 
-  ModInfo(this.title, this.desc, this.author, this.icon, this.dir, this.cells);
+  ModInfo(this.title, this.desc, this.author, this.icon, this.dir, this.cells, this.readme);
 }
 
 class ScriptingManager {
@@ -247,6 +248,17 @@ class ScriptingManager {
     }
 
     return l;
+  }
+
+  String? modReadme(String id) {
+    for (var lua in luaScripts) {
+      if (lua.id == id) {
+        final f = File(path.join(lua.dir.path, 'README.md'));
+        return f.existsSync() ? f.readAsStringSync() : null;
+      }
+    }
+
+    return null;
   }
 
   bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {

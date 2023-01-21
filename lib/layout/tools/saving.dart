@@ -1692,7 +1692,7 @@ class VX {
     for (var layer in layers) {
       final String id = layer[0];
       final int rot = (layer[1] as num).toInt();
-      final Map<String, dynamic> rawData = layer[2];
+      final Map<String, dynamic> rawData = layer[2] is List ? {} : layer[2];
       final c = Cell(0, 0, rot);
       c.id = id;
       c.lastvars.id = id;
@@ -1786,7 +1786,7 @@ class VX {
       final List rawCellData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[3]))));
       final Map<String, dynamic> rawGridData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[4]))));
 
-      if (rawGridData['GT'] != "fixed") throw "Dynamic Grids are not supported by The Puzzle Cell.";
+      if ((rawGridData['GT'] ?? "fixed") != "fixed") throw "Dynamic Grids are not supported by The Puzzle Cell.";
 
       final author = rawGridData['A'];
 

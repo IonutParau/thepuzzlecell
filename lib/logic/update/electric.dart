@@ -21,12 +21,10 @@ class ElectricPath {
       // This might look weird, it means "Don't immediately return to the last point"
       if (fullPath.isNotEmpty && endDir == (i + 2) % 4) continue;
 
-      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source))
-        continue;
+      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) continue;
 
       // Some cells might block where they can transfer to.
-      if (host != null &&
-          !electricManager.blockedByHost(host!, x, y, i, source)) continue;
+      if (host != null && !electricManager.blockedByHost(host!, x, y, i, source)) continue;
 
       final p = copy;
 
@@ -44,9 +42,7 @@ class ElectricPath {
   int get endDir => fullPath.last;
 
   bool get isOffGrid => !grid.inside(x, y);
-  bool get isDone => grid.inside(x, y)
-      ? electricManager.isInput(grid.at(x, y), x, y, endDir)
-      : false;
+  bool get isDone => grid.inside(x, y) ? electricManager.isInput(grid.at(x, y), x, y, endDir) : false;
 
   Cell? get host => grid.get(x, y);
 
@@ -146,12 +142,13 @@ class ElectricManager {
     return min(power, amount);
   }
 
-  void removePower(Cell cell, int x, int y, double amount) {
+  bool removePower(Cell cell, int x, int y, double amount) {
     final power = readPower(cell, x, y);
 
-    if (power < amount) return;
+    if (power < amount) return false;
 
     setPower(cell, x, y, power - amount);
+    return true;
   }
 
   void givePower(Cell cell, int x, int y, double amount) {
