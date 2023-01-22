@@ -19,6 +19,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:the_puzzle_cell/layout/other/other.dart';
+import 'package:the_puzzle_cell/logic/core/lan.dart' show setupLanServer, closeLanServer;
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/logic/performance/grid_benchmark.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';

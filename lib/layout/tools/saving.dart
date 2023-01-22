@@ -1690,7 +1690,7 @@ class VX {
     final l = <Cell>[];
 
     for (var layer in layers) {
-      final String id = layer[0];
+      final id = layer[0].toString();
       final int rot = (layer[1] as num).toInt();
       final Map<String, dynamic> rawData = layer[2] is List ? {} : layer[2];
       final c = Cell(0, 0, rot);
@@ -1771,7 +1771,7 @@ class VX {
 
     str += "$compressedCellData;$compressedGridData;";
 
-    str += "${grid.width};${grid.height};";
+    str += "${grid.width};${grid.width == grid.height ? "=" : grid.height};";
 
     return str;
   }
@@ -1799,7 +1799,7 @@ class VX {
       }
 
       final width = int.parse(segs[5]);
-      final height = int.parse(segs[6]);
+      final height = segs[6] == "=" ? width : int.parse(segs[6]);
 
       final grid = Grid(width, height);
       grid.title = title;

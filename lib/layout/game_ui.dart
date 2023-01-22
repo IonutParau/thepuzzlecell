@@ -456,6 +456,80 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
                                   ],
                                 ),
                               ],
+                              if (!game.isMultiplayer || game.isLan) ...[
+                                Spacer(),
+                                Column(
+                                  children: [
+                                    MaterialButton(
+                                      onPressed: () async {
+                                        if (game.isLan) {
+                                          await closeLanServer();
+                                          game.isLan = false;
+                                          game.ip = null;
+                                          game.multiplayerListener.cancel();
+                                          game.loadAllButtons();
+                                        } else {
+                                          await setupLanServer();
+                                          game.isLan = true;
+                                          final ip = "ws://0.0.0.0:3000";
+                                          game.channel = WebSocketChannel.connect(Uri.parse(ip));
+                                          game.multiplayerListener = game.channel.stream.listen(
+                                            game.multiplayerCallback,
+                                            onDone: () {
+                                              Navigator.of(context).popUntil((route) {
+                                                return route.settings.name == "/main";
+                                              });
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) {
+                                                  return DisconnectionDialog();
+                                                },
+                                              );
+                                            },
+                                            onError: (e) {
+                                              Navigator.of(context).popUntil((route) {
+                                                return route.settings.name == "/main";
+                                              });
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) {
+                                                  return BasicErrorDialog(e.toString());
+                                                },
+                                              );
+                                            },
+                                          );
+                                          game.ip = "https://0.0.0.0:3000";
+                                          game.clientID = storage.getString('clientID') ?? '@uuid';
+
+                                          while (game.clientID.contains('@uuid')) {
+                                            game.clientID = game.clientID.replaceFirst('@uuid', Uuid().v4());
+                                          }
+                                          game.sendToServer('token', {"version": currentVersion.split(' ').first, "clientID": game.clientID});
+                                          game.loadAllButtons();
+                                        }
+                                      },
+                                      child: Opacity(
+                                        opacity: storage.getDouble("editor_menu_button_opacity")!,
+                                        child: Image.asset(
+                                          'assets/images/' + textureMap['displayer.png']!,
+                                          fit: BoxFit.fill,
+                                          colorBlendMode: BlendMode.clear,
+                                          filterQuality: FilterQuality.none,
+                                          isAntiAlias: true,
+                                          width: 5.w,
+                                          height: 5.w,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      game.isLan ? lang('close_lan', 'Close LAN') : lang('open_lan', 'Open LAN'),
+                                      style: TextStyle(
+                                        fontSize: 7.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                               Spacer(flex: 5),
                             ],
                           ),
@@ -840,6 +914,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   String? ip;
 
   bool get isMultiplayer => ip != null;
+
+  var isLan = false;
 
   late WebSocketChannel channel;
 

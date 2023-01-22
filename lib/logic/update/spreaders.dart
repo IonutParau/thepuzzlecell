@@ -88,16 +88,16 @@ void doFiller(Cell cell, int x, int y) {
 }
 
 void doConfigurableFiller(Cell cell, int x, int y) {
-  final consistency = cell.data['consistency'] as num;
+  final consistency = (cell.data['consistency'] ?? 100) as num;
   if (rng.nextDouble() > consistency / 100) return;
 
   final filler = cell.copy;
   filler.updated = true;
 
-  final rotate = cell.data['rotate'] as bool;
-  final mutationChance = cell.data['mutationChance'] as num;
-  final attackChance = cell.data['attackChance'] as num;
-  final id = cell.data['id'] as int;
+  final rotate = (cell.data['rotate'] ?? false) as bool;
+  final mutationChance = (cell.data['mutationChance'] ?? 0) as num;
+  final attackChance = (cell.data['attackChance'] ?? 100) as num;
+  final id = (cell.data['id'] ?? 0) as int;
 
   Cell toSpread(int dir) {
     final c = filler.copy;
@@ -139,16 +139,16 @@ void doConfigurableFiller(Cell cell, int x, int y) {
     num odds = 100;
 
     if (dir == 0) {
-      odds = cell.data['rightSpread'] as num;
+      odds = (cell.data['rightSpread'] ?? 100) as num;
     }
     if (dir == 2) {
-      odds = cell.data['leftSpread'] as num;
+      odds = (cell.data['leftSpread'] ?? 100) as num;
     }
     if (dir == 1) {
-      odds = cell.data['downSpread'] as num;
+      odds = (cell.data['downSpread'] ?? 100) as num;
     }
     if (dir == 3) {
-      odds = cell.data['upSpread'] as num;
+      odds = (cell.data['upSpread'] ?? 100) as num;
     }
     if (rng.nextDouble() <= odds / 100) {
       if (safeAt(fx, fy)?.id == "empty") {
