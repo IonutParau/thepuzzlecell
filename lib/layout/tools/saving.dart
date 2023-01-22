@@ -1759,11 +1759,13 @@ class VX {
     var rawCellData = [];
     final Map<String, dynamic> gridData = {"GT": "fixed", "A": "tpc"};
 
-    grid.forEach((cell, x, y) {
-      final bg = Cell(0, 0, 0)..id = grid.placeable(x, y);
-      final v = encodeLayers([cell, bg]);
-      rawCellData.add(v);
-    });
+    for (var y = 0; y < grid.height; y++) {
+      for (var x = 0; x < grid.width; x++) {
+        final bg = Cell(0, 0, 0)..id = grid.placeable(x, y);
+        final v = encodeLayers([grid.at(x, y), bg]);
+        rawCellData.add(v);
+      }
+    }
 
     var compressedCellData = base64.encode(deflate.encode(utf8.encode(json.encode(rawCellData))));
 
