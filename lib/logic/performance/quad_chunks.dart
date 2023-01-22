@@ -2,7 +2,6 @@ part of logic;
 
 // QuadChunk is an optimization that turns the chunk system into a quad-tree
 class QuadChunk {
-  // Arbitrarily chosen value of 5
   static int get minSize => storage.getInt("min_node_size") ?? 5;
   static set minSize(int val) {
     storage.setInt("min_node_size", val);
@@ -22,10 +21,13 @@ class QuadChunk {
   Set<String> types = {};
   int reads = 0;
 
+  bool get isUnit => width == 1 && height == 1;
+
   // Logic / Helper functions
-  bool get isNodeOnly => width >= minSize && height >= minSize;
+  bool get isNodeOnly => width >= minSize && height >= minSize && !isUnit;
 
   void divide() {
+    if (isUnit) return;
     if (subd) return;
     final w2 = width ~/ 2;
     final h2 = height ~/ 2;

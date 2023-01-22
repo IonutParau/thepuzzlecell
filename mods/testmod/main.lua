@@ -5,8 +5,7 @@ local cell = {
   update = {
     mode = "4-way",
     fn = function(cell, x, y)
-      TPC.emitParticles(50, x, y, "teal")
-      TPC.Move.Push(x, y, math.floor(math.random(0, 3)), 1, "push", nil)
+      TPC.Grid().rotate(x, y, 1)
     end,
   },
   category = "Base/Push Cells",
