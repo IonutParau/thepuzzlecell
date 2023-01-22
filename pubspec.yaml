@@ -113,6 +113,7 @@ flutter:
     - assets/images/unique/plant/
     - assets/images/unique/code/
     - assets/images/references/
+    - assets/images/electrical/
     - assets/audio/
     - languages/
     - mods/

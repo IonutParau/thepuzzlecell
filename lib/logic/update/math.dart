@@ -250,6 +250,10 @@ class MathManager {
       final i1 = input(x, y, cell.rot - 1);
       final i2 = input(x, y, cell.rot + 1);
 
+      if(i2 == 0) {
+        return output(x, y, cell.rot, double.infinity);
+      }
+
       output(x, y, cell.rot, pow(i1, 1 / i2));
     }, null, "math_nroot");
   }

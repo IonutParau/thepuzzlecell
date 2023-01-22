@@ -266,5 +266,9 @@ String textToRenderOnCell(Cell cell) {
     text = "${cell.data["id"] ?? ""} -> ${cell.data["target_id"] ?? ""}";
   }
 
+  if (cell.id == "electric_container") {
+    text = "${cell.data["electric_power"] ?? 0}";
+  }
+
   return text;
 }

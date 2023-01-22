@@ -13,24 +13,27 @@ class ElectricPath {
   }
 
   List<ElectricPath> get next {
-    if (isOffGrid) return [];
-    if (isDone) return [this];
+    if (fullPath.isNotEmpty) {
+      if (isOffGrid) return [];
+      if (isDone) return [this];
+    }
     final l = <ElectricPath>[];
 
     for (var i = 0; i < 4; i++) {
       // This might look weird, it means "Don't immediately return to the last point"
-      if (fullPath.isNotEmpty && endDir == (i + 2) % 4) continue;
+      if (fullPath.isNotEmpty) if (endDir == (i + 2) % 4) continue;
 
       if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) continue;
 
       // Some cells might block where they can transfer to.
-      if (host != null && !electricManager.blockedByHost(host!, x, y, i, source)) continue;
+      if (host != null && electricManager.blockedByHost(host!, x, y, i, source)) continue;
 
       final p = copy;
 
       p.fullPath.add(i);
       p.x = frontX(p.x, i);
       p.y = frontY(p.y, i);
+      if (p.host != null && electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source)) continue;
 
       l.add(p);
     }
@@ -57,11 +60,17 @@ class ElectricPath {
 
   @override
   int get hashCode => Object.hashAll([source.hashCode, x, y, ...fullPath]);
+
+  @override
+  String toString() {
+    return "$x $y $fullPath";
+  }
 }
 
 class ElectricManager {
   bool isInput(Cell cell, int x, int y, int dir) {
     // final side = toSide(dir, cell.rot);
+    if (cell.id == "electric_container") return true;
 
     return false;
   }
@@ -78,8 +87,22 @@ class ElectricManager {
     return false;
   }
 
+  bool blockedByReceiver(Cell receiver, int x, int y, int dir, Cell source) {
+    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0) return true;
+
+    return false;
+  }
+
   bool canHost(Cell host, int x, int y, Cell source) {
     if (host.id == "electric_wire") return true;
+    if (host.id == "electric_container") return true;
+
+    return false;
+  }
+
+  bool canHavePower(Cell cell, int x, int y) {
+    if (cell.id == "electric_wire") return true;
+    if (cell.id == "electric_container") return true;
 
     return false;
   }
@@ -87,7 +110,7 @@ class ElectricManager {
   List<ElectricPath> optimalDirections(Cell source, int x, int y) {
     if (!canHost(source, x, y, source)) return [];
     var l = ElectricPath([], x, y, source).next;
-    int? lastHash;
+    final hashes = HashSet<int>();
 
     while (l.isNotEmpty) {
       var nl = <ElectricPath>[];
@@ -102,12 +125,11 @@ class ElectricManager {
 
       final nh = Object.hashAll(nl);
 
-      if (lastHash != null) {
-        if (Object.hashAll(l) == nh) return [];
-      }
+      // In the case of a loop, return.
+      if (hashes.contains(nh)) return [];
 
       l = nl;
-      lastHash = nh;
+      hashes.add(nh);
     }
 
     return [];
@@ -151,11 +173,20 @@ class ElectricManager {
     return true;
   }
 
+  void whenGiven(Cell cell, int x, int y, double amount) {
+    if (cell.id == "electric_wire") {
+      cell.updated = true;
+    }
+  }
+
   void givePower(Cell cell, int x, int y, double amount) {
-    setPower(cell, x, y, readPower(cell, x, y) + amount);
+    cell.tags.add("received electricity");
+    setPower(cell, x, y, directlyReadPower(cell) + amount);
+    whenGiven(cell, x, y, amount);
   }
 
   void setPower(Cell cell, int x, int y, double power) {
+    if (!canHavePower(cell, x, y)) return;
     power = max(power, 0);
     cell.data['electric_power'] = power;
     if (power == 0) cell.data.remove('electric_power');
@@ -164,6 +195,30 @@ class ElectricManager {
   double readPower(Cell cell, int x, int y) {
     return (cell.data['electric_power'] as num?)?.toDouble() ?? 0;
   }
+
+  double directlyReadPower(Cell cell) {
+    return (cell.data['electric_power'] as num?)?.toDouble() ?? 0;
+  }
 }
 
 final electricManager = ElectricManager();
+
+void electric() {
+  grid.updateCell((cell, x, y) {
+    electricManager.spreadPower(cell, x, y);
+  }, null, "electric_wire");
+  grid.updateCell((cell, x, y) {
+    final interval = ((cell.data['interval'] ?? 1) as num).toInt();
+    if (interval <= 0) return;
+    final power = ((cell.data['power'] ?? 1) as num).toDouble();
+
+    cell.data['t'] ??= 0.0;
+    cell.data['t']++;
+
+    while (cell.data['t'] >= interval) {
+      final f = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+      if (f != null) electricManager.givePower(f, f.cx!, f.cy!, power);
+      cell.data['t'] -= interval;
+    }
+  }, null, "electric_generator");
+}

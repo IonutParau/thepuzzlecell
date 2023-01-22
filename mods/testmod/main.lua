@@ -6,20 +6,9 @@ local cell = {
     mode = "4-way",
     fn = function(cell, x, y)
       TPC.emitParticles(50, x, y, "teal")
-      TPC.Move.Push(x, y, cell.rot(), 0, "push", nil)
+      TPC.Move.Push(x, y, math.floor(math.random(0, 3)), 1, "push", nil)
     end,
   },
-  addedForce = function(cell, dir, side, force, moveType)
-    if side == 0 then
-      return 1
-    end
-
-    if side == 2 then
-      return -1
-    end
-
-    return 0
-  end,
   category = "Base/Push Cells",
 }
 

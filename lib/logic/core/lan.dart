@@ -150,7 +150,7 @@ void execPacket(String data, WebSocketChannel sender) {
       }
 
       clientIDs[sender] = id;
-      game.roles[id] = UserRole.member;
+      game.roles[id] = game.clientID == id ? UserRole.owner : UserRole.member;
       sendRoles();
       clientIDList.add(id);
     } else if (packetType == "chat") {

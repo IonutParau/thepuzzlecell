@@ -355,6 +355,10 @@ final cells = {
   "custom_weight",
   "debt_enemy",
   "portal_c",
+  "antigen",
+  "electric_wire",
+  "electric_generator",
+  "electric_container",
 }.toList();
 
 final modded = <String>[];
@@ -364,6 +368,11 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "electric_wire.png": "electrical/electric_wire.png",
+  "electric_wire_on.png": "electrical/electric_wire_on.png",
+  "electric_generator.png": "electrical/electric_generator.png",
+  "electric_container.png": "electrical/electric_container.png",
+  "antigen.png": "destroyers/antigen.png",
   "portal_c.png": "unique/portal/portal_c.png",
   "debt_enemy.png": "destroyers/enemy/debt_enemy.png",
   "custom_weight.png": "push/custom_weight.png",
@@ -1188,6 +1197,7 @@ final categories = [
         ],
         "fire",
       ),
+      "antigen",
     ],
     "trash",
   ),
@@ -1454,6 +1464,16 @@ final categories = [
       ),
     ],
     "mech_gear",
+  ),
+  CellCategory(
+    "Electrical Cells",
+    "Cells that use Electricity to charge themselves around",
+    [
+      "electric_generator",
+      "electric_wire",
+      "electric_container",
+    ],
+    "electric_wire",
   ),
   CellCategory(
     "Master Cells",
@@ -3008,6 +3028,22 @@ final cellInfo = <String, CellProfile>{
     "Portal C",
     "Like Portal A and Portal B, but it has an ID and TargetID, and teleports to a Portal C with the ID equal to this ones Target ID.",
   ),
+  "antigen": CellProfile(
+    "Anti-Generator",
+    "If the cell in the front has the same ID and rotation as the one in the front, it is pulled into the anti-generator and deleted from existence.",
+  ),
+  "electric_generator": CellProfile(
+    "Electrical Generator",
+    "Generators some power at some interval and gives it to the cell in front.",
+  ),
+  "electric_wire": CellProfile(
+    "Electrical Wire",
+    "Spreads electricity towards the closest valid spot. In the case of a tie, it splits into multiple paths evenly.",
+  ),
+  "electric_container": CellProfile(
+    "Electrical Container",
+    "Takes electrical power, does nothing with it. It also displays it.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3186,5 +3222,12 @@ Map<String, List<CellProperty>> props = {
   "portal_c": [
     CellProperty("ID", "id", CellPropertyType.text, ""),
     CellProperty("Target ID", "target_id", CellPropertyType.text, ""),
+  ],
+  "enemy": [
+    CellProperty("Silent", "silent", CellPropertyType.boolean, false),
+  ],
+  "electric_generator": [
+    CellProperty("Interval", "interval", CellPropertyType.number, 1),
+    CellProperty("Power", "power", CellPropertyType.number, 1),
   ],
 };

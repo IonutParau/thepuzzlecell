@@ -2552,6 +2552,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     );
 
     await Flame.images.load('mechanical/pixel_on.png');
+    await Flame.images.load('electrical/electric_wire_on.png');
 
     loadAllButtons();
 
@@ -3131,6 +3132,11 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     if ((cell.id == "pixel" && MechanicalManager.on(cell))) {
       file = 'pixel_on';
+      ignoreSafety = true;
+    }
+
+    if (cell.id == "electric_wire" && electricManager.directlyReadPower(cell) > 0) {
+      file = 'electric_wire_on';
       ignoreSafety = true;
     }
 
