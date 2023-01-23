@@ -359,15 +359,18 @@ final cells = {
   "electric_wire",
   "electric_generator",
   "electric_container",
+  "electric_mover",
 }.toList();
 
 final modded = <String>[];
 
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
+  ..removeWhere((e) => e == "empty");
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "electric_mover.png": "electrical/electric_mover.png",
   "electric_wire.png": "electrical/electric_wire.png",
   "electric_wire_on.png": "electrical/electric_wire_on.png",
   "electric_generator.png": "electrical/electric_generator.png",
@@ -756,7 +759,8 @@ class CellCategory {
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look,
+      {this.max = 3});
 
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
@@ -1472,6 +1476,7 @@ final categories = [
       "electric_generator",
       "electric_wire",
       "electric_container",
+      "electric_mover",
     ],
     "electric_wire",
   ),
@@ -3044,6 +3049,10 @@ final cellInfo = <String, CellProfile>{
     "Electrical Container",
     "Takes electrical power, does nothing with it. It also displays it.",
   ),
+  "electric_mover": CellProfile(
+    "Electrical Mover",
+    "Can be charged with electricity. If it has power, it'll move. Otherwise, it'll do nothing. When moving, it'll also consume electrical power.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3098,11 +3107,13 @@ Map<String, List<CellProperty>> props = {
   ],
   "explosive": [
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
-    CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
+    CellProperty(
+        "Effectiveness", "effectiveness", CellPropertyType.number, 100),
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Mobile", "mobile", CellPropertyType.boolean, false),
-    CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
+    CellProperty(
+        "Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [
     CellProperty("Cell", "cell", CellPropertyType.cell, "push!0"),
@@ -3112,14 +3123,20 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Quantized", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
-    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset",
+        CellPropertyType.boolean, true),
+    CellProperty(
+        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty(
+        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "mech_checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
-    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset",
+        CellPropertyType.boolean, true),
+    CellProperty(
+        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty(
+        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "trash_can": [
     CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
@@ -3188,7 +3205,8 @@ Map<String, List<CellProperty>> props = {
   ],
   "mech_debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
-    CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
+    CellProperty(
+        "Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
   ],
   "debt_enemy": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
@@ -3196,13 +3214,17 @@ Map<String, List<CellProperty>> props = {
   "configurable_filler": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
-    CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty(
+        "Mutation Chance", "mutationChance", CellPropertyType.number, 0),
     CellProperty("Attack Chance", "attackChance", CellPropertyType.number, 100),
     CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
-    CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
-    CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
     CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
-    CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Down Spread Odds", "downSpread", CellPropertyType.number, 100),
   ],
   "code_instruction": [
     CellProperty("Line", "line", CellPropertyType.integer, 0),
@@ -3229,5 +3251,14 @@ Map<String, List<CellProperty>> props = {
   "electric_generator": [
     CellProperty("Interval", "interval", CellPropertyType.number, 1),
     CellProperty("Power", "power", CellPropertyType.number, 1),
+  ],
+  "electric_mover": [
+    CellProperty(
+      "Count Failed Attempts",
+      "count_fails",
+      CellPropertyType.boolean,
+      false,
+    ),
+    CellProperty("Cost", "cost", CellPropertyType.number, 1),
   ],
 };
