@@ -78,6 +78,7 @@ class ElectricManager {
     // final side = toSide(dir, cell.rot);
     if (cell.id == "electric_container") return true;
     if (cell.id == "electric_mover") return true;
+    if (cell.id == "electric_battery") return true;
 
     return false;
   }
@@ -105,6 +106,7 @@ class ElectricManager {
     if (host.id == "electric_wire") return true;
     if (host.id == "electric_container") return true;
     if (host.id == "electric_mover") return true;
+    if (host.id == "electric_battery") return true;
 
     return false;
   }
@@ -113,6 +115,7 @@ class ElectricManager {
     if (cell.id == "electric_wire") return true;
     if (cell.id == "electric_container") return true;
     if (cell.id == "electric_mover") return true;
+    if (cell.id == "electric_battery") return true;
 
     return false;
   }
@@ -189,6 +192,15 @@ class ElectricManager {
     }
   }
 
+  void whenSet(Cell cell, int x, int y, double amount) {
+    if (cell.id == "electric_battery") {
+      final bool useCapacity = (cell.data['use_capacity'] ?? false);
+      final double capacity = ((cell.data['capacity'] ?? 0) as num).toDouble();
+
+      if (useCapacity && amount > capacity) setPower(cell, x, y, capacity);
+    }
+  }
+
   void givePower(Cell cell, int x, int y, double amount) {
     cell.tags.add("received electricity");
     setPower(cell, x, y, directlyReadPower(cell) + amount);
@@ -200,6 +212,7 @@ class ElectricManager {
     power = max(power, 0);
     cell.data['electric_power'] = power;
     if (power == 0) cell.data.remove('electric_power');
+    whenSet(cell, x, y, power);
   }
 
   double readPower(Cell cell, int x, int y) {
@@ -231,6 +244,32 @@ void electric() {
       cell.data['t'] -= interval;
     }
   }, null, "electric_generator");
+  grid.updateCell((cell, x, y) {
+    var power = electricManager.directlyReadPower(cell);
+    final double capacity = ((cell.data['capacity'] ?? 0) as num).toDouble();
+    final bool useCapacity = (cell.data['use_capacity'] ?? false);
+    final cost = ((cell.data['cost'] ?? 1) as num).toDouble();
+
+    if (power > capacity && useCapacity) {
+      power = capacity;
+      electricManager.setPower(cell, x, y, power);
+    }
+
+    if (power >= cost) {
+      final f = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+
+      if (f == null) return;
+      if (f.id == "empty") return;
+
+      electricManager.removePower(cell, x, y, cost);
+    } else {
+      final f = grid.get(frontX(x, cell.rot), frontY(y, cell.rot));
+      if (f == null) return;
+      if (f.id == "empty") return;
+      f.updated = true;
+      f.tags.add("stopped");
+    }
+  }, null, "electric_battery");
   grid.updateCell((cell, x, y) {
     final power = electricManager.directlyReadPower(cell);
     final countFails = (cell.data['count_fails'] ?? false) as bool;

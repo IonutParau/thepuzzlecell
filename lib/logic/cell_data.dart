@@ -360,6 +360,7 @@ final cells = {
   "electric_generator",
   "electric_container",
   "electric_mover",
+  "electric_battery",
 }.toList();
 
 final modded = <String>[];
@@ -370,6 +371,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "electric_battery.png": "electrical/electric_battery.png",
   "electric_mover.png": "electrical/electric_mover.png",
   "electric_wire.png": "electrical/electric_wire.png",
   "electric_wire_on.png": "electrical/electric_wire_on.png",
@@ -1476,6 +1478,7 @@ final categories = [
       "electric_generator",
       "electric_wire",
       "electric_container",
+      "electric_battery",
       "electric_mover",
     ],
     "electric_wire",
@@ -3053,6 +3056,10 @@ final cellInfo = <String, CellProfile>{
     "Electrical Mover",
     "Can be charged with electricity. If it has power, it'll move. Otherwise, it'll do nothing. When moving, it'll also consume electrical power.",
   ),
+  "electric_battery": CellProfile(
+    "Electrical Battery",
+    "Stores electricity inside. It can optionally have a capacity. If it has power inside of it, the cell in front will be allowed to update. Otherwise, it will act like a Stopper.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3261,4 +3268,30 @@ Map<String, List<CellProperty>> props = {
     ),
     CellProperty("Cost", "cost", CellPropertyType.number, 1),
   ],
+  "electric_battery": [
+    CellProperty(
+      "Power",
+      "electric_power",
+      CellPropertyType.number,
+      0,
+    ),
+    CellProperty(
+      "Use Capacity",
+      "use_capacity",
+      CellPropertyType.boolean,
+      false,
+    ),
+    CellProperty(
+      "Capacity",
+      "capacity",
+      CellPropertyType.number,
+      100,
+    ),
+    CellProperty(
+      "Cost",
+      "cost",
+      CellPropertyType.number,
+      1,
+    ),
+  ]
 };
