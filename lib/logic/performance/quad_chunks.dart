@@ -11,14 +11,20 @@ class QuadChunk {
   List<QuadChunk> subs = [];
   bool get subd => subs.isNotEmpty;
   int sx, sy, ex, ey;
-  int get width => ex - sx + 1; // If sx and ex are equal, the width is 1 (useful for subdivision)
-  int get height => ey - sy + 1; // If sy and ey are equal, the height is 1 (useful for subdivision)
+  int get width =>
+      ex -
+      sx +
+      1; // If sx and ex are equal, the width is 1 (useful for subdivision)
+  int get height =>
+      ey -
+      sy +
+      1; // If sy and ey are equal, the height is 1 (useful for subdivision)
 
   // OOP stuff
   QuadChunk(this.sx, this.sy, this.ex, this.ey);
 
   // Data
-  Set<String> types = {};
+  HashSet<String> types = HashSet();
   int reads = 0;
 
   bool get isUnit => width == 1 && height == 1;
@@ -64,7 +70,8 @@ class QuadChunk {
 
   bool recount = false;
 
-  List<List<int>> fetch(String id, [int? minx, int? miny, int? maxx, int? maxy]) {
+  List<List<int>> fetch(String id,
+      [int? minx, int? miny, int? maxx, int? maxy]) {
     // Stop if the type is not within the node
     if (!containsType(id)) return [];
 
@@ -78,7 +85,7 @@ class QuadChunk {
     if (isNodeOnly) {
       final l = <List<int>>[];
 
-      if (recount) types = {};
+      if (recount) types = HashSet();
 
       for (var sub in subs) {
         l.addAll(sub.fetch(id, minx, miny, maxx, maxy));
@@ -96,6 +103,7 @@ class QuadChunk {
       // Add all x,y pairs within
       for (var x = sx; x <= ex; x++) {
         for (var y = sy; y <= ey; y++) {
+          if (!grid.inside(x, y)) continue;
           l.add([x, y]);
           if (recount) types.add(grid.get(x, y)?.id ?? "empty");
         }

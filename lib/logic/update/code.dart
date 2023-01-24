@@ -7,134 +7,226 @@ class CodeCellInstruction {
   CodeCellInstruction(this.name, this.params);
 }
 
-class CodeTable {
-  late List _l;
+class CodeJump {
+  int ip;
+  CodeJump(this.ip);
 
-  CodeTable(int capacity) {
-    _l = List.generate(capacity, (i) => null);
+  int get hashCode => ip;
+
+  bool operator ==(Object other) {
+    if (other is! CodeJump) return false;
+    return other.ip == ip;
   }
 
-  CodeTable.generate(int capacity, dynamic Function(int i) generator) {
-    _l = List.generate(capacity, generator);
+  bool operator >(Object other) {
+    if (other is! CodeJump) return false;
+    return other.ip > ip;
   }
 
-  int get capacity => _l.length;
-
-  dynamic get(dynamic idx) {
-    if (_l.isEmpty) return null;
-
-    return _l[idx.hashCode % _l.length];
+  bool operator >=(Object other) {
+    if (other is! CodeJump) return false;
+    return other.ip >= ip;
   }
 
-  void set(dynamic idx, dynamic value) {
-    if (_l.isEmpty) return;
-
-    _l[idx.hashCode % _l.length] = value;
+  bool operator <=(Object other) {
+    if (other is! CodeJump) return false;
+    return other.ip <= ip;
   }
 
-  @override
-  int get hashCode => Object.hashAll(_l);
+  bool operator <(Object other) {
+    if (other is! CodeJump) return false;
+    return other.ip < ip;
+  }
+}
+
+class CodeStack {
+  final List stack;
+  CodeStack(this.stack);
+
+  void pushNum(double n) {
+    stack.add(n);
+  }
+
+  void pushString(String str) {
+    stack.add(str);
+  }
+
+  void pushBool(bool b) {
+    stack.add(b);
+  }
+
+  void pushMap() {
+    stack.add(<String, dynamic>{});
+  }
+
+  void pushList([int size = 0]) {
+    stack.add(List.filled(size, null, growable: true));
+  }
+
+  void sum() {
+    final a = pop();
+    final b = pop();
+
+    push(a + b);
+  }
+
+  void sub() {
+    final a = pop();
+    final b = pop();
+
+    push(a - b);
+  }
+
+  void mult() {
+    final a = pop();
+    final b = pop();
+
+    push(a * b);
+  }
+
+  void div() {
+    final a = pop();
+    final b = pop();
+
+    push(a / b);
+  }
+
+  void upArrow() {
+    final a = pop();
+    final b = pop();
+
+    push(a ^ b);
+  }
+
+  void index(int i, int key) {
+    final a = get(i);
+    final b = get(key);
+
+    push(a[b]);
+  }
+
+  void setIndex(int i, int key, int iv) {
+    final a = get(i);
+    final b = get(key);
+    final c = get(iv);
+
+    a[b] = c;
+  }
+
+  void stringify(int i) {
+    set(i, get(i).toString());
+  }
+
+  void pushStringified(int i) {
+    push(get(i).toString());
+  }
+
+  void pushJump(int ip) {
+    push(CodeJump(ip));
+  }
+
+  void push(dynamic val) {
+    stack.add(val);
+  }
+
+  void pushFrom(int i) {
+    push(get(i));
+  }
+
+  void swap(int i, int j) {
+    final tmp = get(i);
+    set(i, get(j));
+    set(j, tmp);
+  }
+
+  void link(int i, int j) {
+    set(i, get(j));
+  }
+
+  void clone(int i) {
+    push(get(i));
+  }
+
+  bool isNum(int i) => get(i) is num;
+  bool isStr(int i) => get(i) is String;
+  bool isBool(int i) => get(i) is bool;
+  bool isJump(int i) => get(i) is CodeJump;
+  bool isMap(int i) => get(i) is Map<String, dynamic>;
+  bool isList(int i) => get(i) is List;
+
+  dynamic get(int n) {
+    if (stack.isEmpty) return null;
+    return stack[n % stack.length];
+  }
+
+  void set(int n, dynamic val) {
+    if (stack.isEmpty) return;
+    stack[n % stack.length] = val;
+  }
+
+  dynamic pop() {
+    return stack.removeLast();
+  }
+
+  List popMultiple(int amount) {
+    return List.generate(amount, (i) => pop());
+  }
+
+  void eq() {
+    final a = pop();
+    final b = pop();
+    push(a == b);
+  }
+
+  void ne() {
+    final a = pop();
+    final b = pop();
+    push(a != b);
+  }
+
+  void less() {
+    final a = pop();
+    final b = pop();
+    push(a < b);
+  }
+
+  void lessEq() {
+    final a = pop();
+    final b = pop();
+    push(a <= b);
+  }
+
+  void greater() {
+    final a = pop();
+    final b = pop();
+    push(a > b);
+  }
+
+  void greaterEq() {
+    final a = pop();
+    final b = pop();
+    push(a >= b);
+  }
+
+  void and() {
+    final a = pop();
+    final b = pop();
+    push(a && b);
+  }
+
+  void or() {
+    final a = pop();
+    final b = pop();
+    push(a || b);
+  }
 }
 
 class CodeRuntimeContext {
-  List stack = [];
-  List allocated = [];
-  List io = [];
-  List calls = [];
+  int ip;
+  Map<int, CodeCellInstruction> instructions;
+  CodeStack stack;
 
-  dynamic getStack(dynamic idx) {
-    if (stack.isEmpty) return null;
-    return stack[idx.hashCode % stack.length];
-  }
-
-  void setStack(dynamic idx, dynamic val) {
-    if (stack.isEmpty) return;
-    stack[idx.hashCode % stack.length] = val;
-  }
-
-  dynamic createStack(int amount) {
-    for (var i = 0; i < amount; i++) {
-      stack.add(null);
-    }
-  }
-
-  dynamic popStack(int amount, [int offset = 0]) {
-    if (offset == 0) {
-      for (var i = 0; i < amount; i++) {
-        stack.removeLast();
-      }
-    } else {
-      for (var i = 0; i < amount; i++) {
-        stack.removeAt(stack.length - 1 - offset);
-      }
-    }
-  }
-
-  int allocate(dynamic thing) {
-    allocated.add(thing);
-    return allocated.length - 1;
-  }
-
-  void free(dynamic idx) {
-    final i = idx.hashCode % allocated.length;
-
-    allocated[i] = null;
-
-    while (allocated.last == null) {
-      allocated.removeLast();
-    }
-  }
-
-  void setAllocated(dynamic idx, dynamic val) {
-    if (allocated.isEmpty) {
-      allocate(val);
-      return;
-    }
-
-    allocated[idx.hashCode % allocated.length] = val;
-  }
-
-  dynamic getAllocated(dynamic idx) {
-    if (allocated.isEmpty) {
-      return null;
-    }
-
-    return allocated[idx.hashCode % allocated.length];
-  }
-
-  int exposeAsIO(dynamic thing) {
-    io.add(thing);
-    return io.length - 1;
-  }
-
-  dynamic readIO(dynamic thing) {
-    if (io.isEmpty) return null;
-
-    return io[thing.hashCode % io.length];
-  }
-
-  void setIO(dynamic idx, dynamic thing) {
-    if (io.isEmpty) return;
-
-    io[idx.hashCode % io.length] = thing;
-  }
-
-  dynamic copy(dynamic other) {
-    if (other is int) return other;
-    if (other is double) return other;
-
-    if (other is CodeTable) {
-      final newTable = CodeTable(other.capacity);
-
-      for (var i = 0; i < other.capacity; i++) {
-        newTable.set(i, copy(other.get(i)));
-      }
-
-      return newTable;
-    }
-
-    return null;
-  }
+  CodeRuntimeContext(this.ip, this.instructions, this.stack);
 }
 
 class CodeCellManager {
@@ -162,7 +254,8 @@ class CodeCellManager {
 
           final segs = code.split(" ");
 
-          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0], segs.length <= 1 ? [] : segs.sublist(1));
+          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0],
+              segs.length <= 1 ? [] : segs.sublist(1));
         } else {
           break;
         }
@@ -175,449 +268,235 @@ class CodeCellManager {
   }
 
   // Returns which instruction to go to.
-  int runInstruction(int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
+  int runInstruction(
+      int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
     if (instruction == null) return i + 1;
 
-    if (instruction.name == "create") {
-      final amount = int.parse(instruction.params[0]);
-
-      context.createStack(amount);
-    }
-
-    if (instruction.name == "delete") {
-      final amount = int.parse(instruction.params[0]);
-
-      context.popStack(amount);
-    }
-
-    if (instruction.name == "deleteShifted") {
-      final amount = int.parse(instruction.params[0]);
-      final shift = int.parse(instruction.params[1]);
-
-      context.popStack(amount, shift);
-    }
-
-    if (instruction.name == "top") {
-      // top is the largest non-wrapping index
-      final top = context.stack.length - 1;
-      context.createStack(1);
-      context.setStack(-1, top);
-    }
-
-    if (instruction.name == "push") {
-      final ptr = int.parse(instruction.params[0]);
-
-      final amount = context.getStack(ptr) as int;
-
-      context.createStack(amount);
-    }
-
     if (instruction.name == "pop") {
-      final ptr = int.parse(instruction.params[0]);
-
-      final amount = context.getStack(ptr) as int;
-
-      context.popStack(amount);
+      context.stack.pop();
     }
 
-    if (instruction.name == "popShifted") {
-      int amount = context.getStack(int.parse(instruction.params[0]));
-      int shift = context.getStack(int.parse(instruction.params[1]));
-
-      context.popStack(amount, shift);
+    if (instruction.name == "link") {
+      context.stack.link(
+          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
-    // table takes a constant size!!!
-    if (instruction.name == "table") {
-      final ptr = int.parse(instruction.params[0]);
-
-      final size = context.getStack(ptr) as int;
-
-      context.createStack(1);
-      context.setStack(-1, CodeTable(size));
-    }
-
-    // tableD has a pointer for size lmao
-    if (instruction.name == "tableD") {
-      final size = int.parse(instruction.params[0]);
-
-      context.createStack(1);
-      context.setStack(-1, CodeTable(size));
-    }
-
-    if (instruction.name == "deref") {
-      final ptr = int.parse(instruction.params[0]);
-
-      context.setStack(ptr, context.copy(context.getStack(ptr)));
-    }
-
-    if (instruction.name == "clone") {
-      final ptr = int.parse(instruction.params[0]);
-
-      final v = context.copy(context.getStack(ptr));
-
-      context.createStack(1);
-      context.setStack(-1, v);
-    }
-
-    if (instruction.name == "copy") {
-      final src = int.parse(instruction.params[0]);
-      final dest = int.parse(instruction.params[1]);
-
-      final v = context.copy(context.getStack(src));
-
-      context.setStack(dest, v);
-    }
-
-    if (instruction.name == "integer") {
-      final ptr = int.parse(instruction.params[0]);
-      final val = int.parse(instruction.params[1]);
-
-      context.setStack(ptr, val);
-    }
-
-    if (instruction.name == "double") {
-      final ptr = int.parse(instruction.params[0]);
-      final val = double.parse(instruction.params[1]);
-
-      context.setStack(ptr, val);
-    }
-
-    if (instruction.name == "null") {
-      final ptr = int.parse(instruction.params[0]);
-
-      context.setStack(ptr, null);
-    }
-
-    if (instruction.name == "malloc") {
-      final ptr = int.parse(instruction.params[0]);
-
-      context.setStack(ptr, context.allocate(null));
-    }
-
-    if (instruction.name == "mallocTable") {
-      final ptr = int.parse(instruction.params[0]);
-      final size = int.parse(instruction.params[1]);
-
-      context.setStack(ptr, context.allocate(CodeTable(size)));
-    }
-
-    if (instruction.name == "mallocInt") {
-      final ptr = int.parse(instruction.params[0]);
-      final val = int.parse(instruction.params[1]);
-
-      context.setStack(ptr, context.allocate(val));
-    }
-
-    if (instruction.name == "mallocDouble") {
-      final ptr = int.parse(instruction.params[0]);
-      final val = double.parse(instruction.params[1]);
-
-      context.setStack(ptr, context.allocate(val));
-    }
-
-    if (instruction.name == "free") {
-      final ptr = context.getStack(int.parse(instruction.params[0]));
-
-      context.free(ptr);
-    }
-
-    if (instruction.name == "goto") {
-      final code = int.parse(instruction.params[0]);
-
-      return code;
-    }
-
-    if (instruction.name == "gotoD") {
-      final code = context.getStack(int.parse(instruction.params[0]));
-
-      return code;
-    }
-
-    if (instruction.name == "ifgoto") {
-      final code = int.parse(instruction.params[0]);
-      final val = context.getStack(int.parse(instruction.params[1]));
-
-      if (val is int && val > 0) {
-        return code;
-      }
-
-      if (val is double && val > 0) {
-        return code;
-      }
-
-      if (val is CodeTable && val.capacity > 0) {
-        return code;
+    if (instruction.name == "pushNum") {
+      if (instruction.params[0] == "infinity") {
+        context.stack.pushNum(double.infinity);
+      } else if (instruction.params[0] == "-infinity") {
+        context.stack.pushNum(double.negativeInfinity);
+      } else if (instruction.params[0] == "nan") {
+        context.stack.pushNum(double.nan);
+      } else {
+        context.stack.pushNum(double.parse(instruction.params[0]));
       }
     }
 
-    if (instruction.name == "ifgotoD") {
-      final code = context.getStack(int.parse(instruction.params[0]));
-      final val = context.getStack(int.parse(instruction.params[1]));
+    if (instruction.name == "pushMap") {
+      context.stack.pushMap();
+    }
 
-      if (val is int && val > 0) {
-        return code;
-      }
+    if (instruction.name == "pushEmptyList") {
+      context.stack.pushList();
+    }
 
-      if (val is double && val > 0) {
-        return code;
-      }
+    if (instruction.name == "pushList") {
+      context.stack.pushList(int.parse(instruction.params[0]));
+    }
 
-      if (val is CodeTable && val.capacity > 0) {
-        return code;
-      }
+    if (instruction.name == "pushFixedJump") {
+      context.stack.pushJump(int.parse(instruction.params[0]));
+    }
+
+    if (instruction.name == "pushReturnJump") {
+      context.stack.pushJump(i + 1);
+    }
+
+    if (instruction.name == "pushCurrentIP") {
+      context.stack.pushJump(i);
+    }
+
+    if (instruction.name == "pushString") {
+      context.stack.pushString(instruction.params.join(" "));
     }
 
     if (instruction.name == "add") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) + context.getStack(b));
+      context.stack.sum();
     }
 
-    if (instruction.name == "sub") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) - context.getStack(b));
+    if (instruction.name == "subtract") {
+      context.stack.sub();
     }
 
-    if (instruction.name == "mult") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) * context.getStack(b));
+    if (instruction.name == "multiply") {
+      context.stack.mult();
     }
 
-    if (instruction.name == "div") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) / context.getStack(b));
+    if (instruction.name == "divide") {
+      context.stack.div();
     }
 
-    if (instruction.name == "divInt") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) ~/ context.getStack(b));
+    if (instruction.name == "exp") {
+      context.stack.upArrow();
     }
 
-    if (instruction.name == "mod") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) % context.getStack(b));
+    if (instruction.name == "index") {
+      context.stack.index(
+          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
-    if (instruction.name == "equal") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) == context.getStack(b) ? 1 : 0);
+    if (instruction.name == "setIndex") {
+      context.stack.setIndex(int.parse(instruction.params[0]),
+          int.parse(instruction.params[1]), int.parse(instruction.params[2]));
     }
 
-    if (instruction.name == "less") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) < context.getStack(b) ? 1 : 0);
+    if (instruction.name == "pushFrom") {
+      context.stack.pushFrom(int.parse(instruction.params[0]));
     }
 
-    if (instruction.name == "greater") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) > context.getStack(b) ? 1 : 0);
+    if (instruction.name == "branch") {
+      final jump1 = context.stack.get(-2) as CodeJump;
+      final jump2 = context.stack.get(-3) as CodeJump;
+      if (context.stack.get(-1) == true) {
+        return jump1.ip;
+      } else {
+        return jump2.ip;
+      }
     }
 
-    if (instruction.name == "lessEqual") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) <= context.getStack(b) ? 1 : 0);
+    if (instruction.name == "goto") {
+      return (context.stack.get(-1) as CodeJump).ip;
     }
 
-    if (instruction.name == "greaterEqual") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) >= context.getStack(b) ? 1 : 0);
+    if (instruction.name == "stringify") {
+      context.stack.stringify(int.parse(instruction.params[0]));
     }
 
-    if (instruction.name == "notEqual") {
-      final a = int.parse(instruction.params[0]);
-      final b = int.parse(instruction.params[1]);
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(c, context.getStack(a) != context.getStack(b) ? 1 : 0);
+    if (instruction.name == "pushStringified") {
+      context.stack.pushStringified(int.parse(instruction.params[0]));
     }
 
-    if (instruction.name == "merge") {
-      final a = context.getStack(int.parse(instruction.params[0])) as CodeTable;
-      final b = context.getStack(int.parse(instruction.params[1])) as CodeTable;
-      final c = int.parse(instruction.params[2]);
-
-      context.setStack(
-        c,
-        CodeTable.generate(
-          a.capacity + b.capacity,
-          (i) {
-            var v = null;
-
-            if (i >= a.capacity) {
-              v = b.get(i);
-            } else {
-              v = a.get(i);
-            }
-
-            return v;
-          },
-        ),
-      );
-    }
-
-    if (instruction.name == "mcopy") {
-      final src = int.parse(instruction.params[0]);
-      final dest = context.getStack(int.parse(instruction.params[1]));
-
-      final v = context.copy(context.getStack(src));
-
-      context.setAllocated(dest, v);
-    }
-
-    if (instruction.name == "mderef") {
-      final ptr = int.parse(instruction.params[0]);
-
-      context.setStack(ptr, context.copy(context.getAllocated(ptr)));
-    }
-
-    if (instruction.name == "mset") {
-      final ptr = int.parse(instruction.params[0]);
-      final key = int.parse(instruction.params[1]);
-      final val = int.parse(instruction.params[2]);
-
-      (context.getAllocated(context.getStack(ptr)) as CodeTable).set(key, context.copy(val));
-    }
-
-    if (instruction.name == "mget") {
-      final ptr = int.parse(instruction.params[0]);
-      final key = int.parse(instruction.params[1]);
-      final out = int.parse(instruction.params[2]);
-
-      context.setStack(out, (context.getAllocated(context.getStack(ptr)) as CodeTable).get(key));
+    if (instruction.name == "pushSize") {
+      if (context.stack.isJump(-1)) {
+        context.stack.pushNum(8);
+      }
+      if (context.stack.isMap(-1)) {
+        context.stack.pushNum(
+          (context.stack.get(-1) as Map<String, dynamic>).length.toDouble(),
+        );
+      }
+      if (context.stack.isList(-1)) {
+        context.stack.pushNum(
+          (context.stack.get(-1) as List).length.toDouble(),
+        );
+      }
+      if (context.stack.isNum(-1)) {
+        context.stack.pushNum(8);
+      }
+      if (context.stack.isBool(-1)) {
+        context.stack.pushNum(1);
+      }
+      if (context.stack.isStr(-1)) {
+        context.stack.pushNum(
+          (context.stack.get(-1) as String).length.toDouble(),
+        );
+      }
     }
 
     if (instruction.name == "set") {
-      final ptr = int.parse(instruction.params[0]);
-      final key = int.parse(instruction.params[1]);
-      final val = int.parse(instruction.params[2]);
-
-      (context.getStack(ptr) as CodeTable).set(key, context.copy(val));
+      context.stack.set(
+        int.parse(instruction.params[0]),
+        int.parse(instruction.params[1]),
+      );
     }
 
-    if (instruction.name == "get") {
-      final ptr = int.parse(instruction.params[0]);
-      final key = int.parse(instruction.params[1]);
-      final out = int.parse(instruction.params[2]);
-
-      context.setStack(out, (context.getStack(ptr) as CodeTable).get(key));
+    if (instruction.name == "eq") {
+      context.stack.eq();
     }
 
-    if (instruction.name == "createIO") {
-      final src = int.parse(instruction.params[0]);
-      final dest = context.getStack(int.parse(instruction.params[1]));
-
-      final v = context.copy(context.getStack(src));
-
-      context.setAllocated(dest, v);
+    if (instruction.name == "ne") {
+      context.stack.ne();
     }
 
-    if (instruction.name == "ioDeref") {
-      final ptr = int.parse(instruction.params[0]);
-
-      context.setStack(ptr, context.copy(context.readIO(ptr)));
+    if (instruction.name == "less") {
+      context.stack.less();
     }
 
-    if (instruction.name == "ioCopy") {
-      final src = int.parse(instruction.params[0]);
-      final dest = int.parse(instruction.params[1]);
-
-      context.setIO(context.getStack(dest), context.copy(context.getStack(src)));
+    if (instruction.name == "lessEq") {
+      context.stack.lessEq();
     }
 
-    if (instruction.name == "isInteger") {
-      final src = int.parse(instruction.params[0]);
-      final dest = int.parse(instruction.params[1]);
-
-      context.setStack(dest, context.getStack(src) is int ? 1 : 0);
+    if (instruction.name == "greater") {
+      context.stack.greater();
     }
 
-    if (instruction.name == "isDouble") {
-      final src = int.parse(instruction.params[0]);
-      final dest = int.parse(instruction.params[1]);
-
-      context.setStack(dest, context.getStack(src) is double ? 1 : 0);
+    if (instruction.name == "greaterEq") {
+      context.stack.greaterEq();
     }
 
-    if (instruction.name == "isTable") {
-      final src = int.parse(instruction.params[0]);
-      final dest = int.parse(instruction.params[1]);
-
-      context.setStack(dest, context.getStack(src) is CodeTable ? 1 : 0);
+    if (instruction.name == "and") {
+      context.stack.and();
     }
 
-    if (instruction.name == "call") {
-      final location = int.parse(instruction.params[0]);
-      context.calls.add(i + 1);
-      return location;
+    if (instruction.name == "or") {
+      context.stack.or();
     }
 
-    if (instruction.name == "ifcall") {
-      final code = int.parse(instruction.params[0]);
-      final val = context.getStack(int.parse(instruction.params[1]));
+    if (instruction.name == "list-add") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final v = context.stack.get(int.parse(instruction.params[1]));
 
-      if (val is int && val > 0) {
-        context.calls.add(i + 1);
-        return code;
-      }
-
-      if (val is double && val > 0) {
-        context.calls.add(i + 1);
-        return code;
-      }
-
-      if (val is CodeTable && val.capacity > 0) {
-        context.calls.add(i + 1);
-        return code;
+      if (l is List) {
+        l.add(v);
       }
     }
 
-    if (instruction.name == "return") {
-      return context.calls.removeLast();
+    if (instruction.name == "list-removeAt") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final i = context.stack.get(int.parse(instruction.params[1]));
+
+      if (l is List && i is num) {
+        l.removeAt(i.toInt());
+      }
     }
 
-    if (instruction.name == "returnN") {
-      final amount = int.parse(instruction.params[0]);
+    if (instruction.name == "list-insertAt") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final i = context.stack.get(int.parse(instruction.params[1]));
+      final v = context.stack.get(int.parse(instruction.params[2]));
 
-      int last = i;
-
-      for (var i = 0; i < amount; i++) {
-        last = context.calls.removeLast();
+      if (l is List && i is num) {
+        l.insert(i.toInt(), v);
       }
+    }
 
-      return last;
+    if (instruction.name == "list-contains") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final v = context.stack.get(int.parse(instruction.params[1]));
+
+      if (l is List) {
+        context.stack.pushBool(l.contains(v));
+      }
+    }
+
+    if (instruction.name == "list-join") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final sep = context.stack
+          .get(
+            int.parse(instruction.params[1]),
+          )
+          .toString();
+
+      if (l is List) {
+        context.stack.pushString(l.join(sep));
+      }
+    }
+
+    if (instruction.name == "pop-n") {
+      for (var i = 0; i < int.parse(instruction.params[0]); i++) {
+        context.stack.pop();
+      }
     }
 
     return i + 1;
@@ -626,42 +505,43 @@ class CodeCellManager {
   void runProgram(Cell program, Map<int, CodeCellInstruction> instructions) {
     final id = program.data['id'] as String;
     if (!_runtimes.containsKey(id)) {
-      _runtimes[id] = CodeRuntimeContext();
+      _runtimes[id] = CodeRuntimeContext(0, {}, CodeStack([]));
     }
 
     final context = _runtimes[id]!;
 
-    // Bind runtime stuff with the cell's data (so the program cell stores all the program info)
-    context.stack = (program.data['stack'] ?? []) as List;
-    context.allocated = (program.data['allocated'] ?? []) as List;
-    context.io = (program.data['io'] ?? []) as List;
-    context.calls = (program.data['calls'] ?? []) as List;
+    if (program.data['stack'] is List) {
+      context.stack = CodeStack(program.data['stack']);
+    }
 
     final ipt = program.data['ipt'];
 
     for (var i = 0; i < ipt; i++) {
-      int idx = program.data['codeptr'];
+      int idx = program.data['ip'];
 
       // Instruction 0 (default instruction) resets
       if (idx == 0) {
-        context.stack.clear();
-        context.allocated.clear();
-        context.io.clear();
-        context.calls.clear();
+        context.stack.stack.clear();
+        context.stack.pushMap(); // Map at 0 is the IO table
       }
 
       try {
-        program.data['codeptr'] = runInstruction(idx, instructions[idx], context);
+        program.data['ip'] = runInstruction(idx, instructions[idx], context);
       } catch (e) {
+        print("Program: $id");
         print("Program runtime error: $e");
         print("Code Pointer: $idx");
-        print("Faulty Instruction: ${instructions[idx]?.name} ${instructions[idx]?.params.join(" ")}");
+        print("[ Code ]");
+        instructions.entries.toList().forEach((entry) {
+          print("${entry.key}. ${entry.value.name} ${entry.value.params.join(" ")}");
+        });
+        print(
+          "Faulty Instruction: ${instructions[idx]?.name} ${instructions[idx]?.params.join(" ")}",
+        );
       }
     }
-    program.data['stack'] = context.stack;
-    program.data['allocated'] = context.allocated;
-    program.data['io'] = context.io;
-    program.data['calls'] = context.calls;
+    program.data['stack'] = context.stack.stack;
+    program.data['ip'] = context.ip;
   }
 }
 

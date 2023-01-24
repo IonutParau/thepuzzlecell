@@ -6,7 +6,8 @@ String encodeColor(Color color) {
 
 Color decodeColor(String string) {
   final parts = string.split(":");
-  return Color.fromARGB(int.parse(parts[3]), int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+  return Color.fromARGB(int.parse(parts[3]), int.parse(parts[0]),
+      int.parse(parts[1]), int.parse(parts[2]));
 }
 
 Color settingsColor(String id, Color defaultColor) {
@@ -24,9 +25,11 @@ class SettingsPage extends StatefulWidget {
   _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
+class _SettingsPageState extends State<SettingsPage>
+    with TickerProviderStateMixin {
   final TextEditingController _delayController = TextEditingController();
-  final TextEditingController _updateQueueRunsController = TextEditingController();
+  final TextEditingController _updateQueueRunsController =
+      TextEditingController();
   final TextEditingController _clientIDController = TextEditingController();
   final textStyle = TextStyle(
     fontSize: 9.sp,
@@ -36,7 +39,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     fontSize: 7.sp,
   );
 
-  Widget colorSetting(String id, String langKey, String title, Color defaultValue) {
+  Widget colorSetting(
+      String id, String langKey, String title, Color defaultValue) {
     return Row(
       children: [
         Text(
@@ -48,7 +52,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
             child: Container(
               width: 2.5.w,
               height: 2.5.w,
-              color: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
+              color: decodeColor(
+                  storage.getString(id) ?? encodeColor(defaultValue)),
             ),
             onPressed: () {
               showDialog(
@@ -58,17 +63,23 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     title: Text(lang('choose_color', 'Choose a Color')),
                     content: SingleChildScrollView(
                       child: ColorPicker(
-                        pickerColor: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
+                        pickerColor: decodeColor(
+                            storage.getString(id) ?? encodeColor(defaultValue)),
                         onColorChanged: (color) {
-                          storage.setString(id, encodeColor(color)).then((v) => setState(() {}));
+                          storage
+                              .setString(id, encodeColor(color))
+                              .then((v) => setState(() {}));
                         },
                       ),
                     ),
                     actions: [
                       Button(
-                        child: Text(lang('restore_default', 'Restore to Default')),
+                        child:
+                            Text(lang('restore_default', 'Restore to Default')),
                         onPressed: () {
-                          storage.setString(id, encodeColor(defaultValue)).then((v) => setState(() {}));
+                          storage
+                              .setString(id, encodeColor(defaultValue))
+                              .then((v) => setState(() {}));
                           Navigator.of(context).pop();
                         },
                       ),
@@ -89,7 +100,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     );
   }
 
-  Widget checkboxSetting(String id, String langKey, String title, bool defaultValue, [void Function(bool v)? callback]) {
+  Widget checkboxSetting(
+      String id, String langKey, String title, bool defaultValue,
+      [void Function(bool v)? callback]) {
     return Row(
       children: [
         Text(
@@ -122,7 +135,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     super.initState();
 
     _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
-    _updateQueueRunsController.text = storage.getInt("update_queue_runs").toString();
+    _updateQueueRunsController.text =
+        storage.getInt("update_queue_runs").toString();
     _clientIDController.text = storage.getString("clientID") ?? "@uuid";
     _tabController = TabController(vsync: this, length: 1);
   }
@@ -234,7 +248,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       child: Row(
                         children: [
                           Text(
-                            lang('current_saving_format', 'Current Saving Format') + ': ',
+                            lang('current_saving_format',
+                                    'Current Saving Format') +
+                                ': ',
                             style: textStyle,
                           ),
                           SizedBox(
@@ -277,11 +293,14 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             min: 0,
                             max: 1,
                             onChanged: (v) async {
-                              await storage.setDouble("music_volume", (v * 100 ~/ 1) / 100);
-                              await setLoopSoundVolume(music, storage.getDouble("music_volume")!);
+                              await storage.setDouble(
+                                  "music_volume", (v * 100 ~/ 1) / 100);
+                              await setLoopSoundVolume(
+                                  music, storage.getDouble("music_volume")!);
                               setState(() {});
                             },
-                            label: '${storage.getDouble('music_volume')! * 100}%',
+                            label:
+                                '${storage.getDouble('music_volume')! * 100}%',
                           ),
                         ),
                       ],
@@ -307,7 +326,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${(storage.getDouble('sfx_volume') ?? 1) * 100}%',
+                            label:
+                                '${(storage.getDouble('sfx_volume') ?? 1) * 100}%',
                           ),
                         ),
                       ],
@@ -367,7 +387,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${storage.getDouble("grid_opacity")! * 100 ~/ 1}%',
+                            label:
+                                '${storage.getDouble("grid_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -393,7 +414,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${storage.getDouble("ui_button_opacity")! * 100 ~/ 1}%',
+                            label:
+                                '${storage.getDouble("ui_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -401,7 +423,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     Row(
                       children: [
                         Text(
-                          lang('cell_button_opacity', 'Cell Button Opacity') + ': ',
+                          lang('cell_button_opacity', 'Cell Button Opacity') +
+                              ': ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -419,7 +442,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${storage.getDouble("cell_button_opacity")! * 100 ~/ 1}%',
+                            label:
+                                '${storage.getDouble("cell_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -427,14 +451,17 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     Row(
                       children: [
                         Text(
-                          lang('editor_menu_button_opacity', 'Editor Menu Button Opacity') + ': ',
+                          lang('editor_menu_button_opacity',
+                                  'Editor Menu Button Opacity') +
+                              ': ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: storage.getDouble("editor_menu_button_opacity")!,
+                            value: storage
+                                .getDouble("editor_menu_button_opacity")!,
                             min: 0,
                             max: 1,
                             onChanged: (v) => storage
@@ -445,21 +472,38 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${storage.getDouble("editor_menu_button_opacity")! * 100 ~/ 1}%',
+                            label:
+                                '${storage.getDouble("editor_menu_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
                     ),
-                    colorSetting('game_bg', 'game_bg', 'Game Background', Color.fromARGB(255, 27, 27, 27)),
-                    colorSetting('cellbar_background', 'cellbar_background', 'Cell Bar Background', Colors.grey[180]),
-                    colorSetting('cellbar_border', 'cellbar_border', 'Cell Bar Border', Colors.grey[60]),
-                    colorSetting('infobox_background', 'infobox_background', 'Info Box Background', Colors.grey[180]),
-                    colorSetting('infobox_border', 'infobox_border', 'Info Box Border', Colors.white),
-                    colorSetting('infobox_title', 'infobox_title', 'Info Box Title', Colors.white),
-                    colorSetting('infobox_desc', 'infobox_desc', 'Info Box Description', Colors.white),
-                    colorSetting('editor_menu_bg', 'editor_menu_bg', 'Editor Menu Background', Colors.grey.withOpacity(0.7)),
-                    colorSetting('editor_menu_slider_active', 'editor_menu_slider_active', 'Editor Menu Slider Active Color', Colors.blue),
-                    colorSetting('editor_menu_slider_inactive', 'editor_menu_slider_inactive', 'Editor Menu Slider Inactive Color', Colors.black),
+                    colorSetting('game_bg', 'game_bg', 'Game Background',
+                        Color.fromARGB(255, 27, 27, 27)),
+                    colorSetting('cellbar_background', 'cellbar_background',
+                        'Cell Bar Background', Colors.grey[180]),
+                    colorSetting('cellbar_border', 'cellbar_border',
+                        'Cell Bar Border', Colors.grey[60]),
+                    colorSetting('infobox_background', 'infobox_background',
+                        'Info Box Background', Colors.grey[180]),
+                    colorSetting('infobox_border', 'infobox_border',
+                        'Info Box Border', Colors.white),
+                    colorSetting('infobox_title', 'infobox_title',
+                        'Info Box Title', Colors.white),
+                    colorSetting('infobox_desc', 'infobox_desc',
+                        'Info Box Description', Colors.white),
+                    colorSetting('editor_menu_bg', 'editor_menu_bg',
+                        'Editor Menu Background', Colors.grey.withOpacity(0.7)),
+                    colorSetting(
+                        'editor_menu_slider_active',
+                        'editor_menu_slider_active',
+                        'Editor Menu Slider Active Color',
+                        Colors.blue),
+                    colorSetting(
+                        'editor_menu_slider_inactive',
+                        'editor_menu_slider_inactive',
+                        'Editor Menu Slider Inactive Color',
+                        Colors.black),
                   ],
                 ),
                 ListView(
@@ -491,7 +535,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     (v * 10 ~/ 1) / 10,
                                   )
                                   .then((v) => setState(() {})),
-                              label: '${storage.getDouble('lerp_speed') ?? 10.0}x',
+                              label:
+                                  '${storage.getDouble('lerp_speed') ?? 10.0}x',
                             ),
                           ),
                         ],
@@ -570,7 +615,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ),
                       ],
                     ),
-                    checkboxSetting('local_packet_mirror', 'preprocess_packets', 'Preprocess Sent Packets', false),
+                    checkboxSetting('local_packet_mirror', 'preprocess_packets',
+                        'Preprocess Sent Packets', false),
                     SizedBox(
                       width: 60.w,
                       child: Row(
@@ -584,9 +630,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             child: DropDownButton(
                               leading: Image.asset(
                                 "assets/images/" +
-                                    ((storage.getString("cursor_texture") ?? "cursor") == "cursor"
+                                    ((storage.getString("cursor_texture") ??
+                                                "cursor") ==
+                                            "cursor"
                                         ? "interface/cursor.png"
-                                        : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png")),
+                                        : (textureMap[
+                                                "${storage.getString("cursor_texture")!}.png"] ??
+                                            "${storage.getString("cursor_texture")!}.png")),
                                 fit: BoxFit.fill,
                                 colorBlendMode: BlendMode.clear,
                                 filterQuality: FilterQuality.none,
@@ -594,14 +644,26 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 width: 3.h,
                                 height: 3.h,
                               ),
-                              title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!))),
+                              title: Text((storage
+                                              .getString("cursor_texture") ??
+                                          "cursor") ==
+                                      "cursor"
+                                  ? "Default"
+                                  : (idToString(
+                                      storage.getString("cursor_texture")!))),
                               placement: FlyoutPlacement.start,
                               items: [
                                 for (var texture in cursorTextures)
                                   MenuFlyoutItem(
-                                    text: Text(texture == "cursor" ? "Default" : idToString(texture)),
+                                    text: Text(texture == "cursor"
+                                        ? "Default"
+                                        : idToString(texture)),
                                     leading: Image.asset(
-                                      "assets/images/" + (texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png")),
+                                      "assets/images/" +
+                                          (texture == "cursor"
+                                              ? "interface/cursor.png"
+                                              : (textureMap["$texture.png"] ??
+                                                  "$texture.png")),
                                       fit: BoxFit.fill,
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,
@@ -610,7 +672,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                       height: 3.h,
                                     ),
                                     onPressed: () async {
-                                      await storage.setString("cursor_texture", texture);
+                                      await storage.setString(
+                                          "cursor_texture", texture);
                                       setState(() {});
                                     },
                                   ),
@@ -630,7 +693,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: storage.getInt("cursor_precision")!.toDouble(),
+                            value:
+                                storage.getInt("cursor_precision")!.toDouble(),
                             min: 1,
                             max: 9,
                             divisions: 9,
@@ -648,14 +712,18 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     Row(
                       children: [
                         Text(
-                          lang('packet_queue_limit', 'Packet Queue Limit (KB/s)') + ': ',
+                          lang('packet_queue_limit',
+                                  'Packet Queue Limit (KB/s)') +
+                              ': ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 50.w,
                           height: 5.h,
                           child: Slider(
-                            value: storage.getInt("packet_queue_limit")!.toDouble(),
+                            value: storage
+                                .getInt("packet_queue_limit")!
+                                .toDouble(),
                             min: 1000,
                             max: 5000000,
                             divisions: 5000,
@@ -665,7 +733,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   (v + 0.5).toInt(),
                                 )
                                 .then((v) => setState(() {})),
-                            label: '${storage.getInt('packet_queue_limit')! ~/ 1000} KB/s',
+                            label:
+                                '${storage.getInt('packet_queue_limit')! ~/ 1000} KB/s',
                           ),
                         ),
                       ],
@@ -690,7 +759,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 storage
                                     .setDouble(
                                       "delay",
-                                      max(min(num.tryParse(str)!.toDouble(), 5), 0.001),
+                                      max(min(num.tryParse(str)!.toDouble(), 5),
+                                          0.001),
                                     )
                                     .then(
                                       (e) => setState(
@@ -726,7 +796,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           height: 5.h,
                           child: Slider(
                             value: (QuadChunk.minSize).toDouble(),
-                            min: 1,
+                            min: 3,
                             max: 100,
                             onChanged: (v) => storage
                                 .setInt(
@@ -751,8 +821,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: (storage.getInt("chunk_size") ?? 25).toDouble(),
-                            min: 1,
+                            value:
+                                (storage.getInt("chunk_size") ?? 25).toDouble(),
+                            min: 5,
                             max: 100,
                             onChanged: (v) => storage
                                 .setInt(
@@ -770,14 +841,16 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     Row(
                       children: [
                         Text(
-                          lang('benchmark_length', 'Benchmark Length (Ticks)') + ': ',
+                          lang('benchmark_length', 'Benchmark Length (Ticks)') +
+                              ': ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: (storage.getInt("benchmark_length") ?? 100).toDouble(),
+                            value: (storage.getInt("benchmark_length") ?? 100)
+                                .toDouble(),
                             min: 10,
                             max: 1000,
                             onChanged: (v) => storage
@@ -788,7 +861,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label: '${storage.getInt("benchmark_length") ?? 100}',
+                            label:
+                                '${storage.getInt("benchmark_length") ?? 100}',
                           ),
                         ),
                       ],
@@ -797,13 +871,19 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       alignment: Alignment.topLeft,
                       child: SizedBox(
                         child: Button(
-                          child: Text(lang("benchmark", "Benchmark"), style: textStyle),
+                          child: Text(lang("benchmark", "Benchmark"),
+                              style: textStyle),
                           onPressed: () {
-                            final f = benchmarkOnThread(BenchmarkSettings(storage.getInt("benchmark_length") ?? 100, storage));
+                            final f = benchmarkOnThread(BenchmarkSettings(
+                                storage.getInt("benchmark_length") ?? 100,
+                                storage));
                             showDialog(
                               context: context,
                               builder: (ctx) {
-                                return LoadingDialog(future: f, completionMessage: "%value", title: lang("benchmark", "Benchmark"));
+                                return LoadingDialog(
+                                    future: f,
+                                    completionMessage: "%value",
+                                    title: lang("benchmark", "Benchmark"));
                               },
                             );
                           },
@@ -833,7 +913,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                 context: context,
                 builder: (ctx) {
                   return ContentDialog(
-                    title: Text(lang('warning_storage_del', 'Warning: This will delete all save files!')),
+                    title: Text(lang('warning_storage_del',
+                        'Warning: This will delete all save files!')),
                     content: Text(lang('warning_del_msg',
                         'This will erase your save files. This means your settings will reset, your worlds will be deleted, the server list will be erased. This will also apply to all installations since they share the save files')),
                     actions: [

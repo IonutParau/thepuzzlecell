@@ -45,28 +45,19 @@ class Grid {
   int height;
 
   void create() {
-    grid = [];
     place = [];
-    for (var x = 0; x < width; x++) {
-      grid.add([]);
+    grid = List.generate(width, (x) {
       place.add([]);
-      for (var y = 0; y < height; y++) {
-        grid.last.add(Cell(x, y));
+      return List.generate(height, (y) {
         place.last.add("empty");
-      }
-    }
+        return Cell(x, y);
+      });
+    });
 
     final cx = ceil(width / chunkSize);
     final cy = ceil(height / chunkSize);
 
-    chunks = [];
-
-    for (var x = 0; x < cx; x++) {
-      chunks.add([]);
-      for (var y = 0; y < cy; y++) {
-        chunks.last.add(HashSet<String>());
-      }
-    }
+    chunks = List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
 
     quadChunk = QuadChunk(0, 0, width - 1, height - 1);
   }
@@ -173,8 +164,21 @@ class Grid {
     return false;
   }
 
-  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false}) {
+  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false, bool useQuadChunks = false}) {
     //if (!cells.contains(id)) return;
+
+    if (useQuadChunks) {
+      final pos = quadChunk.fetch(id);
+
+      if (rot == null) {
+        for (var p in pos) {
+          final c = at(p[0], p[1]);
+          if (c.id == id) callback(c, p[0], p[1]);
+        }
+      }
+
+      return;
+    }
 
     if (rot == null) {
       // Update statically
