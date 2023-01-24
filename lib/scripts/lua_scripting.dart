@@ -18,12 +18,7 @@ class LuaScript {
   }
 
   LuaScript(this.dir) {
-    final ver = info['lua_ver'] ?? 'lua-latest';
-    if (ver == 'lua-latest') {
-      ls = LuaState(dll: LuaState.toLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib'));
-    } else if (ver == 'lua-jit') {
-      throw "LuaJIT is not yet supported.";
-    }
+    ls = LuaState(dll: LuaState.toLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib'));
   }
 
   void OnMsg(String msg) {

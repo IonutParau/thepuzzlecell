@@ -254,8 +254,7 @@ class CodeCellManager {
 
           final segs = code.split(" ");
 
-          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0],
-              segs.length <= 1 ? [] : segs.sublist(1));
+          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0], segs.length <= 1 ? [] : segs.sublist(1));
         } else {
           break;
         }
@@ -268,8 +267,7 @@ class CodeCellManager {
   }
 
   // Returns which instruction to go to.
-  int runInstruction(
-      int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
+  int runInstruction(int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
     if (instruction == null) return i + 1;
 
     if (instruction.name == "pop") {
@@ -277,8 +275,7 @@ class CodeCellManager {
     }
 
     if (instruction.name == "link") {
-      context.stack.link(
-          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
+      context.stack.link(int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
     if (instruction.name == "pushNum") {
@@ -342,13 +339,11 @@ class CodeCellManager {
     }
 
     if (instruction.name == "index") {
-      context.stack.index(
-          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
+      context.stack.index(int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
     if (instruction.name == "setIndex") {
-      context.stack.setIndex(int.parse(instruction.params[0]),
-          int.parse(instruction.params[1]), int.parse(instruction.params[2]));
+      context.stack.setIndex(int.parse(instruction.params[0]), int.parse(instruction.params[1]), int.parse(instruction.params[2]));
     }
 
     if (instruction.name == "pushFrom") {
@@ -554,5 +549,6 @@ void codeCellsSubtick() {
     },
     null,
     "code_program",
+    useQuadChunks: true,
   );
 }

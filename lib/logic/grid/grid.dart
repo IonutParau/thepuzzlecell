@@ -142,12 +142,13 @@ class Grid {
     grid.wrap = wrap;
     grid.title = title;
     grid.desc = desc;
-    forEach(
-      (cell, x, y) {
-        grid.setPlace(x, y, placeable(x, y));
-        grid.set(x, y, cell.copy);
-      },
-    );
+    final cellPos = quadChunk.fetch("all");
+    for (var pos in cellPos) {
+      final x = pos[0];
+      final y = pos[1];
+      grid.setPlace(x, y, placeable(x, y));
+      grid.set(x, y, at(x, y).copy);
+    }
     memory.forEach((key, value) {
       grid.memory[key] = HashMap.from(value);
     });
@@ -170,11 +171,9 @@ class Grid {
     if (useQuadChunks) {
       final pos = quadChunk.fetch(id);
 
-      if (rot == null) {
-        for (var p in pos) {
-          final c = at(p[0], p[1]);
-          if (c.id == id) callback(c, p[0], p[1]);
-        }
+      for (var p in pos) {
+        final c = at(p[0], p[1]);
+        if (c.id == id && (rot ?? c.rot) == c.rot) callback(c, p[0], p[1]);
       }
 
       return;
@@ -349,6 +348,13 @@ class Grid {
 
     if (cellPos.length < width * height) cells.add("empty"); // If we skipped some its guaranteed we have some empties
 
+    QuadChunk? nextQC;
+    bool buildNextQC = tickCount % 10 == 0;
+
+    if (buildNextQC) {
+      nextQC = QuadChunk(0, 0, width - 1, height - 1);
+    }
+
     for (var p in cellPos) {
       var x = p[0];
       var y = p[1];
@@ -360,10 +366,14 @@ class Grid {
       cell.cy = y;
       cell.lifespan++;
       cells.add(cell.id);
-      if (place[x][y] != "empty") cells.add(place[x][y]);
+      if (place[x][y] != "empty") {
+        cells.add(place[x][y]);
+        nextQC?.insert(x, y, place[x][y]);
+      }
+      nextQC?.insert(x, y, cell.id);
     }
 
-    if (tickCount % 100 == 0) quadChunk.reload();
+    if (buildNextQC) quadChunk = nextQC!;
 
     return cells;
   }

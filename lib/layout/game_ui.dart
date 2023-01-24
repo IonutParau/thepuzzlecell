@@ -842,6 +842,8 @@ void renderInfoBox(Canvas canvas, String title, String description) {
   final mouseX = max(game.mouseX, 10).toDouble();
   final mouseY = max(game.mouseY, 10).toDouble();
 
+  final scale = storage.getDouble('infobox_scale')!;
+
   final titleTP = TextPainter(textWidthBasis: TextWidthBasis.longestLine, textDirection: TextDirection.ltr);
   final descriptionTP = TextPainter(textDirection: TextDirection.ltr);
 
@@ -852,7 +854,7 @@ void renderInfoBox(Canvas canvas, String title, String description) {
     text: title,
     style: TextStyle(
       color: titleColor,
-      fontSize: 9.sp,
+      fontSize: 9.sp * scale,
     ),
   );
 
@@ -860,22 +862,22 @@ void renderInfoBox(Canvas canvas, String title, String description) {
     text: description,
     style: TextStyle(
       color: descColor,
-      fontSize: 7.sp,
+      fontSize: 7.sp * scale,
     ),
   );
 
   titleTP.layout();
-  final width = max(titleTP.width, 20.w);
+  final width = max(titleTP.width, 20.w * scale);
   descriptionTP.layout(maxWidth: width);
   final height = titleTP.height + descriptionTP.height;
 
-  var size = Size(width + 20, height + 20);
+  var size = Size(width + 20 * scale, height + 20 * scale);
   var off = Offset(mouseX, mouseY);
   if (off.dx + size.width > game.canvasSize.x) {
-    off = Offset(game.canvasSize.x - size.width - 10, off.dy);
+    off = Offset(game.canvasSize.x - size.width - 10 * scale, off.dy);
   }
   if (off.dy + size.height > game.canvasSize.y) {
-    off = Offset(off.dx, game.canvasSize.y - size.height - 10);
+    off = Offset(off.dx, game.canvasSize.y - size.height - 10 * scale);
   }
 
   final rect = off & size;
@@ -888,14 +890,14 @@ void renderInfoBox(Canvas canvas, String title, String description) {
     Paint()
       ..color = border
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 10,
+      ..strokeWidth = 10 * scale,
   );
   canvas.drawRect(
     rect,
     Paint()..color = background,
   );
-  titleTP.paint(canvas, Offset(off.dx + 10, off.dy + 10));
-  descriptionTP.paint(canvas, Offset(off.dx + 10, off.dy + titleTP.height + 20));
+  titleTP.paint(canvas, Offset(off.dx + 10 * scale, off.dy + 10 * scale));
+  descriptionTP.paint(canvas, Offset(off.dx + 10 * scale, off.dy + titleTP.height + 20 * scale));
 }
 
 class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
@@ -2539,6 +2541,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     loadHistory();
 
+    defaultCellSize = baseCellSize * storage.getDouble('cell_scale')!;
     cellSize = defaultCellSize.toDouble();
     if (edType == EditorType.loaded) {
       wantedCellSize /= (max(grid.width, grid.height) / 2);

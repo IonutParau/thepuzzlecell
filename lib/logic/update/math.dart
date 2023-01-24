@@ -106,8 +106,7 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
-        return output(x, y, cell.rot, double.infinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, abs(i));
     }, null, "math_abs");
@@ -115,8 +114,7 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
       if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, ceil(i));
     }, null, "math_ceil");
@@ -124,8 +122,7 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
       if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, floor(i));
     }, null, "math_floor");
@@ -133,8 +130,7 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
       if (i == double.nan) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, log(i));
     }, null, "math_log");
@@ -142,8 +138,7 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot - 1);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
       if (i == double.nan) return output(x, y, cell.rot, double.nan);
       final base = input(x, y, cell.rot + 1);
       if (base == double.infinity) return output(x, y, cell.rot, 0);
@@ -171,7 +166,11 @@ class MathManager {
       final seed = (x + y * grid.width) * grid.tickCount * x / (cell.rot + 1);
 
       output(
-          x, y, cell.rot, Random(seed.toInt()).nextDouble() * (i2 - i1) + i1);
+        x,
+        y,
+        cell.rot,
+        Random(seed.toInt()).nextDouble() * (i2 - i1) + i1,
+      );
     }, null, "math_prng");
     // Randomizer
     grid.updateCell((cell, x, y) {
@@ -210,8 +209,7 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
 
       if (i1 > 0 && i2 == 0) return output(x, y, cell.rot, double.infinity);
-      if (i1 < 0 && i2 == 0)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i1 < 0 && i2 == 0) return output(x, y, cell.rot, double.negativeInfinity);
       if (i1 == 0 && i2 == 0) return output(x, y, cell.rot, double.nan);
 
       output(x, y, cell.rot, i1 / i2);
@@ -223,8 +221,7 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
 
       if (i1 > 0 && i2 == 0) return output(x, y, cell.rot, double.infinity);
-      if (i1 < 0 && i2 == 0)
-        return output(x, y, cell.rot, double.negativeInfinity);
+      if (i1 < 0 && i2 == 0) return output(x, y, cell.rot, double.negativeInfinity);
       if (i1 == 0 && i2 == 0) return output(x, y, cell.rot, double.nan);
 
       output(x, y, cell.rot, i1 % i2);
@@ -250,7 +247,7 @@ class MathManager {
       final i1 = input(x, y, cell.rot - 1);
       final i2 = input(x, y, cell.rot + 1);
 
-      if(i2 == 0) {
+      if (i2 == 0) {
         return output(x, y, cell.rot, double.infinity);
       }
 
@@ -267,8 +264,7 @@ class MathManager {
     if (index == double.negativeInfinity) return;
     if (index == double.nan) return;
 
-    if (grid.memory[channel.toInt()] == null)
-      grid.memory[channel.toInt()] = HashMap();
+    if (grid.memory[channel.toInt()] == null) grid.memory[channel.toInt()] = HashMap();
 
     grid.memory[channel.toInt()]![index.toInt()] = value;
   }
@@ -385,8 +381,7 @@ class MathManager {
     if (cell.id == "math_tick") return grid.tickCount;
     if (cell.id == "math_time") return grid.tickCount * game.delay;
 
-    if (cell.id == "math_memreader")
-      return getGlobal(cell.data['channel'], cell.data['index']);
+    if (cell.id == "math_memreader") return getGlobal(cell.data['channel'], cell.data['index']);
     if (cell.id == "math_memget") {
       final channel = input(x, y, dir - 1);
       final index = input(x, y, dir + 1);
@@ -404,11 +399,8 @@ class MathManager {
   bool isWritable(int x, int y, int dir) {
     final cell = grid.at(x, y);
 
-    if (cell.id == "counter" ||
-        cell.id == "math_number" ||
-        cell.id == "math_safe_number") return true;
-    if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot)
-      return true;
+    if (cell.id == "counter" || cell.id == "math_number" || cell.id == "math_safe_number") return true;
+    if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) return true;
 
     return false;
   }
@@ -419,53 +411,16 @@ class MathManager {
 
     if (cell.id.startsWith("master_get_")) return true;
 
-    if ([
-      "counter",
-      "math_number",
-      "math_e",
-      "math_infinity",
-      "math_phi",
-      "math_pi",
-      "math_tick",
-      "math_time",
-      "math_safe_number"
-    ].contains(cell.id)) return true;
+    if (["counter", "math_number", "math_e", "math_infinity", "math_phi", "math_pi", "math_tick", "math_time", "math_safe_number"].contains(cell.id)) return true;
     // Memory outputs
-    if (["math_memget", "math_memreader", "math_memset", "math_memwriter"]
-            .contains(cell.id) &&
-        dir == cell.rot) return true;
+    if (["math_memget", "math_memreader", "math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) return true;
     // Core outputs
-    if ([
-          "math_div",
-          "math_exp",
-          "math_minus",
-          "math_mod",
-          "math_mult",
-          "math_plus",
-          "math_sqrt",
-          "math_nroot"
-        ].contains(cell.id) &&
-        dir == cell.rot) return true;
+    if (["math_div", "math_exp", "math_minus", "math_mod", "math_mult", "math_plus", "math_sqrt", "math_nroot"].contains(cell.id) && dir == cell.rot) return true;
     // Function outputs
-    if ([
-          "math_abs",
-          "math_ceil",
-          "math_floor",
-          "math_log",
-          "math_logn",
-          "math_max",
-          "math_min",
-          "math_prng",
-          "math_rng",
-          "math_sin",
-          "math_cos",
-          "math_tan"
-        ].contains(cell.id) &&
-        dir == cell.rot) return true;
+    if (["math_abs", "math_ceil", "math_floor", "math_log", "math_logn", "math_max", "math_min", "math_prng", "math_rng", "math_sin", "math_cos", "math_tan"].contains(cell.id) && dir == cell.rot)
+      return true;
     // Logic outputs
-    if (["math_equal", "math_notequal", "math_greater", "math_less"]
-            .contains(cell.id) &&
-        dir == cell.rot) return true;
+    if (["math_equal", "math_notequal", "math_greater", "math_less"].contains(cell.id) && dir == cell.rot) return true;
 
     // sync
     if (cell.id == "math_sync" && dir == cell.rot) return true;
@@ -473,8 +428,7 @@ class MathManager {
     return false;
   }
 
-  bool autoApplyCount(
-      Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
+  bool autoApplyCount(Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
     if (cell.id == "math_safe_number") return false;
 
     return true;
@@ -488,8 +442,7 @@ class MathManager {
     final ty = t[1];
 
     if (isWritable(tx, ty, dir)) {
-      if (autoApplyCount(grid.at(tx, ty), tx, ty, dir, count, x, y))
-        grid.at(tx, ty).data['count'] = count;
+      if (autoApplyCount(grid.at(tx, ty), tx, ty, dir, count, x, y)) grid.at(tx, ty).data['count'] = count;
       whenWritten(grid.at(tx, ty), tx, ty, dir, count);
     }
   }

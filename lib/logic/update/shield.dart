@@ -6,5 +6,5 @@ void shield() {
     grid.get(x + 1, y)?.tags.add("shielded");
     grid.get(x, y - 1)?.tags.add("shielded");
     grid.get(x, y + 1)?.tags.add("shielded");
-  }, null, "shield");
+  }, null, "shield", useQuadChunks: true);
 }

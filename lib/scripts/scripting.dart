@@ -18,6 +18,7 @@ class ScriptingManager {
   List<LuaScript> luaScripts = [];
 
   void loadScripts([List<String> blocked = const []]) {
+    if (!Directory('dlls').existsSync()) return;
     final subitems = directory.listSync();
     final subdirs = subitems.where((e) => e is Directory).cast<Directory>();
 
@@ -48,6 +49,8 @@ class ScriptingManager {
   }
 
   Future<void> initScripts() async {
+    if (!Directory('dlls').existsSync()) return;
+
     LuaState.loadLibLua(
       windows: 'dlls/lua54.dll',
       linux: 'dlls/liblua54.so',
