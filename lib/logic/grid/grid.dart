@@ -48,28 +48,20 @@ class Grid {
   int height;
 
   void create() {
-    grid = [];
     place = [];
-    for (var x = 0; x < width; x++) {
-      grid.add([]);
+    grid = List.generate(width, (x) {
       place.add([]);
-      for (var y = 0; y < height; y++) {
-        grid.last.add(Cell(x, y));
+      return List.generate(height, (y) {
         place.last.add("empty");
-      }
-    }
+        return Cell(x, y);
+      });
+    });
 
     final cx = ceil(width / chunkSize);
     final cy = ceil(height / chunkSize);
 
-    chunks = [];
-
-    for (var x = 0; x < cx; x++) {
-      chunks.add([]);
-      for (var y = 0; y < cy; y++) {
-        chunks.last.add(HashSet<String>());
-      }
-    }
+    chunks =
+        List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
 
     quadChunk = QuadChunk(0, 0, width - 1, height - 1);
   }
@@ -437,7 +429,8 @@ class Grid {
   }
 
   String encode() {
-    if (currentSavingFormat == CurrentSavingFormat.VX) return VX.encodeGrid(this, title: title, desc: desc);
+    if (currentSavingFormat == CurrentSavingFormat.VX)
+      return VX.encodeGrid(this, title: title, desc: desc);
 
     return SavingFormat.encodeGrid(this, title: title, description: desc);
   }
