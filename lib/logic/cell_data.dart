@@ -1249,7 +1249,7 @@ final categories = [
       ),
       CellCategory(
         "Code Cells",
-        "Cells that run or interact with programs. Yes, this means you can write and run code in TPC. No, you can't get hacked by this, it's fully sandboxed.",
+        "Cells that run or interact with programs. Yes, this means you can write and run code in TPC. No, you can't get hacked by this, it's fully sandboxed. Please note: Errors in the code may crash the game.",
         [
           "code_program",
           "code_instruction",

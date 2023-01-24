@@ -282,7 +282,15 @@ class CodeCellManager {
     }
 
     if (instruction.name == "pushNum") {
-      context.stack.pushNum(double.parse(instruction.params[0]));
+      if (instruction.params[0] == "infinity") {
+        context.stack.pushNum(double.infinity);
+      } else if (instruction.params[0] == "-infinity") {
+        context.stack.pushNum(double.negativeInfinity);
+      } else if (instruction.params[0] == "nan") {
+        context.stack.pushNum(double.nan);
+      } else {
+        context.stack.pushNum(double.parse(instruction.params[0]));
+      }
     }
 
     if (instruction.name == "pushMap") {
@@ -435,6 +443,62 @@ class CodeCellManager {
       context.stack.or();
     }
 
+    if (instruction.name == "list-add") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final v = context.stack.get(int.parse(instruction.params[1]));
+
+      if (l is List) {
+        l.add(v);
+      }
+    }
+
+    if (instruction.name == "list-removeAt") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final i = context.stack.get(int.parse(instruction.params[1]));
+
+      if (l is List && i is num) {
+        l.removeAt(i.toInt());
+      }
+    }
+
+    if (instruction.name == "list-insertAt") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final i = context.stack.get(int.parse(instruction.params[1]));
+      final v = context.stack.get(int.parse(instruction.params[2]));
+
+      if (l is List && i is num) {
+        l.insert(i.toInt(), v);
+      }
+    }
+
+    if (instruction.name == "list-contains") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final v = context.stack.get(int.parse(instruction.params[1]));
+
+      if (l is List) {
+        context.stack.pushBool(l.contains(v));
+      }
+    }
+
+    if (instruction.name == "list-join") {
+      final l = context.stack.get(int.parse(instruction.params[0]));
+      final sep = context.stack
+          .get(
+            int.parse(instruction.params[1]),
+          )
+          .toString();
+
+      if (l is List) {
+        context.stack.pushString(l.join(sep));
+      }
+    }
+
+    if (instruction.name == "pop-n") {
+      for (var i = 0; i < int.parse(instruction.params[0]); i++) {
+        context.stack.pop();
+      }
+    }
+
     return i + 1;
   }
 
@@ -464,8 +528,13 @@ class CodeCellManager {
       try {
         program.data['ip'] = runInstruction(idx, instructions[idx], context);
       } catch (e) {
+        print("Program: $id");
         print("Program runtime error: $e");
         print("Code Pointer: $idx");
+        print("[ Code ]");
+        instructions.entries.toList().forEach((entry) {
+          print("${entry.key}. ${entry.value.name} ${entry.value.params.join(" ")}");
+        });
         print(
           "Faulty Instruction: ${instructions[idx]?.name} ${instructions[idx]?.params.join(" ")}",
         );
