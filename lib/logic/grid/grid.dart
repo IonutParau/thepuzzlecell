@@ -170,8 +170,21 @@ class Grid {
 
   void updateCell(
       void Function(Cell cell, int x, int y) callback, int? rot, String id,
-      {bool invertOrder = false}) {
+      {bool invertOrder = false, bool useQuadChunks = false}) {
     //if (!cells.contains(id)) return;
+
+    if (useQuadChunks) {
+      final pos = quadChunk.fetch(id);
+
+      if (rot == null) {
+        for (var p in pos) {
+          final c = at(p[0], p[1]);
+          if (c.id == id) callback(c, p[0], p[1]);
+        }
+      }
+
+      return;
+    }
 
     if (rot == null) {
       // Update statically
