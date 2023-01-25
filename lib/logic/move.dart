@@ -190,6 +190,7 @@ final trashes = [
   "counter",
   "trash_can",
   "mech_p_trash",
+  "eater",
 ].toSet().toList();
 
 final enemies = [

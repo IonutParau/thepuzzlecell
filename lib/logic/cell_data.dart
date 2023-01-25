@@ -363,6 +363,7 @@ final cells = {
   "electric_mover",
   "electric_battery",
   "unstable_tunnel",
+  "eater",
 }.toList();
 
 final modded = <String>[];
@@ -373,6 +374,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "eater.png": "destroyers/trash/eater.png",
   "unstable_tunnel.png": "quantum/unstable_tunnel.png",
   "electric_battery.png": "electrical/electric_battery.png",
   "electric_mover.png": "electrical/electric_mover.png",
@@ -1179,6 +1181,7 @@ final categories = [
           "puzzle_trash",
           "mech_p_trash",
           "hungry_trash",
+          "eater",
         ],
         "trash",
         max: 7,
@@ -3067,6 +3070,10 @@ final cellInfo = <String, CellProfile>{
   "unstable_tunnel": CellProfile(
     "Unstable Tunnel",
     "A tunnel that sends the cell through other cells (also kills enemies in the process)",
+  ),
+  "eater": CellProfile(
+    "Eater",
+    "A trash cell that pulls the stuff adjacent to it inside of itself",
   ),
 };
 
