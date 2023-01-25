@@ -362,6 +362,7 @@ final cells = {
   "electric_container",
   "electric_mover",
   "electric_battery",
+  "unstable_tunnel",
 }.toList();
 
 final modded = <String>[];
@@ -372,6 +373,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "unstable_tunnel.png": "quantum/unstable_tunnel.png",
   "electric_battery.png": "electrical/electric_battery.png",
   "electric_mover.png": "electrical/electric_mover.png",
   "electric_wire.png": "electrical/electric_wire.png",
@@ -1219,6 +1221,7 @@ final categories = [
         [
           "unstable_mover",
           "unstable_gen",
+          "unstable_tunnel",
           "field",
           "quantum_zypper",
           "proton",
@@ -3060,6 +3063,10 @@ final cellInfo = <String, CellProfile>{
   "electric_battery": CellProfile(
     "Electrical Battery",
     "Stores electricity inside. It can optionally have a capacity. If it has power inside of it, the cell in front will be allowed to update. Otherwise, it will act like a Stopper.",
+  ),
+  "unstable_tunnel": CellProfile(
+    "Unstable Tunnel",
+    "A tunnel that sends the cell through other cells (also kills enemies in the process)",
   ),
 };
 
