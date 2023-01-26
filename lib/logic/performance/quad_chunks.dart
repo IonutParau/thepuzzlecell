@@ -119,4 +119,88 @@ class QuadChunk {
     recount = true;
     subs.forEach((node) => node.reload());
   }
+
+  void iterateX(int y, String chunkType, bool reversed,
+      void callback(Cell cell, int x, int y)) {
+    if (y != -1 && !(y >= sy && y <= ey)) return;
+    if (!containsType(chunkType)) return;
+
+    if (isNodeOnly) {
+      // Iterating the list in order gives us 0 -> w-1 order
+      // Iterating the list backwards gives us w-1 -> 0 order
+      if (reversed) {
+        for (var i = subs.length - 1; i >= 0; i--) {
+          subs[i].iterateX(y, chunkType, reversed, callback);
+        }
+      } else {
+        for (var sub in subs) sub.iterateX(y, chunkType, reversed, callback);
+      }
+    } else {
+      if (reversed) {
+        for (var x = ex; x >= sx; x--) {
+          if (!grid.inside(x, y)) continue;
+          callback(grid.at(x, y), x, y);
+        }
+      } else {
+        for (var x = sx; x <= ex; x++) {
+          if (!grid.inside(x, y)) continue;
+          callback(grid.at(x, y), x, y);
+        }
+      }
+    }
+  }
+
+  void iterateY(int x, String chunkType, bool reversed,
+      void callback(Cell cell, int x, int y)) {
+    if (x != -1 && !(x >= sx && x <= ex)) return;
+    if (!containsType(chunkType)) return;
+
+    if (isNodeOnly) {
+      // Iterating the list in order gives us 0 -> w-1 order
+      // Iterating the list backwards gives us w-1 -> 0 order
+      if (reversed) {
+        for (var i = subs.length - 1; i >= 0; i--) {
+          subs[i].iterateY(x, chunkType, reversed, callback);
+        }
+      } else {
+        for (var sub in subs) sub.iterateY(x, chunkType, reversed, callback);
+      }
+    } else {
+      if (reversed) {
+        for (var y = ey; y >= sy; y--) {
+          if (!grid.inside(x, y)) continue;
+          callback(grid.at(x, y), x, y);
+        }
+      } else {
+        for (var y = sy; y <= ey; y++) {
+          if (!grid.inside(x, y)) continue;
+          callback(grid.at(x, y), x, y);
+        }
+      }
+    }
+  }
+
+  void iterate(Grid grid, GridAlignment alignment, String chunkType,
+      void callback(Cell cell, int x, int y)) {
+    if (alignment == GridAlignment.bottomright) {
+      for (var y = 0; y < grid.height; y++) {
+        iterateX(y, chunkType, false, callback);
+      }
+    }
+    if (alignment == GridAlignment.topleft) {
+      for (var y = grid.height - 1; y >= 0; y--) {
+        iterateX(y, chunkType, true, callback);
+      }
+    }
+    if (alignment == GridAlignment.topright) {
+      for (var x = 0; x < grid.width; x++) {
+        iterateY(x, chunkType, true, callback);
+      }
+    }
+    if (alignment == GridAlignment.bottomleft) {
+      for (var x = grid.width - 1; x >= 0; x--) {
+        iterateY(x, chunkType, false, callback);
+      }
+    }
+  }
 }

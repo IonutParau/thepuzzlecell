@@ -28,13 +28,16 @@ class Grid {
 
   List<FakeCell> fakeCells = [];
 
-  void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
+  void addBroken(Cell cell, int dx, int dy,
+      [String type = "normal", int? rlvx, int? rlvy]) {
     if (cell.invisible && game.edType == EditorType.loaded) return;
     if (cell.id == "empty") return;
 
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data, cell.invisible);
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type,
+        cell.data, cell.invisible);
 
-    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
+    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx,
+        rlvy?.toDouble() ?? b.lv.lastPos.dy);
 
     brokenCells.add(b);
   }
@@ -57,7 +60,8 @@ class Grid {
     final cx = ceil(width / chunkSize);
     final cy = ceil(height / chunkSize);
 
-    chunks = List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
+    chunks =
+        List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
 
     quadChunk = QuadChunk(0, 0, width - 1, height - 1);
   }
@@ -165,7 +169,11 @@ class Grid {
     return false;
   }
 
-  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false, bool useQuadChunks = false}) {
+  bool useExperimentalUpdating = true;
+
+  void updateCell(
+      void Function(Cell cell, int x, int y) callback, int? rot, String id,
+      {bool invertOrder = false, bool useQuadChunks = false}) {
     //if (!cells.contains(id)) return;
 
     if (useQuadChunks) {
@@ -176,6 +184,35 @@ class Grid {
         if (c.id == id && (rot ?? c.rot) == c.rot) callback(c, p[0], p[1]);
       }
 
+      return;
+    }
+
+    if (useExperimentalUpdating) {
+      if (rot == null) {
+        quadChunk.iterate(
+          this,
+          invertOrder ? GridAlignment.topleft : GridAlignment.bottomright,
+          id,
+          (cell, x, y) {
+            if (cell.id == id && !cell.updated) {
+              cell.updated = true;
+              callback(cell, x, y);
+            }
+          },
+        );
+      } else {
+        quadChunk.iterate(
+          this,
+          fromRot((rot + (invertOrder ? 2 : 0)) % 4),
+          id,
+          (cell, x, y) {
+            if (cell.id == id && !cell.updated) {
+              cell.updated = true;
+              callback(cell, x, y);
+            }
+          },
+        );
+      }
       return;
     }
 
@@ -208,7 +245,10 @@ class Grid {
     return chunks[cx(x)][cy(y)].contains(id);
   }
 
-  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter, bool shouldUpdate = true}) {
+  void loopChunks(String chunkID, GridAlignment alignment,
+      void Function(Cell cell, int x, int y) callback,
+      {bool Function(Cell cell, int x, int y)? filter,
+      bool shouldUpdate = true}) {
     if (chunkID == "all") {
       if (cells.isEmpty) return;
     } else if (chunkID != "*") {
@@ -346,7 +386,9 @@ class Grid {
 
     final cellPos = quadChunk.fetch("all");
 
-    if (cellPos.length < width * height) cells.add("empty"); // If we skipped some its guaranteed we have some empties
+    if (cellPos.length < width * height)
+      cells.add(
+          "empty"); // If we skipped some its guaranteed we have some empties
 
     QuadChunk? nextQC;
     bool buildNextQC = tickCount % 10 == 0;
@@ -386,7 +428,8 @@ class Grid {
       doAnchor(x, y, rot);
       return;
     }
-    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
+    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
+      return;
     if (!breakable(
       at(x, y),
       x,
@@ -431,7 +474,8 @@ class Grid {
       }
     } else {
       for (var subtick in subticks) {
-        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) return;
+        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded)
+          return;
         if (subtick is void Function(Set<String>)) {
           // QueueManager.add("subticks", () => subtick(cells));
           subtick(cells);
@@ -445,16 +489,24 @@ class Grid {
   }
 
   String encode() {
-    if (currentSavingFormat == CurrentSavingFormat.VX) return VX.encodeGrid(this, title: title, desc: desc);
+    if (currentSavingFormat == CurrentSavingFormat.VX)
+      return VX.encodeGrid(this, title: title, desc: desc);
 
     return SavingFormat.encodeGrid(this, title: title, description: desc);
   }
 }
 
 enum GridAlignment {
+  /// 0 - (w-1,h-1) -> (0,0)
   topleft,
+
+  /// 1 - (0,h-1) -> (w-1,0)
   topright,
+
+  /// 2 - (0,0) -> (w-1,h-1)
   bottomright,
+
+  /// 3 - (w-1,0) -> (0,h-1)
   bottomleft,
 }
 
@@ -482,9 +534,17 @@ class GridClip {
         final sx = cx + x;
         final sy = cy + y;
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
-          cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
+          cells[cx][cy].lastvars =
+              LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
           if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
-          game.sendToServer('place', {"x": sx, "y": sy, "id": cells[cx][cy].id, "rot": cells[cx][cy].rot, "data": cells[cx][cy].data, "size": 1});
+          game.sendToServer('place', {
+            "x": sx,
+            "y": sy,
+            "id": cells[cx][cy].id,
+            "rot": cells[cx][cy].rot,
+            "data": cells[cx][cy].data,
+            "size": 1
+          });
         }
       }
     }
@@ -506,7 +566,8 @@ class GridClip {
               sy %= grid.height;
             }
             final off = rotateOff(
-                  Offset(sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
+                  Offset(sx * cellSize + cellSize / 2,
+                      sy * cellSize + cellSize / 2),
                   -rot,
                 ) -
                 Offset(
@@ -515,8 +576,11 @@ class GridClip {
                     ) /
                     2;
             canvas.rotate(rot);
-            final file = textureMap['${cells[cx][cy].id}.png'] ?? '${cells[cx][cy].id}.png';
-            (Sprite(Flame.images.fromCache(file))..paint = (Paint()..color = Colors.white.withOpacity(0.2))).render(
+            final file = textureMap['${cells[cx][cy].id}.png'] ??
+                '${cells[cx][cy].id}.png';
+            (Sprite(Flame.images.fromCache(file))
+                  ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
+                .render(
               canvas,
               position: Vector2(off.dx, off.dy),
               size: Vector2.all(
