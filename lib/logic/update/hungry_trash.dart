@@ -34,4 +34,14 @@ void hungryTrashes() {
     null,
     "hungry_trash",
   );
+  grid.updateCell(
+    (cell, x, y) {
+      pull(x - 1, y, 0, 1);
+      pull(x + 1, y, 2, 1);
+      pull(x, y - 1, 1, 1);
+      pull(x, y + 1, 3, 1);
+    },
+    null,
+    "eater",
+  );
 }

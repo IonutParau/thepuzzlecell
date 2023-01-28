@@ -34,6 +34,8 @@ final List<String> changes = [
   "Added Debt Enemy",
   "Added Portal C",
   "Added Custom Weight",
+  "Debt and Mechanically Powered Debt can now be made immovable",
+  "Added Unstable Tunnel",
 ];
 
 IconData getTrailing(String change) {

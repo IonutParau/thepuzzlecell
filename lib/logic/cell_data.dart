@@ -362,15 +362,20 @@ final cells = {
   "electric_container",
   "electric_mover",
   "electric_battery",
+  "unstable_tunnel",
+  "eater",
 }.toList();
 
 final modded = <String>[];
 
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
+  ..removeWhere((e) => e == "empty");
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "eater.png": "destroyers/trash/eater.png",
+  "unstable_tunnel.png": "quantum/unstable_tunnel.png",
   "electric_battery.png": "electrical/electric_battery.png",
   "electric_mover.png": "electrical/electric_mover.png",
   "electric_wire.png": "electrical/electric_wire.png",
@@ -761,7 +766,8 @@ class CellCategory {
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look,
+      {this.max = 3});
 
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
@@ -1175,6 +1181,7 @@ final categories = [
           "puzzle_trash",
           "mech_p_trash",
           "hungry_trash",
+          "eater",
         ],
         "trash",
         max: 7,
@@ -1217,6 +1224,7 @@ final categories = [
         [
           "unstable_mover",
           "unstable_gen",
+          "unstable_tunnel",
           "field",
           "quantum_zypper",
           "proton",
@@ -3059,6 +3067,14 @@ final cellInfo = <String, CellProfile>{
     "Electrical Battery",
     "Stores electricity inside. It can optionally have a capacity. If it has power inside of it, the cell in front will be allowed to update. Otherwise, it will act like a Stopper.",
   ),
+  "unstable_tunnel": CellProfile(
+    "Unstable Tunnel",
+    "A tunnel that sends the cell through other cells (also kills enemies in the process)",
+  ),
+  "eater": CellProfile(
+    "Eater",
+    "A trash cell that pulls the stuff adjacent to it inside of itself",
+  ),
 };
 
 enum CellPropertyType {
@@ -3113,11 +3129,13 @@ Map<String, List<CellProperty>> props = {
   ],
   "explosive": [
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
-    CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
+    CellProperty(
+        "Effectiveness", "effectiveness", CellPropertyType.number, 100),
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Mobile", "mobile", CellPropertyType.boolean, false),
-    CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
+    CellProperty(
+        "Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [
     CellProperty("Cell", "cell", CellPropertyType.cell, "push!0"),
@@ -3127,14 +3145,20 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Quantized", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
-    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset",
+        CellPropertyType.boolean, true),
+    CellProperty(
+        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty(
+        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "mech_checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
-    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset",
+        CellPropertyType.boolean, true),
+    CellProperty(
+        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty(
+        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "trash_can": [
     CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
@@ -3200,10 +3224,17 @@ Map<String, List<CellProperty>> props = {
   ],
   "debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
+    CellProperty("Immovable", "immovable", CellPropertyType.boolean, false),
   ],
   "mech_debt": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
-    CellProperty("Self-Destruct", "selfDestruct", CellPropertyType.boolean, true),
+    CellProperty(
+      "Self-Destruct",
+      "selfDestruct",
+      CellPropertyType.boolean,
+      true,
+    ),
+    CellProperty("Immovable", "immovable", CellPropertyType.boolean, false),
   ],
   "debt_enemy": [
     CellProperty("Debt", "debt", CellPropertyType.integer, 1),
@@ -3211,13 +3242,17 @@ Map<String, List<CellProperty>> props = {
   "configurable_filler": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
-    CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty(
+        "Mutation Chance", "mutationChance", CellPropertyType.number, 0),
     CellProperty("Attack Chance", "attackChance", CellPropertyType.number, 100),
     CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
-    CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
-    CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
     CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
-    CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
+    CellProperty(
+        "Down Spread Odds", "downSpread", CellPropertyType.number, 100),
   ],
   "code_instruction": [
     CellProperty("Line", "line", CellPropertyType.integer, 0),

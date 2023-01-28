@@ -1,5 +1,25 @@
 part of logic;
 
+bool unstablePushOut(Cell cell, int x, int y, int dir, [bool copy = false]) {
+  var d = 0;
+  while (true) {
+    d++;
+    if (d > grid.width * grid.height) return false;
+    x = frontX(x, dir);
+    y = frontY(y, dir);
+    if (!grid.inside(x, y)) return false;
+    final c = grid.at(x, y);
+
+    if (c.id == "empty") {
+      break;
+    } else if (moveInsideOf(c, x, y, dir, 1, MoveType.unknown_move)) {
+      push(x, y, dir, 99999999999, replaceCell: copy ? cell.copy : cell);
+    }
+  }
+  grid.set(x, y, copy ? cell.copy : cell);
+  return true;
+}
+
 void unstableMove(int x, int y, int dir) {
   var cx = x;
   var cy = y;
@@ -94,7 +114,8 @@ class RaycastInfo {
   late int x;
   late int y;
 
-  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y) : successful = true {
+  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y)
+      : successful = true {
     hitCell = cell.copy;
   }
 
@@ -132,10 +153,12 @@ class QuantumInteraction {
   num? flipDist;
   int? distOff;
 
-  QuantumInteraction(this.scale, this.flipWhenClose, {this.flipDist, this.distOff});
+  QuantumInteraction(this.scale, this.flipWhenClose,
+      {this.flipDist, this.distOff});
 
   QuantumInteraction operator *(num other) {
-    return QuantumInteraction(scale * other, flipWhenClose, flipDist: flipDist, distOff: distOff);
+    return QuantumInteraction(scale * other, flipWhenClose,
+        flipDist: flipDist, distOff: distOff);
   }
 }
 
@@ -241,6 +264,18 @@ void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
   }
 }
 
+void doUnstableTunnel(int x, int y, int dir) {
+  final bx = frontX(x, dir, -1);
+  final by = frontY(y, dir, -1);
+
+  final b = grid.get(bx, by);
+  if (b == null) return;
+  if (b.id == "empty") return;
+  if (unstablePushOut(b, x, y, dir)) {
+    grid.set(bx, by, Cell(bx, by));
+  }
+}
+
 void quantums() {
   if (grid.movable) {
     for (var rot in rotOrder) {
@@ -250,7 +285,10 @@ void quantums() {
         (cell, x, y) {
           if (cell.rot == rot) unstableMove(x, y, cell.rot);
         },
-        filter: (cell, x, y) => cell.id == "unstable_mover" && cell.rot == rot && cell.updated == false,
+        filter: (cell, x, y) =>
+            cell.id == "unstable_mover" &&
+            cell.rot == rot &&
+            cell.updated == false,
       );
       grid.updateCell(
         (cell, x, y) {
@@ -264,6 +302,13 @@ void quantums() {
         },
         rot,
         "unstable_gen",
+      );
+      grid.updateCell(
+        (cell, x, y) {
+          doUnstableTunnel(x, y, cell.rot);
+        },
+        rot,
+        "unstable_tunnel",
       );
       grid.updateCell(
         (cell, x, y) {

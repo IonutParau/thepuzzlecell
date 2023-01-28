@@ -140,6 +140,10 @@ bool canMove(int x, int y, int dir, int force, MoveType mt) {
         return force > 2;
       case "debt_enemy":
         return playerKeys >= (cell.data['debt'] ?? 1);
+      case "debt":
+        return !(cell.data['immovable'] ?? false);
+      case "mech_debt":
+        return !(cell.data['immovable'] ?? false);
       default:
         return true;
     }
@@ -186,6 +190,7 @@ final trashes = [
   "counter",
   "trash_can",
   "mech_p_trash",
+  "eater",
 ].toSet().toList();
 
 final enemies = [
