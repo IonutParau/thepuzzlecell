@@ -40,7 +40,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final currentID = controllers[i].text;
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
       return DropDownButton(
-        placement: FlyoutPlacement.start,
+        placement: FlyoutPlacementMode.bottomCenter,
         leading: Image.asset(
           'assets/images/$tp',
           fit: BoxFit.fill,
@@ -77,7 +77,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final rot = int.tryParse(currentID) ?? 0;
 
       return DropDownButton(
-        placement: FlyoutPlacement.start,
+        placement: FlyoutPlacementMode.bottomCenter,
         title: Text("$displayName: " + rotToString(rot)),
         items: [
           for (var r = 0; r < 4; r++)
@@ -95,7 +95,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final current = controllers[i].text;
 
       return DropDownButton(
-        placement: FlyoutPlacement.start,
+        placement: FlyoutPlacementMode.bottomCenter,
         leading: Transform.rotate(
           angle: parseJointCellStr(current)[1] * halfPi,
           child: Image.asset(
@@ -138,7 +138,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final currentID = controllers[i].text;
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
       return DropDownButton(
-        placement: FlyoutPlacement.start,
+        placement: FlyoutPlacementMode.bottomCenter,
         leading: Image.asset(
           'assets/images/$tp',
           fit: BoxFit.fill,

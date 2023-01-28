@@ -44,13 +44,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
           style: textStyle,
         ),
         SizedBox(
-          child: Button(
+          child: InkWell(
             child: Container(
               width: 2.5.w,
               height: 2.5.w,
               color: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
             ),
-            onPressed: () {
+            onTap: () {
               showDialog(
                 context: context,
                 builder: (context) {
@@ -242,7 +242,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             child: DropDownButton(
                               leading: Icon(FluentIcons.save),
                               title: Text(currentSavingFormat.name),
-                              placement: FlyoutPlacement.start,
+                              placement: FlyoutPlacementMode.bottomCenter,
                               items: [
                                 for (var format in CurrentSavingFormat.values)
                                   MenuFlyoutItem(
@@ -325,7 +325,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             child: DropDownButton(
                               leading: Icon(FluentIcons.music_note),
                               title: Text(getCurrentMusicData().name),
-                              placement: FlyoutPlacement.start,
+                              placement: FlyoutPlacementMode.bottomCenter,
                               items: [
                                 for (var music in musics)
                                   MenuFlyoutItem(
@@ -646,7 +646,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 height: 3.h,
                               ),
                               title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!))),
-                              placement: FlyoutPlacement.start,
+                              placement: FlyoutPlacementMode.bottomCenter,
                               items: [
                                 for (var texture in cursorTextures)
                                   MenuFlyoutItem(
