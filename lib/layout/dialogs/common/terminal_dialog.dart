@@ -75,8 +75,11 @@ class _TerminalDialogState extends State<TerminalDialog> {
                                       return SizedBox(
                                         width: constraints.maxWidth * 0.8,
                                         child: ListTile(
-                                          title: Text(terminalSession.output[index]),
+                                          title: SelectableText(terminalSession.output[index]),
                                           tileColor: ConstantColorButtonState(Colors.grey[130]),
+                                          onPressed: () {
+                                            inputController.text += terminalSession.output[index];
+                                          },
                                         ),
                                       );
                                     },
