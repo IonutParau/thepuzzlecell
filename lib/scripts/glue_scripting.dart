@@ -207,9 +207,11 @@ class GlueScript {
       if (rot is! GlueNumber) return GlueNull();
       if (rot.n.isInfinite || rot.n.isNaN) return GlueNull();
 
-      if (ccx is GlueNumber && (ccx.n.isInfinite || ccx.n.isNaN)) return GlueNull();
+      if (ccx is GlueNumber && (ccx.n.isInfinite || ccx.n.isNaN))
+        return GlueNull();
 
-      if (ccy is GlueNumber && (ccy.n.isInfinite || ccy.n.isNaN)) return GlueNull();
+      if (ccy is GlueNumber && (ccy.n.isInfinite || ccy.n.isNaN))
+        return GlueNull();
 
       if (lifespan is! GlueNumber) return GlueNull();
       if (lifespan.n.isInfinite || lifespan.n.isNaN) return GlueNull();
@@ -271,7 +273,8 @@ class GlueScript {
     });
 
     vm.globals["grid-save-str"] = GlueExternalFunction((vm, stack, args) {
-      return GlueString(SavingFormat.encodeGrid(grid, title: grid.title, description: grid.desc));
+      return GlueString(SavingFormat.encodeGrid(grid,
+          title: grid.title, description: grid.desc));
     });
 
     vm.globals["grid-toggle-wrap"] = GlueExternalFunction((vm, stack, args) {
@@ -346,7 +349,8 @@ class GlueScript {
 
         if (n.n.isInfinite || n.n.isNaN) return n;
 
-        game.storedOffX = game.cellToPixelX(n.n.toInt()) + game.canvasSize.x ~/ 2;
+        game.storedOffX =
+            game.cellToPixelX(n.n.toInt()) + game.canvasSize.x ~/ 2;
 
         return n;
       }
@@ -364,7 +368,8 @@ class GlueScript {
 
         if (n.n.isInfinite || n.n.isNaN) return n;
 
-        game.storedOffY = game.cellToPixelY(n.n.toInt()) + game.canvasSize.y ~/ 2;
+        game.storedOffY =
+            game.cellToPixelY(n.n.toInt()) + game.canvasSize.y ~/ 2;
 
         return n;
       }
@@ -400,13 +405,16 @@ class GlueScript {
         if (n is GlueNumber && (n.n.isNaN || n.n.isInfinite)) {
           game.currentRotation = n.n.toInt() % 4;
           for (var i = 0; i < categories.length; i++) {
-            game.buttonManager.buttons['cat$i']!.rotation = game.currentRotation;
+            game.buttonManager.buttons['cat$i']!.rotation =
+                game.currentRotation;
             for (var j = 0; j < categories[i].items.length; j++) {
-              game.buttonManager.buttons['cat${i}cell$j']!.rotation = game.currentRotation;
+              game.buttonManager.buttons['cat${i}cell$j']!.rotation =
+                  game.currentRotation;
 
               if (categories[i].items[j] is CellCategory) {
                 for (var k = 0; k < categories[i].items[j].items.length; k++) {
-                  game.buttonManager.buttons['cat${i}cell${j}sub$k']!.rotation = game.currentRotation;
+                  game.buttonManager.buttons['cat${i}cell${j}sub$k']!.rotation =
+                      game.currentRotation;
                 }
               }
             }
@@ -415,6 +423,34 @@ class GlueScript {
       }
 
       return GlueNumber(game.currentRotation.toDouble());
+    });
+
+    vm.globals["brush-size"] = GlueExternalFunction((vm, stack, args) {
+      if (args.isNotEmpty) {
+        args = vm.processedArgs(stack, args);
+
+        final bs = args[0];
+
+        if (bs is! GlueNumber) return GlueNull();
+        if (bs.n.isInfinite || bs.n.isNaN || bs.n.isNegative) return GlueNull();
+        game.brushSize = bs.n.toInt();
+      }
+
+      return GlueNumber(game.brushSize.toDouble());
+    });
+
+    vm.globals["brush-temp"] = GlueExternalFunction((vm, stack, args) {
+      if (args.isNotEmpty) {
+        args = vm.processedArgs(stack, args);
+
+        final bt = args[0];
+
+        if (bt is! GlueNumber) return GlueNull();
+        if (bt.n.isInfinite || bt.n.isNaN || bt.n.isNegative) return GlueNull();
+        game.brushTemp = bt.n.toInt();
+      }
+
+      return GlueNumber(game.brushTemp.toDouble());
     });
 
     vm.globals["q"] = GlueExternalFunction((vm, stack, args) {
