@@ -1662,6 +1662,32 @@ class LuaScript {
 
         return 0;
       },
+      "ModList": (LuaState ls) {
+        final modList = scriptingManager.getScripts();
+
+        ls.createTable(modList.length, modList.length);
+
+        var i = -1;
+        for (var mod in modList) {
+          i++;
+          final name = scriptingManager.modName(mod);
+          final desc = scriptingManager.modDesc(mod);
+          final author = scriptingManager.modAuthor(mod);
+
+          ls.pushLib({
+            "name": name,
+            "description": desc,
+            "author": author,
+          }); // <table> <lib>
+          ls.pushInteger(i); // <table> <lib> i
+          ls.pushNil(); // <table> <lib> i nil
+          ls.copy(-3, -1); // <table> <lib> i <lib>
+          ls.setTable(-4); // <table> <lib>
+          ls.pop(); // <table>
+        }
+
+        return 1;
+      },
       "Move": moveAPI(),
       "Helper": helperLib(),
       "Queues": queuesAPI(),
