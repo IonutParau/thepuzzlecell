@@ -446,7 +446,7 @@ class GlueScript {
         final bt = args[0];
 
         if (bt is! GlueNumber) return GlueNull();
-        if (bt.n.isInfinite || bt.n.isNaN || bt.n.isNegative) return GlueNull();
+        if (bt.n.isInfinite || bt.n.isNaN) return GlueNull();
         game.brushTemp = bt.n.toInt();
       }
 
