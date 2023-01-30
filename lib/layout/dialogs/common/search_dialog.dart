@@ -36,6 +36,14 @@ class SearchCellDialog extends StatefulWidget {
   State<StatefulWidget> createState() => _SearchCellDialogState();
 }
 
+final referenceCells = {
+  "nuke",
+  "bread",
+  "cellua",
+  "poly",
+  "mystic_x",
+};
+
 class _SearchCellDialogState extends State<SearchCellDialog> {
   final _searchController = TextEditingController();
   var searchResults = <SearchQueryResult>[];
@@ -78,16 +86,9 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       }
     }
 
-    // References
-    results.addAll([
-      SearchQueryResult("nuke", "References"),
-      // SearchQueryResult("monitor", "References"), // TODO: Add A Monitor reference
-      // SearchQueryResult("kyyay", "References"), // TODO: Add KyYay reference
-      SearchQueryResult("bread", "References"),
-      SearchQueryResult("cellua", "References"),
-      SearchQueryResult("poly", "References"),
-      SearchQueryResult("mystic_x", "References"),
-    ]);
+    for (var ref in referenceCells) {
+      results.add(SearchQueryResult(ref, "References"));
+    }
 
     if (parts.first == "") {
       searchResults = results;
