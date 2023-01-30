@@ -170,6 +170,8 @@ final justMoveInsideOf = [
   "portal_c",
 ].toSet().toList();
 
+final movables = <String>[];
+
 final trashes = [
   "trash",
   "semi_trash",
@@ -204,6 +206,10 @@ final enemies = [
   "bread",
   "debt_enemy",
 ].toSet().toList();
+
+final friendlyEnemies = <String>[
+  "friend",
+];
 
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
   dir %= 4;

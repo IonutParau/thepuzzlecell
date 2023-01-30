@@ -1043,7 +1043,19 @@ class LuaScript {
       "release": (LuaState ls) {
         releaser.release();
         return 0;
-      }
+      },
+      "types": (LuaState ls) {
+        final types = grid.cells;
+        var i = 0;
+        ls.createTable(types.length, types.length);
+        for (var type in types) {
+          ls.pushString(type);
+          ls.pushInteger(i);
+          ls.setTable(-3);
+          i++;
+        }
+        return 1;
+      },
     };
 
     ls.pushLib(gridAPI, releaser);
@@ -1162,6 +1174,56 @@ class LuaScript {
           ls.call(1, 0);
         });
         return 0;
+      },
+    };
+  }
+
+  Map<String, dynamic> typesAPI() {
+    return {
+      "MarkAsEnemy": (LuaState ls) {
+        final id = ls.toStr(-1)!;
+        if (!enemies.contains(id)) enemies.add(id);
+        return 0;
+      },
+      "MarkAsMovable": (LuaState ls) {
+        final id = ls.toStr(-1)!;
+        if (!movables.contains(id)) movables.add(id);
+        return 0;
+      },
+      "MarkAsFriendlyEnemy": (LuaState ls) {
+        final id = ls.toStr(-1)!;
+        if (!friendlyEnemies.contains(id)) friendlyEnemies.add(id);
+        return 0;
+      },
+      "Enemies": (LuaState ls) {
+        ls.createTable(enemies.length, enemies.length);
+
+        for (var i = 0; i < enemies.length; i++) {
+          ls.pushString(enemies[i]);
+          ls.pushInteger(i);
+          ls.setTable(-3);
+        }
+        return 1;
+      },
+      "Movables": (LuaState ls) {
+        ls.createTable(movables.length, movables.length);
+
+        for (var i = 0; i < movables.length; i++) {
+          ls.pushString(movables[i]);
+          ls.pushInteger(i);
+          ls.setTable(-3);
+        }
+        return 1;
+      },
+      "FriendlyEnemies": (LuaState ls) {
+        ls.createTable(friendlyEnemies.length, friendlyEnemies.length);
+
+        for (var i = 0; i < friendlyEnemies.length; i++) {
+          ls.pushString(friendlyEnemies[i]);
+          ls.pushInteger(i);
+          ls.setTable(-3);
+        }
+        return 1;
       },
     };
   }
@@ -1606,6 +1668,7 @@ class LuaScript {
       "FS": fsAPI(),
       "Math": mathAPI(),
       "Channel": channelAPI(),
+      "Types": typesAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);

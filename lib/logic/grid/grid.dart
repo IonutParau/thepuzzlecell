@@ -166,6 +166,7 @@ class Grid {
     }
     if (cells.containsAny(trashes)) return true;
     if (cells.containsAny(enemies)) return true;
+    if (cells.containsAny(movables)) return true;
     return false;
   }
 
