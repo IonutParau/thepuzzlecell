@@ -69,7 +69,7 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       o.id = "unlock";
     }
   } else if (o.id == "flag") {
-    if (!cells.containsAny(enemies) && !grid.cells.containsAny(moddedEnemy)) {
+    if (!cells.containsAny([...enemies]..removeWhere(friendlyEnemies.contains)) && !grid.cells.containsAny(moddedEnemy)) {
       puzzleWin = true;
       if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
