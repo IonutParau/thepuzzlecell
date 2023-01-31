@@ -50,3 +50,6 @@ app.*.map.json
 
 # Stuffs
 .fvm/flutter_sdk
+
+# Some stuff that is not that important
+TODO.txt

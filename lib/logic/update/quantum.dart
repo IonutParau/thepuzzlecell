@@ -1,5 +1,9 @@
 part of logic;
 
+bool blocksUnstable(Cell cell, int x, int y, int dir, Cell moving) {
+  return false;
+}
+
 bool unstablePushOut(Cell cell, int x, int y, int dir, [bool copy = false]) {
   var d = 0;
   while (true) {
@@ -12,6 +16,8 @@ bool unstablePushOut(Cell cell, int x, int y, int dir, [bool copy = false]) {
 
     if (c.id == "empty") {
       break;
+    } else if (blocksUnstable(c, x, y, dir, cell)) {
+      return false;
     } else if (moveInsideOf(c, x, y, dir, 1, MoveType.unknown_move)) {
       push(x, y, dir, 99999999999, replaceCell: copy ? cell.copy : cell);
     }
@@ -40,6 +46,8 @@ void unstableMove(int x, int y, int dir) {
     if (c.id == "empty") {
       moveCell(x, y, cx, cy, dir);
       return;
+    } else if (blocksUnstable(c, x, y, dir, self)) {
+      return;
     } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unknown_move)) {
       push(cx, cy, dir, 99999999999, replaceCell: self.copy);
     }
@@ -63,6 +71,8 @@ void unstableGen(int x, int y, int dir, Cell self) {
 
     if (c.id == "empty") {
       grid.set(cx, cy, self);
+      return;
+    } else if (blocksUnstable(c, x, y, dir, self)) {
       return;
     } else if (moveInsideOf(c, cx, cy, dir, 1, MoveType.unknown_move)) {
       push(cx, cy, dir, 99999999999, replaceCell: self.copy);
@@ -114,8 +124,7 @@ class RaycastInfo {
   late int x;
   late int y;
 
-  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y)
-      : successful = true {
+  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y) : successful = true {
     hitCell = cell.copy;
   }
 
@@ -153,12 +162,10 @@ class QuantumInteraction {
   num? flipDist;
   int? distOff;
 
-  QuantumInteraction(this.scale, this.flipWhenClose,
-      {this.flipDist, this.distOff});
+  QuantumInteraction(this.scale, this.flipWhenClose, {this.flipDist, this.distOff});
 
   QuantumInteraction operator *(num other) {
-    return QuantumInteraction(scale * other, flipWhenClose,
-        flipDist: flipDist, distOff: distOff);
+    return QuantumInteraction(scale * other, flipWhenClose, flipDist: flipDist, distOff: distOff);
   }
 }
 
@@ -285,10 +292,7 @@ void quantums() {
         (cell, x, y) {
           if (cell.rot == rot) unstableMove(x, y, cell.rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "unstable_mover" &&
-            cell.rot == rot &&
-            cell.updated == false,
+        filter: (cell, x, y) => cell.id == "unstable_mover" && cell.rot == rot && cell.updated == false,
       );
       grid.updateCell(
         (cell, x, y) {

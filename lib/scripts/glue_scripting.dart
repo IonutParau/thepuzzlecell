@@ -122,7 +122,7 @@ class GlueScript {
         m["last-id"] = m['id'] ?? GlueString("empty");
       }
 
-      return GlueTable(m.map((k, v) => MapEntry(GlueString(k), v)));
+      return GlueTable(m.map((k, v) => MapEntry(GlueString(k), v))).toValue(vm, stack);
     });
 
     vm.globals['grid-get-cell'] = GlueExternalFunction((vm, stack, args) {
@@ -330,8 +330,8 @@ class GlueScript {
       iterFromTo(sy, ey, (y) {
         iterFromTo(sx, ex, (x) {
           final s = stack.linked;
-          s.push(r"$cx", GlueNumber(sx.toDouble()));
-          s.push(r"$cy", GlueNumber(sy.toDouble()));
+          s.push(r"$cx", GlueNumber(x.toDouble()));
+          s.push(r"$cy", GlueNumber(y.toDouble()));
           body.toValue(vm, s); // toValue executes it, so...
         });
       });
