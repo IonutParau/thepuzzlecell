@@ -206,7 +206,7 @@ String countToString(num? count) {
   return count.toString();
 }
 
-String textToRenderOnCell(Cell cell) {
+String textToRenderOnCell(Cell cell, num x, num y) {
   var text = "";
 
   if (cell.id == "counter" ||
@@ -300,6 +300,10 @@ String textToRenderOnCell(Cell cell) {
     final power = electricManager.directlyReadPower(cell);
     final double capacity = ((cell.data['capacity'] ?? 0) as num).toDouble();
     text = useCapacity ? "${(power / capacity * 100).toInt()}%" : "$power";
+  }
+
+  if (modded.contains(cell.id)) {
+    return scriptingManager.customText(cell, x, y) ?? "";
   }
 
   return text;

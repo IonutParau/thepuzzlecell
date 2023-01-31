@@ -16,6 +16,10 @@ bool shouldHaveGenBias(String id, int side) {
     return side == 0;
   }
 
+  if (modded.contains(id)) {
+    return scriptingManager.shouldHaveGenBias(id, side);
+  }
+
   return false;
 }
 

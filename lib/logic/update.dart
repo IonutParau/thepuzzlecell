@@ -42,6 +42,10 @@ bool isUngennable(Cell cell, int x, int y, int dir) {
   dir %= 4;
   /* Special code here */
 
+  if (modded.contains(cell.id)) {
+    return scriptingManager.isUngeneratable(cell, x, y, dir);
+  }
+
   return ungennable.contains(cell.id);
 }
 
@@ -59,7 +63,12 @@ class CellTypeManager {
     "mem_gen_triple",
   ];
 
-  static List<String> movers = ["mover", "slow_mover", "fast_mover", "releaser"];
+  static List<String> movers = [
+    "mover",
+    "slow_mover",
+    "fast_mover",
+    "releaser"
+  ];
 
   static List<String> puller = [
     "puller",
@@ -186,7 +195,17 @@ class CellTypeManager {
     "keyfake",
   ];
 
-  static List<String> gates = ["and_gate", "or_gate", "xor_gate", "not_gate", "nand_gate", "nor_gate", "xnor_gate", "imply_gate", "nimply_gate"];
+  static List<String> gates = [
+    "and_gate",
+    "or_gate",
+    "xor_gate",
+    "not_gate",
+    "nand_gate",
+    "nor_gate",
+    "xnor_gate",
+    "imply_gate",
+    "nimply_gate"
+  ];
 
   static List<String> mirrors = [
     "mirror",
@@ -269,7 +288,8 @@ void doAnchor(int x, int y, int amount) {
     final nv = Vector2.all(0);
     final dx = v.x.toInt() - x;
     final dy = v.y.toInt() - y;
-    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1, MoveType.unknown_move)) {
+    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1,
+        MoveType.unknown_move)) {
       return;
     }
     if (amount == 1) {
@@ -294,7 +314,8 @@ void doAnchor(int x, int y, int amount) {
 
   for (var i = 0; i < structure.coords.length; i++) {
     final v = structure.coords[i];
-    if (v != center) grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
+    if (v != center)
+      grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
   }
 
   for (var i = 0; i < structure.coords.length; i++) {
@@ -368,7 +389,8 @@ Offset? findCell(int x, int y, List<String> targets, int maxDepth) {
   return null;
 }
 
-int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
+int? getPathFindingDirection(
+    int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
   if (x == dx && y == dy) return null;
   if (!grid.inside(x, y)) return null;
   final Map<String, bool> visited = {};
