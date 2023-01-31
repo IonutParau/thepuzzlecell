@@ -4,30 +4,84 @@ void transformers() {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          cell.rot,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
       },
       rot,
       "transformer",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          (cell.rot + 1) % 4,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
       },
       rot,
       "transformer_cw",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          (cell.rot + 3) % 4,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
       },
       rot,
       "transformer_ccw",
     );
     grid.updateCell(
       (cell, x, y) {
-        doTransformer(x, y, cell.rot, (cell.rot + 3) % 4, 0, 0, cell.data['offset'] ?? 1);
-        doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1);
-        doTransformer(x, y, cell.rot, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1);
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          (cell.rot + 3) % 4,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          cell.rot,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
+        doTransformer(
+          x,
+          y,
+          cell.rot,
+          (cell.rot + 1) % 4,
+          0,
+          0,
+          cell.data['offset'] ?? 1,
+          0,
+        );
       },
       rot,
       "triple_transformer",
@@ -35,11 +89,12 @@ void transformers() {
   }
 }
 
-void doTransformer(int x, int y, int dir, int outdir, int offX, int offY, int off) {
+void doTransformer(int x, int y, int dir, int outdir, int offX, int offY,
+    int off, int backOff) {
   final idir = (dir + 2) % 4;
 
-  final bx = frontX(x, idir);
-  final by = frontY(y, idir);
+  final bx = frontX(x, idir, backOff);
+  final by = frontY(y, idir, backOff);
 
   if (!grid.inside(bx, by)) return;
 
@@ -54,7 +109,10 @@ void doTransformer(int x, int y, int dir, int outdir, int offX, int offY, int of
   input.rot = (input.rot + (outdir - dir + 4)) % 4;
 
   if (input.id != "empty" && output.id != "empty") {
-    if (input.id == "untransformable" || output.id == "untransformable" || !breakable(input, bx, by, dir, BreakType.transform) || !breakable(output, ox, oy, dir, BreakType.transform)) return;
+    if (input.id == "untransformable" ||
+        output.id == "untransformable" ||
+        !breakable(input, bx, by, dir, BreakType.transform) ||
+        !breakable(output, ox, oy, dir, BreakType.transform)) return;
     output.id = input.id;
     output.rot = input.rot;
     output.data = input.data;
@@ -80,7 +138,8 @@ bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
 
   if (c.id == "untransformable" && bt == BreakType.transform) return false;
 
-  if (grid.placeable(x, y) == "biome_norot" && bt == BreakType.rotate) return false;
+  if (grid.placeable(x, y) == "biome_norot" && bt == BreakType.rotate)
+    return false;
 
   if (bt == BreakType.transform) {
     if (c.id == "pushable") {

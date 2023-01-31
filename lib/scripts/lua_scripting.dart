@@ -1160,6 +1160,44 @@ class LuaScript {
         ls.pushBoolean(!isUngennable(cell, x, y, dir));
         return 1;
       },
+      "canBreak": (LuaState ls) {
+        ls.pushNil();
+        ls.copy(-6, -1);
+        final cell = popCell(ls);
+        final x = ls.toInteger(-4);
+        final y = ls.toInteger(-3);
+        final dir = ls.toInteger(-2);
+        final breakTypeName = ls.toStr(-1)!;
+
+        BreakType? breakType;
+
+        for (var bt in BreakType.values) {
+          if (bt.name == breakTypeName) {
+            breakType = bt;
+            break;
+          }
+        }
+
+        if (breakType == null) {
+          ls.pushBoolean(false);
+          return 1;
+        }
+
+        ls.pushBoolean(breakable(cell, x, y, dir, breakType));
+        return 1;
+      },
+      "transform": (LuaState ls) {
+        final x = ls.toInteger(-8);
+        final y = ls.toInteger(-7);
+        final dir = ls.toInteger(-6);
+        final outdir = ls.toInteger(-5);
+        final offX = ls.toInteger(-4);
+        final offY = ls.toInteger(-3);
+        final off = ls.toInteger(-2);
+        final backOff = ls.toInteger(-1);
+        doTransformer(x, y, dir, outdir, offX, offY, off, backOff);
+        return 0;
+      }
     };
   }
 
@@ -1955,6 +1993,21 @@ class LuaScript {
         return ls.toBoolean(-1);
       }
       return false;
+    });
+  }
+
+  bool breakable(Cell cell, int x, int y, int dir, BreakType bt) {
+    return withDefinedCellProperty<bool>(cell.id, "breakable", () {
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.pushString(bt.name);
+        ls.call(5, 1);
+        return ls.toBoolean(-1);
+      }
+      return true;
     });
   }
 }
