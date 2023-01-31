@@ -1934,4 +1934,19 @@ class LuaScript {
       return null;
     });
   }
+
+  bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
+    return withDefinedCellProperty<bool>(cell.id, "hasGrabBias", () {
+      if (ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.pushInteger(mdir);
+        ls.call(5, 1);
+        return ls.toBoolean(-1);
+      }
+      return false;
+    });
+  }
 }

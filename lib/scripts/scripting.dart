@@ -360,6 +360,16 @@ class ScriptingManager {
 
     return null;
   }
+
+  bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
+    for (var lua in luaScripts) {
+      if (lua.hasDefinedCell(cell.id)) {
+        return lua.hasGrabberBias(cell, x, y, dir, mdir);
+      }
+    }
+
+    return false;
+  }
 }
 
 final scriptingManager = ScriptingManager();
