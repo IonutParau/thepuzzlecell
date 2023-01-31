@@ -1814,7 +1814,21 @@ class LuaScript {
     return;
   }
 
+  String? get minimumVersion => info["tpcMinimumVersion"]?.toString();
+
+  List get experimentalFlags => info["tpcExperimental"] ?? [];
+
+  bool hasExperimentalFlag(String flag) {
+    return experimentalFlags.contains(flag);
+  }
+
   Future<void> init() async {
+    if (minimumVersion != null) {
+      if (higherVersion(minimumVersion!, currentVersion)) {
+        return;
+      }
+    }
+
     loadAPI();
 
     final remoteUpdates = info["remoteUpdates"] ?? "auto";
