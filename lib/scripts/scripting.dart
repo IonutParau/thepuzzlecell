@@ -370,6 +370,34 @@ class ScriptingManager {
 
     return false;
   }
+
+  void createCategory(
+      String host, String name, String desc, String look, int max) {
+    if (host.isEmpty) {
+      categories.add(CellCategory(name, desc, [], look, max: max));
+      return;
+    }
+
+    final parts = host.split('/');
+    List cats = categories;
+
+    while (parts.isNotEmpty) {
+      final curr = parts.removeAt(0);
+
+      var found = false;
+
+      for (var cat in cats) {
+        if (cat is! CellCategory) continue;
+        if (cat.title == curr) {
+          cats = cat.items;
+          found = true;
+          break;
+        }
+      }
+      if (!found) return;
+    }
+    cats.add(CellCategory(name, desc, [], look, max: max));
+  }
 }
 
 final scriptingManager = ScriptingManager();

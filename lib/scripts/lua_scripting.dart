@@ -709,7 +709,7 @@ class LuaScript {
         }
 
         ls.pushString("isReference");
-        ls.getTable(-3);
+        ls.getTable(-2);
         if (ls.isBoolean(-1)) {
           if (ls.toBoolean(-1)) {
             referenceCells.add(id);
@@ -1796,6 +1796,15 @@ class LuaScript {
           ls.getGlobal("POST_INIT_CB:$id");
           ls.call(0, 0);
         });
+        return 0;
+      },
+      "CreateCategory": (LuaState ls) {
+        final host = ls.toStr(-5)!;
+        final name = ls.toStr(-4)!;
+        final desc = ls.toStr(-3)!;
+        final look = ls.toStr(-2)!;
+        final max = ls.toInteger(-1);
+        scriptingManager.createCategory(host, name, desc, look, max);
         return 0;
       },
       "Move": moveAPI(),

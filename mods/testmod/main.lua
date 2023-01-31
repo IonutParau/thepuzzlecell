@@ -1,3 +1,5 @@
+TPC.CreateCategory("Base", "Test", "A test category", "test_cell", 3)
+
 local cell = {
   id = "test_cell",
   name = "Test Cell",
@@ -8,7 +10,7 @@ local cell = {
       TPC.Grid().rotate(x, y, 1)
     end,
   },
-  category = "Base/Push Cells",
+  category = "Base/Test",
 }
 
 TPC.DefineCell(cell)
