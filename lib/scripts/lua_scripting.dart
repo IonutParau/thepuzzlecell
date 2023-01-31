@@ -1123,6 +1123,14 @@ class LuaScript {
             ignoreOptimization);
         return 0;
       },
+      "antiGenerate": (LuaState ls) {
+        final x = ls.toInteger(-4);
+        final y = ls.toInteger(-3);
+        final dir = ls.toInteger(-2);
+        final gdir = ls.toInteger(-1);
+        doAntiGen(x, y, dir, gdir);
+        return 0;
+      },
       "superGenerate": (LuaState ls) {
         final x = ls.toInteger(-7);
         final y = ls.toInteger(-6);
