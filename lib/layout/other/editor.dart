@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:fluent_ui/fluent_ui.dart';
@@ -65,71 +66,102 @@ class _EditorState extends State<Editor> {
           ],
         ),
       ),
-      content: Center(
-        child: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Column(
-            children: [
-              Spacer(flex: 10),
-              Row(
-                children: [
-                  Spacer(flex: 5),
-                  SizedBox(
-                    width: 20.w,
-                    child: TextBox(
-                      header: lang('width', 'Width'),
-                      keyboardType: TextInputType.number,
-                      placeholder: '100',
-                      onChanged: (v) => setState(
-                        () => width = clamp(
-                                int.tryParse(v) ?? (v == "" ? 100 : width),
-                                1,
-                                999)
-                            .toInt(),
-                      ),
-                      keyboardAppearance: Brightness.dark,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[180],
-                      ),
+      content: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.all(2.w),
+              child: DropDownButton(
+                title: Text("Quick-Play", style: TextStyle(fontSize: 7.sp)),
+                disabled: quickPlayOptions.isEmpty,
+                placement: FlyoutPlacementMode.topCenter,
+                items: [
+                  if (quickPlayOptions.isEmpty)
+                    MenuFlyoutItem(
+                      text: Text("how did you get here"),
+                      onPressed: null,
                     ),
-                  ),
-                  Spacer(),
-                  SizedBox(
-                    width: 20.w,
-                    child: TextBox(
-                      header: lang('height', 'Height'),
-                      keyboardType: TextInputType.number,
-                      placeholder: '100',
-                      onChanged: (v) => setState(
-                        () => height = clamp(
-                                int.tryParse(v) ?? (v == "" ? 100 : height),
-                                1,
-                                999)
-                            .toInt(),
-                      ),
-                      keyboardAppearance: Brightness.dark,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[180],
-                      ),
-                    ),
-                  ),
-                  Spacer(flex: 5),
+                  for (var option in quickPlayOptions)
+                    MenuFlyoutItem(
+                      text: Text(option),
+                      onPressed: () {
+                        grid = loadStr(option);
+                        puzzleIndex = null;
+                        Navigator.of(context).pushNamed('/game');
+                      },
+                    )
                 ],
               ),
-              Spacer(),
-              Button(
-                child: Text(
-                  lang('play', 'Play!'),
-                  style: fontSize(
-                    12.sp,
-                  ),
-                ),
-                onPressed: () => setState(play),
-              ),
-              Spacer(flex: 10),
-            ],
+            ),
           ),
-        ),
+          Center(
+            child: Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Column(
+                children: [
+                  Spacer(flex: 10),
+                  Row(
+                    children: [
+                      Spacer(flex: 5),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          header: lang('width', 'Width'),
+                          keyboardType: TextInputType.number,
+                          placeholder: '100',
+                          onChanged: (v) => setState(
+                            () => width = clamp(
+                                    int.tryParse(v) ?? (v == "" ? 100 : width),
+                                    1,
+                                    999)
+                                .toInt(),
+                          ),
+                          keyboardAppearance: Brightness.dark,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[180],
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      SizedBox(
+                        width: 20.w,
+                        child: TextBox(
+                          header: lang('height', 'Height'),
+                          keyboardType: TextInputType.number,
+                          placeholder: '100',
+                          onChanged: (v) => setState(
+                            () => height = clamp(
+                                    int.tryParse(v) ?? (v == "" ? 100 : height),
+                                    1,
+                                    999)
+                                .toInt(),
+                          ),
+                          keyboardAppearance: Brightness.dark,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[180],
+                          ),
+                        ),
+                      ),
+                      Spacer(flex: 5),
+                    ],
+                  ),
+                  Spacer(),
+                  Button(
+                    child: Text(
+                      lang('play', 'Play!'),
+                      style: fontSize(
+                        12.sp,
+                      ),
+                    ),
+                    onPressed: () => setState(play),
+                  ),
+                  Spacer(flex: 10),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
