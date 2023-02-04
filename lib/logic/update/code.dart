@@ -242,8 +242,9 @@ class CodeRuntimeContext {
   int ip;
   Map<int, CodeCellInstruction> instructions;
   CodeStack stack;
+  Map<String, dynamic> buffers;
 
-  CodeRuntimeContext(this.ip, this.instructions, this.stack);
+  CodeRuntimeContext(this.ip, this.instructions, this.stack, this.buffers);
 }
 
 class CodeCellManager {
@@ -553,19 +554,50 @@ class CodeCellManager {
       context.stack.push(context.stack.isBool(int.parse(instruction.params[0])));
     }
 
+    if (instruction.name == "ioCreate") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+
+      if (!context.buffers.containsKey(buffName)) {
+        context.buffers[buffName] = null;
+      }
+    }
+
+    if (instruction.name == "ioErase") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+
+      context.buffers.remove(buffName);
+    }
+
+    if (instruction.name == "ioGet") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+
+      context.stack.push(context.buffers[buffName]);
+    }
+
+    if (instruction.name == "ioSet") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final val = context.stack.get(int.parse(instruction.params[1]));
+
+      context.buffers[buffName] = val;
+    }
+
     return i + 1;
   }
 
   void runProgram(Cell program, Map<int, CodeCellInstruction> instructions) {
     final id = program.data['id'] as String;
     if (!_runtimes.containsKey(id)) {
-      _runtimes[id] = CodeRuntimeContext(0, {}, CodeStack([]));
+      _runtimes[id] = CodeRuntimeContext(0, {}, CodeStack([]), {});
     }
 
     final context = _runtimes[id]!;
 
     if (program.data['stack'] is List) {
       context.stack = CodeStack(program.data['stack']);
+    }
+
+    if (program.data['buffers'] is List) {
+      context.buffers = program.data['buffers'];
     }
 
     final ipt = program.data['ipt'];
@@ -595,6 +627,7 @@ class CodeCellManager {
       }
     }
     program.data['stack'] = context.stack.stack;
+    program.data['buffers'] = context.buffers;
     program.data['ip'] = context.ip;
   }
 }
