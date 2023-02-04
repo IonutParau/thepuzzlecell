@@ -1,10 +1,7 @@
 part of logic;
 
 bool shouldHaveGenBias(String id, int side) {
-  if (CellTypeManager.generators.contains(id) ||
-      CellTypeManager.replicators.contains(id) ||
-      CellTypeManager.superGens.contains(id) ||
-      CellTypeManager.memgens.contains(id)) {
+  if (CellTypeManager.generators.contains(id) || CellTypeManager.replicators.contains(id) || CellTypeManager.superGens.contains(id) || CellTypeManager.memgens.contains(id)) {
     if (id == "quad_rep") return true;
 
     if (id.contains("opposite")) return (side == 0 || side == 2);
@@ -24,45 +21,29 @@ bool shouldHaveGenBias(String id, int side) {
 }
 
 class GenOptimizer {
-  final hasWorked = HashMap<int, bool>();
-
-  int hash(int x, int y, int dir) {
-    return (x + grid.width * y + dir * grid.width * grid.width);
-  }
-
   bool shouldSkip(int x, int y, int dir) {
-    // if (hasWorked[hash(x, y, dir)] == false) {
-    //   return true;
-    // }
-
-    return false;
+    if (!grid.inside(x, y)) return false;
+    return grid.tiles[x][y].genOp[dir % 4];
   }
 
   void skip(int x, int y, int dir) {
-    hasWorked[hash(x, y, dir)] = false;
+    if (!grid.inside(x, y)) return;
+    grid.tiles[x][y].opGen(dir);
   }
 
   void clear() {
-    hasWorked.clear();
+    //hasWorked.clear();
   }
 
   void remove(int x, int y) {
-    for (var i = 0; i < 4; i++) {
-      hasWorked.remove(hash(x, y, i));
-    }
+    if (!grid.inside(x, y)) return;
+    grid.tiles[x][y].deopGenAll();
   }
 }
 
 final GenOptimizer genOptimizer = GenOptimizer();
 
-void doGen(int x, int y, int dir, int gendir,
-    [int? offX,
-    int? offY,
-    int preaddedRot = 0,
-    bool physical = false,
-    int lvxo = 0,
-    int lvyo = 0,
-    bool ignoreOptimization = false]) {
+void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preaddedRot = 0, bool physical = false, int lvxo = 0, int lvyo = 0, bool ignoreOptimization = false]) {
   offX ??= 0;
   offY ??= 0;
   dir %= 4;
@@ -72,9 +53,7 @@ void doGen(int x, int y, int dir, int gendir,
   var ox = x + outputOff.dx ~/ 1 + offX;
   var oy = y + outputOff.dy ~/ 1 + offY;
 
-  if (genOptimizer.shouldSkip(ox, oy, dir) &&
-      !physical &&
-      !ignoreOptimization) {
+  if (genOptimizer.shouldSkip(ox, oy, dir) && !physical && !ignoreOptimization) {
     genOptimizer.skip(x, y, dir);
     //print("skip");
     return;
@@ -155,8 +134,7 @@ void gens(Set<String> cells) {
         (cell, x, y) {
           doGen(x, y, rot, rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "generator" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "generator" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("generator_cw")) {
@@ -166,8 +144,7 @@ void gens(Set<String> cells) {
         (cell, x, y) {
           doGen(x, y, rot + 1, rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "generator_cw" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "generator_cw" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("generator_ccw")) {
@@ -177,8 +154,7 @@ void gens(Set<String> cells) {
         (cell, x, y) {
           doGen(x, y, rot - 1, rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "generator_ccw" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "generator_ccw" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("crossgen")) {
@@ -189,8 +165,7 @@ void gens(Set<String> cells) {
           doGen(x, y, rot, rot);
           doGen(x, y, rot - 1, rot - 1);
         },
-        filter: (cell, x, y) =>
-            cell.id == "crossgen" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "crossgen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("doublegen")) {
@@ -201,8 +176,7 @@ void gens(Set<String> cells) {
           doGen(x, y, rot - 1, rot);
           doGen(x, y, rot + 1, rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "doublegen" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "doublegen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("triplegen")) {
@@ -214,8 +188,7 @@ void gens(Set<String> cells) {
           doGen(x, y, rot - 1, rot);
           doGen(x, y, rot + 1, rot);
         },
-        filter: (cell, x, y) =>
-            cell.id == "triplegen" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "triplegen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("constructorgen")) {
@@ -228,13 +201,10 @@ void gens(Set<String> cells) {
           doGen(x, y, rot + 1, rot);
           final forward = fromDir(cell.rot) / 3 * 2;
           final down = fromDir(cell.rot + 1);
-          doGen(x, y, rot, rot, floor(forward.dx - down.dx),
-              floor(forward.dy - down.dy));
-          doGen(x, y, rot, rot, floor(forward.dx + down.dx),
-              floor(forward.dy + down.dy));
+          doGen(x, y, rot, rot, floor(forward.dx - down.dx), floor(forward.dy - down.dy));
+          doGen(x, y, rot, rot, floor(forward.dx + down.dx), floor(forward.dy + down.dy));
         },
-        filter: (cell, x, y) =>
-            cell.id == "constructorgen" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "constructorgen" && cell.rot == rot && !cell.updated,
       );
     }
     if (cells.contains("physical_gen")) {
@@ -244,8 +214,7 @@ void gens(Set<String> cells) {
         (cell, x, y) {
           doGen(x, y, rot, rot, null, null, 0, true);
         },
-        filter: (cell, x, y) =>
-            cell.id == "physical_gen" && cell.rot == rot && !cell.updated,
+        filter: (cell, x, y) => cell.id == "physical_gen" && cell.rot == rot && !cell.updated,
       );
     }
     grid.loopChunks(
@@ -265,8 +234,7 @@ void gens(Set<String> cells) {
           frontY(0, rot + 1) - frontY(0, rot),
         );
       },
-      filter: (cell, x, y) =>
-          cell.id == "physical_gen_cw" && cell.rot == rot && !cell.updated,
+      filter: (cell, x, y) => cell.id == "physical_gen_cw" && cell.rot == rot && !cell.updated,
     );
     grid.loopChunks(
       "physical_gen_ccw",
@@ -285,8 +253,7 @@ void gens(Set<String> cells) {
           frontY(0, rot + 3) - frontY(0, rot),
         );
       },
-      filter: (cell, x, y) =>
-          cell.id == "physical_gen_ccw" && cell.rot == rot && !cell.updated,
+      filter: (cell, x, y) => cell.id == "physical_gen_ccw" && cell.rot == rot && !cell.updated,
     );
   }
 }

@@ -11,9 +11,24 @@ List<String> backgrounds = [
   ...biomes,
 ];
 
+class CellGridTile {
+  Cell cell;
+  String background;
+  List<bool> genOp;
+
+  CellGridTile(this.cell, this.background, this.genOp);
+
+  factory CellGridTile.empty(int x, int y) {
+    return CellGridTile(Cell(x, y), "empty", [false, false, false, false]);
+  }
+
+  void opGen(int dir) => genOp[dir % 4] = true;
+  void deopGen(int dir) => genOp[dir % 4] = false;
+  void deopGenAll() => genOp = [false, false, false, false];
+}
+
 class Grid {
-  late List<List<Cell>> grid;
-  late List<List<String>> place;
+  late List<List<CellGridTile>> tiles;
   late List<List<HashSet<String>>> chunks;
 
   late QuadChunk quadChunk;
@@ -45,12 +60,9 @@ class Grid {
   int height;
 
   void create() {
-    place = [];
-    grid = List.generate(width, (x) {
-      place.add([]);
+    tiles = List.generate(width, (x) {
       return List.generate(height, (y) {
-        place.last.add("empty");
-        return Cell(x, y);
+        return CellGridTile.empty(x, y);
       });
     });
 
@@ -72,7 +84,7 @@ class Grid {
   }
 
   Cell at(int x, int y) {
-    return grid[this.x(x)][this.y(y)]
+    return (tiles[this.x(x)][this.y(y)].cell)
       ..cx = this.x(x)
       ..cy = this.y(y);
   }
@@ -100,7 +112,7 @@ class Grid {
     }
 
     if (inside(x, y)) {
-      grid[x][y] = cell;
+      tiles[x][y].cell = cell;
       cell.cx = x;
       cell.cy = y;
       setChunk(x, y, cell.id);
@@ -111,7 +123,7 @@ class Grid {
     x = this.x(x);
     y = this.y(y);
     if (inside(x, y)) {
-      place[x][y] = id;
+      tiles[x][y].background = id;
       setChunk(x, y, id);
     }
   }
@@ -131,10 +143,10 @@ class Grid {
 
   String placeable(int x, int y) {
     if (wrap) {
-      return place[(x + width) % width][(y + height) % height];
+      return tiles[(x + width) % width][(y + height) % height].background;
     }
     if (!inside(x, y)) return "empty";
-    return place[x][y];
+    return tiles[x][y].background;
   }
 
   Grid get copy {
@@ -201,7 +213,7 @@ class Grid {
           fromRot((rot + (invertOrder ? 2 : 0)) % 4),
           id,
           (cell, x, y) {
-            if (cell.id == id && !cell.updated) {
+            if (cell.id == id && cell.rot == rot && !cell.updated) {
               cell.updated = true;
               callback(cell, x, y);
             }
@@ -398,9 +410,9 @@ class Grid {
       cell.cy = y;
       cell.lifespan++;
       cells.add(cell.id);
-      if (place[x][y] != "empty") {
-        cells.add(place[x][y]);
-        nextQC?.insert(x, y, place[x][y]);
+      if (tiles[x][y].background != "empty") {
+        cells.add(tiles[x][y].background);
+        nextQC?.insert(x, y, tiles[x][y].background);
       }
       nextQC?.insert(x, y, cell.id);
     }

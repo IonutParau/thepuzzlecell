@@ -15,7 +15,7 @@ Future<void> saveBlueprints() async {
 void loadBlueprint(int i) {
   final g = loadStr(blueprints[i], false);
   final gc = GridClip();
-  gc.activate(g.width, g.height, g.grid);
+  gc.activate(g.width, g.height, g.tiles.map((row) => row.map((tile) => tile.cell).toList()).toList());
   gc.optimize();
 
   game.gridClip = gc;

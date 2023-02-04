@@ -38,7 +38,7 @@ Grid loadGrid(Map<String, dynamic> code) {
         cell.rot = rot;
         cell.lastvars.lastRot = rot;
         grid.set(x, y, cell);
-        grid.place[x][y] = isPlaceable;
+        grid.tiles[x][y].background = isPlaceable;
       }
     },
   );
@@ -217,7 +217,7 @@ class P1 {
           cell.rot = cellList[i].rot;
           cell.lastvars.lastRot = cell.rot;
           grid.set(x, y, cell);
-          grid.place[x][y] = cellPlace[i];
+          grid.tiles[x][y].background = cellPlace[i];
         }
         i++;
       },
@@ -338,7 +338,7 @@ class P1Plus {
     grid.forEach(
       (cell, x, y) {
         grid.set(x, y, cellList[i].asCell(x, y));
-        grid.place[x][y] = cellList[i].place;
+        grid.tiles[x][y].background = cellList[i].place;
         i++;
       },
     );
