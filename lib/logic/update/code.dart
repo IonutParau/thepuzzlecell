@@ -102,7 +102,13 @@ class CodeStack {
     final a = get(i);
     final b = get(key);
 
-    push(a[b]);
+    if (a is List && b is num) {
+      push(a[b.toInt()]);
+    }
+
+    if (a is Map<String, dynamic>) {
+      push(a[b.toString()]);
+    }
   }
 
   void setIndex(int i, int key, int iv) {
@@ -110,7 +116,12 @@ class CodeStack {
     final b = get(key);
     final c = get(iv);
 
-    a[b] = c;
+    if (a is List && b is num) {
+      a[b.toInt()] = c;
+    }
+    if (a is Map<String, dynamic>) {
+      a[b.toString()] = c;
+    }
   }
 
   void stringify(int i) {
@@ -127,6 +138,11 @@ class CodeStack {
 
   void push(dynamic val) {
     stack.add(val);
+  }
+
+  void remove(int i) {
+    if (stack.isEmpty) return;
+    stack.removeAt(i % stack.length);
   }
 
   void pushFrom(int i) {
@@ -147,6 +163,7 @@ class CodeStack {
     push(get(i));
   }
 
+  bool isNull(int i) => get(i) == null;
   bool isNum(int i) => get(i) is num;
   bool isStr(int i) => get(i) is String;
   bool isBool(int i) => get(i) is bool;
@@ -318,6 +335,14 @@ class CodeCellManager {
       context.stack.pushString(instruction.params.join(" "));
     }
 
+    if (instruction.name == "pushBool") {
+      context.stack.pushBool(instruction.params[0] == "true");
+    }
+
+    if (instruction.name == "pushNull") {
+      context.stack.push(null);
+    }
+
     if (instruction.name == "add") {
       context.stack.sum();
     }
@@ -352,16 +377,20 @@ class CodeCellManager {
 
     if (instruction.name == "branch") {
       final jump1 = context.stack.get(-2) as CodeJump;
-      final jump2 = context.stack.get(-3) as CodeJump;
-      if (context.stack.get(-1) == true) {
+      final jump2 = context.stack.get(-3) as CodeJump?;
+      final cond = context.stack.get(-1);
+      context.stack.pop();
+      context.stack.pop();
+      context.stack.pop();
+      if (cond == true) {
         return jump1.ip;
-      } else {
+      } else if (jump2 != null) {
         return jump2.ip;
       }
     }
 
     if (instruction.name == "goto") {
-      return (context.stack.get(-1) as CodeJump).ip;
+      return (context.stack.pop() as CodeJump).ip;
     }
 
     if (instruction.name == "stringify") {
@@ -397,13 +426,6 @@ class CodeCellManager {
           (context.stack.get(-1) as String).length.toDouble(),
         );
       }
-    }
-
-    if (instruction.name == "set") {
-      context.stack.set(
-        int.parse(instruction.params[0]),
-        int.parse(instruction.params[1]),
-      );
     }
 
     if (instruction.name == "eq") {
@@ -492,6 +514,43 @@ class CodeCellManager {
       for (var i = 0; i < int.parse(instruction.params[0]); i++) {
         context.stack.pop();
       }
+    }
+
+    if (instruction.name == "mapListPairs") {
+      final m = context.stack.get(int.parse(instruction.params[0]));
+      final map = context.stack.get(m);
+
+      if (map is Map<String, dynamic>) {
+        context.stack.push(map.entries.map((entry) => <String, dynamic>{"key": entry.key, "value": entry.value}).toList());
+      }
+    }
+
+    if (instruction.name == "isNull") {
+      context.stack.push(context.stack.isNull(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isNumber") {
+      context.stack.push(context.stack.isNum(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isString") {
+      context.stack.push(context.stack.isStr(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isJump") {
+      context.stack.push(context.stack.isJump(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isList") {
+      context.stack.push(context.stack.isList(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isMap") {
+      context.stack.push(context.stack.isMap(int.parse(instruction.params[0])));
+    }
+
+    if (instruction.name == "isBool") {
+      context.stack.push(context.stack.isBool(int.parse(instruction.params[0])));
     }
 
     return i + 1;
