@@ -364,16 +364,19 @@ final cells = {
   "electric_battery",
   "unstable_tunnel",
   "eater",
+  "code_text",
+  "code_number",
 }.toList();
 
 final modded = <String>[];
 
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
-  ..removeWhere((e) => e == "empty");
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "code_text.png": "unique/code/code_text.png",
+  "code_number.png": "unique/code/code_number.png",
   "eater.png": "destroyers/trash/eater.png",
   "unstable_tunnel.png": "quantum/unstable_tunnel.png",
   "electric_battery.png": "electrical/electric_battery.png",
@@ -766,8 +769,7 @@ class CellCategory {
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look,
-      {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
 
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
@@ -1260,6 +1262,8 @@ final categories = [
         [
           "code_program",
           "code_instruction",
+          "code_number",
+          "code_text",
         ],
         "code_program",
       ),
@@ -3075,6 +3079,14 @@ final cellInfo = <String, CellProfile>{
     "Eater",
     "A trash cell that pulls the stuff adjacent to it inside of itself",
   ),
+  "code_text": CellProfile(
+    "Programmable Text",
+    "It displays the stringified value of a buffer of a Code Program",
+  ),
+  "code_number": CellProfile(
+    "Programmable Number",
+    "It gives the numeric value of a buffer, and can also be written to, allowing external cells to interact with Code Programs",
+  ),
 };
 
 enum CellPropertyType {
@@ -3129,13 +3141,11 @@ Map<String, List<CellProperty>> props = {
   ],
   "explosive": [
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
-    CellProperty(
-        "Effectiveness", "effectiveness", CellPropertyType.number, 100),
+    CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Mobile", "mobile", CellPropertyType.boolean, false),
-    CellProperty(
-        "Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
+    CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [
     CellProperty("Cell", "cell", CellPropertyType.cell, "push!0"),
@@ -3145,20 +3155,14 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Quantized", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset",
-        CellPropertyType.boolean, true),
-    CellProperty(
-        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "mech_checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset",
-        CellPropertyType.boolean, true),
-    CellProperty(
-        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "trash_can": [
     CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
@@ -3242,17 +3246,13 @@ Map<String, List<CellProperty>> props = {
   "configurable_filler": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
-    CellProperty(
-        "Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
     CellProperty("Attack Chance", "attackChance", CellPropertyType.number, 100),
     CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
-    CellProperty(
-        "Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
-    CellProperty(
-        "Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
+    CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
+    CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
     CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
-    CellProperty(
-        "Down Spread Odds", "downSpread", CellPropertyType.number, 100),
+    CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
   ],
   "code_instruction": [
     CellProperty("Line", "line", CellPropertyType.integer, 0),
@@ -3261,7 +3261,7 @@ Map<String, List<CellProperty>> props = {
   "code_program": [
     CellProperty("Program ID", "id", CellPropertyType.text, "default"),
     CellProperty("Instructions Per Tick", "ipt", CellPropertyType.integer, 100),
-    CellProperty("Code Pointer", "codeptr", CellPropertyType.integer, 0),
+    CellProperty("Code Pointer", "ip", CellPropertyType.integer, 0),
   ],
   "text": [
     CellProperty("Text", "text", CellPropertyType.text, ""),
@@ -3314,5 +3314,13 @@ Map<String, List<CellProperty>> props = {
       CellPropertyType.number,
       1,
     ),
-  ]
+  ],
+  "code_text": [
+    CellProperty("Program ID", "progID", CellPropertyType.text, "default"),
+    CellProperty("Buffer ID", "buffID", CellPropertyType.text, "txt"),
+  ],
+  "code_number": [
+    CellProperty("Program ID", "progID", CellPropertyType.text, "default"),
+    CellProperty("Buffer ID", "buffID", CellPropertyType.text, "txt"),
+  ],
 };

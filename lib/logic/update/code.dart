@@ -250,6 +250,14 @@ class CodeRuntimeContext {
 class CodeCellManager {
   Map<String, CodeRuntimeContext> _runtimes = {};
 
+  dynamic getBuffer(String program, String buffer) {
+    return _runtimes[program]?.buffers[buffer];
+  }
+
+  void setBuffer(String program, String buffer, dynamic value) {
+    _runtimes[program]?.buffers[buffer] = value;
+  }
+
   void clearContexts() {
     _runtimes.clear();
   }
@@ -260,14 +268,14 @@ class CodeCellManager {
     var m = <int, CodeCellInstruction>{};
 
     while (true) {
-      cx = frontX(x, dir);
-      cy = frontY(y, dir);
+      cx = frontX(cx, dir);
+      cy = frontY(cy, dir);
 
       if (grid.inside(cx, cy)) {
         final c = grid.at(cx, cy);
 
         if (c.id == "code_instruction") {
-          final i = c.data['line'] as int;
+          final i = (c.data['line'] as num).toInt();
           final code = c.data['code'] as String;
 
           final segs = code.split(" ");
@@ -581,6 +589,21 @@ class CodeCellManager {
       context.buffers[buffName] = val;
     }
 
+    if (instruction.name == "ioGetExternal") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final programName = context.stack.get(int.parse(instruction.params[1])).toString();
+
+      context.stack.push(getBuffer(programName, buffName));
+    }
+
+    if (instruction.name == "ioSetExternal") {
+      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final programName = context.stack.get(int.parse(instruction.params[1])).toString();
+      final val = context.stack.get(int.parse(instruction.params[2]));
+
+      setBuffer(programName, buffName, val);
+    }
+
     return i + 1;
   }
 
@@ -608,7 +631,6 @@ class CodeCellManager {
       // Instruction 0 (default instruction) resets
       if (idx == 0) {
         context.stack.stack.clear();
-        context.stack.pushMap(); // Map at 0 is the IO table
       }
 
       try {
@@ -633,6 +655,7 @@ class CodeCellManager {
 }
 
 void codeCellsSubtick() {
+  grid.codeManager.clearContexts();
   grid.updateCell(
     (cell, x, y) {
       final code = grid.codeManager.getInstructions(x, y, cell.rot);

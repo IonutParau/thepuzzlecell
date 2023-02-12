@@ -364,6 +364,12 @@ class MathManager {
     if (cell.id == "math_safe_number") {
       cell.data['next_count'] = amount;
     }
+    if (cell.id == "code_number") {
+      final prog = cell.data["progID"].toString();
+      final buff = cell.data["buffID"].toString();
+
+      grid.codeManager.setBuffer(prog, buff, amount.toDouble());
+    }
     if (cell.id == "math_memset") {
       final channel = input(x, y, dir - 1);
       final index = input(x, y, dir + 1);
@@ -390,6 +396,15 @@ class MathManager {
 
     if (cell.id == "mech_to_math") {
       return MechanicalManager.on(cell) ? (cell.data['scale'] ?? 1) : 0;
+    }
+
+    if (cell.id == "code_number") {
+      final prog = cell.data["progID"].toString();
+      final buff = cell.data["buffID"].toString();
+
+      final v = grid.codeManager.getBuffer(prog, buff);
+
+      return v is num ? v.toDouble() : null;
     }
 
     return customMasterNum(cell, x, y, dir);
