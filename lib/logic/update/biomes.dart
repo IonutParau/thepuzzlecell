@@ -27,11 +27,11 @@ void biome() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 3);
   }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_ccw");
-  
+
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 2);
   }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_180");
-  
+
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     final rng = Random();
     int randRot() => rng.nextBool() ? 1 : 3;
@@ -78,7 +78,7 @@ void biome() {
           if (!cell.data.containsKey(p.key)) {
             cell.data[p.key] = p.def;
           } else {
-            if ((cell.data[p.key]?.runtimeType ?? p.def.runtimeType) == p.def.runtimeType) {
+            if ((cell.data[p.key]?.runtimeType ?? p.def.runtimeType) != p.def.runtimeType) {
               cell.data[p.key] = p.def;
             }
           }
