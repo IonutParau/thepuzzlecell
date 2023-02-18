@@ -55,7 +55,6 @@ jobs:
       - run: gem install cocoapods
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
-      - run: brew install xcode
       - run: flutter build macos
       - uses: actions/upload-artifact@v3
         with:
