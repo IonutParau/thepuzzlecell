@@ -71,3 +71,7 @@ Blueprints allow you to save creations and reuse them. They are a huge time-save
 In settings, there is a "theme" category.
 The settings in there will allow you to customize UI colors and make some boxes opaque.
 The possibilities of making themes is almost endless!
+
+# Some legal stuff
+
+Because of Cell Machine Mystic Mod's <a href="https://github.com/CellMachine-Official/legal.cellmachine.net/blob/main/license/cell-machine/2023-3.md">license</a>, and because TPC coutns as derivative work, I must mention that TPC's subtick order is derived from Cell Machine Mystic Mod and it supports V3 which was made by Cell Machine Mystic Mod.
