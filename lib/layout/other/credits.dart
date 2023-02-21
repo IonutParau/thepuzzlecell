@@ -50,19 +50,6 @@ class CreditsPage extends StatelessWidget {
           );
         },
       ),
-      bottomBar: Row(
-        children: [
-          Spacer(),
-          Button(
-            child: Text(
-              "View Cell Machine's License (this is here for license reasons)",
-            ),
-            onPressed: () {
-              launchUrlString("https://legal.cellmachine.net");
-            },
-          ),
-        ],
-      ),
     );
   }
 }
