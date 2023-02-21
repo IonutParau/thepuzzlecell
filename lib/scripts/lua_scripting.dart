@@ -1491,7 +1491,8 @@ class LuaScript {
         final replaceCell = ls.isTable(-1) ? popCell(ls, false) : null;
 
         ls.pushBoolean(
-            push(x, y, dir, force, mt: mt, replaceCell: replaceCell));
+          push(x, y, dir, force, mt: mt, replaceCell: replaceCell),
+        );
         return 1;
       },
       "Pull": (LuaState ls) {
