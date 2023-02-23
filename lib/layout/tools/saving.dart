@@ -1684,145 +1684,48 @@ class TPCML {
 }
 
 class VX {
-  static String header = "VX;";
+  static const header = "VX;";
+  static const spec = "14-2-2023"; // This is meant to implement 14-2-2023
 
-  static List<Cell> parseCellsFromLayers(List<List> layers) {
-    final l = <Cell>[];
+  static String decodeID(String id) {
+    if (id.startsWith('@')) return id.substring(1);
 
-    for (var layer in layers) {
-      final id = layer[0].toString();
-      final int rot = (layer[1] as num).toInt();
-      final Map<String, dynamic> rawData = layer[2] is List ? {} : layer[2];
-      final c = Cell(0, 0, rot);
-      c.id = id;
-      c.lastvars.id = id;
-      final data = {...rawData};
-      data.remove("@life");
-      data.remove("@invis");
-      c.lifespan = ((rawData["@life"] as num?) ?? 0).toInt();
-      c.invisible = rawData["@invis"] ?? false;
+    return stdIDs[id] ?? id;
+  }
 
-      l.add(c);
+  static String encodeID(String id) {
+    if (stdIDs.containsKey(id) && stdIDs[id] != id) {
+      return '@id';
     }
 
-    return l;
-  }
-
-  static List encodeCell(Cell cell) {
-    return [
-      cell.id,
-      cell.rot,
-      {...cell.data, if (cell.lifespan != 0) "@life": cell.lifespan, if (cell.invisible) "@invis": cell.invisible}
-    ];
-  }
-
-  static dynamic encodeLayers(List<Cell> cells) {
-    final l = [];
-
-    for (var cell in cells) l.addAll(encodeCell(cell));
-
-    return l;
-  }
-
-  static List<List> parseEncodedLayers(dynamic val) {
-    if (val is List) {
-      final cells = <List>[];
-
-      for (var i = 0; i < val.length; i += 3) {
-        cells.add([val[i], val[i + 1], val[i + 2]]);
-      }
-
-      return cells;
-    } else if (val is String) {
-      final parts = val.split('|');
-
-      print(val);
-
-      final cells = <List>[];
-
-      for (var part in parts) {
-        final rot = int.parse(part.substring(part.length - 1));
-        final id = part.substring(0, part.length - 1);
-
-        cells.add([id, rot, <String, dynamic>{}]);
-      }
-
-      return cells;
-    } else {
-      return [];
-    }
+    return inverseIds[id] ?? id;
   }
 
   static String encodeGrid(Grid grid, {String title = "", String desc = ""}) {
     var str = header + "$title;$desc;";
 
-    var rawCellData = [];
-    final Map<String, dynamic> gridData = {"GT": "fixed", "A": "tpc"};
-
-    for (var y = 0; y < grid.height; y++) {
-      for (var x = 0; x < grid.width; x++) {
-        final bg = Cell(0, 0, 0)..id = grid.placeable(x, y);
-        final v = encodeLayers([grid.at(x, y), bg]);
-        rawCellData.add(v);
-      }
-    }
-
-    var compressedCellData = base64.encode(deflate.encode(utf8.encode(json.encode(rawCellData))));
-
-    var compressedGridData = base64.encode(deflate.encode(utf8.encode(json.encode(gridData))));
-
-    str += "$compressedCellData;$compressedGridData;";
-
-    str += "${grid.width};${grid.width == grid.height ? "=" : grid.height};";
-
     return str;
   }
 
   static Grid decodeString(String str) {
-    try {
-      final segs = str.split(';');
-
-      final title = segs[1];
-      final desc = segs[2];
-
-      final List rawCellData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[3]))));
-      final Map<String, dynamic> rawGridData = json.decode(utf8.decode(deflate.decode(base64.decode(segs[4]))));
-
-      if ((rawGridData['GT'] ?? "fixed") != "fixed") throw "Dynamic Grids are not supported by The Puzzle Cell.";
-
-      final author = rawGridData['A'];
-
-      // Optionally preprocess
-      final preprocessor = preprocessors[author];
-      if (preprocessor != null) {
-        for (var i = 0; i < rawCellData.length; i++) {
-          rawCellData[i] = preprocessor(rawCellData[i]);
-        }
-      }
-
-      final width = int.parse(segs[5]);
-      final height = segs[6] == "=" ? width : int.parse(segs[6]);
-
-      final grid = Grid(width, height);
-      grid.title = title;
-      grid.desc = desc;
-
-      var i = -1;
-      grid.forEach((cell, x, y) {
-        i++;
-        final cells = parseCellsFromLayers(parseEncodedLayers(rawCellData[i]));
-
-        grid.set(x, y, cells[0]);
-        grid.setPlace(x, y, cells[1].id);
-      });
-
-      return grid;
-    } catch (e, st) {
-      print(e);
-      print(st);
-      return Grid(1, 1);
-    }
+    throw "nuked";
   }
 
   static Map<String, dynamic Function(dynamic val)> preprocessors = {};
+  static Map<String, int> stdExtraRot = {};
+  static Map<String, String> stdIDs = {
+    "mover": "mover",
+    "gen": "generator",
+    "rot_cw": "rotator_cw",
+    "rot_ccw": "rotator_ccw",
+    "push": "push",
+    "slide": "slide",
+    "wall": "wall",
+    "trash": "trash",
+    "enemy": "enemy",
+    "place": "place",
+    "empty": "empty",
+  };
+
+  static final inverseIds = stdIDs.map((key, value) => MapEntry(value, key));
 }
