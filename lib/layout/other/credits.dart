@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 final credits = [
   "Sam Hogan for making the original Cell Machine",
@@ -7,7 +8,7 @@ final credits = [
   "k.#0086 for making all the OSTs",
   "The Generator Cell#7431 for helping me remake all of the textures",
   "Qwerty.R#9850 for making the sound effects",
-  "uku1928#8305 for fixing typos and reworking categories",
+  "uku1928#8305 for fixing typos, reworking categories and even contributing code",
   "Resizing and clearing are based on CelLua's resizing and clearing buttons",
   "Blueprints are heavily inspired by schematics from Cell Machine Mystic Mod V4",
   "Everyone who has suggested the addition of features and cells",
