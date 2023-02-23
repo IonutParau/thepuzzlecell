@@ -2,14 +2,15 @@ part of logic;
 
 class ElectricPath {
   List<int> fullPath;
+  Set<String> visited;
   int x;
   int y;
   Cell source;
 
-  ElectricPath(this.fullPath, this.x, this.y, this.source);
+  ElectricPath(this.fullPath, this.visited, this.x, this.y, this.source);
 
   ElectricPath get copy {
-    return ElectricPath([...fullPath], x, y, source);
+    return ElectricPath([...fullPath], visited, x, y, source);
   }
 
   List<ElectricPath> get next {
@@ -23,23 +24,20 @@ class ElectricPath {
       // This might look weird, it means "Don't immediately return to the last point"
       if (fullPath.isNotEmpty) if (endDir == (i + 2) % 4) continue;
 
-      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source))
-        continue;
+      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) continue;
 
       // Some cells might block where they can transfer to.
-      if (host != null && electricManager.blockedByHost(host!, x, y, i, source))
-        continue;
+      if (host != null && electricManager.blockedByHost(host!, x, y, i, source)) continue;
 
       final p = copy;
 
       p.fullPath.add(i);
       p.x = frontX(p.x, i);
       p.y = frontY(p.y, i);
-      if (p.host != null &&
-          electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source))
-        continue;
+      if (p.host != null && electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source)) continue;
 
       l.add(p);
+      visited.add("${p.x} ${p.y}");
     }
     l.removeWhere((p) => p.isOffGrid || !p.valid);
     return l;
@@ -49,9 +47,7 @@ class ElectricPath {
   int get endDir => fullPath.last;
 
   bool get isOffGrid => !grid.inside(x, y);
-  bool get isDone => grid.inside(x, y)
-      ? electricManager.isInput(grid.at(x, y), x, y, endDir)
-      : false;
+  bool get isDone => visited.contains("$x $y") && grid.inside(x, y) ? electricManager.isInput(grid.at(x, y), x, y, endDir) : false;
 
   Cell? get host => grid.get(x, y);
 
@@ -65,7 +61,7 @@ class ElectricPath {
         );
 
   @override
-  int get hashCode => Object.hashAll([source.hashCode, x, y, ...fullPath]);
+  int get hashCode => Object.hashAll([source.hashCode, x, y]);
 
   @override
   String toString() {
@@ -96,8 +92,7 @@ class ElectricManager {
   }
 
   bool blockedByReceiver(Cell receiver, int x, int y, int dir, Cell source) {
-    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0)
-      return true;
+    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0) return true;
 
     return false;
   }
@@ -122,7 +117,8 @@ class ElectricManager {
 
   List<ElectricPath> optimalDirections(Cell source, int x, int y) {
     if (!canHost(source, x, y, source)) return [];
-    var l = ElectricPath([], x, y, source).next;
+    final visited = <String>{};
+    var l = ElectricPath([], visited, x, y, source).next;
     final hashes = HashSet<int>();
 
     while (l.isNotEmpty) {
@@ -143,6 +139,7 @@ class ElectricManager {
 
       l = nl;
       hashes.add(nh);
+      print(nl);
     }
 
     return [];
