@@ -1687,6 +1687,52 @@ class VX {
   static const header = "VX;";
   static const spec = "14-2-2023"; // This is meant to implement 14-2-2023
 
+  static List<List> decodeLayers(List l) {
+    final layers = <List>[];
+
+    for (var i = 0; i < l.length; i += 3) {
+      layers.add([l[i], l[i + 1], l[i + 2]]);
+    }
+
+    return layers;
+  }
+
+  static List encodeLayers(List<List> l) {
+    return l.fold([], (c, layer) => [...c, ...layer]);
+  }
+
+  static Cell decodeLayer(List layer) {
+    final c = Cell(0, 0);
+    final id = decodeID(layer[0]);
+    final rot = decodeRot(layer[0], layer[1]);
+    final Map<String, dynamic> rawdata = layer[2];
+
+    c.invisible = rawdata['@invis'];
+    c.lifespan = (rawdata['@life'] as num).toInt();
+    rawdata.remove('@invis');
+    rawdata.remove('@life');
+
+    final data = <String, dynamic>{...rawdata};
+
+    c.id = id;
+    c.rot = rot;
+    c.data = data;
+    return c;
+  }
+
+  static List encodeLayer(Cell cell) {
+    final id = encodeID(cell.id);
+    return [
+      id,
+      decodeRot(id, cell.rot),
+      {
+        ...cell.data,
+        if (cell.invisible) '@invis': true,
+        if (cell.lifespan > 0) '@life': true,
+      },
+    ];
+  }
+
   static String decodeID(String id) {
     if (id.startsWith('@')) return id.substring(1);
 
@@ -1701,6 +1747,14 @@ class VX {
     return inverseIds[id] ?? id;
   }
 
+  static int decodeRot(String id, num rot) {
+    return ((rot - (stdExtraRot[id] ?? rot)) % 4).toInt();
+  }
+
+  static int encodeRot(String id, int rot) {
+    return (rot + (stdExtraRot[id] ?? rot)) % 4;
+  }
+
   static String encodeGrid(Grid grid, {String title = "", String desc = ""}) {
     var str = header + "$title;$desc;";
 
@@ -1711,8 +1765,11 @@ class VX {
     throw "nuked";
   }
 
-  static Map<String, dynamic Function(dynamic val)> preprocessors = {};
-  static Map<String, int> stdExtraRot = {};
+  static Map<String, List Function(List val)> preprocessors = {};
+  // This uses encoded ID btw
+  static Map<String, int> stdExtraRot = {
+    "onedir": 2,
+  };
   static Map<String, String> stdIDs = {
     "mover": "mover",
     "gen": "generator",
@@ -1725,6 +1782,11 @@ class VX {
     "enemy": "enemy",
     "place": "place",
     "empty": "empty",
+
+    // Extended std IDs
+    "onedir": "onedir",
+    "ghost": "ghost",
+    "ungeneratable": "ungeneratable",
   };
 
   static final inverseIds = stdIDs.map((key, value) => MapEntry(value, key));
