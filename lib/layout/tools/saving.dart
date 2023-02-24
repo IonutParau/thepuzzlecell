@@ -59,8 +59,7 @@ String encodeNum(int n, String valueString) {
   } else {
     var cellString = '';
     for (var i = 0; i < cellBase; i++) {
-      var iN = min(n ~/ pow(valueString.length, cellBase - 1 - i),
-          valueString.length - 1);
+      var iN = min(n ~/ pow(valueString.length, cellBase - 1 - i), valueString.length - 1);
       cellString += valueString[iN];
       n -= iN * pow(valueString.length, cellBase - 1 - i).toInt();
     }
@@ -72,8 +71,7 @@ int decodeNum(String n, String valueString) {
   var numb = 0;
   for (var i = 0; i < n.length; i++) {
     final char = n[i];
-    numb += valueString.indexOf(char) *
-        pow(valueString.length, n.length - 1 - i).toInt();
+    numb += valueString.indexOf(char) * pow(valueString.length, n.length - 1 - i).toInt();
   }
   return numb;
 }
@@ -94,8 +92,7 @@ Grid loadStr(String str, [bool allowGameStateChanges = true]) {
 }
 
 class P1 {
-  static String valueString =
-      "qwertyuiopasdfghjklzxcvbnm,<.>/?:'[{]}\\=+-_1234567890!@#\$%^&*()`~";
+  static String valueString = "qwertyuiopasdfghjklzxcvbnm,<.>/?:'[{]}\\=+-_1234567890!@#\$%^&*()`~";
   static String encode(Grid grid) {
     final rawCellList = <Cell>[];
     final rawCellPlace = <String>[];
@@ -139,9 +136,7 @@ class P1 {
         final lastCell = cellList.last;
         final lastPlace = compiledCellPlace.last;
 
-        if (lastCell.id == cell.id &&
-            lastCell.rot == cell.rot &&
-            lastPlace == place) {
+        if (lastCell.id == cell.id && lastCell.rot == cell.rot && lastPlace == place) {
           cellCount.last++;
         } else {
           cellList.add(cell);
@@ -154,8 +149,7 @@ class P1 {
     for (var i = 0; i < cellList.length; i++) {
       final cell = cellList[i];
       if (cell != "") {
-        str +=
-            "${ids.toList().indexOf(cell.id)}|${cell.rot}|${encodeNum(cellCount[i], valueString)}|${compiledCellPlace[i] == "place" ? '+' : ''};";
+        str += "${ids.toList().indexOf(cell.id)}|${cell.rot}|${encodeNum(cellCount[i], valueString)}|${compiledCellPlace[i] == "place" ? '+' : ''};";
       }
     }
 
@@ -240,8 +234,7 @@ class SaveCell {
 
   SaveCell(this.id, this.rot, this.place);
 
-  bool sameAs(SaveCell other) =>
-      (id == other.id && rot == other.rot && place == other.place);
+  bool sameAs(SaveCell other) => (id == other.id && rot == other.rot && place == other.place);
 
   Cell asCell(int x, int y) => Cell(x, y)
     ..rot = rot
@@ -252,14 +245,11 @@ class SaveCell {
 class P1Plus {
   static final sig = "P1+;";
 
-  static final valueString =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/?*.:[]{}()";
+  static final valueString = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/?*.:[]{}()";
 
   static String encodeCell(List<String> cellTable, SaveCell cell) {
     return encodeNum(
-      (cellTable.indexOf(cell.id) * 8 +
-          cell.rot +
-          (cell.place != "empty" ? 4 : 0)),
+      (cellTable.indexOf(cell.id) * 8 + cell.rot + (cell.place != "empty" ? 4 : 0)),
       valueString,
     );
   }
@@ -310,8 +300,7 @@ class P1Plus {
     }
 
     for (var i = 0; i < cellList.length; i++) {
-      str +=
-          "${encodeCell(cellTable.toList(), cellList[i])}-${encodeNum(cellCount[i], valueString)};";
+      str += "${encodeCell(cellTable.toList(), cellList[i])}-${encodeNum(cellCount[i], valueString)};";
     }
 
     return str;
@@ -381,12 +370,10 @@ String decodePlaceChar(String char) {
 }
 
 class P2 {
-  static String valueString =
-      "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[]{}()-_+=<>./?:'";
+  static String valueString = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[]{}()-_+=<>./?:'";
 
   static String encodeCell(Cell cell, Set<String> cellTable) {
-    return encodeNum(
-        cellTable.toList().indexOf(cell.id) * 4 + cell.rot, valueString);
+    return encodeNum(cellTable.toList().indexOf(cell.id) * 4 + cell.rot, valueString);
   }
 
   static Cell decodeCell(String cell, List<String> cellTable) {
@@ -400,8 +387,7 @@ class P2 {
 
   static String sig = "P2;";
 
-  static String encodeGrid(Grid grid,
-      {String title = "", String description = ""}) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     var str = sig;
     str += "$title;$description;"; // title and description
     str += (encodeNum(grid.width, valueString) + ';');
@@ -421,8 +407,7 @@ class P2 {
 
     grid.forEach(
       (cell, x, y) {
-        cells.add(
-            "${encodeCell(cell, cellTable)}|${placeChar(grid.placeable(x, y))}");
+        cells.add("${encodeCell(cell, cellTable)}|${placeChar(grid.placeable(x, y))}");
       },
     );
 
@@ -477,20 +462,9 @@ class P2 {
 
 class MysticCodes {
   static List<int> directions = [0, 1, 2, 3];
-  static List<String> types = [
-    "generator",
-    "rotator_cw",
-    "rotator_ccw",
-    "mover",
-    "slide",
-    "push",
-    "wall",
-    "enemy",
-    "trash"
-  ];
+  static List<String> types = ["generator", "rotator_cw", "rotator_ccw", "mover", "slide", "push", "wall", "enemy", "trash"];
 
-  static String cellKey =
-      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
+  static String cellKey = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
 
   static Map<String, int> dictionary = {};
 
@@ -628,8 +602,7 @@ class MysticCodes {
         } else {
           dataIndex++;
           temp = "";
-          while (arguments[3][dataIndex] != ')' &&
-              arguments[3][dataIndex] != '(') {
+          while (arguments[3][dataIndex] != ')' && arguments[3][dataIndex] != '(') {
             temp += arguments[3][dataIndex];
             dataIndex++;
           }
@@ -666,8 +639,7 @@ class MysticCodes {
 }
 
 class P3 {
-  static String valueString =
-      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
+  static String valueString = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
 
   static String signature = "P3;";
 
@@ -700,8 +672,7 @@ class P3 {
     return (c.id != "empty" || bg != "empty");
   }
 
-  static String encodeGrid(Grid grid,
-      {String title = "", String description = ""}) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     var str = signature;
     str += "$title;$description;"; // Title and description
     str += "${encodeNum(grid.width, valueString)};";
@@ -781,9 +752,7 @@ class P3 {
     newGrid.title = segs[1];
     newGrid.desc = segs[2];
 
-    final cellDataStr = segs[5] == "eJwDAAAAAAE="
-        ? ""
-        : utf8.decode(zlib.decode(base64.decode(segs[5])));
+    final cellDataStr = segs[5] == "eJwDAAAAAAE=" ? "" : utf8.decode(zlib.decode(base64.decode(segs[5])));
 
     if (cellDataStr != "") {
       final cellDataList = cellDataStr.split(',');
@@ -808,8 +777,7 @@ class P3Cell {
   Set<String> tags;
   int lifespan;
 
-  P3Cell(this.id, this.x, this.y, this.rot, this.data, this.tags, this.bg,
-      this.lifespan);
+  P3Cell(this.id, this.x, this.y, this.rot, this.data, this.tags, this.bg, this.lifespan);
 
   void placeOn(Grid grid) {
     final c = Cell(x, y);
@@ -918,11 +886,9 @@ bool stringContainsAtRoot(String thing, String char) {
 }
 
 class P4 {
-  static final String valueString =
-      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
+  static final String valueString = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}";
 
-  static final String base =
-      r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~/?:@&=+$,#()[]{}%'|^";
+  static final String base = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~/?:@&=+$,#()[]{}%'|^";
 
   static final baseEncoder = BaseXCodec(base);
 
@@ -963,8 +929,7 @@ class P4 {
     grid.setPlace(x, y, bg);
   }
 
-  static String encodeGrid(Grid grid,
-      {String title = "", String description = ""}) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     var str = header + '$title;$description;'; // Header, title and description
 
     str += '${encodeNum(grid.width, valueString)};';
@@ -1019,8 +984,7 @@ class P4 {
     g.title = segs[1];
     g.desc = segs[2];
 
-    final rawCellDataList = fancySplit(
-        utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
+    final rawCellDataList = fancySplit(utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList()), '');
 
     while (rawCellDataList.first == "") {
       rawCellDataList.removeAt(0);
@@ -1065,8 +1029,7 @@ class P4 {
         QueueManager.add("post-game-init", () {
           final vb = props['viewbox'] as Map;
 
-          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) &
-              Size(vb['w'].toDouble(), vb['h'].toDouble()));
+          game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
         });
       }
       // We gotta decode le' RAM stick
@@ -1159,11 +1122,9 @@ class P4 {
 typedef SavingFormat = P6;
 
 class P5 {
-  static final String valueString =
-      r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.={}";
+  static final String valueString = r"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.={}";
 
-  static final String base =
-      r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  static final String base = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   static final baseEncoder = BaseXCodec(base);
 
@@ -1205,8 +1166,7 @@ class P5 {
     grid.setPlace(x, y, bg);
   }
 
-  static String encodeGrid(Grid grid,
-      {String title = "", String description = ""}) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     var str = header + '$title;$description;'; // Header, title and description
 
     str += '${encodeNum(grid.width, valueString)};';
@@ -1227,8 +1187,7 @@ class P5 {
             return;
           }
         }
-        cellDataList.add(
-            TPCML.encodeValue({"cell": TPCML.decodeValue(cstr), "count": 1}));
+        cellDataList.add(TPCML.encodeValue({"cell": TPCML.decodeValue(cstr), "count": 1}));
       },
     );
 
@@ -1263,11 +1222,8 @@ class P5 {
       g.title = segs[1];
       g.desc = segs[2];
 
-      final content =
-          utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList());
-      final rawCellDataList = stringContainsAtRoot(content, ':')
-          ? fancySplit(content, ':')
-          : fancySplit(content, '');
+      final content = utf8.decode(zlib.decode(baseEncoder.decode(segs[5])).toList());
+      final rawCellDataList = stringContainsAtRoot(content, ':') ? fancySplit(content, ':') : fancySplit(content, '');
 
       final cellDataList = [];
 
@@ -1307,8 +1263,7 @@ class P5 {
           QueueManager.add("post-game-init", () {
             final vb = props['viewbox'] as Map;
 
-            game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) &
-                Size(vb['w'].toDouble(), vb['h'].toDouble()));
+            game.viewbox = (Offset(vb['x'].toDouble(), vb['y'].toDouble()) & Size(vb['w'].toDouble(), vb['h'].toDouble()));
           });
         }
         // We gotta decode le' RAM stick
@@ -1339,8 +1294,7 @@ class P5 {
 class P6 {
   static String header = "P6;";
 
-  static final String base =
-      r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  static final String base = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   static dynamic encodeCell(Cell cell, String bg, int count) {
     var isSimple = true;
@@ -1355,15 +1309,7 @@ class P6 {
 
       return "${cell.id}|${cell.rot}|$bg|${encodeNum(cell.lifespan, base)}|${encodeNum(count, base)}";
     } else {
-      return [
-        cell.id,
-        cell.rot,
-        bg,
-        encodeNum(cell.lifespan, base),
-        cell.data.isEmpty ? 0 : cell.data,
-        cell.invisible ? 1 : 0,
-        encodeNum(count, base)
-      ];
+      return [cell.id, cell.rot, bg, encodeNum(cell.lifespan, base), cell.data.isEmpty ? 0 : cell.data, cell.invisible ? 1 : 0, encodeNum(count, base)];
     }
   }
 
@@ -1393,8 +1339,7 @@ class P6 {
       final rot = value[1];
       final bg = value[2];
       final lifespan = decodeNum(value[3], base);
-      final Map<String, dynamic> data =
-          value[4] is Map ? value[4] : <String, dynamic>{};
+      final Map<String, dynamic> data = value[4] is Map ? value[4] : <String, dynamic>{};
       final invisible = value[5] == 1;
       final count = decodeNum(value[6], base);
 
@@ -1411,13 +1356,11 @@ class P6 {
     throw "P6 Error: No parser specified for $value";
   }
 
-  static String encodeGrid(Grid grid,
-      {String title = "", String description = ""}) {
+  static String encodeGrid(Grid grid, {String title = "", String description = ""}) {
     var str = header + "$title;$description;";
 
     str += "${encodeNum(grid.width, base)};";
-    str +=
-        grid.width == grid.height ? "<;" : "${encodeNum(grid.height, base)};";
+    str += grid.width == grid.height ? "<;" : "${encodeNum(grid.height, base)};";
 
     final rawCellList = [];
     final gridData = <String, dynamic>{};
@@ -1459,8 +1402,7 @@ class P6 {
 
     if (encodedList.isNotEmpty) {
       if (encodedList.last is num) {
-        encodedList
-            .removeLast(); // If last thing is just a bunch of empty cells, we don't care
+        encodedList.removeLast(); // If last thing is just a bunch of empty cells, we don't care
       }
     }
 
@@ -1676,9 +1618,7 @@ class TPCML {
 
       for (var part in parts) {
         final kv = fancySplit(part, '=');
-        final k = kv[0].startsWith('\"') && kv[0].endsWith('\"')
-            ? kv[0].substring(1, kv[0].length - 1)
-            : kv[0];
+        final k = kv[0].startsWith('\"') && kv[0].endsWith('\"') ? kv[0].substring(1, kv[0].length - 1) : kv[0];
         final v = decodeValue(kv[1]);
 
         map[k] = v;
@@ -1735,8 +1675,7 @@ class TPCML {
       return s;
     } else if (str.startsWith('ni') && int.tryParse(str.substring(2)) != null) {
       return int.parse(str.substring(2));
-    } else if (str.startsWith('nd') &&
-        double.tryParse(str.substring(2)) != null) {
+    } else if (str.startsWith('nd') && double.tryParse(str.substring(2)) != null) {
       return double.parse(str.substring(2));
     }
 
@@ -1904,7 +1843,7 @@ class VX {
 
       if (cellData is List) {
         var i = 0;
-        grid.forEach((_, x, y) {
+        g.forEach((_, x, y) {
           List cd = cellData[i];
           if (preprocessors.containsKey(a)) {
             cd = preprocessors[a]!(cd);
@@ -1912,8 +1851,8 @@ class VX {
 
           final cells = decodeLayers(cd, 2).map(decodeLayer).toList();
 
-          grid.set(x, y, cells[0]);
-          grid.setPlace(x, y, cells[1].id);
+          g.set(x, y, cells[0]);
+          g.setPlace(x, y, cells[1].id);
         });
       }
     }
@@ -1961,8 +1900,7 @@ class VX {
   }
 
   /// Adds an ID that can work across remakes
-  static void overwritePreprocessor(
-      String remakeID, List Function(List) preprocessor) {
+  static void overwritePreprocessor(String remakeID, List Function(List) preprocessor) {
     preprocessors[remakeID] = preprocessor;
   }
 }
