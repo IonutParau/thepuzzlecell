@@ -76,7 +76,9 @@ class _MyAppState extends State<MyApp> {
             automaticallyImplyLeading: false,
           ),
           body: Text(
-            details.stack != null ? "Stack Trace:\n${details.stack.toString()}" : "No stack trace available",
+            details.stack != null
+                ? "Stack Trace:\n${details.stack.toString()}"
+                : "No stack trace available",
             textAlign: TextAlign.left,
           ),
         );
@@ -130,7 +132,7 @@ class _MyAppState extends State<MyApp> {
                             ),
                           ),
                           Text(
-                            'by A Monitor#1595',
+                            'by Atomical#1595',
                             style: TextStyle(
                               fontSize: 5.sp,
                             ),
