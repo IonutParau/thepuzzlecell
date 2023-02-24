@@ -1764,18 +1764,20 @@ class VX {
 
     List<List> cellData = [];
 
-    grid.forEach((cell, x, y) {
-      final bg = Cell(x, y)..id = grid.placeable(x, y);
+    for (var y = 0; y < grid.height; y++) {
+      for (var x = 0; x < grid.width; x++) {
+        final bg = Cell(x, y)..id = grid.placeable(x, y);
 
-      cellData.add(
-        encodeLayers(
-          [
-            encodeLayer(cell),
-            encodeLayer(bg),
-          ],
-        ),
-      );
-    });
+        cellData.add(
+          encodeLayers(
+            [
+              encodeLayer(grid.at(x, y)),
+              encodeLayer(bg),
+            ],
+          ),
+        );
+      }
+    }
 
     str += "${base64.encode(zlib.encode(utf8.encode(json.encode(cellData))))};";
 
@@ -1843,17 +1845,19 @@ class VX {
 
       if (cellData is List) {
         var i = 0;
-        g.forEach((_, x, y) {
-          List cd = cellData[i];
-          if (preprocessors.containsKey(a)) {
-            cd = preprocessors[a]!(cd);
+        for (var y = 0; y < g.height; y++) {
+          for (var x = 0; x < g.width; x++) {
+            List cd = cellData[i];
+            if (preprocessors.containsKey(a)) {
+              cd = preprocessors[a]!(cd);
+            }
+
+            final cells = decodeLayers(cd, 2).map(decodeLayer).toList();
+
+            g.set(x, y, cells[0]);
+            g.setPlace(x, y, cells[1].id);
           }
-
-          final cells = decodeLayers(cd, 2).map(decodeLayer).toList();
-
-          g.set(x, y, cells[0]);
-          g.setPlace(x, y, cells[1].id);
-        });
+        }
       }
     }
 
