@@ -1768,8 +1768,8 @@ class VX {
 
   static Cell decodeLayer(List layer) {
     final c = Cell(0, 0);
-    final id = decodeID(layer[0]);
-    final rot = decodeRot(layer[0], layer[1]);
+    final id = decodeID(layer[0].toString());
+    final rot = decodeRot(layer[0].toString(), layer[1]);
     final Map<String, dynamic> rawdata = layer[2] is Map ? layer[2] : {};
 
     c.invisible = rawdata['@invis'] ?? true;
@@ -1892,6 +1892,9 @@ class VX {
       }
     }
 
+    g.title = title;
+    g.desc = desc;
+
     return g;
   }
 
@@ -1920,4 +1923,16 @@ class VX {
   };
 
   static final inverseIds = stdIDs.map((key, value) => MapEntry(value, key));
+
+  /// Adds an ID that can work across remakes
+  static void addNonstandardizedID(String tpcID, String globalID) {
+    stdIDs[globalID] = tpcID;
+    inverseIds[tpcID] = globalID;
+  }
+
+  /// Adds an ID that can work across remakes
+  static void overwritePreprocessor(
+      String remakeID, List Function(List) preprocessor) {
+    preprocessors[remakeID] = preprocessor;
+  }
 }
