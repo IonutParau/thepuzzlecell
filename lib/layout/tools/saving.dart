@@ -1823,6 +1823,32 @@ class VX {
   static String encodeGrid(Grid grid, {String title = "", String desc = ""}) {
     var str = header + "$title;$desc;";
 
+    List<List> cellData = [];
+
+    grid.forEach((cell, x, y) {
+      final bg = Cell(x, y)..id = grid.placeable(x, y);
+
+      cellData.add(
+        encodeLayers(
+          [
+            encodeLayer(cell),
+            encodeLayer(bg),
+          ],
+        ),
+      );
+    });
+
+    str += "${base64.encode(zlib.encode(utf8.encode(json.encode(cellData))))};";
+
+    final gridData = <String, dynamic>{
+      "A": "tpc",
+    };
+
+    str += "${base64.encode(zlib.encode(utf8.encode(json.encode(gridData))))};";
+
+    str += (grid.width == 100) ? ";" : "${grid.width};";
+    str += (grid.width == grid.height) ? ";" : "${grid.width};";
+
     return str;
   }
 
@@ -1928,6 +1954,10 @@ class VX {
   static void addNonstandardizedID(String tpcID, String globalID) {
     stdIDs[globalID] = tpcID;
     inverseIds[tpcID] = globalID;
+  }
+
+  static void nonstandardizedIDRotation(String globalID, int rot) {
+    stdExtraRot[globalID] = rot;
   }
 
   /// Adds an ID that can work across remakes
