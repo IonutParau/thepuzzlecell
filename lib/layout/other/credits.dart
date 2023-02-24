@@ -1,10 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 final credits = [
   "Sam Hogan for making the original Cell Machine",
-  "Me, A Monitor#1595, for making this remake",
+  "Me, Atomical#1595, for making this remake",
   "k.#0086 for making all the OSTs",
   "The Generator Cell#7431 for helping me remake all of the textures",
   "Qwerty.R#9850 for making the sound effects",
