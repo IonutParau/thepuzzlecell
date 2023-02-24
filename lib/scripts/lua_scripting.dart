@@ -603,8 +603,9 @@ class LuaScript {
                     ls.pushNumber(x.toDouble());
                     ls.pushNumber(y.toDouble());
                     ls.call(3, 0);
+                  } else {
+                    ls.pop();
                   }
-                  ls.pop();
                 }, null, cell);
               }
               if (mode == "4-way") {
@@ -614,11 +615,12 @@ class LuaScript {
                     ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
                     if (ls.isFunction(-1)) {
                       pushCell(cell, ls);
-                      ls.pushNumber(x.toDouble());
-                      ls.pushNumber(y.toDouble());
+                      ls.pushInteger(x);
+                      ls.pushInteger(y);
                       ls.call(3, 0);
+                    } else {
+                      ls.pop();
                     }
-                    ls.pop();
                   }, rot, cell);
                 }
               }
@@ -637,8 +639,9 @@ class LuaScript {
                         ls.pushNumber(x.toDouble());
                         ls.pushNumber(y.toDouble());
                         ls.call(3, 0);
+                      } else {
+                        ls.pop();
                       }
-                      ls.pop();
                     },
                     filter: (cell, x, y) =>
                         cell.id == cell &&
