@@ -96,7 +96,7 @@ class _ChatDialogState extends State<ChatDialog> {
                           height: 7.h,
                           child: TextBox(
                             controller: msgController,
-                            header: lang('msg', 'Message'),
+                            prefix: Text(lang('msg', 'Message')),
                             onSubmitted: (val) {
                               game.sendMessageToServer(val);
                               msgController.clear();

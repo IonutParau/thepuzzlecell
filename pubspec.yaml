@@ -14,9 +14,9 @@ dependencies:
   clipboard: any
   cupertino_icons: ^1.0.5
   flame: ^1.6.0
-  audioplayers: ^2.0.0
+  audioplayers: ^3.0.1
   flame_splash_screen: any
-  fluent_ui: ^4.2.0
+  fluent_ui: ^4.4.0
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.0.3
@@ -28,7 +28,7 @@ dependencies:
   url_launcher: ^6.1.6
   uuid: any
   web_socket_channel: any
-  window_manager: ^0.2.7
+  window_manager: ^0.3.0
   yaml: ^3.1.1
   quiver: ^3.1.0
   archive: ^3.3.1

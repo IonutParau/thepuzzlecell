@@ -39,7 +39,7 @@ class _AddWorldDialogState extends State<AddWorldDialog> {
                   height: 7.h,
                   child: TextBox(
                     controller: _titleController,
-                    header: lang('title_box', 'Title'),
+                    prefix: Text(lang('title_box', 'Title')),
                   ),
                 ),
               ),
@@ -50,7 +50,7 @@ class _AddWorldDialogState extends State<AddWorldDialog> {
                   height: 7.h,
                   child: TextBox(
                     controller: _descController,
-                    header: lang('description', 'Description'),
+                    prefix: Text(lang('description', 'Description')),
                   ),
                 ),
               ),
@@ -61,7 +61,7 @@ class _AddWorldDialogState extends State<AddWorldDialog> {
                   height: 7.h,
                   child: TextBox(
                     controller: _widthController,
-                    header: lang('width', 'Width'),
+                    prefix: Text(lang('width', 'Width')),
                   ),
                 ),
               ),
@@ -72,7 +72,7 @@ class _AddWorldDialogState extends State<AddWorldDialog> {
                   height: 7.h,
                   child: TextBox(
                     controller: _heightController,
-                    header: lang('height', 'Height'),
+                    prefix: Text(lang('height', 'Height')),
                   ),
                 ),
               ),

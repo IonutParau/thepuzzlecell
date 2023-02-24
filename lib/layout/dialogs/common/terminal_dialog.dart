@@ -99,7 +99,7 @@ class _TerminalDialogState extends State<TerminalDialog> {
                           height: 7.h,
                           child: TextBox(
                             controller: inputController,
-                            header: lang('run_command', 'Run Command'),
+                            prefix: Text(lang('run_command', 'Run Command')),
                             onSubmitted: (val) {
                               terminalSession.output.add("Command > $val");
                               try {

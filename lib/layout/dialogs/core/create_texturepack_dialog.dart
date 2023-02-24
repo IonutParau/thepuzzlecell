@@ -44,14 +44,14 @@ class _CreateTexturePackDialogState extends State<CreateTexturePackDialog> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                 child: TextBox(
-                  header: 'ID',
+                  prefix: Text('ID'),
                   controller: idController,
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                 child: TextBox(
-                  header: lang('title_box', 'Title'),
+                  prefix: Text(lang('title_box', 'Title')),
                   controller: titleController,
                 ),
               ),

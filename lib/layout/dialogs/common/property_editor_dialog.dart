@@ -181,7 +181,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       );
     }
     return TextBox(
-      header: displayName,
+      prefix: Text(displayName),
       controller: controllers[i],
     );
   }

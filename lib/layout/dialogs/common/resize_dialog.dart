@@ -52,7 +52,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       width: constraints.maxWidth / 3,
                       height: 7.h,
                       child: TextBox(
-                        header: 'Width',
+                        prefix: Text('Width'),
                         controller: _widthController,
                       ),
                     ),
@@ -61,7 +61,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       width: constraints.maxWidth / 3,
                       height: 7.h,
                       child: TextBox(
-                        header: 'Height',
+                        prefix: Text('Height'),
                         controller: _heightController,
                       ),
                     ),

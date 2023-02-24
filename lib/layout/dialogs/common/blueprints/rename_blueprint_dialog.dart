@@ -38,7 +38,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
                   width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Title',
+                    prefix: Text('Title'),
                     controller: _titleController,
                   ),
                 ),
@@ -47,7 +47,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
                   width: constraints.maxWidth * 0.7,
                   height: 7.h,
                   child: TextBox(
-                    header: 'Description',
+                    prefix: Text('Description'),
                     controller: _descController,
                   ),
                 ),

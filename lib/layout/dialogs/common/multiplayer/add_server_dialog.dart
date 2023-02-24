@@ -32,7 +32,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
                 height: 7.h,
                 child: TextBox(
                   controller: _titleController,
-                  header: lang('title_box', 'Title'),
+                  prefix: Text(lang('title_box', 'Title')),
                 ),
               ),
               SizedBox(
@@ -40,7 +40,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
                 height: 7.h,
                 child: TextBox(
                   controller: _ipController,
-                  header: lang('ip_address', 'IP / Address'),
+                  prefix: Text(lang('ip_address', 'IP / Address')),
                 ),
               ),
             ],

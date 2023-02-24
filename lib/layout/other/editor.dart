@@ -107,15 +107,11 @@ class _EditorState extends State<Editor> {
                       SizedBox(
                         width: 20.w,
                         child: TextBox(
-                          header: lang('width', 'Width'),
+                          prefix: Text(lang('width', 'Width')),
                           keyboardType: TextInputType.number,
                           placeholder: '100',
                           onChanged: (v) => setState(
-                            () => width = clamp(
-                                    int.tryParse(v) ?? (v == "" ? 100 : width),
-                                    1,
-                                    999)
-                                .toInt(),
+                            () => width = clamp(int.tryParse(v) ?? (v == "" ? 100 : width), 1, 999).toInt(),
                           ),
                           keyboardAppearance: Brightness.dark,
                           decoration: BoxDecoration(
@@ -127,15 +123,11 @@ class _EditorState extends State<Editor> {
                       SizedBox(
                         width: 20.w,
                         child: TextBox(
-                          header: lang('height', 'Height'),
+                          prefix: Text(lang('height', 'Height')),
                           keyboardType: TextInputType.number,
                           placeholder: '100',
                           onChanged: (v) => setState(
-                            () => height = clamp(
-                                    int.tryParse(v) ?? (v == "" ? 100 : height),
-                                    1,
-                                    999)
-                                .toInt(),
+                            () => height = clamp(int.tryParse(v) ?? (v == "" ? 100 : height), 1, 999).toInt(),
                           ),
                           keyboardAppearance: Brightness.dark,
                           decoration: BoxDecoration(
