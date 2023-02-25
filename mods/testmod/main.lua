@@ -7,7 +7,7 @@ local cell = {
   update = {
     mode = "4-way",
     fn = function(cell, x, y)
-      print("Hello, world!")
+      TPC.Move.Push(x, y, cell.rot(), 1, "push", nil)
     end,
   },
   category = "Base/Test",
