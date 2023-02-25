@@ -1041,10 +1041,10 @@ class LuaScript {
         var i = 0;
         ls.createTable(types.length, types.length);
         for (var type in types) {
+          i++;
           ls.pushString(type);
           ls.pushInteger(i);
           ls.setTable(-3);
-          i++;
         }
         return 1;
       },
@@ -1723,7 +1723,7 @@ class LuaScript {
         return 1;
       },
       "enemyParticleCount": (LuaState ls) {
-        ls.pushNumber(enemyParticleCounts.toDouble());
+        ls.pushInteger(enemyParticleCounts);
         return 1;
       },
       "emitParticles": (LuaState ls) {
@@ -1748,7 +1748,7 @@ class LuaScript {
 
         ls.createTable(modList.length, modList.length);
 
-        var i = -1;
+        var i = 0;
         for (var mod in modList) {
           i++;
           final name = scriptingManager.modName(mod);
@@ -1778,6 +1778,8 @@ class LuaScript {
         scriptingManager.postInit.add(() {
           ls.getGlobal("POST_INIT_CB:$id");
           ls.call(0, 0);
+          ls.pushNil();
+          ls.setGlobal("POST_INIT_CB:$id");
         });
         return 0;
       },
