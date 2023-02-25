@@ -37,7 +37,7 @@ class GenOptimizer {
 
   void remove(int x, int y) {
     if (!grid.inside(x, y)) return;
-    grid.tiles[x][y].deopGenAll();
+    grid.tiles[grid.x(x)][grid.y(y)].deopGenAll();
   }
 }
 
