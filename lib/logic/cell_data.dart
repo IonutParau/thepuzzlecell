@@ -366,6 +366,9 @@ final cells = {
   "eater",
   "code_text",
   "code_number",
+  "roadblock",
+  "strong_enemy",
+  "weak_enemy",
 }.toList();
 
 final modded = <String>[];
@@ -375,6 +378,9 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "roadblock.png": "destroyers/enemy/roadblock.png",
+  "strong_enemy.png": "destroyers/enemy/strong_enemy.png",
+  "weak_enemy.png": "destroyers/enemy/weak_enemy.png",
   "code_text.png": "unique/code/code_text.png",
   "code_number.png": "unique/code/code_number.png",
   "eater.png": "destroyers/trash/eater.png",
@@ -1160,6 +1166,9 @@ final categories = [
           "mech_enemy",
           "friend",
           "debt_enemy",
+          "roadblock",
+          "strong_enemy",
+          "weak_enemy",
         ],
         "enemy",
       ),
@@ -3086,6 +3095,18 @@ final cellInfo = <String, CellProfile>{
   "code_number": CellProfile(
     "Programmable Number",
     "It gives the numeric value of a buffer, and can also be written to, allowing external cells to interact with Code Programs",
+  ),
+  "roadblock": CellProfile(
+    "Road Block",
+    "It is like a normal enemy, except it is ignnored by flags",
+  ),
+  "strong_enemy": CellProfile(
+    "Strong Enemy",
+    "An enemy, but when killed, becomes the normal enemy",
+  ),
+  "weak_enemy": CellProfile(
+    "Weak Enemy",
+    "An enemy, but when killed, becomes the cell that killed it",
   ),
 };
 

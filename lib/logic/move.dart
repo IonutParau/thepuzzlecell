@@ -203,10 +203,14 @@ final enemies = [
   "friend",
   "bread",
   "debt_enemy",
+  "roadblock",
+  "strong_enemy",
+  "weak_enemy",
 ].toSet().toList();
 
 final friendlyEnemies = <String>[
   "friend",
+  "roadblock",
 ];
 
 bool moveInsideOf(Cell into, int x, int y, int dir, int force, MoveType mt) {
@@ -641,6 +645,20 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       grid.set(x, y, Cell(x, y));
       game.yellowparticles.emit(enemyParticleCounts, x, y);
       playerKeys -= (destroyer.data['debt'] as num? ?? 1).toInt();
+    } else if (destroyer.id == "strong_enemy") {
+      grid.addBroken(moving, x, y, "shrinking");
+      grid.set(
+        x,
+        y,
+        Cell(x, y)
+          ..id = "enemy"
+          ..lastvars.id = "strong_enemy",
+      );
+      game.redparticles.emit(enemyParticleCounts, x, y);
+    } else if (destroyer.id == "weak_enemy") {
+      grid.addBroken(destroyer, x, y, "shrinking");
+      grid.set(x, y, moving);
+      game.redparticles.emit(enemyParticleCounts, x, y);
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");
