@@ -12,7 +12,7 @@ import 'package:the_puzzle_cell/layout/layout.dart';
 
 import 'logic/logic.dart';
 
-late ThemeData td;
+late FluentThemeData td;
 
 final deflate = ZLibCodec();
 
@@ -25,7 +25,7 @@ void main() async {
   await loadBlueprints();
   addBlueprints();
 
-  td = ThemeData(
+  td = FluentThemeData(
     brightness: Brightness.dark,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
@@ -76,9 +76,7 @@ class _MyAppState extends State<MyApp> {
             automaticallyImplyLeading: false,
           ),
           body: Text(
-            details.stack != null
-                ? "Stack Trace:\n${details.stack.toString()}"
-                : "No stack trace available",
+            details.stack != null ? "Stack Trace:\n${details.stack.toString()}" : "No stack trace available",
             textAlign: TextAlign.left,
           ),
         );

@@ -100,7 +100,6 @@ void kickWS(WebSocketChannel ws) {
 }
 
 bool isValidID(String id) {
-  // TODO: Proper ID validation
   return true;
 }
 

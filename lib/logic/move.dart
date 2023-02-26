@@ -1087,12 +1087,7 @@ NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
     if (depth > 9000 || !grid.inside(x, y)) {
       return NextCell(0, 0, 0, 0, true);
     }
-    final c = grid.at(x, y);
-
-    final side = toSide(dir, c.rot);
     if (completed) return NextCell(x, y, dir, addedrot, false);
-    x = frontX(x, dir);
-    y = frontY(y, dir);
   }
 }
 
