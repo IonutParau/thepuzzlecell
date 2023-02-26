@@ -732,6 +732,8 @@ final withBias = [
   "lofter",
   "cellua",
   "mystic_x",
+  "platform",
+  "carrier",
 ];
 
 int addedForce(Cell cell, int dir, int force, MoveType mt) {

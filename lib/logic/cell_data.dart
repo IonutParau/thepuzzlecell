@@ -369,6 +369,8 @@ final cells = {
   "roadblock",
   "strong_enemy",
   "weak_enemy",
+  "platform",
+  "carrier",
 }.toList();
 
 final modded = <String>[];
@@ -378,6 +380,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "platform.png": "movers/combos/platform.png",
+  "carrier.png": "movers/combos/carrier.png",
   "roadblock.png": "destroyers/enemy/roadblock.png",
   "strong_enemy.png": "destroyers/enemy/strong_enemy.png",
   "weak_enemy.png": "destroyers/enemy/weak_enemy.png",
@@ -964,6 +968,8 @@ final categories = [
           "axis",
           "bringer",
           "lofter",
+          "platform",
+          "carrier",
         ],
         "liner",
       ),

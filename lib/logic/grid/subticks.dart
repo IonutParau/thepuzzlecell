@@ -36,6 +36,8 @@ final subticks = [
   liners,
   bringers,
   lofters,
+  platforms,
+  carriers,
   axis,
   birds,
   fans,
