@@ -148,7 +148,6 @@ void doWarper(int x, int y, int dir, int odir) {
   final by = frontY(y, (dir + 2) % 4);
 
   if (!grid.inside(bx, by)) return;
-  if (ungennable.contains(grid.at(bx, by).id)) return;
   if (grid.at(bx, by).id.startsWith("warper")) return;
 
   var fx = x;
