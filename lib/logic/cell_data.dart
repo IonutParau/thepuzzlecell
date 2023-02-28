@@ -1635,13 +1635,22 @@ final cellInfo = <String, CellProfile>{
     "Empty",
     "Placing it will erase what was before it. You can also right click to erase as well",
   ),
-  "wall": CellProfile("Wall", "Can't be moved, but can be generated"),
-  "ghost": CellProfile("Ghost Wall", "Can't be moved nor generated"),
+  "wall": CellProfile(
+    "Wall",
+    "Can't be moved, but can be generated",
+  ),
+  "ghost": CellProfile(
+    "Ghost Wall",
+    "Can't be moved nor generated",
+  ),
   "place": CellProfile(
     "Placeable",
     "Allows the player to pick up the cell on top of this and place it on other placeable tiles",
   ),
-  "mover": CellProfile("Mover", "Moves forward, can push forward"),
+  "mover": CellProfile(
+    "Mover",
+    "Moves forward, can push forward",
+  ),
   "puller": CellProfile(
     "Puller",
     "Moves forward, unable to push, but instead pulls all cells behind it",
@@ -1652,7 +1661,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "liner": CellProfile(
     "Liner",
-    "Moves, pushes and pulls, basically puller + pusher",
+    "Moves, pushes and pulls, basically Puller + Mover",
   ),
   "bird": CellProfile(
     "Bird",
@@ -3104,15 +3113,23 @@ final cellInfo = <String, CellProfile>{
   ),
   "roadblock": CellProfile(
     "Road Block",
-    "It is like a normal enemy, except it is ignnored by flags",
+    "An enemy who is ignored by flags",
   ),
   "strong_enemy": CellProfile(
     "Strong Enemy",
-    "An enemy, but when killed, becomes the normal enemy",
+    "An enemy who becomes the normal enemy when killed. Basically an enemy with 2 HP",
   ),
   "weak_enemy": CellProfile(
     "Weak Enemy",
-    "An enemy, but when killed, becomes the cell that killed it",
+    "An enemy who becomes the cell that kills it",
+  ),
+  "platform": CellProfile(
+    "Platform",
+    "Mover + Grabber",
+  ),
+  "carrier": CellProfile(
+    "Carrier",
+    "Puller + Driller",
   ),
 };
 
