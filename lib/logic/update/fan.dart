@@ -107,6 +107,24 @@ void doInverseAirflow(Cell cell, int x, int y) {
   }
 }
 
+void doFourWayFan(Cell cell, int x, int y) {
+  for (var dir in rotOrder) {
+    final fx = frontX(x, (cell.rot + dir) % 4);
+    final fy = frontY(y, (cell.rot + dir) % 4);
+
+    push(fx, fy, (cell.rot + dir) % 4, 1);
+  }
+}
+
+void doFourWayVacuum(Cell cell, int x, int y) {
+  for (var dir in rotOrder) {
+    final fx = frontX(x, (cell.rot + dir) % 4, 2);
+    final fy = frontY(y, (cell.rot + dir) % 4, 2);
+
+    pull(fx, fy, (cell.rot + dir + 2) % 4, 1);
+  }
+}
+
 void fans() {
   for (var rot in rotOrder) {
     grid.updateCell(
@@ -124,6 +142,11 @@ void fans() {
       rot,
       "airflow",
     );
+    grid.updateCell(
+      doFourWayFan,
+      rot,
+      "4way_fan",
+    );
   }
   for (var rot in rotOrder) {
     grid.updateCell(
@@ -140,6 +163,11 @@ void fans() {
       doInverseAirflow,
       rot,
       "inverse_airflow",
+    );
+    grid.updateCell(
+      doFourWayVacuum,
+      rot,
+      "4way_vacuum",
     );
   }
   for (var rot in rotOrder) {

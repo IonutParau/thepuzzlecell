@@ -371,6 +371,8 @@ final cells = {
   "weak_enemy",
   "platform",
   "carrier",
+  "4way_fan",
+  "4way_vacuum",
 }.toList();
 
 final modded = <String>[];
@@ -380,6 +382,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "4way_fan.png": "movers/movers/4way_fan.png",
+  "4way_vacuum.png": "movers/pullers/4way_vacuum.png",
   "platform.png": "movers/combos/platform.png",
   "carrier.png": "movers/combos/carrier.png",
   "roadblock.png": "destroyers/enemy/roadblock.png",
@@ -987,6 +991,7 @@ final categories = [
           "fan",
           "superfan",
           "airflow",
+          "4way_fan",
         ],
         "fan",
       ),
@@ -997,6 +1002,7 @@ final categories = [
           "vacuum",
           "supervacuum",
           "inverse_airflow",
+          "4way_vacuum",
         ],
         "vacuum",
       ),
@@ -3052,7 +3058,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "shield": CellProfile(
     "Shield",
-    "Blocks Enemies from dying and trashes from eating",
+    "Blocks enemies from dying and trashes from eating. Note: Only on foreground cells. Biomes such as Spiketrap are not affected.",
   ),
   "debt_enemy": CellProfile(
     "Debt Enemy",
@@ -3113,6 +3119,14 @@ final cellInfo = <String, CellProfile>{
   "weak_enemy": CellProfile(
     "Weak Enemy",
     "An enemy, but when killed, becomes the cell that killed it",
+  ),
+  "4way_fan": CellProfile(
+    "4-way Fan",
+    "A fan but it pushes in all 4 directions",
+  ),
+  "4way_vacuum": CellProfile(
+    "4-way Vacuum",
+    "A vacuum but it pulls in all 4 directions",
   ),
 };
 
