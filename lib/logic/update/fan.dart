@@ -39,7 +39,7 @@ void doSuperFan(Cell cell, int x, int y) {
 }
 
 bool isFlowThrough(Cell cell, int x, int y, int dir) {
-  if (["airflow", "inverse_airflow"].contains(cell.id) && (cell.rot % 2 == dir % 2)) {
+  if (["airflow", "inverse_airflow", "nudging_airflow"].contains(cell.id) && (cell.rot % 2 == dir % 2)) {
     return true;
   }
 
@@ -125,6 +125,46 @@ void doFourWayVacuum(Cell cell, int x, int y) {
   }
 }
 
+void doSuperNudger(Cell cell, int x, int y) {
+  var cx = x;
+  var cy = y;
+  var d = 0;
+
+  while (true) {
+    d++;
+    if (d >= grid.width * grid.height) return;
+    cx = frontX(cx, cell.rot);
+    cy = frontY(cy, cell.rot);
+
+    if (!grid.inside(cx, cy)) return;
+    if (grid.at(cx, cy).id != "empty") {
+      nudge(cx, cy, cell.rot);
+      return;
+    }
+  }
+}
+
+void doNudgingAirflow(Cell cell, int x, int y) {
+  var cx = x;
+  var cy = y;
+  var d = 0;
+
+  while (true) {
+    d++;
+    if (d >= grid.width * grid.height) return;
+    cx = frontX(cx, cell.rot);
+    cy = frontY(cy, cell.rot);
+
+    if (!grid.inside(cx, cy)) return;
+    final c = grid.at(cx, cy);
+    if (isFlowThrough(c, x, y, cell.rot)) continue;
+    if (c.id != "empty") {
+      nudge(cx, cy, cell.rot);
+      return;
+    }
+  }
+}
+
 void fans() {
   for (var rot in rotOrder) {
     grid.updateCell(
@@ -196,6 +236,16 @@ void fans() {
       },
       rot,
       "nudger",
+    );
+    grid.updateCell(
+      doSuperNudger,
+      rot,
+      "supernudger",
+    );
+    grid.updateCell(
+      doNudgingAirflow,
+      rot,
+      "nudging_airflow",
     );
   }
 }

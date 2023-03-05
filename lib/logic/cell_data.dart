@@ -373,6 +373,8 @@ final cells = {
   "carrier",
   "4way_fan",
   "4way_vacuum",
+  "supernudger",
+  "nudging_airflow",
 }.toList();
 
 final modded = <String>[];
@@ -382,6 +384,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "supernudger.png": "movers/speeds/supernudger.png",
+  "nudging_airflow.png": "movers/speeds/nudging_airflow.png",
   "4way_fan.png": "movers/movers/4way_fan.png",
   "4way_vacuum.png": "movers/pullers/4way_vacuum.png",
   "platform.png": "movers/combos/platform.png",
@@ -1008,7 +1012,16 @@ final categories = [
       ),
       "conveyor",
       "swapper",
-      "nudger",
+      CellCategory(
+        "Nudgers",
+        "They move the things in front of them but don't push, pull, or anything.",
+        [
+          "nudger",
+          "supernudger",
+          "nudging_airflow",
+        ],
+        "nudger",
+      ),
       CellCategory(
         "Mirrors",
         "They swap cells around themselves",
@@ -3144,6 +3157,14 @@ final cellInfo = <String, CellProfile>{
   "4way_vacuum": CellProfile(
     "4-way Vacuum",
     "A vacuum but it pulls in all 4 directions",
+  ),
+  "supernudger": CellProfile(
+    "Super Nudger",
+    "A nudger that can nudge from any distance",
+  ),
+  "nudging_airflow": CellProfile(
+    "Nudging Airflow",
+    "An Airflow equivalent of Super Nudger",
   ),
 };
 
