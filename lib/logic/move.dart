@@ -206,6 +206,8 @@ final enemies = [
   "roadblock",
   "strong_enemy",
   "weak_enemy",
+  "mech_enemy_gen",
+  "balanced_enemy",
 ].toSet().toList();
 
 final friendlyEnemies = <String>[
@@ -647,18 +649,31 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       playerKeys -= (destroyer.data['debt'] as num? ?? 1).toInt();
     } else if (destroyer.id == "strong_enemy") {
       grid.addBroken(moving, x, y, "shrinking");
-      grid.set(
-        x,
-        y,
-        Cell(x, y)
-          ..id = "enemy"
-          ..lastvars.id = "strong_enemy",
-      );
+      destroyer.id = "enemy";
       game.redparticles.emit(enemyParticleCounts, x, y);
     } else if (destroyer.id == "weak_enemy") {
       grid.addBroken(destroyer, x, y, "shrinking");
       grid.set(x, y, moving);
+      game.purpleparticles.emit(enemyParticleCounts, x, y);
+    } else if (destroyer.id == "mech_enemy_gen") {
       game.redparticles.emit(enemyParticleCounts, x, y);
+      grid.addBroken(moving, x, y, "shrinking");
+      if ((destroyer.data['countdown'] ?? 0) > 0) {
+        destroyer.data['countdown']--;
+      } else {
+        grid.addBroken(destroyer, x, y, "shrinking");
+        grid.set(x, y, Cell(x, y));
+        QueueManager.add("post-move", () {
+          MechanicalManager.spread(x + 1, y, 0, false, 0);
+          MechanicalManager.spread(x - 1, y, 0, false, 2);
+          MechanicalManager.spread(x, y + 1, 0, false, 1);
+          MechanicalManager.spread(x, y - 1, 0, false, 3);
+        });
+      }
+    } else if (destroyer.id == "balanced_enemy") {
+      grid.addBroken(moving, x, y, "shrinking");
+      destroyer.id = "weak_enemy";
+      game.yellowparticles.emit(enemyParticleCounts, x, y);
     } else {
       final silent = destroyer.data['silent'] ?? false;
       grid.addBroken(destroyer, x, y, silent == true ? "silent_shrinking" : "shrinking");

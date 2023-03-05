@@ -375,6 +375,8 @@ final cells = {
   "4way_vacuum",
   "supernudger",
   "nudging_airflow",
+  "mech_enemy_gen",
+  "balanced_enemy",
 }.toList();
 
 final modded = <String>[];
@@ -384,6 +386,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
+  "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
   "supernudger.png": "movers/speeds/supernudger.png",
   "nudging_airflow.png": "movers/speeds/nudging_airflow.png",
   "4way_fan.png": "movers/movers/4way_fan.png",
@@ -1194,6 +1198,8 @@ final categories = [
           "roadblock",
           "strong_enemy",
           "weak_enemy",
+          "mech_enemy_gen",
+          "balanced_enemy",
         ],
         "enemy",
       ),
@@ -1457,14 +1463,15 @@ final categories = [
         "Power Givers",
         "They give cells mechanical power",
         [
-          "mech_gen",
           "mech_trash",
+          "mech_enemy_gen",
           "mech_sensor",
           "mech_comparator",
           "mech_keyleft",
           "mech_keydown",
           "mech_keyup",
           "mech_keyright",
+          "mech_gen",
         ],
         "mech_gen",
         max: 4,
@@ -3166,6 +3173,14 @@ final cellInfo = <String, CellProfile>{
     "Nudging Airflow",
     "An Airflow equivalent of Super Nudger",
   ),
+  "mech_enemy_gen": CellProfile(
+    "Enemy-Based Mechanical Generator",
+    "An enemy, but when killed, it powers mechanical cells. It also has a countdown, and it only dies at the very end of it.",
+  ),
+  "balanced_enemy": CellProfile(
+    "Balanced Enemy",
+    "An enemy, that when killed, becomes weak. Thus, it is perfectly balanced.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3199,6 +3214,9 @@ Map<String, List<CellProperty>> props = {
   "mech_trash": [
     CellProperty("Countdown", "countdown", CellPropertyType.integer, 0),
     CellProperty("Silent", "silent", CellPropertyType.boolean, false),
+  ],
+  "mech_enemy_gen": [
+    CellProperty("Countdown", "countdown", CellPropertyType.integer, 0),
   ],
   "math_memwriter": [
     CellProperty("Channel", "channel", CellPropertyType.integer, 0),
