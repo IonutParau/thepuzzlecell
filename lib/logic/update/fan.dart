@@ -14,7 +14,7 @@ void doVacuum(Cell cell, int x, int y) {
 
   if (front != null) {
     if (front.id == "empty") {
-      pull(frontX(frontX(x, cell.rot), cell.rot), frontY(frontY(y, cell.rot), cell.rot), (cell.rot + 2) % 4, 1);
+      pull(frontX(x, cell.rot, 2), frontY(y, cell.rot, 2), (cell.rot + 2) % 4, 1);
     }
   }
 }
