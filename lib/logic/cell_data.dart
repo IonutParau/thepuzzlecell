@@ -388,7 +388,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
-  "configurable_redirector.png": "rotators/configurable_rediretor.png",
+  "configurable_redirector.png": "rotators/configurable_redirector.png",
   "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
   "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
   "supernudger.png": "movers/speeds/supernudger.png",
@@ -3442,9 +3442,9 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Buffer ID", "buffID", CellPropertyType.text, "txt"),
   ],
   "configurable_redirector": [
+    CellProperty("Forward", "forward", CellPropertyType.integer, 0),
+    CellProperty("Backward", "backward", CellPropertyType.integer, 0),
     CellProperty("Left", "left", CellPropertyType.integer, 0),
     CellProperty("Right", "right", CellPropertyType.integer, 0),
-    CellProperty("Up", "up", CellPropertyType.integer, 0),
-    CellProperty("Down", "down", CellPropertyType.integer, 0),
   ],
 };
