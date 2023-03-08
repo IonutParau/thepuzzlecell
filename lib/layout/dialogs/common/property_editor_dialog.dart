@@ -27,14 +27,18 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
     for (var i = 0; i < p.length; i++) {
       final v = game.currentData[p[i].key] ?? p[i].def;
-      controllers.add(TextEditingController(text: v == null ? null : v.toString()));
+      controllers
+          .add(TextEditingController(text: v == null ? null : v.toString()));
     }
   }
 
   Widget propToTile(int i) {
     final property = props[game.currentSelection]![i];
 
-    final displayName = lang("property.${game.currentSelection}.${property.key}", property.name);
+    final displayName = lang(
+        "property.${game.currentSelection}.${property.key}", property.name);
+
+    final textStyle = TextStyle(fontSize: 5.sp);
 
     if (property.type == CellPropertyType.cellID) {
       final currentID = controllers[i].text;
@@ -50,7 +54,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           width: 3.h,
           height: 3.h,
         ),
-        title: Text("$displayName: " + idToString(currentID)),
+        title: Text("$displayName: " + idToString(currentID), style: textStyle),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
@@ -63,7 +67,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                 width: 3.h,
                 height: 3.h,
               ),
-              text: Text(idToString(id)),
+              text: Text(idToString(id), style: textStyle),
               onPressed: () {
                 controllers[i].text = id;
                 setState(() {});
@@ -82,7 +86,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
         items: [
           for (var r = 0; r < 4; r++)
             MenuFlyoutItem(
-              text: Text(rotToString(rot)),
+              text: Text(rotToString(rot), style: textStyle),
               onPressed: () {
                 controllers[i].text = r.toString();
                 setState(() {});
@@ -108,7 +112,13 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
             height: 3.h,
           ),
         ),
-        title: Text("$displayName: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")"),
+        title: Text(
+            "$displayName: " +
+                idToString(parseJointCellStr(current)[0]) +
+                " (" +
+                rotToString(parseJointCellStr(current)[1]) +
+                ")",
+            style: textStyle),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             for (var r = 0; r < 4; r++)
@@ -125,7 +135,8 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                     height: 3.h,
                   ),
                 ),
-                text: Text(idToString(id) + " (" + rotToString(r) + ")"),
+                text: Text(idToString(id) + " (" + rotToString(r) + ")",
+                    style: textStyle),
                 onPressed: () {
                   controllers[i].text = "$id!$r";
                   setState(() {});
@@ -148,7 +159,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           width: 3.h,
           height: 3.h,
         ),
-        title: Text("$displayName: " + idToString(currentID)),
+        title: Text("$displayName: " + idToString(currentID), style: textStyle),
         items: [
           for (var id in backgrounds)
             MenuFlyoutItem(
@@ -177,12 +188,13 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           controllers[i].text = (v == true) ? "true" : "false";
           setState(() {});
         },
-        content: Text(displayName),
+        content: Text(displayName, style: textStyle),
       );
     }
     return TextBox(
-      prefix: Text(displayName),
+      prefix: Text(displayName, style: textStyle),
       controller: controllers[i],
+      style: textStyle,
     );
   }
 
@@ -197,7 +209,8 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
             children: [
               for (var i = 0; i < props[game.currentSelection]!.length; i++)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,
@@ -229,12 +242,15 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
               dynamic value = text;
 
-              if (type == CellPropertyType.integer || type == CellPropertyType.cellRot) {
+              if (type == CellPropertyType.integer ||
+                  type == CellPropertyType.cellRot) {
                 value = int.tryParse(text);
               } else if (type == CellPropertyType.number) {
                 value = double.tryParse(text);
-                if (text == "inf" || text == "infinity") value = double.infinity;
-                if (text == "-inf" || text == "-infinity") value = double.negativeInfinity;
+                if (text == "inf" || text == "infinity")
+                  value = double.infinity;
+                if (text == "-inf" || text == "-infinity")
+                  value = double.negativeInfinity;
                 if (text == "pi") value = pi;
                 if (text == "e") value = e;
                 if (text == "phi") value = (1 + sqrt(5)) / 2;
