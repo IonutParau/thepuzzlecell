@@ -4,10 +4,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_cw")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), 1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), 1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), 1);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), 1);
       },
       null,
       "rotator_cw",
@@ -16,10 +20,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_ccw")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), -1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), -1);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), -1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), -1);
       },
       null,
       "rotator_ccw",
@@ -28,8 +36,10 @@ void rots(Set<String> cells) {
   if (cells.contains("opposite_rotator")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), -1);
       },
       null,
       "opposite_rotator",
@@ -44,10 +54,14 @@ void rots(Set<String> cells) {
       "rotator_rand",
       GridAlignment.bottomleft,
       (cell, x, y) {
-        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), randRot());
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), randRot());
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), randRot());
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), randRot());
+        grid.rotate(frontX(cell.cx ?? x, cell.rot),
+            frontY(cell.cy ?? y, cell.rot), randRot());
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), randRot());
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), randRot());
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), randRot());
       },
       filter: (cell, x, y) => cell.id == "rotator_rand" && !cell.updated,
     );
@@ -55,10 +69,14 @@ void rots(Set<String> cells) {
   if (cells.contains("rotator_180")) {
     grid.updateCell(
       (cell, x, y) {
-        grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 2);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), 2);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), 2);
-        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), 2);
+        grid.rotate(
+            frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+            frontY(cell.cy ?? y, cell.rot + 1), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+            frontY(cell.cy ?? y, cell.rot + 2), 2);
+        grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+            frontY(cell.cy ?? y, cell.rot + 3), 2);
       },
       null,
       "rotator_180",
@@ -88,6 +106,24 @@ void rots(Set<String> cells) {
         },
         rot,
         "super_redirector",
+      );
+    }
+    if (cells.contains("configurable_redirector")) {
+      grid.updateCell(
+        (cell, x, y) {
+          final confOrder = ["forward", "right", "backward", "left"];
+
+          for (var r in rotOrder) {
+            final fx = frontX(x, (rot + r) % 4);
+            final fy = frontY(y, (rot + r) % 4);
+
+            final off = (cell.data[confOrder[r]] as num).toInt();
+
+            redirect(grid.get(fx, fy) ?? Cell(fx, fy), fx, fy, (rot + off) % 4);
+          }
+        },
+        rot,
+        "configurable_redirector",
       );
     }
   }
