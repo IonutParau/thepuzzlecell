@@ -31,6 +31,8 @@ class MarkdownManager {
     addFromAssets('Installing a Texture Pack', 'install_texture_packs.md');
     addFromAssets('Creating a Texture Pack', 'create_texture_packs.md');
     addFromAssets('How to make a Translation', 'translation.md');
+    addFromAssets('Mechanical Cells', 'mechanical_cells.md');
+    addFromAssets('Math Cells', 'math_cells.md');
   }
 }
 
