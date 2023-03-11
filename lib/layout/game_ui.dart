@@ -3072,7 +3072,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       super.render(canvas);
     } catch (e) {
       print(e);
-      Navigator.pop(context);
       Navigator.of(context).push(MaterialPageRoute(
         builder: (ctx) => ErrorWidget(e),
       ));

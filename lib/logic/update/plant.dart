@@ -48,7 +48,7 @@ bool checkPlantDeath(Cell cell, int x, int y) {
 
 void buildPlant(int x, int y, int dir, double lChance, int plantID, [int depth = 0]) {
   if (!grid.inside(x, y)) return;
-  if (depth > 500) return;
+  if (depth > 200) return;
   if (rng.nextBool()) {
     if (rng.nextBool()) {
       dir = (dir + 3) % 4;
@@ -170,6 +170,8 @@ void doPlantSeed(Cell cell, int x, int y) {
       spore.id = "plant_spore";
       spore.data = Map<String, dynamic>.from(vars);
       spore.data['energy'] = sporeEnergy;
+      plantID++;
+      spore.data['plant_id'] = plantID;
       spore.data.remove("deathtime");
       final fx = frontX(px, dir);
       final fy = frontY(py, dir);
