@@ -15,6 +15,7 @@ final subticks = [
   automata,
   spikefactories,
   spreaders,
+  stabletons,
   quantums,
   hungryTrashes,
   mirrors,

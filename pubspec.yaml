@@ -114,6 +114,7 @@ flutter:
     - assets/images/unique/code/
     - assets/images/references/
     - assets/images/electrical/
+    - assets/images/stableton/
     - assets/audio/
     - languages/
     - mods/
