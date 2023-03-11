@@ -3215,27 +3215,27 @@ final cellInfo = <String, CellProfile>{
   ),
   "stable_a": CellProfile(
     "Stableton A",
-    "a",
+    "Adjacent offsets, has a unit constant of 1, layer constants of (1, 1) and is stationary.",
   ),
   "stable_b": CellProfile(
     "Stableton B",
-    "b",
+    "Adjacent offsets, has a unit constant of -1, layer constants of (-1, 1) and is stationary.",
   ),
   "stable_i": CellProfile(
     "Stableton I",
-    "i",
+    "Adjacent and diagonal offsets, has a unit constant of 1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
   ),
   "stable_j": CellProfile(
     "Stableton J",
-    "j",
+    "Adjacent and diagonal offsets (but opposite order of Stableton I), has a unit constant of -1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
   ),
   "stable_k": CellProfile(
     "Stableton K",
-    "k",
+    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary",
   ),
   "stable_n": CellProfile(
     "Stableton N",
-    "n",
+    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary",
   ),
 };
 
