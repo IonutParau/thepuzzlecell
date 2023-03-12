@@ -1357,7 +1357,7 @@ final categories = [
       ),
       CellCategory(
         "Stabletons",
-        "Stabletons will try to find stable arrangements. They may never find them, and thus be chaotic, but if they find a stable arrangement, they will try their best to keep it.",
+        "Stabletons will try to find stable arrangements. They may never find them, and thus be chaotic, but if they find a stable arrangement, they will try their best to keep it.\nIf multiple stable arrangements exist, they will clone themselves and try to reach both.",
         [
           "stable_a",
           "stable_b",
@@ -3231,11 +3231,11 @@ final cellInfo = <String, CellProfile>{
   ),
   "stable_k": CellProfile(
     "Stableton K",
-    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary",
+    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary.",
   ),
   "stable_n": CellProfile(
     "Stableton N",
-    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary",
+    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary.",
   ),
 };
 
