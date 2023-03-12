@@ -998,6 +998,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   double scrollDelta = 0;
 
+  bool hideUI = false;
+
   void saveHistory() {
     if (!isMultiplayer && worldIndex == null) {
       storage.setStringList("grid_history", gridHistory);
@@ -2710,6 +2712,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
       grid.fakeCells.removeWhere((fc) => fc.dead);
 
+      if (hideUI) return;
+
       if (edType == EditorType.making && realisticRendering && mouseInside && !(pasting || selecting)) {
         var mx = cellMouseX; // shorter names
         var my = cellMouseY; // shorter names
@@ -3418,12 +3422,35 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       magentaparticles.update(dt);
 
       AchievementRenderer.update(dt);
-      buttonManager.forEach(
-        (key, button) {
-          button.time += dt;
-          button.timeRot += dt;
-        },
-      );
+      if (!overlays.isActive("EditorMenu")) {
+        if ((running || onetick)) {
+          itime += dt;
+
+          while (itime > delay) {
+            itime -= delay;
+            if (onetick) {
+              onetick = false;
+              itime = 0;
+            } else {
+              grid.update(); // Update the cells boizz
+            }
+          }
+        }
+
+        const speed = 600;
+        if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
+          storedOffY += speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
+          storedOffY -= speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
+          storedOffX += speed * dt;
+        }
+        if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
+          storedOffX -= speed * dt;
+        }
+      }
       if (isMultiplayer && mouseInside) {
         var n = pow(10, storage.getInt("cursor_precision")!);
         num mx = (mouseX - offX) / cellSize - 0.5;
@@ -3461,18 +3488,14 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         smoothOffX = storedOffX;
         smoothOffY = storedOffY;
       }
-      // if (overlays.isActive('CellBar')) {
-      //   overlays.remove('CellBar');
-      // }
-      // if (!overlays.isActive('CellBar')) {
-      //   overlays.add('CellBar');
-      // }
-      // if (!overlays.isActive('ActionBar')) {
-      //   overlays.add('ActionBar');
-      // }
-      // if (!overlays.isActive('Info')) {
-      //   overlays.add('Info');
-      // }
+      if (hideUI) return;
+      buttonManager.forEach(
+        (key, button) {
+          button.time += dt;
+          button.timeRot += dt;
+        },
+      );
+
       if (puzzleLost && edType == EditorType.loaded) {
         if (!overlays.isActive("Lose")) {
           overlays.add("Lose");
@@ -3488,55 +3511,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         }
         return;
       }
-      var subticksPerFrame = subticks.length;
-      if (QueueManager.hasInQueue("cell-updates")) {
-        QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
-      } else {
-        for (var i = 0; i < subticksPerFrame; i++) {
-          QueueManager.runQueue("subticks", 1);
-          QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
-          if (QueueManager.hasInQueue("cell-updates")) break;
-        }
-      }
       if (!overlays.isActive("EditorMenu")) {
-        if ((running || onetick)) {
-          itime += dt;
-
-          while (itime > delay) {
-            itime -= delay;
-            while (QueueManager.hasInQueue("subticks")) {
-              QueueManager.runQueue("cell-updates");
-              QueueManager.runQueue("subticks", 1);
-            }
-            if (QueueManager.hasInQueue("cell-updates")) QueueManager.runQueue("cell-updates");
-            if (onetick) {
-              onetick = false;
-              itime = 0;
-            } else {
-              grid.update(); // Update the cells boizz
-              for (var i = 0; i < subticksPerFrame; i++) {
-                QueueManager.runQueue("subticks", 1);
-                QueueManager.runQueue("cell-updates", storage.getInt("update_queue_runs"));
-                if (QueueManager.hasInQueue("cell-updates")) break;
-              }
-            }
-          }
-        }
-
-        const speed = 600;
-        if (keys[LogicalKeyboardKey.keyW.keyLabel] == true) {
-          storedOffY += speed * dt;
-        }
-        if (keys[LogicalKeyboardKey.keyS.keyLabel] == true) {
-          storedOffY -= speed * dt;
-        }
-        if (keys[LogicalKeyboardKey.keyA.keyLabel] == true) {
-          storedOffX += speed * dt;
-        }
-        if (keys[LogicalKeyboardKey.keyD.keyLabel] == true) {
-          storedOffX -= speed * dt;
-        }
-
         if (selecting && dragPos && setPos) {
           final ex = max(min(cellMouseX, grid.width - 1), -1);
           final ey = max(min(cellMouseY, grid.height - 1), -1);
@@ -4144,6 +4119,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           } else {
             overlays.remove("EditorMenu");
           }
+        } else if (keysDown.contains(LogicalKeyboardKey.f1.keyLabel)) {
+          hideUI = !hideUI;
         } else if (keysDown.contains(LogicalKeyboardKey.keyZ.keyLabel)) {
           delay /= 2;
           delay = max(delay, 0.01);

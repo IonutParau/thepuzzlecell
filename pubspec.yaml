@@ -45,6 +45,7 @@ dependencies:
   flutter_markdown: ^0.6.13
   shelf: ^1.4.0
   shelf_web_socket: ^1.0.3
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:

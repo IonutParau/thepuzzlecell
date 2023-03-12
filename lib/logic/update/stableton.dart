@@ -28,7 +28,7 @@ final stabletonData = <String, StabletonData>{
       [0, 1],
     ],
     stationary: true,
-    clonable: false,
+    clonable: true,
   ),
   "stable_b": StabletonData(
     unitConstant: -1,
@@ -84,7 +84,7 @@ final stabletonData = <String, StabletonData>{
       [0, 1],
     ],
     stationary: false,
-    clonable: true,
+    clonable: false,
   ),
   "stable_n": StabletonData(
     unitConstant: -5,
@@ -96,7 +96,7 @@ final stabletonData = <String, StabletonData>{
       [0, 1],
     ],
     stationary: false,
-    clonable: true,
+    clonable: false,
   ),
 };
 
@@ -214,6 +214,10 @@ void stabletons() {
           bests.add([cx, cy]);
           hasMoved = true;
         }
+      }
+
+      if (!data.clonable && bests.length > 1) {
+        return; // If there is a tie in the stableton possible moves, do nothing.
       }
 
       if (hasMoved) {
