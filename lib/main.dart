@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' show AppBar, Scaffold;
+import 'package:flutter/material.dart' as MaterialStuff;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/other/credits.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
@@ -25,9 +27,26 @@ void main() async {
   await loadBlueprints();
   addBlueprints();
 
+  final defaultMaterialTheme = MaterialStuff.ThemeData().textTheme;
+
+  final font = GoogleFonts.oxygen; // Just grab the constructor, nothing too cursed
+
+  // Text stuff
+  final typography = Typography.raw(
+    body: font(textStyle: defaultMaterialTheme.bodyMedium, color: Colors.white),
+    bodyLarge: font(textStyle: defaultMaterialTheme.bodyLarge, color: Colors.white),
+    bodyStrong: font(textStyle: defaultMaterialTheme.bodyMedium, color: Colors.white),
+    title: font(textStyle: defaultMaterialTheme.titleMedium, color: Colors.white),
+    titleLarge: font(textStyle: defaultMaterialTheme.titleLarge, color: Colors.white),
+    subtitle: font(textStyle: defaultMaterialTheme.titleSmall, color: Colors.white),
+    caption: font(textStyle: defaultMaterialTheme.headlineSmall, color: Colors.white),
+    display: font(textStyle: defaultMaterialTheme.displayMedium, color: Colors.white),
+  );
+
   td = FluentThemeData(
     brightness: Brightness.dark,
     visualDensity: VisualDensity.adaptivePlatformDensity,
+    typography: typography,
   );
 
   storage = await SharedPreferences.getInstance();

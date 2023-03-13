@@ -94,6 +94,7 @@ part 'update/electric.dart';
 part 'update/shield.dart';
 part 'update/platform.dart';
 part 'update/carriers.dart';
+part 'update/stableton.dart';
 
 extension SetX on Set<String> {
   bool containsAny(List<String> strings) {

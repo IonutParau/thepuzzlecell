@@ -379,6 +379,12 @@ final cells = {
   "balanced_enemy",
   "configurable_redirector",
   "electric_puller",
+  "stable_a",
+  "stable_b",
+  "stable_i",
+  "stable_j",
+  "stable_k",
+  "stable_n",
 }.toList();
 
 final modded = <String>[];
@@ -390,6 +396,12 @@ final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
   "electric_puller.png": "electrical/electric_puller.png",
+  "stable_a.png": "stableton/stable_a.png",
+  "stable_b.png": "stableton/stable_b.png",
+  "stable_i.png": "stableton/stable_i.png",
+  "stable_j.png": "stableton/stable_j.png",
+  "stable_k.png": "stableton/stable_k.png",
+  "stable_n.png": "stableton/stable_n.png",
   "configurable_redirector.png": "rotators/configurable_redirector.png",
   "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
   "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
@@ -1346,6 +1358,19 @@ final categories = [
           "plasma",
         ],
         "water",
+      ),
+      CellCategory(
+        "Stabletons",
+        "Stabletons will try to find stable arrangements. They may never find them, and thus be chaotic, but if they find a stable arrangement, they will try their best to keep it.\nIf multiple stable arrangements exist, they will clone themselves and try to reach both.",
+        [
+          "stable_a",
+          "stable_b",
+          "stable_i",
+          "stable_j",
+          "stable_k",
+          "stable_n",
+        ],
+        "stable_a",
       ),
       "crystal",
       "floppy",
@@ -3196,6 +3221,30 @@ final cellInfo = <String, CellProfile>{
   "electric_puller": CellProfile(
     "Electrical Puller",
     "Like Electrical Mover, but a puller",
+  ),
+  "stable_a": CellProfile(
+    "Stableton A",
+    "Adjacent offsets, has a unit constant of 1, layer constants of (1, 1) and is stationary.",
+  ),
+  "stable_b": CellProfile(
+    "Stableton B",
+    "Adjacent offsets, has a unit constant of -1, layer constants of (-1, 1) and is stationary.",
+  ),
+  "stable_i": CellProfile(
+    "Stableton I",
+    "Adjacent and diagonal offsets, has a unit constant of 1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
+  ),
+  "stable_j": CellProfile(
+    "Stableton J",
+    "Adjacent and diagonal offsets (but opposite order of Stableton I), has a unit constant of -1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
+  ),
+  "stable_k": CellProfile(
+    "Stableton K",
+    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary.",
+  ),
+  "stable_n": CellProfile(
+    "Stableton N",
+    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary.",
   ),
 };
 
