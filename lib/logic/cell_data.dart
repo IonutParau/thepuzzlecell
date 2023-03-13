@@ -378,6 +378,7 @@ final cells = {
   "mech_enemy_gen",
   "balanced_enemy",
   "configurable_redirector",
+  "electric_puller",
 }.toList();
 
 final modded = <String>[];
@@ -388,6 +389,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
 final textureMapBackup = Map.from(textureMap);
 
 Map<String, String> textureMap = {
+  "electric_puller.png": "electrical/electric_puller.png",
   "configurable_redirector.png": "rotators/configurable_redirector.png",
   "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
   "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
@@ -1537,6 +1539,7 @@ final categories = [
       "electric_container",
       "electric_battery",
       "electric_mover",
+      "electric_puller",
     ],
     "electric_wire",
   ),
@@ -3190,6 +3193,10 @@ final cellInfo = <String, CellProfile>{
     "Configurable Redirector",
     "A redirector that can be configured to have special offsets for all sides.",
   ),
+  "electric_puller": CellProfile(
+    "Electrical Puller",
+    "Like Electrical Mover, but a puller",
+  ),
 };
 
 enum CellPropertyType {
@@ -3399,6 +3406,15 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Power", "power", CellPropertyType.number, 1),
   ],
   "electric_mover": [
+    CellProperty(
+      "Count Failed Attempts",
+      "count_fails",
+      CellPropertyType.boolean,
+      false,
+    ),
+    CellProperty("Cost", "cost", CellPropertyType.number, 1),
+  ],
+  "electric_puller": [
     CellProperty(
       "Count Failed Attempts",
       "count_fails",

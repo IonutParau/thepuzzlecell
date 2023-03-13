@@ -24,17 +24,21 @@ class ElectricPath {
       // This might look weird, it means "Don't immediately return to the last point"
       if (fullPath.isNotEmpty) if (endDir == (i + 2) % 4) continue;
 
-      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) continue;
+      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source))
+        continue;
 
       // Some cells might block where they can transfer to.
-      if (host != null && electricManager.blockedByHost(host!, x, y, i, source)) continue;
+      if (host != null && electricManager.blockedByHost(host!, x, y, i, source))
+        continue;
 
       final p = copy;
 
       p.fullPath.add(i);
       p.x = frontX(p.x, i);
       p.y = frontY(p.y, i);
-      if (p.host != null && electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source)) continue;
+      if (p.host != null &&
+          electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source))
+        continue;
 
       l.add(p);
       visited.add("${p.x} ${p.y}");
@@ -47,7 +51,9 @@ class ElectricPath {
   int get endDir => fullPath.last;
 
   bool get isOffGrid => !grid.inside(x, y);
-  bool get isDone => visited.contains("$x $y") && grid.inside(x, y) ? electricManager.isInput(grid.at(x, y), x, y, endDir) : false;
+  bool get isDone => visited.contains("$x $y") && grid.inside(x, y)
+      ? electricManager.isInput(grid.at(x, y), x, y, endDir)
+      : false;
 
   Cell? get host => grid.get(x, y);
 
@@ -74,6 +80,7 @@ class ElectricManager {
     // final side = toSide(dir, cell.rot);
     if (cell.id == "electric_container") return true;
     if (cell.id == "electric_mover") return true;
+    if (cell.id == "electric_puller") return true;
     if (cell.id == "electric_battery") return true;
 
     return false;
@@ -92,7 +99,8 @@ class ElectricManager {
   }
 
   bool blockedByReceiver(Cell receiver, int x, int y, int dir, Cell source) {
-    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0) return true;
+    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0)
+      return true;
 
     return false;
   }
@@ -101,6 +109,7 @@ class ElectricManager {
     if (host.id == "electric_wire") return true;
     if (host.id == "electric_container") return true;
     if (host.id == "electric_mover") return true;
+    if (host.id == "electric_puller") return true;
     if (host.id == "electric_battery") return true;
 
     return false;
@@ -110,6 +119,7 @@ class ElectricManager {
     if (cell.id == "electric_wire") return true;
     if (cell.id == "electric_container") return true;
     if (cell.id == "electric_mover") return true;
+    if (cell.id == "electric_puller") return true;
     if (cell.id == "electric_battery") return true;
 
     return false;
@@ -280,4 +290,17 @@ void electric() {
       }
     }
   }, null, "electric_mover");
+  grid.updateCell((cell, x, y) {
+    final power = electricManager.directlyReadPower(cell);
+    final countFails = (cell.data['count_fails'] ?? false) as bool;
+    final cost = ((cell.data['cost'] ?? 1) as num).toDouble();
+
+    if (power >= cost) {
+      if (pull(x, y, cell.rot, 0)) {
+        electricManager.removePower(cell, x, y, cost);
+      } else if (countFails) {
+        electricManager.removePower(cell, x, y, cost);
+      }
+    }
+  }, null, "electric_puller");
 }
