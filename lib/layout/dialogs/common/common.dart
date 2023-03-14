@@ -16,3 +16,4 @@ export 'search_dialog.dart' show SearchCellDialog;
 export 'see_mod_cells_dialog.dart' show ViewModCellsDialog;
 export 'modules_dialog.dart' show ModulesDialog;
 export 'terminal_dialog.dart' show TerminalDialog;
+export 'replace_cell_dialog.dart' show ReplaceCellDialog;
