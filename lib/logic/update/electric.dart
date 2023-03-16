@@ -300,6 +300,8 @@ void electric() {
         electricManager.removePower(cell, x, y, cost);
       } else if (countFails) {
         electricManager.removePower(cell, x, y, cost);
+      } else {
+        print("uh oh");
       }
     }
   }, null, "electric_puller");

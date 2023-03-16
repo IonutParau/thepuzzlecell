@@ -1058,9 +1058,21 @@ bool pull(int x, int y, int dir, int force,
 
   final isAcid = acidic(cell, dir, force, mt, f, fx, fy);
 
-  if (!isAcid && !moveInsideOf(f, fx, fy, dir, force, mt)) return false;
+  final moveInFront = moveInsideOf(f, fx, fy, dir, force, mt);
 
-  moveCell(x, y, fx, fy);
+  if (!isAcid && !moveInFront) return false;
+
+  if (f.id != "empty" && moveInFront) {
+    handleInside(fx, fy, dir, force, cell, mt);
+    grid.set(x, y, Cell(x, y));
+  } else if (isAcid) {
+    handleAcid(f, dir, force, mt, cell, x, y);
+    grid.set(x, y, Cell(x, y));
+  } else {
+    grid.set(fx, fy, cell);
+    grid.set(x, y, Cell(x, y));
+  }
+
   pull(bx, by, dir, force, mt, depth + 1);
 
   if (depth == 0) QueueManager.runQueue("post-move");
