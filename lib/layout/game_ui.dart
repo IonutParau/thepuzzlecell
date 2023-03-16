@@ -4534,7 +4534,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
           if (edType == EditorType.making) restoreInitial();
         } else if (keysDown.contains(LogicalKeyboardKey.keyV.keyLabel) &&
-            keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel)) {
+            keysDown.contains(LogicalKeyboardKey.controlLeft.keyLabel) && gridClip.active) {
           game.pasting = !game.pasting;
 
           buttonManager.buttons['paste-btn']?.texture =

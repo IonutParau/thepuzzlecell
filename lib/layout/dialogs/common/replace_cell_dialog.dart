@@ -121,14 +121,16 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
             game.selW--;
             game.selH--;
 
+            print(ids);
+
             for (var x = 0; x <= game.selW; x++) {
               for (var y = 0; y <= game.selH; y++) {
                 final cx = game.selX + x;
                 final cy = game.selY + y;
                 if (grid.inside(cx, cy)) {
                   final c = grid.at(cx, cy);
-                  if (c.id == ids[0]) {
-                    c.id = ids[1];
+                  if (c.id == controllers[0].text) {
+                    c.id = controllers[1].text;
                   }
                 }
               }
@@ -137,7 +139,7 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
             game.selecting = false;
             game.setPos = false;
             game.dragPos = false;
-            game.pasting = true;
+            game.pasting = false;
 
             game.selW++;
             game.selH++;
