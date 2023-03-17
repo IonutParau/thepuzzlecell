@@ -33,6 +33,7 @@ class MarkdownManager {
     addFromAssets('How to make a Translation', 'translation.md');
     addFromAssets('Mechanical Cells', 'mechanical_cells.md');
     addFromAssets('Math Cells', 'math_cells.md');
+    addFromAssets('Master Cells', 'master_cells.md');
   }
 }
 
