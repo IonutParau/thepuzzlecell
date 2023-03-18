@@ -450,10 +450,44 @@ TPC.Queues = {}
 
 
 
---- High-level filesystem functions
+--- High-level sandboxed filesystem functions
 TPC.FS = {}
 
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+--- Creates a file
+function TPC.FS.create(path) return end
 
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+--- Deletes a file or folder
+function TPC.FS.delete(path) return end
+
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+---@param content string The content they want to write to.
+--- Overwrites the contents of a file
+function TPC.FS.writeTo(path, content) return end
+
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+---@return string
+--- Reads the contents of a file as a string
+function TPC.FS.readFrom(path) return "" end
+
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+--- Creates a directory
+function TPC.FS.createDir(path) return end
+
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+--- Deletes a file or folder
+function TPC.FS.deleteDir(path) return end
+
+---@param path string Path is relative to main.lua, which means the path stuff/etc.png is actually mods/<mod folder>/stuff/etc.png.
+---@return string[]
+--- Returns the subfiles and subfolders inside a directory
+function TPC.FS.listDir(path) return {} end
+
+--- Will ask TPC to update the files in the background. This is not on a seperate thread, but instead just uses Dart's async/await loop.
+--- This means that your Lua code can block the updates to the files from happening.
+--- The updates are grabbed from the remoteFiles field in the info.json file of your mod.
+function TPC.FS.asyncUpdateRemotes() return end
 
 --- Help with math
 TPC.Math = {}
@@ -472,3 +506,10 @@ TPC.Types = {}
 
 --- Help with time-travel
 TPC.Time = {}
+
+--- Returns instance to grid to time travel to
+---@return GridBinding|nil
+function TPC.Time.Grid() return {} end
+
+--- Requests a travel back in time. This is not instant, and can last a bit.
+function TPC.Time.Travel() return end
