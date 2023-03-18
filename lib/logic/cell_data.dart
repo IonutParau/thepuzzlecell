@@ -389,8 +389,7 @@ final cells = {
 
 final modded = <String>[];
 
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
-  ..removeWhere((e) => e == "empty");
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
 final textureMapBackup = Map.from(textureMap);
 
@@ -808,8 +807,7 @@ class CellCategory {
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look,
-      {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
 
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
@@ -3224,27 +3222,27 @@ final cellInfo = <String, CellProfile>{
   ),
   "stable_a": CellProfile(
     "Stableton A",
-    "Adjacent offsets, has a unit constant of 1, layer constants of (1, 1) and is stationary.",
+    "Adjacent offsets, has a unit constant of 1, layer constants of (1, 1) and is stationary and clonable.",
   ),
   "stable_b": CellProfile(
     "Stableton B",
-    "Adjacent offsets, has a unit constant of -1, layer constants of (-1, 1) and is stationary.",
+    "Adjacent offsets, has a unit constant of -1, layer constants of (-1, 1) and is stationary and clonable.",
   ),
   "stable_i": CellProfile(
     "Stableton I",
-    "Adjacent and diagonal offsets, has a unit constant of 1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
+    "Adjacent and diagonal offsets, has a unit constant of 1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary but not clonable.",
   ),
   "stable_j": CellProfile(
     "Stableton J",
-    "Adjacent and diagonal offsets (but opposite order of Stableton I), has a unit constant of -1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary.",
+    "Adjacent and diagonal offsets (but opposite order of Stableton I), has a unit constant of -1, layer constants of (1, -1, 2, -2, 3, -3) and is stationary but not clonable.",
   ),
   "stable_k": CellProfile(
     "Stableton K",
-    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary.",
+    "Adjacent offsets, has a unit constant of 2, layer constants of (1, -1, 1, -1, 1, -1, 1, -1), is not stationary but not clonable.",
   ),
   "stable_n": CellProfile(
     "Stableton N",
-    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary.",
+    "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary but not clonable.",
   ),
 };
 
@@ -3303,13 +3301,11 @@ Map<String, List<CellProperty>> props = {
   ],
   "explosive": [
     CellProperty("Radius", "radius", CellPropertyType.integer, 1),
-    CellProperty(
-        "Effectiveness", "effectiveness", CellPropertyType.number, 100),
+    CellProperty("Effectiveness", "effectiveness", CellPropertyType.number, 100),
     CellProperty("By-product", "byproduct", CellPropertyType.cell, "empty!0"),
     CellProperty("Circular", "circular", CellPropertyType.boolean, false),
     CellProperty("Mobile", "mobile", CellPropertyType.boolean, false),
-    CellProperty(
-        "Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
+    CellProperty("Pseudo-Random", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [
     CellProperty("Cell", "cell", CellPropertyType.cell, "push!0"),
@@ -3319,20 +3315,14 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Quantized", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset",
-        CellPropertyType.boolean, true),
-    CellProperty(
-        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "mech_checkpoint": [
-    CellProperty("Reset other checkpoints", "checkpoint_reset",
-        CellPropertyType.boolean, true),
-    CellProperty(
-        "Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
+    CellProperty("Reset other checkpoints", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "reset_rot", CellPropertyType.boolean, false),
   ],
   "trash_can": [
     CellProperty("Remaining", "remaining", CellPropertyType.integer, 10),
@@ -3416,17 +3406,13 @@ Map<String, List<CellProperty>> props = {
   "configurable_filler": [
     CellProperty("ID", "id", CellPropertyType.integer, 0),
     CellProperty("Rotate", "rotate", CellPropertyType.boolean, false),
-    CellProperty(
-        "Mutation Chance", "mutationChance", CellPropertyType.number, 0),
+    CellProperty("Mutation Chance", "mutationChance", CellPropertyType.number, 0),
     CellProperty("Attack Chance", "attackChance", CellPropertyType.number, 100),
     CellProperty("Consistency", "consistency", CellPropertyType.number, 100),
-    CellProperty(
-        "Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
-    CellProperty(
-        "Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
+    CellProperty("Left Spread Odds", "leftSpread", CellPropertyType.number, 100),
+    CellProperty("Right Spread Odds", "rightSpread", CellPropertyType.number, 100),
     CellProperty("Up Spread Odds", "upSpread", CellPropertyType.number, 100),
-    CellProperty(
-        "Down Spread Odds", "downSpread", CellPropertyType.number, 100),
+    CellProperty("Down Spread Odds", "downSpread", CellPropertyType.number, 100),
   ],
   "code_instruction": [
     CellProperty("Line", "line", CellPropertyType.integer, 0),

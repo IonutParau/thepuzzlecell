@@ -1302,7 +1302,7 @@ class LuaScript {
         final channel = ls.toNumber(-2);
         final idx = ls.toNumber(-1);
         ls.pushNumber(mathManager.getGlobal(channel, idx).toDouble());
-        return 0;
+        return 1;
       },
       "input": (LuaState ls) {
         final x = ls.toInteger(-3);
@@ -1320,8 +1320,8 @@ class LuaScript {
         return 0;
       },
       "logn": (LuaState ls) {
-        final x = ls.toInteger(-2);
-        final n = ls.toInteger(-1);
+        final x = ls.toNumber(-2);
+        final n = ls.toNumber(-1);
         ls.pushNumber(mathManager.logn(x, n));
         return 1;
       },

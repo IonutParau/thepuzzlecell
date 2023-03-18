@@ -216,7 +216,7 @@ void stabletons() {
         }
       }
 
-      if (!data.clonable && bests.length > 1) {
+      if (!data.clonable && bests.length > 1 && data.stationary) {
         return; // If there is a tie in the stableton possible moves, do nothing.
       }
 

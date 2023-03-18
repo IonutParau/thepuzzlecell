@@ -492,7 +492,34 @@ function TPC.FS.asyncUpdateRemotes() return end
 --- Help with math
 TPC.Math = {}
 
+TPC.Math.phi = (1 + math.sqrt(5)) / 2
 
+---@param channel integer
+---@param idx integer
+---@param val number
+function TPC.Math.setGlobal(channel, idx, val) return end
+
+---@param channel integer
+---@param idx integer
+---@return number
+function TPC.Math.getGlobal(channel, idx) return 0 end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@return number
+function TPC.Math.input(x, y, dir) return 0 end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param count number
+function TPC.Math.output(x, y, dir, count) return end
+
+---@param x number
+---@param n number
+---@return number
+function TPC.Math.logn(x, n) return 0 end
 
 --- Mod-to-mod communication
 TPC.Channel = {}
