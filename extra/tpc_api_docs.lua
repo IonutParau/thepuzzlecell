@@ -6,6 +6,8 @@ TPC = {}
 
 ---@alias MoveType "push"|"gear"|"mirror"|"pull"|"puzzle"|"grab"|"tunnel"|"unknown_move"|"transform"|"burn"|"sticky_check"
 
+---@alias BreakType "rotate"|"transform"|"burn"|"explode"
+
 --- A binding for when a message is sent. Currently unimplemented.
 ---@param msg string The message
 function TPC.OnMsg(msg)
@@ -358,7 +360,90 @@ function TPC.Move.Nudge(x, y, dir, moveType) return false end
 --- Functions that help with common problems
 TPC.Helper = {}
 
+---@param dir integer
+---@param rot integer
+---@return integer
+function TPC.Helper.toSide(dir, rot) return 0 end
 
+---@param x integer
+---@param dir integer
+---@return integer
+function TPC.Helper.frontX(x, dir) return 0 end
+
+---@param y integer
+---@param dir integer
+---@return integer
+function TPC.Helper.frontY(y, dir) return 0 end
+
+---@param cell CellBinding
+---@param x integer
+---@param y integer
+---@param dir integer
+---@return boolean
+function TPC.Helper.ungennable(cell, x, y, dir) return false end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param gendir integer
+---@param offX integer
+---@param offY integer
+---@param preaddedRot integer
+---@param physical boolean
+---@param lvxo integer Offset for Last Vars's X of the generated cell
+---@param lvyo integer Offset for Last Vars's Y of the generated cell
+---@param ignoreOptimization boolean Tells generate to ignore the generator optimization
+---@return nil
+function TPC.Helper.generate(x, y, dir, gendir, offX, offY, preaddedRot, physical, lvxo, lvyo, ignoreOptimization) return end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param gdir integer
+---@return nil
+function TPC.Helper.antiGenerate(x, y, dir, gdir) return end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param gendir integer
+---@param offX integer
+---@param offY integer
+---@param preaddedRot integer
+---@return nil
+function TPC.Helper.superGenerate(x, y, dir, gendir, offX, offY, preaddedRot) return end
+
+--- Triggers a win
+function TPC.Helper.triggerWin() return end
+
+--- Triggers a loss
+function TPC.Helper.triggerLoss() return end
+
+---@param cell CellBinding
+---@param x integer
+---@param y integer
+---@param dir integer
+---@return boolean
+function TPC.Helper.IsGeneratable(cell, x, y, dir) return false end
+
+---@param cell CellBinding
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param breakType BreakType
+---@return boolean
+function TPC.Helper.canBreak(cell, x, y, dir, breakType) return false end
+
+---@param x integer
+---@param y integer
+---@param dir integer
+---@param outdir integer
+---@param offX integer
+---@param offY integer
+---@param off integer
+---@param backOff integer
+---@return boolean
+function TPC.Helper.transform(x, y, dir, outdir, offX, offY, off, backOff) return false end
 
 --- Functions that handle queues
 TPC.Queues = {}
