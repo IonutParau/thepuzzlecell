@@ -18,7 +18,11 @@ class LuaScript {
   }
 
   LuaScript(this.dir) {
-    ls = LuaState(dll: LuaState.toLibLua(windows: 'dlls/lua54.dll', linux: 'dlls/liblua54.so', macos: 'dlls/liblua52.dylib'));
+    ls = LuaState(
+        dll: LuaState.toLibLua(
+            windows: 'dlls/lua54.dll',
+            linux: 'dlls/liblua54.so',
+            macos: 'dlls/liblua52.dylib'));
   }
 
   void OnMsg(String msg) {
@@ -198,7 +202,8 @@ class LuaScript {
       "last": <String, dynamic>{
         "x": (LuaState ls) {
           if (ls.top == 1) {
-            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            cell.lastvars.lastPos =
+                Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
             return 0;
           }
           ls.pushNumber(cell.lastvars.lastPos.dy);
@@ -206,7 +211,8 @@ class LuaScript {
         },
         "y": (LuaState ls) {
           if (ls.top == 1) {
-            cell.lastvars.lastPos = Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
+            cell.lastvars.lastPos =
+                Offset(ls.toNumber(-1), cell.lastvars.lastPos.dy);
             return 0;
           }
           ls.pushNumber(cell.lastvars.lastPos.dy);
@@ -392,7 +398,8 @@ class LuaScript {
     return cell;
   }
 
-  int? addedForceModded(Cell cell, int dir, int force, int side, String moveType) {
+  int? addedForceModded(
+      Cell cell, int dir, int force, int side, String moveType) {
     if (definedCells.contains(cell.id)) {
       // We getting into low level Lua VM stuff, we need garbage collection
       final id = cell.id;
@@ -414,7 +421,8 @@ class LuaScript {
     return null;
   }
 
-  bool? moveInsideOfModded(Cell into, int x, int y, int dir, int force, String mt) {
+  bool? moveInsideOfModded(
+      Cell into, int x, int y, int dir, int force, String mt) {
     if (definedCells.contains(into.id)) {
       final id = into.id;
       bool? result;
@@ -439,7 +447,8 @@ class LuaScript {
     return null;
   }
 
-  void handleInsideModded(int x, int y, int dir, int force, Cell moving, String mt) {
+  void handleInsideModded(
+      int x, int y, int dir, int force, Cell moving, String mt) {
     final destroyer = grid.at(x, y);
     if (definedCells.contains(destroyer.id)) {
       final id = destroyer.id;
@@ -459,7 +468,8 @@ class LuaScript {
     }
   }
 
-  bool? isAcidicModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  bool? isAcidicModded(
+      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       bool? result;
@@ -484,7 +494,8 @@ class LuaScript {
     return null;
   }
 
-  void handleAcidModded(Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
+  void handleAcidModded(
+      Cell cell, int dir, int force, String mt, Cell melting, int mx, int my) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       ls.getGlobal("HANDLE_ACID:$id");
@@ -617,7 +628,9 @@ class LuaScript {
                 for (var rot in [0, 1]) {
                   grid.loopChunks(
                     cell,
-                    i == 0 ? GridAlignment.bottomleft : GridAlignment.bottomright,
+                    i == 0
+                        ? GridAlignment.bottomleft
+                        : GridAlignment.bottomright,
                     (cell, x, y) {
                       cell.updated = true;
                       ls.getGlobal("CELL_UPDATE_FUNCS:${cell.id}");
@@ -630,7 +643,10 @@ class LuaScript {
                         ls.pop();
                       }
                     },
-                    filter: (cell, x, y) => cell.id == cell && (cell.rot % 2 == rot) && !cell.updated,
+                    filter: (cell, x, y) =>
+                        cell.id == cell &&
+                        (cell.rot % 2 == rot) &&
+                        !cell.updated,
                   );
                 }
               }
@@ -766,7 +782,8 @@ class LuaScript {
         modded.add(cell);
         print("Defined Cell: " + cell);
         cellInfo[cell] = CellProfile(name, desc);
-        textureMap['$cell.png'] = "../../mods/$id/${texture.split("/").join(path.separator)}";
+        textureMap['$cell.png'] =
+            "../../mods/$id/${texture.split("/").join(path.separator)}";
         textureMapBackup['$cell.png'] = textureMap['$cell.png']!;
         ls.setGlobal("PROPS:$cell");
       }
@@ -789,7 +806,8 @@ class LuaScript {
     return r;
   }
 
-  bool? canMoveModded(Cell cell, int x, int y, int dir, int side, int force, String mt) {
+  bool? canMoveModded(
+      Cell cell, int x, int y, int dir, int side, int force, String mt) {
     if (definedCells.contains(cell.id)) {
       return withDefinedCellProperty<bool>(cell.id, "movable", () {
         if (ls.isFunction(-1)) {
@@ -811,7 +829,8 @@ class LuaScript {
     return null;
   }
 
-  bool? isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {
+  bool? isSticky(Cell cell, int x, int y, int dir, bool base,
+      bool checkedAsBack, int originX, int originY) {
     if (definedCells.contains(cell.id)) {
       final id = cell.id;
       ls.getGlobal("IS_STICKY:$id");
@@ -835,7 +854,8 @@ class LuaScript {
     return null;
   }
 
-  bool? sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack, int originX, int originY) {
+  bool? sticksTo(Cell sticker, Cell to, int dir, bool base, bool checkedAsBack,
+      int originX, int originY) {
     final id = sticker.id;
     if (definedCells.contains(id)) {
       ls.getGlobal("STICKS_TO:$id");
@@ -1102,7 +1122,8 @@ class LuaScript {
         final lvxo = ls.toInteger(-3);
         final lvyo = ls.toInteger(-2);
         final ignoreOptimization = ls.toBoolean(-1);
-        doGen(x, y, dir, gendir, offX, offY, preaddedRot, physical, lvxo, lvyo, ignoreOptimization);
+        doGen(x, y, dir, gendir, offX, offY, preaddedRot, physical, lvxo, lvyo,
+            ignoreOptimization);
         return 0;
       },
       "antiGenerate": (LuaState ls) {
@@ -1260,7 +1281,7 @@ class LuaScript {
 
         for (var i = 0; i < enemies.length; i++) {
           ls.pushString(enemies[i]);
-          ls.pushInteger(i);
+          ls.pushInteger(i + 1);
           ls.setTable(-3);
         }
         return 1;
@@ -1270,7 +1291,7 @@ class LuaScript {
 
         for (var i = 0; i < movables.length; i++) {
           ls.pushString(movables[i]);
-          ls.pushInteger(i);
+          ls.pushInteger(i + 1);
           ls.setTable(-3);
         }
         return 1;
@@ -1813,7 +1834,8 @@ class LuaScript {
   }
 
   Future<void> asyncUpdateRemotes() async {
-    final Map<String, dynamic> remote = info['remoteFiles'] ?? <String, dynamic>{};
+    final Map<String, dynamic> remote =
+        info['remoteFiles'] ?? <String, dynamic>{};
 
     final remoteFiles = remote.entries.toList();
 
@@ -1823,7 +1845,8 @@ class LuaScript {
       if (remoteFile.value is Map<String, dynamic>) {
         final data = remoteFile.value;
 
-        final response = await http.get(Uri.parse(data['url']), headers: data['headers']);
+        final response =
+            await http.get(Uri.parse(data['url']), headers: data['headers']);
 
         if (response.statusCode == 200) {
           final f = File(fileName);

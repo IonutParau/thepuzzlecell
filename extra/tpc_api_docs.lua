@@ -554,7 +554,32 @@ TPC.Channel = {}
 --- Cell type information
 TPC.Types = {}
 
+---@param id string
+---@return nil
+--- Marks it as an enemy. This means flags will look for it in order to kill it.
+function TPC.Types.MarkAsEnemy(id) return end
 
+---@param id string
+---@return nil
+--- Marks it as movable. This means if the cell exists then even if the grid is full, stuff can move. This is used to prevent bugs caused by one of TPC's oldest optimizations, the grid-wise movability check.
+function TPC.Types.MarkAsMovable(id) return end
+
+---@param id string
+---@return nil
+--- Friendly enemies are enemies not looked at by flags. They may still be identified as enemies, it's just that flags won't look for them.
+function TPC.Types.MarkAsFriendlyEnemy(id) return end
+
+---@return string[]
+--- Returns a list of enemies
+function TPC.Types.Enemies() return {} end
+
+---@return string[]
+--- Returns a list of mpvables
+function TPC.Types.Movables() return {} end
+
+---@return string[]
+--- Returns a list of friendly enemies
+function TPC.Types.FriendlyEnemies() return {} end
 
 --- Help with time-travel
 TPC.Time = {}
