@@ -238,7 +238,7 @@ function TPC.Grid() return {} end
 
 --- Returns the amount of enemy particles TPC recommends
 ---@return integer
-function TPC.enemyParticleCount() return 0 end
+function TPC.enemyParticleCount() return 250 end
 
 --- Emits <amount> particles at x, y with a specific color
 ---@param amount integer
@@ -606,3 +606,29 @@ function TPC.Time.Grid() return {} end
 
 --- Requests a travel back in time. This is not instant, and can last a bit.
 function TPC.Time.Travel() return end
+
+---@class UpdateConfig
+--- How to update the cell. 4-way means in a mover-like style, static means in a rotator-like style and 2-way means in a mirror-like style
+---@field mode "4-way"|"static"|"2-way"
+--- The index the subtick should have
+---@field index integer
+--- The update function itself
+---@field fn fun(cell: CellBinding, x: integer, y: integer):nil
+
+---@class CellConfig
+--- The ID of the cell
+---@field id string
+--- The display name of the cell
+---@field name string
+--- The description of the cell
+---@field desc string
+--- The category the cell is in. If in multiple categories, you can put a list of them.
+---@field category string[]|string
+--- The texture of the cell (relative to main.lua)
+---@field texture string
+--- Information about how to update the cell. Nil means the cell should not have a subtick.
+---@field update UpdateConfig
+
+---@return nil
+---@param config CellConfig
+function TPC.DefineCell(config) return end
