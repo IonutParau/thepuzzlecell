@@ -448,6 +448,31 @@ function TPC.Helper.transform(x, y, dir, outdir, offX, offY, off, backOff) retur
 --- Functions that handle queues
 TPC.Queues = {}
 
+---@param id string
+---@return nil
+function TPC.Queues.create(id) return end
+
+---@param id string
+---@return nil
+function TPC.Queues.delete(id) return end
+
+---@param id string
+---@param callback fun()
+---@return nil
+function TPC.Queues.add(id, callback) return end
+
+---@param id string
+---@return nil
+function TPC.Queues.empty(id) return end
+
+---@param id string
+---@return nil
+function TPC.Queues.runQueue(id) return end
+
+---@param id string
+---@param limit integer
+---@return nil
+function TPC.Queues.runLimitedQueue(id, limit) return end
 
 
 --- High-level sandboxed filesystem functions
