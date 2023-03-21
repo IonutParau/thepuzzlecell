@@ -628,6 +628,13 @@ function TPC.Time.Travel() return end
 ---@field texture string
 --- Information about how to update the cell. Nil means the cell should not have a subtick.
 ---@field update UpdateConfig
+--- How much force to add to a push or pull. This can be used to implement weights or mover bias.
+---@field addedForce fun(cell: CellBinding, dir: integer, side: integer, force: integer, moveType: MoveType): integer
+--- How to handle something going inside of the cell. This can be used to make proper enemies or trashes.
+---@field handleInside fun(destroyer: CellBinding, x: integer, y: integer, moving: CellBinding, dir: integer, side: integer, force: integer, mt: MoveType)
+--- Returns whether or not a cell can move inside of this one.
+---@field moveInsideOf fun(into: CellBinding, x: integer, y: integer, dir: integer, side: integer, force: integer, mt: MoveType):boolean
+
 
 ---@return nil
 ---@param config CellConfig
