@@ -549,7 +549,23 @@ function TPC.Math.logn(x, n) return 0 end
 --- Mod-to-mod communication
 TPC.Channel = {}
 
+---@param id string
+---@return nil
+function TPC.Channel.Create(id) return end
 
+---@param id string
+---@return boolean
+function TPC.Channel.Exists(id) return false end
+
+---@param id string
+---@param content string
+---@return nil
+function TPC.Channel.Send(id, content) return end
+
+---@param id string
+---@param callback fun(data: string):nil
+---@return nil
+function TPC.Channel.Listen(id, callback) return end
 
 --- Cell type information
 TPC.Types = {}
