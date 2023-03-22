@@ -34,6 +34,7 @@ class MarkdownManager {
     addFromAssets('Mechanical Cells', 'mechanical_cells.md');
     addFromAssets('Math Cells', 'math_cells.md');
     addFromAssets('Master Cells', 'master_cells.md');
+    addFromAssets('How to make a mod', 'how_to_make_a_mod.md');
   }
 }
 

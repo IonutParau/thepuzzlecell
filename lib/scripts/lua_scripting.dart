@@ -1895,6 +1895,14 @@ class LuaScript {
     final remoteUpdates = info["remoteUpdates"] ?? "auto";
     if (remoteUpdates == "auto") await asyncUpdateRemotes();
 
+    List modules = info["modules"] ?? [];
+
+    for (var module in modules) {
+      if (module is String) {
+        loadModule(module);
+      }
+    }
+
     final status = ls.loadFile(path.joinAll([dir.path, 'main.lua']));
     if (status != LuaThreadStatus.ok) {
       print(
@@ -1903,14 +1911,6 @@ class LuaScript {
       exit(0);
     }
     ls.call(0, 0);
-
-    List modules = info["modules"] ?? [];
-
-    for (var module in modules) {
-      if (module is String) {
-        loadModule(module);
-      }
-    }
 
     return;
   }
