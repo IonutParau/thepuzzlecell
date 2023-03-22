@@ -624,18 +624,41 @@ function TPC.Time.Travel() return end
 ---@field desc string
 --- The category the cell is in. If in multiple categories, you can put a list of them.
 ---@field category string[]|string
---- The texture of the cell (relative to main.lua)
+--- The texture of the cell (relative to main.lua), defaults to default.png
 ---@field texture string
 --- Information about how to update the cell. Nil means the cell should not have a subtick.
 ---@field update UpdateConfig
 --- How much force to add to a push or pull. This can be used to implement weights or mover bias.
 ---@field addedForce fun(cell: CellBinding, dir: integer, side: integer, force: integer, moveType: MoveType): integer
 --- How to handle something going inside of the cell. This can be used to make proper enemies or trashes.
----@field handleInside fun(destroyer: CellBinding, x: integer, y: integer, moving: CellBinding, dir: integer, side: integer, force: integer, mt: MoveType)
+---@field handleInside fun(destroyer: CellBinding, x: integer, y: integer, moving: CellBinding, dir: integer, side: integer, force: integer, mt: MoveType):nil
 --- Returns whether or not a cell can move inside of this one.
 ---@field moveInsideOf fun(into: CellBinding, x: integer, y: integer, dir: integer, side: integer, force: integer, mt: MoveType):boolean
+--- Returns whether the cell should behave like mobile trash. cell is the potentially acidic cell and melting is the cell it will move into.
+---@field acidic fun(cell: CellBinding, dir: integer, side: integer, force: integer, mt: MoveType, melting: CellBinding, mx: integer, my: integer):boolean
+--- Called to properly handle acidic behavior
+---@field handleAcid fun(cell: CellBinding, dir: integer, side: integer, force: integer, mt: MoveType, melting: CellBinding, mx: integer, my: integer):nil
+--- Returns whether the cell should behave like a sticky cell
+---@field isSticky fun(cell: CellBinding, x: integer, y: integer, base: boolean, checkedAsBack: boolean, originX: integer, originY: integer):nil
+--- Returns if it sticks specifically to a cell. sticker is the cell this method is bound to, while to is the cell you're checking if it can stick to.
+---@field sticksTo fun(sticker: CellBinding, to: CellBinding, dir: integer, base: boolean, checkedAsBack: boolean, originX: integer, originY: integer):boolean
+--- Whether the cell is meant to be in References
+---@field isReference boolean
+--- A list of properties for the property editor to allow the modification of.
+---@field properties CellProperty[]
 
+---@class CellProperty
+--- The name of the property
+---@field name string
+--- The key in data that the field is bound to.
+---@field field string
+--- The type of the property so the property editor can properly use it.
+---@field type "number"|"integer"|"text"|"boolean"|"cellID"|"cellRot"|"cell"|"background"
+--- The default value. Please note: There is no validation that the default value matches the type of the property, so be careful.
+---@field default any
 
 ---@return nil
 ---@param config CellConfig
-function TPC.DefineCell(config) return end
+function TPC.DefineCell(config)
+    return
+end
