@@ -474,7 +474,6 @@ function TPC.Queues.runQueue(id) return end
 ---@return nil
 function TPC.Queues.runLimitedQueue(id, limit) return end
 
-
 --- High-level sandboxed filesystem functions
 TPC.FS = {}
 
@@ -650,6 +649,8 @@ function TPC.Time.Travel() return end
 ---@class CellProperty
 --- The name of the property
 ---@field name string
+--- The description of the property
+---@field desc string
 --- The key in data that the field is bound to.
 ---@field field string
 --- The type of the property so the property editor can properly use it.
@@ -660,5 +661,5 @@ function TPC.Time.Travel() return end
 ---@return nil
 ---@param config CellConfig
 function TPC.DefineCell(config)
-    return
+  return
 end
