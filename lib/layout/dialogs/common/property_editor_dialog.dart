@@ -201,9 +201,15 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
+      constraints: BoxConstraints(
+        minWidth: 60.w,
+        maxWidth: 80.w,
+        minHeight: 80.h,
+        maxHeight: 80.h,
+      ),
       title: Text(lang("prop-edit-btn.title", "Property Editor")),
       content: SizedBox(
-        height: 20.h,
+        height: 80.h,
         child: LayoutBuilder(builder: (context, constraints) {
           return ListView(
             children: [
