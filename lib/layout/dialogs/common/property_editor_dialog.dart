@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show VerticalDivider;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
@@ -198,29 +199,234 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
     );
   }
 
+  Widget indexToBody(int i) {
+    final textStyle = TextStyle(fontSize: 5.sp);
+    final property = props[game.currentSelection]![i];
+
+    if (property.type == CellPropertyType.cellID) {
+      final currentID = controllers[i].text;
+      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
+      return DropDownButton(
+        placement: FlyoutPlacementMode.bottomCenter,
+        leading: Image.asset(
+          'assets/images/$tp',
+          fit: BoxFit.fill,
+          colorBlendMode: BlendMode.clear,
+          filterQuality: FilterQuality.none,
+          isAntiAlias: true,
+          width: 3.h,
+          height: 3.h,
+        ),
+        title: Text("Current: " + idToString(currentID), style: textStyle),
+        items: [
+          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
+            MenuFlyoutItem(
+              leading: Image.asset(
+                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
+                fit: BoxFit.fill,
+                colorBlendMode: BlendMode.clear,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: true,
+                width: 3.h,
+                height: 3.h,
+              ),
+              text: Text(idToString(id), style: textStyle),
+              onPressed: () {
+                controllers[i].text = id;
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
+    if (property.type == CellPropertyType.cellRot) {
+      final currentID = controllers[i].text;
+      final rot = int.tryParse(currentID) ?? 0;
+
+      return DropDownButton(
+        placement: FlyoutPlacementMode.bottomCenter,
+        title: Text("Current: " + rotToString(rot)),
+        items: [
+          for (var r = 0; r < 4; r++)
+            MenuFlyoutItem(
+              text: Text(rotToString(rot), style: textStyle),
+              onPressed: () {
+                controllers[i].text = r.toString();
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
+    if (property.type == CellPropertyType.cell) {
+      final current = controllers[i].text;
+
+      return DropDownButton(
+        placement: FlyoutPlacementMode.bottomCenter,
+        leading: Transform.rotate(
+          angle: parseJointCellStr(current)[1] * halfPi,
+          child: Image.asset(
+            idToTexture(parseJointCellStr(current)[0]),
+            fit: BoxFit.fill,
+            colorBlendMode: BlendMode.clear,
+            filterQuality: FilterQuality.none,
+            isAntiAlias: true,
+            width: 3.h,
+            height: 3.h,
+          ),
+        ),
+        title: Text(
+            "Current: " +
+                idToString(parseJointCellStr(current)[0]) +
+                " (" +
+                rotToString(parseJointCellStr(current)[1]) +
+                ")",
+            style: textStyle),
+        items: [
+          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
+            for (var r = 0; r < 4; r++)
+              MenuFlyoutItem(
+                leading: Transform.rotate(
+                  angle: r * halfPi,
+                  child: Image.asset(
+                    idToTexture(id),
+                    fit: BoxFit.fill,
+                    colorBlendMode: BlendMode.clear,
+                    filterQuality: FilterQuality.none,
+                    isAntiAlias: true,
+                    width: 3.h,
+                    height: 3.h,
+                  ),
+                ),
+                text: Text(idToString(id) + " (" + rotToString(r) + ")",
+                    style: textStyle),
+                onPressed: () {
+                  controllers[i].text = "$id!$r";
+                  setState(() {});
+                },
+              ),
+        ],
+      );
+    }
+
+    if (property.type == CellPropertyType.background) {
+      final currentID = controllers[i].text;
+      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
+      return DropDownButton(
+        placement: FlyoutPlacementMode.bottomCenter,
+        leading: Image.asset(
+          'assets/images/$tp',
+          fit: BoxFit.fill,
+          colorBlendMode: BlendMode.clear,
+          filterQuality: FilterQuality.none,
+          isAntiAlias: true,
+          width: 3.h,
+          height: 3.h,
+        ),
+        title: Text("Current: " + idToString(currentID), style: textStyle),
+        items: [
+          for (var id in backgrounds)
+            MenuFlyoutItem(
+              leading: Image.asset(
+                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
+                fit: BoxFit.fill,
+                colorBlendMode: BlendMode.clear,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: true,
+                width: 3.h,
+                height: 3.h,
+              ),
+              text: Text(idToString(id)),
+              onPressed: () {
+                controllers[i].text = id;
+                setState(() {});
+              },
+            ),
+        ],
+      );
+    }
+
+    if (property.type == CellPropertyType.boolean) {
+      return Row(
+        children: [
+          Spacer(),
+          Text("Enabled:", style: textStyle),
+          SizedBox(width: 2.w),
+          Checkbox(
+            checked: controllers[i].text == "true",
+            onChanged: (v) {
+              controllers[i].text = (v == true) ? "true" : "false";
+              setState(() {});
+            },
+          ),
+          Spacer(),
+        ],
+      );
+    }
+
+    return TextBox(controller: controllers[i], style: textStyle);
+  }
+
+  int? currentProperty = null;
+
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
       constraints: BoxConstraints(
         minWidth: 60.w,
         maxWidth: 80.w,
-        minHeight: 80.h,
+        minHeight: 60.h,
         maxHeight: 80.h,
       ),
       title: Text(lang("prop-edit-btn.title", "Property Editor")),
       content: SizedBox(
+        width: 70.w,
         height: 80.h,
         child: LayoutBuilder(builder: (context, constraints) {
-          return ListView(
+          final p = props[game.currentSelection] ?? [];
+          return Row(
             children: [
-              for (var i = 0; i < props[game.currentSelection]!.length; i++)
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
-                  child: SizedBox(
-                    width: constraints.maxWidth * 0.7,
-                    height: 7.h,
-                    child: propToTile(i),
+              Container(
+                width: constraints.maxWidth * 0.3,
+                height: constraints.maxHeight,
+                child: ListView.builder(
+                  itemCount: p.length,
+                  itemBuilder: (ctx, i) {
+                    final prop = p[i];
+
+                    return SizedBox(
+                      width: constraints.maxWidth * 0.23,
+                      child: ListTile(
+                        title: Text(prop.name),
+                        onPressed: () {
+                          currentProperty = i;
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              VerticalDivider(),
+              if (currentProperty != null)
+                SizedBox(
+                  width: constraints.maxWidth * 0.45,
+                  height: constraints.maxHeight,
+                  child: Column(
+                    children: [
+                      Text(
+                        p[currentProperty!].name,
+                        style: TextStyle(fontSize: 9.sp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(2.w),
+                        child: Text(
+                          "Description here",
+                          style: TextStyle(fontSize: 7.sp),
+                        ),
+                      ),
+                      indexToBody(currentProperty!),
+                    ],
                   ),
                 ),
             ],
