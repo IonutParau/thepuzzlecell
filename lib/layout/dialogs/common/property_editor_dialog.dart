@@ -27,16 +27,14 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
     for (var i = 0; i < p.length; i++) {
       final v = game.currentData[p[i].key] ?? p[i].def;
-      controllers
-          .add(TextEditingController(text: v == null ? null : v.toString()));
+      controllers.add(TextEditingController(text: v == null ? null : v.toString()));
     }
   }
 
   Widget propToTile(int i) {
     final property = props[game.currentSelection]![i];
 
-    final displayName = lang(
-        "property.${game.currentSelection}.${property.key}", property.name);
+    final displayName = lang("property.${game.currentSelection}.${property.key}.name", property.name);
 
     final textStyle = TextStyle(fontSize: 5.sp);
 
@@ -112,13 +110,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
             height: 3.h,
           ),
         ),
-        title: Text(
-            "$displayName: " +
-                idToString(parseJointCellStr(current)[0]) +
-                " (" +
-                rotToString(parseJointCellStr(current)[1]) +
-                ")",
-            style: textStyle),
+        title: Text("$displayName: " + idToString(parseJointCellStr(current)[0]) + " (" + rotToString(parseJointCellStr(current)[1]) + ")", style: textStyle),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             for (var r = 0; r < 4; r++)
@@ -135,8 +127,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                     height: 3.h,
                   ),
                 ),
-                text: Text(idToString(id) + " (" + rotToString(r) + ")",
-                    style: textStyle),
+                text: Text(idToString(id) + " (" + rotToString(r) + ")", style: textStyle),
                 onPressed: () {
                   controllers[i].text = "$id!$r";
                   setState(() {});
@@ -209,8 +200,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
             children: [
               for (var i = 0; i < props[game.currentSelection]!.length; i++)
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,
@@ -242,15 +232,12 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
               dynamic value = text;
 
-              if (type == CellPropertyType.integer ||
-                  type == CellPropertyType.cellRot) {
+              if (type == CellPropertyType.integer || type == CellPropertyType.cellRot) {
                 value = int.tryParse(text);
               } else if (type == CellPropertyType.number) {
                 value = double.tryParse(text);
-                if (text == "inf" || text == "infinity")
-                  value = double.infinity;
-                if (text == "-inf" || text == "-infinity")
-                  value = double.negativeInfinity;
+                if (text == "inf" || text == "infinity") value = double.infinity;
+                if (text == "-inf" || text == "-infinity") value = double.negativeInfinity;
                 if (text == "pi") value = pi;
                 if (text == "e") value = e;
                 if (text == "phi") value = (1 + sqrt(5)) / 2;
