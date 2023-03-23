@@ -405,7 +405,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                       Padding(
                         padding: EdgeInsets.all(2.w),
                         child: Text(
-                          "Description here",
+                          p[currentProperty!].description,
                           style: TextStyle(fontSize: 7.sp),
                         ),
                       ),
