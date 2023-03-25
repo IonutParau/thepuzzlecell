@@ -3441,7 +3441,7 @@ Map<String, List<CellProperty>> props = {
   ],
   "electric_generator": [
     CellProperty("Interval", "The interval to generate power at", "interval", CellPropertyType.number, 1),
-    CellProperty("Power", "The amount of power to generate", "power", CellPropertyType.number, 1),
+    CellProperty("Power", "The amount of power to generate", "power_to_give", CellPropertyType.number, 1),
   ],
   "electric_mover": [
     CellProperty(

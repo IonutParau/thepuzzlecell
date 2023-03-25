@@ -233,7 +233,7 @@ void electric() {
   grid.updateCell((cell, x, y) {
     final num interval = (cell.data['interval'] ?? 1);
     if (interval <= 0) return;
-    final power = ((cell.data['power'] ?? 1) as num).toDouble();
+    final power = ((cell.data['power_to_give'] ?? 1) as num).toDouble();
 
     cell.data['t'] ??= 0.0;
     cell.data['t']++;
