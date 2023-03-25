@@ -24,21 +24,17 @@ class ElectricPath {
       // This might look weird, it means "Don't immediately return to the last point"
       if (fullPath.isNotEmpty) if (endDir == (i + 2) % 4) continue;
 
-      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source))
-        continue;
+      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) continue;
 
       // Some cells might block where they can transfer to.
-      if (host != null && electricManager.blockedByHost(host!, x, y, i, source))
-        continue;
+      if (host != null && electricManager.blockedByHost(host!, x, y, i, source)) continue;
 
       final p = copy;
 
       p.fullPath.add(i);
       p.x = frontX(p.x, i);
       p.y = frontY(p.y, i);
-      if (p.host != null &&
-          electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source))
-        continue;
+      if (p.host != null && electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source)) continue;
 
       l.add(p);
       visited.add("${p.x} ${p.y}");
@@ -51,9 +47,7 @@ class ElectricPath {
   int get endDir => fullPath.last;
 
   bool get isOffGrid => !grid.inside(x, y);
-  bool get isDone => visited.contains("$x $y") && grid.inside(x, y)
-      ? electricManager.isInput(grid.at(x, y), x, y, endDir)
-      : false;
+  bool get isDone => visited.contains("$x $y") && grid.inside(x, y) ? electricManager.isInput(grid.at(x, y), x, y, endDir) : false;
 
   Cell? get host => grid.get(x, y);
 
@@ -99,8 +93,7 @@ class ElectricManager {
   }
 
   bool blockedByReceiver(Cell receiver, int x, int y, int dir, Cell source) {
-    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0)
-      return true;
+    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0) return true;
 
     return false;
   }
@@ -238,7 +231,7 @@ void electric() {
     electricManager.spreadPower(cell, x, y);
   }, null, "electric_wire");
   grid.updateCell((cell, x, y) {
-    final interval = ((cell.data['interval'] ?? 1) as num).toInt();
+    final num interval = (cell.data['interval'] ?? 1);
     if (interval <= 0) return;
     final power = ((cell.data['power'] ?? 1) as num).toDouble();
 
