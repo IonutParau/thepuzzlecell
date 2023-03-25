@@ -1107,7 +1107,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   void loadFromText(String str) {
-    genOptimizer.clear();
     QueueManager.empty("cell-updates");
     QueueManager.empty("subticks");
     grid = loadStr(str);
@@ -3954,7 +3953,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void setInitial() {
     if (inMenu) return;
-    genOptimizer.clear();
     QueueManager.empty("cell-updates");
     QueueManager.empty("subticks");
     initial = grid.copy;
@@ -3969,7 +3967,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   void restoreInitial() {
     if (inMenu) return;
-    genOptimizer.clear();
     QueueManager.empty("cell-updates");
     QueueManager.empty("subticks");
     bool differentSize = (grid.width != initial.width || grid.height != initial.height);

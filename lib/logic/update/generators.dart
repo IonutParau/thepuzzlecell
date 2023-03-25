@@ -31,13 +31,14 @@ class GenOptimizer {
     grid.tiles[x][y].opGen(dir);
   }
 
-  void clear() {
-    //hasWorked.clear();
-  }
-
   void remove(int x, int y) {
     if (!grid.inside(x, y)) return;
     grid.tiles[grid.x(x)][grid.y(y)].deopGenAll();
+  }
+
+  void removeDir(int x, int y, int dir) {
+    if (!grid.inside(x, y)) return;
+    grid.tiles[grid.x(x)][grid.y(y)].deopGen(dir);
   }
 }
 
@@ -49,9 +50,8 @@ void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preadde
   dir %= 4;
   gendir %= 4;
 
-  final outputOff = fromDir(dir);
-  var ox = x + outputOff.dx ~/ 1 + offX;
-  var oy = y + outputOff.dy ~/ 1 + offY;
+  var ox = frontX(x, dir) + offX;
+  var oy = frontY(y, dir) + offY;
 
   if (genOptimizer.shouldSkip(ox, oy, dir) && !physical && !ignoreOptimization) {
     genOptimizer.skip(x, y, dir);
@@ -60,18 +60,9 @@ void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preadde
   }
 
   var addedRot = (dir - gendir + preaddedRot) % 4;
-  final genOff = fromDir(gendir + 2);
-  var gx = x + genOff.dx ~/ 1;
-  var gy = y + genOff.dy ~/ 1;
+  var gx = frontX(x, gendir, -1);
+  var gy = frontY(y, gendir, -1);
   if (!grid.inside(gx, gy)) return;
-
-  final gnc = nextCell(gx, gy, (gendir + 2) % 4);
-  if (gnc.broken) return;
-  gx = gnc.x;
-  gy = gnc.y;
-  //gendir = gnc.dir;
-  addedRot -= gnc.addedrot;
-  addedRot %= 4;
 
   final toGenerate = grid.at(gx, gy).copy;
 
@@ -105,6 +96,7 @@ void doGen(int x, int y, int dir, int gendir, [int? offX, int? offY, int preadde
       );
 
   if (push(ox, oy, dir, 1, replaceCell: toGenerate)) {
+    genOptimizer.removeDir(x, y, dir);
   } else {
     genOptimizer.skip(x, y, dir);
     if (physical) {

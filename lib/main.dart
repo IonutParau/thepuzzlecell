@@ -57,6 +57,29 @@ void main() async {
 
   markdownManager.init();
 
+  final stopwatch = Stopwatch()..start();
+  var tc = 0;
+  game = PuzzleGame();
+  final grid = Grid(100, 100);
+  game.initial = grid;
+  grid.set(30, 20, Cell(30, 20, 0)..id = "generator_cw");
+  grid.set(
+      29,
+      20,
+      Cell(29, 20, 2)
+        ..id = "generator_cw"
+        ..rot = 2);
+
+  while (stopwatch.elapsedMilliseconds < 10000) {
+    grid.update();
+    tc++;
+  }
+
+  stopwatch.stop();
+
+  print("Milliseconds per tick: ${stopwatch.elapsedMilliseconds / tc}");
+  print("TPS: ${tc / (stopwatch.elapsedMilliseconds / 1000)}");
+
   runApp(const MyApp());
 }
 
