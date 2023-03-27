@@ -37,6 +37,12 @@ void doFactory(Cell cell, int x, int y) {
     output.rot = rot;
     output.lastvars.lastRot = r;
     output.tags.add("gend ${cell.rot}");
+    final p = props[output.id];
+    if (p != null) {
+      for (var prop in p) {
+        output.data[prop.key] = prop.def;
+      }
+    }
 
     if (shouldHaveGenBias(output.id, toSide(cell.rot, output.rot))) {
       output.updated = true;
