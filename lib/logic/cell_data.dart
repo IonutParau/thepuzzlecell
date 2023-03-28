@@ -3130,7 +3130,7 @@ final cellInfo = <String, CellProfile>{
   ),
   "antigen": CellProfile(
     "Anti-Generator",
-    "If the cell in the front has the same ID and rotation as the one in the front, it is pulled into the anti-generator and deleted from existence.",
+    "If the cell in the front has the same ID and rotation as the one in the back, it is pulled into the anti-generator and deleted from existence.",
   ),
   "electric_generator": CellProfile(
     "Electrical Generator",

@@ -8,6 +8,7 @@ String currentVersion = '2.3.0.1 Configurable QuickFix 1';
 final List<String> changes = [
   "QuickFix: Fixed skin textures being out of date",
   "QuickFix: Deleted Test-Mod",
+  "QuickFix: Fixed a problem with the description of Anti-Generators",
 ];
 
 IconData getTrailing(String change) {
