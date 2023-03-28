@@ -3,35 +3,11 @@ import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 
-String currentVersion = '2.3.0.0 Configurable';
+String currentVersion = '2.3.0.1 Configurable QuickFix 1';
 
 final List<String> changes = [
-  "Reworked all the textures",
-  "Added themes",
-  "Improved multiplayer performance",
-  "Added some settings to limit bandwidth usage",
-  "Added a modding API",
-  "Added Random Filler",
-  "Added Configurable Filler",
-  "Made selection area show size and position",
-  "Made Debug Mode also show cell position",
-  "Moved Zoom In and Zoom Out out of tools",
-  "Added Cell Searching",
-  "Added Sticky Cell (real)",
-  "Added modules",
-  "Added a fancy hover effect for cells",
-  "Added a Copy Old Instance button to transfer over blueprints, texture packs, mods and modules!",
-  "Added Secret Cells (check cell searching)",
-  "Reworked the multiplayer packet format (more robust, but may require more bandwidth)",
-  "Added VX support (VX is a saving format made by ModularCM)",
-  "Added Electric Cells!",
-  "Added Text Cell",
-  "Added Shield",
-  "Added Debt Enemy",
-  "Added Portal C",
-  "Added Custom Weight",
-  "Debt and Mechanically Powered Debt can now be made immovable",
-  "Added Unstable Tunnel",
+  "QuickFix: Fixed skin textures being out of date",
+  "QuickFix: Deleted Test-Mod",
 ];
 
 IconData getTrailing(String change) {
