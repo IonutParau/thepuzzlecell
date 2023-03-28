@@ -3,8 +3,8 @@ description: The Puzzle Cell
 
 publish_to: "none"
 
-version: "2.2.0"
-gameVersion: "2.2.0.1"
+version: "2.3.0"
+gameVersion: "2.3.0.0"
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
