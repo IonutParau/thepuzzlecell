@@ -78,7 +78,7 @@ void biome() {
           if (!cell.data.containsKey(p.key)) {
             cell.data[p.key] = p.def;
           } else {
-            if ((cell.data[p.key]?.runtimeType ?? p.def.runtimeType) != p.def.runtimeType) {
+            if (cell.data[p.key]?.runtimeType != p.def.runtimeType) {
               cell.data[p.key] = p.def;
             }
           }
