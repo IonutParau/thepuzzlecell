@@ -23,7 +23,7 @@ bool shouldHaveGenBias(String id, int side) {
 class GenOptimizer {
   bool shouldSkip(int x, int y, int dir) {
     if (!grid.inside(x, y)) return false;
-    return grid.tiles[x][y].genOp[dir % 4];
+    return grid.tiles[grid.x(x)][grid.y(y)].genOp[dir % 4];
   }
 
   void skip(int x, int y, int dir) {
