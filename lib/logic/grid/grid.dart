@@ -66,6 +66,9 @@ class Grid {
       });
     });
 
+    columns = List.generate(width, (x) => {});
+    rows = List.generate(height, (y) => {});
+
     final cx = ceil(width / chunkSize);
     final cy = ceil(height / chunkSize);
 
@@ -99,12 +102,13 @@ class Grid {
 
   void set(int x, int y, Cell cell) {
     if (cell != get(x, y)) genOptimizer.remove(x, y);
-    if (cell.id != "empty") {
-      cells.add(cell.id);
-    }
+    cells.add(cell.id);
 
     x = this.x(x);
     y = this.y(y);
+
+    columns[x].add(cell.id);
+    rows[y].add(cell.id);
 
     if (backgrounds.contains(cell.id)) {
       setPlace(x, y, cell.id);
@@ -176,6 +180,28 @@ class Grid {
     if (cells.containsAny(enemies)) return true;
     if (cells.containsAny(movables)) return true;
     return false;
+  }
+
+  bool typesContainMovable(Set<String> cells) {
+    if (cells.contains("empty")) return true;
+    for (var passThrough in justMoveInsideOf) {
+      if (cells.contains(passThrough)) return true;
+    }
+    if (cells.containsAny(trashes)) return true;
+    if (cells.containsAny(enemies)) return true;
+    if (cells.containsAny(movables)) return true;
+    return false;
+  }
+
+  late List<Set<String>> columns;
+  late List<Set<String>> rows;
+
+  bool isMovableInDir(int x, int y, int dir) {
+    if (dir % 2 == 0) {
+      return typesContainMovable(rows[this.y(y)]);
+    } else {
+      return typesContainMovable(columns[this.x(x)]);
+    }
   }
 
   bool useExperimentalUpdating = true;
@@ -387,10 +413,10 @@ class Grid {
   Set<String> prepareTick() {
     brokenCells = [];
     final cells = <String>{};
+    columns.forEach((column) => column.clear());
+    rows.forEach((row) => row.clear());
 
     final cellPos = quadChunk.fetch("all");
-
-    if (cellPos.length < width * height) cells.add("empty"); // If we skipped some its guaranteed we have some empties
 
     QuadChunk? nextQC;
     bool buildNextQC = tickCount % 10 == 0;
@@ -398,6 +424,9 @@ class Grid {
     if (buildNextQC) {
       nextQC = QuadChunk(0, 0, width - 1, height - 1);
     }
+
+    final columnCounts = List.filled(width, 0);
+    final rowCounts = List.filled(height, 0);
 
     for (var p in cellPos) {
       var x = p[0];
@@ -410,12 +439,26 @@ class Grid {
       cell.cy = y;
       cell.lifespan++;
       cells.add(cell.id);
+      columns[x].add(cell.id);
+      rows[y].add(cell.id);
+      columnCounts[x]++;
+      rowCounts[y]++;
       if (tiles[x][y].background != "empty") {
         cells.add(tiles[x][y].background);
         nextQC?.insert(x, y, tiles[x][y].background);
       }
       nextQC?.insert(x, y, cell.id);
     }
+
+    if (cellPos.length < width * height) {
+      cells.add("empty");
+      for (var x = 0; x < width; x++) {
+        if (columnCounts[x] < width) columns[x].add("empty");
+      }
+      for (var y = 0; y < height; y++) {
+        if (rowCounts[y] < height) rows[y].add("empty");
+      }
+    } // If we skipped some its guaranteed we have some empties
 
     if (buildNextQC) quadChunk = nextQC!;
 

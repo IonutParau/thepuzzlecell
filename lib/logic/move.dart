@@ -938,6 +938,8 @@ void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx
 bool push(int x, int y, int dir, int force, {MoveType mt = MoveType.push, int depth = 0, Cell? replaceCell, bool shifted = false}) {
   replaceCell ??= Cell(x, y);
   if (!grid.inside(x, y)) return false;
+  if (!grid.movable) return false;
+  if (!grid.isMovableInDir(x, y, dir)) return false;
   if (((dir % 2 == 0) && (depth > grid.width)) || ((dir % 2 == 1) && (depth > grid.height))) {
     return false;
   }
