@@ -9,6 +9,8 @@ final List<String> changes = [
   "QuickFix: Fixed skin textures being out of date",
   "QuickFix: Deleted Test-Mod",
   "QuickFix: Fixed a problem with the description of Anti-Generators",
+  "Made generators faster with an amazing optimization",
+  "QuickFix: Made generators not commit die",
 ];
 
 IconData getTrailing(String change) {
