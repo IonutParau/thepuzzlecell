@@ -4263,7 +4263,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                   if (grid.inside(cx, cy)) {
                     s.add(grid.at(cx, cy).copy);
                     if (!isMultiplayer) grid.set(cx, cy, Cell(cx, cy));
-                    sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 1});
+                    sendToServer('place', {"x": cx, "y": cy, "id": "empty", "rot": 0, "data": {}, "size": 0});
                   }
                 }
               }
@@ -4277,7 +4277,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                     final c = s[i];
                     i++;
                     if (!isMultiplayer) grid.set(cx, cy, c);
-                    sendToServer('place', {"x": cx, "y": cy, "id": c.id, "rot": c.rot, "data": c.data, "size": 1});
+                    sendToServer('place', {"x": cx, "y": cy, "id": c.id, "rot": c.rot, "data": c.data, "size": 0});
                     if (c.invisible) sendToServer('invis', {"x": cx, "y": cy, "v": true});
                   }
                 }

@@ -605,8 +605,8 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
       }
     } else if (destroyer.id == "counter") {
       grid.addBroken(moving, x, y, (destroyer.data['silent'] ?? false) ? "silent" : "normal");
-      var amount = 1;
-      if (moving.id == "counter" || moving.id == "math_number") amount = (moving.data['count'] ?? 0);
+      var amount = 1.0;
+      if (moving.id == "counter" || moving.id == "math_number") amount = (moving.data['count'] ?? 0.0);
       destroyer.data['count'] = (destroyer.data['count'] ?? 0) + amount;
     } else if (destroyer.id == "trash_can") {
       destroyer.data['remaining'] ??= 10;
