@@ -327,6 +327,31 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         ),
                       ),
                     ),
+                    Row(
+                      children: [
+                        Text(
+                          lang('cursor_scroll_scale', 'Cursor Scroll Scale') + ': ',
+                          style: textStyle,
+                        ),
+                        SizedBox(
+                          width: 50.w,
+                          height: 5.h,
+                          child: Slider(
+                            value: storage.getDouble("cursor_scroll_scale")!,
+                            min: 0,
+                            max: 10,
+                            divisions: 100,
+                            onChanged: (v) => storage
+                                .setDouble(
+                                  "cursor_scroll_scale",
+                                  double.parse(v.toStringAsFixed(1)),
+                                )
+                                .then((v) => setState(() {})),
+                            label: 'x${storage.getDouble('cursor_scroll_scale')}',
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 ListView(

@@ -578,7 +578,7 @@ class GridClip {
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
           cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
           if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
-          game.sendToServer('place', {"x": sx, "y": sy, "id": cells[cx][cy].id, "rot": cells[cx][cy].rot, "data": cells[cx][cy].data, "size": 1});
+          game.sendToServer('place', {"x": sx, "y": sy, "id": cells[cx][cy].id, "rot": cells[cx][cy].rot, "data": cells[cx][cy].data, "size": 0});
         }
       }
     }

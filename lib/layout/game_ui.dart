@@ -115,7 +115,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
             onPointerUp: game.onPointerUp,
             onPointerSignal: (PointerSignalEvent event) {
               if (event is PointerScrollEvent) {
-                game.scrollDelta += (event.scrollDelta.dy.abs());
+                game.scrollDelta += (event.scrollDelta.dy.abs()) * storage.getDouble("cursor_scroll_scale")!;
                 final amount = 50;
                 while (game.scrollDelta > amount) {
                   if (keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {

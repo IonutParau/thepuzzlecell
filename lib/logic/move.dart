@@ -168,7 +168,10 @@ final justMoveInsideOf = [
   "portal_c",
 ].toSet().toList();
 
-final movables = <String>[];
+final movables = <String>[
+  "mobile_trash",
+  "mobile_enemy",
+];
 
 final trashes = [
   "trash",

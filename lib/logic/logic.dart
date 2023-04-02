@@ -214,6 +214,10 @@ Future<void> fixStorage() async {
     await storage.setStringList("quickplay_options", []);
   }
 
+  if (storage.getDouble("cursor_scroll_scale") == null) {
+    await storage.setDouble("cursor_scroll_scale", 1);
+  }
+
   await applyTexturePackSettings();
 }
 

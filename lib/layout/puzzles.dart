@@ -4,7 +4,7 @@ var puzzles = <String>[];
 
 int? puzzleIndex;
 
-Future loadAllPuzzles() async {
+Future<void> loadAllPuzzles() async {
   puzzles = (await loadFileData('assets/puzzles.txt')).split('\n');
 }
 

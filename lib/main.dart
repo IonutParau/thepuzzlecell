@@ -18,7 +18,54 @@ late FluentThemeData td;
 
 final deflate = ZLibCodec();
 
-void main() async {
+Future<void> benchmarkSelf() async {
+  storage = await SharedPreferences.getInstance();
+  game = PuzzleGame();
+  grid = Grid(100, 100);
+  grid.set(30, 20, Cell(30, 20)..id = "generator_cw");
+  grid.set(
+      29,
+      20,
+      Cell(29, 20)
+        ..id = "generator_cw"
+        ..rot = 2);
+  game.initial = grid;
+  print("Starting 20s benchmark...");
+  final stopwatch = Stopwatch()..start();
+  var slowest = 0.0;
+  var fastest = double.infinity;
+  while (stopwatch.elapsedMilliseconds < 20000) {
+    var time = stopwatch.elapsedMilliseconds;
+    grid.update();
+    var elapsed = (stopwatch.elapsedMilliseconds - time) / 1000;
+
+    if (elapsed > slowest) slowest = elapsed;
+    if (elapsed < fastest) fastest = elapsed;
+  }
+  stopwatch.stop();
+
+  print("Ticks Executed: ${grid.tickCount}");
+  print("Average Tick Execution: ${(stopwatch.elapsedMilliseconds / grid.tickCount) / 1000}s");
+  print("Slowest Tick Execution: ${slowest}s");
+  print("Fastest Tick Execution: ${fastest}s");
+  print("Average Ticks Per Second: ${grid.tickCount / (stopwatch.elapsedMilliseconds / 1000)}");
+  print("Slowest Ticks Per Second: ${1 / slowest}");
+  print("Fastest Ticks Per Second: ${1 / fastest}");
+}
+
+void main(List<String> args) async {
+  if (args.isNotEmpty) {
+    if (args[0] == "bench") {
+      await benchmarkSelf();
+      return;
+    }
+  }
+
+  if (bool.fromEnvironment("bench")) {
+    await benchmarkSelf();
+    return;
+  }
+
   //await Flame.device.setLandscape();
 
   WidgetsFlutterBinding.ensureInitialized();
