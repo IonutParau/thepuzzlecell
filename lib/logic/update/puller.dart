@@ -14,16 +14,6 @@ void pullers() {
     grid.updateCell(
       (cell, x, y) {
         if (cell.rot != rot) return;
-        if (pull(x, y, rot, 0)) {
-          grid.at(x, y).updated = true;
-        }
-      },
-      rot,
-      "collector",
-    );
-    grid.updateCell(
-      (cell, x, y) {
-        if (cell.rot != rot) return;
         pull(x, y, rot, 0);
       },
       rot,
