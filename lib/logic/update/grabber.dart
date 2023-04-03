@@ -9,13 +9,6 @@ void grabbers() {
       rot,
       "grabber",
     );
-    grid.updateCell(
-      (cell, x, y) {
-        doThief(x, y, cell.rot);
-      },
-      rot,
-      "thief",
-    );
   }
 }
 
@@ -26,12 +19,20 @@ void doThief(int x, int y, int dir) {
         frontX(x, dir) + frontX(0, (dir + 3) % 4),
         frontY(y, dir) + frontY(0, (dir + 3) % 4),
       )?.updated = true;
+      safeAt(
+        frontX(x, dir) + frontX(0, (dir + 3) % 4),
+        frontY(y, dir) + frontY(0, (dir + 3) % 4),
+      )?.tags.add('stopped');
     }
     if (grabSide(x, y, dir + 1, dir)) {
       safeAt(
         frontX(x, dir) + frontX(0, (dir + 1) % 4),
         frontY(y, dir) + frontY(0, (dir + 1) % 4),
       )?.updated = true;
+      safeAt(
+        frontX(x, dir) + frontX(0, (dir + 1) % 4),
+        frontY(y, dir) + frontY(0, (dir + 1) % 4),
+      )?.tags.add('stopped');
     }
   }
 }
@@ -48,16 +49,13 @@ bool doGrabber(int x, int y, int dir) {
 bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
   final odir = (dir + 2) % 4;
 
-  if (cell.id == "mech_grabber" && (cell.rot == odir || cell.rot == dir))
-    return MechanicalManager.on(cell, true);
+  if (cell.id == "mech_grabber" && (cell.rot == odir || cell.rot == dir)) return MechanicalManager.on(cell, true);
 
   if (modded.contains(cell.id)) {
     return scriptingManager.hasGrabberBias(cell, x, y, dir, mdir);
   }
 
-  return ["grabber", "axis", "bringer", "lofter", "conveyor"]
-          .contains(cell.id) &&
-      (cell.rot == odir || cell.rot == dir);
+  return ["grabber", "axis", "bringer", "lofter", "conveyor", "thief"].contains(cell.id) && (cell.rot == odir || cell.rot == dir);
 }
 
 bool grabSide(int x, int y, int mdir, int dir) {
@@ -73,8 +71,7 @@ bool grabSide(int x, int y, int mdir, int dir) {
         if (moveInsideOf(grid.at(x, y), x, y, dir, 1, MoveType.grab)) {
           break;
         } else {
-          if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir))
-            grid.at(x, y).updated = true;
+          if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir)) grid.at(x, y).updated = true;
           if (!canMove(x, y, dir, 1, MoveType.grab)) break;
           final fx = frontX(x, dir);
           final fy = frontY(y, dir);
