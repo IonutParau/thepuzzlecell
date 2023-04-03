@@ -12,6 +12,8 @@ final List<String> changes = [
   "Made generators faster with an amazing optimization",
   "QuickFix: Made generators not commit die",
   "QuickFix: Made multiplaer pasting not broken",
+  "QuickFix: Changed order of subticks so Releaser can work better",
+  "QuickFix: Fixed VX implementation being horribly bugged",
 ];
 
 IconData getTrailing(String change) {

@@ -1711,7 +1711,7 @@ class VX {
     final rot = decodeRot(layer[0].toString(), layer[1]);
     final Map<String, dynamic> rawdata = layer[2] is Map ? layer[2] : {};
 
-    c.invisible = rawdata['@invis'] ?? true;
+    c.invisible = rawdata['@invis'] ?? false;
     c.lifespan = (rawdata['@life'] as num?)?.toInt() ?? 0;
     rawdata.remove('@invis');
     rawdata.remove('@life');
@@ -1745,7 +1745,7 @@ class VX {
 
   static String encodeID(String id) {
     if (stdIDs.containsKey(id) && stdIDs[id] != id) {
-      return '@id';
+      return '@$id';
     }
 
     return inverseIds[id] ?? id;
@@ -1856,6 +1856,7 @@ class VX {
 
             g.set(x, y, cells[0]);
             g.setPlace(x, y, cells[1].id);
+            i++;
           }
         }
       }
