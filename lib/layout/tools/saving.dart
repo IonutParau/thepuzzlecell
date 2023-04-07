@@ -1728,7 +1728,7 @@ class VX {
     final id = encodeID(cell.id);
     return [
       id,
-      decodeRot(id, cell.rot),
+      encodeRot(id, cell.rot),
       {
         ...cell.data,
         if (cell.invisible) '@invis': true,
@@ -1752,11 +1752,11 @@ class VX {
   }
 
   static int decodeRot(String id, num rot) {
-    return ((rot - (stdExtraRot[id] ?? rot)) % 4).toInt();
+    return ((rot - (stdExtraRot[id] ?? 0)) % 4).toInt();
   }
 
   static int encodeRot(String id, int rot) {
-    return (rot + (stdExtraRot[id] ?? rot)) % 4;
+    return (rot + (stdExtraRot[id] ?? 0)) % 4;
   }
 
   static String encodeGrid(Grid grid, {String title = "", String desc = ""}) {
