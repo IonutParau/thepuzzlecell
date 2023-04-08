@@ -41,6 +41,6 @@ A list of modules to be loaded before the mod loads. Modules are global, shared 
 
 # What functions are available?
 
-There is `tpc_api_docs.lua`, which is meant to bring IDE support to TPC. It defines a list of functions you can use, so your IDE knows which functions exist, and their types.
+There is [tpc_api_docs.lua](https://github.com/IonutParau/thepuzzlecell/blob/main/extra/tpc_api_docs.lua), which is meant to bring IDE support to TPC. It defines a list of functions you can use, so your IDE knows which functions exist, and their types.
 
 The most important function to know about is `TPC.DefineCell`, which actually defines a cell based off a specified config.
