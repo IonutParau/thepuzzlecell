@@ -6,6 +6,8 @@ class StabletonData {
   int unitConstant;
   bool stationary;
   bool clonable;
+  List<String> decaysInto;
+  bool recursiveDecayTest;
 
   StabletonData({
     required this.unitConstant,
@@ -13,6 +15,8 @@ class StabletonData {
     required this.offsets,
     required this.stationary,
     required this.clonable,
+    required this.decaysInto,
+    required this.recursiveDecayTest,
   });
 }
 
@@ -29,6 +33,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: true,
     clonable: true,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
   "stable_b": StabletonData(
     unitConstant: -1,
@@ -41,6 +47,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: true,
     clonable: true,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
   "stable_i": StabletonData(
     unitConstant: 1,
@@ -57,6 +65,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: true,
     clonable: false,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
   "stable_j": StabletonData(
     unitConstant: -1,
@@ -73,6 +83,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: true,
     clonable: false,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
   "stable_k": StabletonData(
     unitConstant: 2,
@@ -85,6 +97,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: false,
     clonable: false,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
   "stable_n": StabletonData(
     unitConstant: -5,
@@ -97,6 +111,8 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: false,
     clonable: false,
+    decaysInto: [],
+    recursiveDecayTest: false,
   ),
 };
 
@@ -183,53 +199,80 @@ int calculateStability(int x, int y, List<int> layerConstants, int? ix, int? iy)
   return stability;
 }
 
+class StabletonMove {
+  String newID;
+  int newX;
+  int newY;
+  int score;
+
+  StabletonMove(this.newID, this.newX, this.newY, this.score);
+}
+
+List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonData data, bool checkDecay, int current, bool isDecay) {
+  var bestMoves = <StabletonMove>[];
+  var bestScore = data.stationary ? current : (1 << 63);
+
+  if (isDecay) {
+    final inactiveScore = calculateStability(x, y, data.layerConstants, null, null);
+    bestMoves.add(StabletonMove(id, x, y, inactiveScore));
+    bestScore = inactiveScore;
+  }
+
+  if (checkDecay) {
+    var bestDecayMoves = data.decaysInto.map((did) => calculateMostStableMoves(id, x, y, stabletonData[did]!, data.recursiveDecayTest, current, true)).toList();
+    bestDecayMoves.removeWhere((moves) => moves.isEmpty);
+
+    for (var bestDecay in bestDecayMoves) {
+      if (bestDecay.first.score > bestScore) {
+        bestScore = bestDecay.first.score;
+        bestMoves = [StabletonMove(id, x, y, bestScore)];
+      }
+    }
+  }
+
+  for (var off in data.offsets) {
+    final cx = x + off[0];
+    final cy = y + off[1];
+
+    if (!grid.inside(cx, cy)) continue;
+    if (grid.at(cx, cy).id != "empty") continue;
+    final score = calculateStability(cx, cy, data.layerConstants, x, y);
+
+    if (score > bestScore) {
+      bestMoves = [StabletonMove(id, cx, cy, score)];
+      bestScore = score;
+    } else if (score == bestScore) {
+      bestMoves.add(StabletonMove(id, cx, cy, score));
+    }
+  }
+
+  return bestMoves;
+}
+
 void stabletons() {
   for (var stableton in stabletonOrder) {
     grid.updateCell((cell, x, y) {
       final data = stabletonData[stableton]!;
       final current = calculateStability(x, y, data.layerConstants, null, null);
 
-      var bests = [
-        [x, y]
-      ];
-      var bestScore = data.stationary ? current : (1 << 63);
-      var hasMoved = false;
+      final bestMoves = calculateMostStableMoves(cell.id, x, y, data, true, current, false);
 
-      for (var off in data.offsets) {
-        final cx = x + off[0];
-        final cy = y + off[1];
-
-        if (!grid.inside(cx, cy)) continue;
-        if (grid.at(cx, cy).id != "empty") continue;
-
-        final score = calculateStability(cx, cy, data.layerConstants, x, y);
-
-        if (score > bestScore) {
-          bestScore = score;
-          bests = [
-            [cx, cy]
-          ];
-          hasMoved = true;
-        } else if (score == bestScore) {
-          bests.add([cx, cy]);
-          hasMoved = true;
-        }
-      }
-
-      if (!data.clonable && bests.length > 1 && data.stationary) {
+      if (!data.clonable && bestMoves.length > 1 && data.stationary) {
         return; // If there is a tie in the stableton possible moves, do nothing.
       }
 
-      if (hasMoved) {
-        for (var best in bests) {
-          final cx = best[0];
-          final cy = best[1];
-          if (grid.at(cx, cy).id != "empty") continue;
+      if (bestMoves.isNotEmpty) {
+        for (var best in bestMoves) {
+          final cid = best.newID;
+          final cx = best.newX;
+          final cy = best.newY;
 
-          grid.set(cx, cy, cell.copy);
+          final c = cell.copy;
+          c.id = cid;
+          grid.set(cx, cy, c);
           if (!data.clonable) break;
         }
-        grid.set(x, y, Cell(x, y));
+        if (grid.at(x, y) == cell) grid.set(x, y, Cell(x, y));
       }
     }, null, stableton);
   }
