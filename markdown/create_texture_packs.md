@@ -34,7 +34,7 @@ You click "Open", and it'll open the texture pack's folder.
 
 You click "Package", and it'll create a ZIP archive and ask where you'd like to save it. Then, simply upload that ZIP!
 
-## Techincal stuff
+## Technical stuff
 
 ### How are texture packs sorted in-game?
 
