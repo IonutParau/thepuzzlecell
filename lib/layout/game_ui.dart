@@ -1301,7 +1301,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             cell.rot = rot;
             cell.data = data;
             cell.invisible = false;
-            cell.tags = {};
+            cell.tags.clear();
             cell.lifespan = 0;
             g.set(wcx, wcy, cell);
           }

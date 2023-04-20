@@ -15,7 +15,7 @@ Cell cellFromData(Map<String, dynamic> data, int x, int y) {
     ..rot = data['rot']!
     ..lastvars.lastRot = data['rot']!
     ..data = data
-    ..tags = (data['tags'] as String).split(' ').toSet();
+    ..tags = HashSet.from((data['tags'] as String).split(' ').toSet());
 }
 
 Map<String, dynamic> copyData(Map<String, dynamic> data) {

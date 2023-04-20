@@ -1166,7 +1166,7 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
           final c = Cell(cx.toInt(), cy.toInt(), rot)
             ..id = id
             ..rot = rot
-            ..tags = {"mutatedWhileMoved"};
+            ..tags.add("mutatedWhileMoved");
 
           grid.set(cx.toInt(), cy.toInt(), c);
         }

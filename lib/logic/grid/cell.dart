@@ -118,7 +118,7 @@ class Cell extends Equatable {
   LastVars lastvars;
   bool updated = false;
   Map<String, dynamic> data = {};
-  Set<String> tags = {};
+  HashSet<String> tags = HashSet.from({});
   int lifespan = 0;
   bool invisible = false;
   int? cx;

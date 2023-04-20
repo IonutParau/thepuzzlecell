@@ -98,7 +98,7 @@ part 'update/stableton.dart';
 part 'update/releasers.dart';
 
 extension SetX on Set<String> {
-  bool containsAny(List<String> strings) {
+  bool containsAny(Iterable<String> strings) {
     for (var s in this) {
       if (strings.contains(s)) {
         return true;

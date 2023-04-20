@@ -785,7 +785,7 @@ class P3Cell {
     c.rot = rot;
     c.id = id;
     c.data = data;
-    c.tags = tags;
+    c.tags = HashSet.from(tags);
     c.lifespan = lifespan;
 
     grid.set(x, y, c);
@@ -918,7 +918,7 @@ class P4 {
     c.lastvars.lastRot = m['rot'].toInt();
     c.rot = m['rot'].toInt();
     c.data = m['data'];
-    c.tags = {};
+    c.tags.clear();
     m['tags'].forEach((v) => c.tags.add(v.toString()));
     c.id = m['id'];
     c.lifespan = m['lifespan'].toInt();
@@ -1155,7 +1155,7 @@ class P5 {
     c.lastvars.lastRot = (m['rot'] ?? 0).toInt();
     c.rot = (m['rot'] ?? 0).toInt();
     c.data = m['data'] ?? {};
-    c.tags = {};
+    c.tags.clear();
     (m['tags'] ?? []).forEach((v) => c.tags.add(v.toString()));
     c.id = m['id'] ?? "empty";
     c.lifespan = (m['lifespan'] ?? 0).toInt();

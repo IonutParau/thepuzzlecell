@@ -186,7 +186,7 @@ void loadTexturePacks() {
 
 void applyTexturePacks() {
   final e = enabledTexturePacks;
-  textureMap = {...textureMapBackup};
+  textureMap = HashMap.from(textureMapBackup);
   for (var i = 0; i < e.length; i++) {
     e[i].load();
   }

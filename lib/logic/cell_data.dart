@@ -391,9 +391,9 @@ final modded = <String>[];
 
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
-final textureMapBackup = Map.from(textureMap);
+final textureMapBackup = HashMap.from(textureMap);
 
-Map<String, String> textureMap = {
+HashMap<String, String> textureMap = HashMap.from({
   "electric_puller.png": "electrical/electric_puller.png",
   "stable_a.png": "stableton/stable_a.png",
   "stable_b.png": "stableton/stable_b.png",
@@ -790,7 +790,7 @@ Map<String, String> textureMap = {
   'mech_toggle.png': 'mechanical/mech_toggle.png',
   "invis_tool.png": "interface/tools/invis_tool.png",
   "trick_tool.png": "interface/tools/trick_tool.png",
-};
+});
 
 class CellProfile {
   String title;
