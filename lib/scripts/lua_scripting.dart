@@ -574,7 +574,7 @@ class LuaScript {
             ls.pop();
           }
 
-          int i = subticks.length;
+          int i = subticks.length - 1;
 
           if (index >= 0) {
             i = index.toInt();

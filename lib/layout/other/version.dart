@@ -14,6 +14,7 @@ final List<String> changes = [
   "QuickFix: Made multiplayer pasting not broken",
   "QuickFix: Changed order of subticks so Releaser can work better",
   "QuickFix: Fixed VX implementation being horribly bugged",
+  "QuickFix: Made the modding API not add subticks AFTER time reset",
 ];
 
 IconData getTrailing(String change) {
