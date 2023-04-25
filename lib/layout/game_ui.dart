@@ -2442,6 +2442,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   Sprite? emptyImage;
 
+  List<Sprite> empties = [];
+
   Future buildEmpty() async {
     final e = Flame.images.fromCache('empty.png');
     final rowCompose = ImageComposition();
@@ -2460,6 +2462,19 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
     final composed = await emptyCompose.compose();
     emptyImage = Sprite(composed);
+    empties.clear();
+    empties.add(emptyImage!);
+    for (var i = 0; i < 2; i++) {
+      final scale = (i + 1) * 2;
+      emptyCompose.clear();
+      final jpeg = emptyImage!.image;
+      final w = jpeg.width ~/ scale;
+      final h = jpeg.height ~/ scale;
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+      emptyImage?.render(canvas, size: Vector2(w.toDouble(), h.toDouble()));
+      empties.add(Sprite(await recorder.endRecording().toImageSafe(w, h)));
+    }
     return emptyImage;
   }
 
@@ -2667,7 +2682,20 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         if (replaceBgWithRect) {
           canvas.drawRect(Offset.zero & Size(grid.width / 1, grid.height / 1) * cellSize, Paint()..color = Color.fromARGB((opacity * 255).toInt(), 49, 47, 47));
         } else {
-          emptyImage?.render(
+          var downscaleTarget = defaultCellSize / cellSize;
+          var i = 0;
+
+          while (downscaleTarget > 2) {
+            downscaleTarget /= 2;
+            i++;
+          }
+
+          if (empties.isNotEmpty && i >= empties.length) {
+            i = empties.length - 1;
+          }
+
+          var jpeg = i < empties.length ? empties[i] : null;
+          jpeg?.render(
             canvas,
             position: Vector2.zero(),
             size: Vector2(

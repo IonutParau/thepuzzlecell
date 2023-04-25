@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flame/components.dart';
@@ -29,6 +30,8 @@ import 'package:window_manager/window_manager.dart';
 import 'tools/tools.dart';
 export 'other/other.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'package:image/image.dart' as png;
 
 part 'game_ui.dart';
 part 'game_audio.dart';
