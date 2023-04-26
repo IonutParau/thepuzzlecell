@@ -7,7 +7,7 @@ class StabletonData {
   bool stationary;
   bool clonable;
   List<String> decaysInto;
-  bool recursiveDecayTest;
+  int decayRecursion;
 
   StabletonData({
     required this.unitConstant,
@@ -16,7 +16,7 @@ class StabletonData {
     required this.stationary,
     required this.clonable,
     required this.decaysInto,
-    required this.recursiveDecayTest,
+    required this.decayRecursion,
   });
 }
 
@@ -34,7 +34,7 @@ final stabletonData = <String, StabletonData>{
     stationary: true,
     clonable: true,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
   "stable_b": StabletonData(
     unitConstant: -1,
@@ -48,7 +48,7 @@ final stabletonData = <String, StabletonData>{
     stationary: true,
     clonable: true,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
   "stable_i": StabletonData(
     unitConstant: 1,
@@ -66,7 +66,7 @@ final stabletonData = <String, StabletonData>{
     stationary: true,
     clonable: false,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
   "stable_j": StabletonData(
     unitConstant: -1,
@@ -84,7 +84,7 @@ final stabletonData = <String, StabletonData>{
     stationary: true,
     clonable: false,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
   "stable_k": StabletonData(
     unitConstant: 2,
@@ -98,7 +98,7 @@ final stabletonData = <String, StabletonData>{
     stationary: false,
     clonable: false,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
   "stable_n": StabletonData(
     unitConstant: -5,
@@ -112,7 +112,7 @@ final stabletonData = <String, StabletonData>{
     stationary: false,
     clonable: false,
     decaysInto: [],
-    recursiveDecayTest: false,
+    decayRecursion: 0,
   ),
 };
 
@@ -208,7 +208,7 @@ class StabletonMove {
   StabletonMove(this.newID, this.newX, this.newY, this.score);
 }
 
-List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonData data, bool checkDecay, int current, bool isDecay) {
+List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonData data, bool isDecay, int current, int depth, int maxDepth) {
   var bestMoves = <StabletonMove>[];
   var bestScore = data.stationary ? current : (1 << 63);
 
@@ -218,8 +218,8 @@ List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonD
     bestScore = inactiveScore;
   }
 
-  if (checkDecay) {
-    var bestDecayMoves = data.decaysInto.map((did) => calculateMostStableMoves(id, x, y, stabletonData[did]!, data.recursiveDecayTest, current, true)).toList();
+  if (depth < maxDepth) {
+    var bestDecayMoves = data.decaysInto.map((did) => calculateMostStableMoves(id, x, y, stabletonData[did]!, true, current, depth + 1, maxDepth)).toList();
     bestDecayMoves.removeWhere((moves) => moves.isEmpty);
 
     for (var bestDecay in bestDecayMoves) {
@@ -255,7 +255,7 @@ void stabletons() {
       final data = stabletonData[stableton]!;
       final current = calculateStability(x, y, data.layerConstants, null, null);
 
-      final bestMoves = calculateMostStableMoves(cell.id, x, y, data, true, current, false);
+      final bestMoves = calculateMostStableMoves(cell.id, x, y, data, false, current, 0, data.decayRecursion);
 
       if (!data.clonable && bestMoves.length > 1 && data.stationary) {
         return; // If there is a tie in the stableton possible moves, do nothing.
