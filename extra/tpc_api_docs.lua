@@ -641,6 +641,8 @@ function TPC.Time.Travel() return end
 ---@field isSticky fun(cell: CellBinding, x: integer, y: integer, base: boolean, checkedAsBack: boolean, originX: integer, originY: integer):nil
 --- Returns if it sticks specifically to a cell. sticker is the cell this method is bound to, while to is the cell you're checking if it can stick to.
 ---@field sticksTo fun(sticker: CellBinding, to: CellBinding, dir: integer, base: boolean, checkedAsBack: boolean, originX: integer, originY: integer):boolean
+---
+---@field movable fun(cell: CellBinding, x: integer, y: integer, dir: integer, side: integer, force: integer, mt: MoveType):boolean
 --- Whether the cell is meant to be in References
 ---@field isReference boolean
 --- A list of properties for the property editor to allow the modification of.
