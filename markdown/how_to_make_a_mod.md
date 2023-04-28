@@ -1,6 +1,6 @@
 # How to make a mod
 
-Step one is to Open the mods folder. This can be done directly from the Mods page.
+Step one is to Open the mods folder. You can open the modules folder from the Mods menu, Right next is the mods folder.
 After that, create a new folder, which is going to contain the files of your mod.
 There are a few files your mod will need.
 The mod uses the Lua programming language, so you should also have a decent understanding in that.
@@ -38,6 +38,18 @@ Defaults to auto, specifies if the game should always perform remoteUpdates or i
 ## modules
 
 A list of modules to be loaded before the mod loads. Modules are global, shared files meant to contain libraries or compatibility layers.
+
+## name
+
+The name of your mod.
+
+## desc
+
+The description of your mod.
+
+## author
+
+Who you claim to have created this mod.
 
 # What functions are available?
 

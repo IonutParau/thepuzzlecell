@@ -16,6 +16,7 @@ final List<String> changes = [
   "QuickFix: Fixed VX implementation being horribly bugged",
   "QuickFix: Made the modding API not add subticks AFTER time reset",
   "Reworked rendering and the background image to make it extremely much faster",
+  "QuickFix: Fixed several modding API problems",
 ];
 
 IconData getTrailing(String change) {

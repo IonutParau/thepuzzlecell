@@ -85,7 +85,7 @@ function CellBinding.cy() return 0 end
 
 --- If not given any parameters, it will return the JSON encoded version of the data.
 --- If a parameter is given, it will set the data to the JSON decoded version of that jsonData.
----@param jsonData string
+---@param jsonData string|nil
 ---@return string
 function CellBinding.data(jsonData) return "" end
 
@@ -294,7 +294,7 @@ function TPC.Move.moveInsideOf(cell, x, y, dir, force, moveType) return false en
 ---@param moveType MoveType
 function TPC.Move.handleInside(x, y, dir, force, moving, moveType) return end
 
---- Swaps 2 cells
+--- Swaps 2 cells. Does not actually check if it CAN swap the 2 cells. You need to do that.
 ---@param x1 integer
 ---@param y1 integer
 ---@param x2 integer
