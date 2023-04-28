@@ -51,6 +51,16 @@ The description of your mod.
 
 Who you claim to have created this mod.
 
+## remoteFiles
+
+This should be an object who's keys are paths relative to the `main.lua` file, and the values are the URLs to download the files from.
+TPC will use GET requests to grab the content and replace the files with newer versions if needed.
+
+## remoteUpdates
+
+Either `"auto"` or something else.
+If it is `"auto"`, the game will do it every time the mod loads.
+
 # What functions are available?
 
 There is [tpc_api_docs.lua](https://github.com/IonutParau/thepuzzlecell/blob/main/extra/tpc_api_docs.lua), which is meant to bring IDE support to TPC. It defines a list of functions you can use, so your IDE knows which functions exist, and their types.
