@@ -126,6 +126,10 @@ enum BreakType {
 }
 
 bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
+  if (modded.contains(c.id)) {
+    return scriptingManager.moddedBreakable(c, x, y, dir, bt);
+  }
+
   if (bt == BreakType.burn && grid.placeable(x, y) == "no_burn_biome") {
     return false;
   }

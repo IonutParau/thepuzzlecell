@@ -1995,7 +1995,7 @@ class LuaScript {
     });
   }
 
-  bool breakable(Cell cell, int x, int y, int dir, BreakType bt) {
+  bool moddedBreakable(Cell cell, int x, int y, int dir, BreakType bt) {
     return withDefinedCellProperty<bool>(cell.id, "breakable", () {
       if (ls.isFunction(-1)) {
         pushCell(cell, ls);
