@@ -277,7 +277,7 @@ class LuaScript {
       ls.pop(1);
     }
 
-    // Get Invsibile
+    // Get invisible
     {
       ls.pushString("invisible");
       ls.getTable(-2);
