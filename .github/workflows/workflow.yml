@@ -18,6 +18,14 @@ jobs:
         with:
           name: thepuzzlecell-windows
           path: build/windows/runner/Release
+      - run: flutter build windows --debug
+      - run: xcopy ".\external_dependencies\windows" ".\build\windows\runner\Debug\" /y /s
+      - run: mkdir ".\build\windows\runner\Debug\dlls"
+      - run: xcopy ".\dlls" ".\build\windows\runner\Debug\dlls" /y /s
+      - uses: actions/upload-artifact@v3
+        with:
+          name: thepuzzlecell-windows-debug
+          path: build/windows/runner/Debug
   build_linux:
     runs-on: ubuntu-22.04
     steps:
@@ -30,20 +38,19 @@ jobs:
       - run: sudo apt-get install libgstreamer1.0-dev
       - run: sudo apt-get install libgstreamer-plugins-base1.0-dev
       - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
+      - run: copy dlls/* build/linux/x64/release/bundle/*
+      - run: copy dlls/* build/linux/x64/debug/bundle/*
       - run: flutter config --enable-linux-desktop
       - run: flutter build linux
+      - run: flutter build linux --debug
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-linux
           path: build/linux/x64/release/bundle
-      # - run: chmod +x ./build_appimage.sh
-      # - run: chmod a+x ./appimage_builder.AppImage
-      # - run: ./build_appimage.sh
-      # - run: mv ./build/The\ Puzzle\ Cell.AppImage ./build/appimage/TPC.AppImage
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: thepuzzlecell-appimage
-      #     path: build/appimage
+      - uses: actions/upload-artifact@v3
+        with:
+          name: thepuzzlecell-linux-debug
+          path: build/linux/x64/release/debug
   build_macos:
     runs-on: macOS-latest
     steps:
