@@ -39,8 +39,8 @@ jobs:
       - run: sudo apt-get install libgstreamer1.0-dev
       - run: sudo apt-get install libgstreamer-plugins-base1.0-dev
       - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
-      - run: cp dlls/* build/linux/x64/release/bundle/*
-      - run: cp dlls/* build/linux/x64/debug/bundle/*
+      - run: cp dlls build/linux/x64/release/bundle/dlls
+      - run: cp dlls build/linux/x64/debug/bundle/dlls
       - run: flutter config --enable-linux-desktop
       - run: flutter build linux
       - run: flutter build linux --debug
