@@ -22,6 +22,7 @@ jobs:
       - run: xcopy ".\external_dependencies\windows" ".\build\windows\runner\Debug\" /y /s
       - run: mkdir ".\build\windows\runner\Debug\dlls"
       - run: xcopy ".\dlls" ".\build\windows\runner\Debug\dlls" /y /s
+      - run: xcopy ".\external_dependencies\windows" ".\build\windows\runner\Debug\" /y /s
       - uses: actions/upload-artifact@v3
         with:
           name: thepuzzlecell-windows-debug
