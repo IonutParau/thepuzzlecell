@@ -1812,9 +1812,13 @@ class LuaScript {
 
   int importOther(LuaState ls) {
     final str = ls.toStr(-1) ?? "";
-    ls.loadFile(path.joinAll([dir.path, ...str.split('/')]));
-    ls.call(0, 0);
-    return 0;
+    final status = ls.loadFile(path.joinAll([dir.path, ...str.split('/')]));
+    if (status != LuaThreadStatus.ok) {
+      print("[ Mod Import Failed ]\nMod: $id\nError Type: ${status.name}\nError Message: ${ls.toStr(-1)}");
+      return 1;
+    }
+    ls.call(0, 1);
+    return 1;
   }
 
   Future<void> asyncUpdateRemotes() async {

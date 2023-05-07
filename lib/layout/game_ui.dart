@@ -1116,6 +1116,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     buttonManager.buttons['play-btn']?.texture = 'mover.png';
     buttonManager.buttons['play-btn']?.rotation = 0;
     buttonManager.buttons['wrap-btn']?.title = grid.wrap ? lang('wrapModeOn', "Wrap Mode (ON)") : lang("wrapModeOff", "Wrap Mode (OFF)");
+    buildEmpty();
   }
 
   void exit() {
