@@ -190,7 +190,7 @@ class Cell extends Equatable {
 String countToString(num? count) {
   if (count == double.infinity) return "inf";
   if (count == double.negativeInfinity) return "-inf";
-  if (count == double.nan) return "nan";
+  if (count is double && count.isNaN) return "nan";
 
   return count.toString();
 }

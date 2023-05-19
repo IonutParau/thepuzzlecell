@@ -2445,6 +2445,12 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
   List<Sprite> empties = [];
 
+  // By how much the resolution decreases
+  static const emptyLinearScale = 2;
+
+  // When to change it
+  static const emptyLinearEffect = 3;
+
   Future buildEmpty() async {
     final e = Flame.images.fromCache('empty.png');
     final rowCompose = ImageComposition();
@@ -2466,7 +2472,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     empties.clear();
     empties.add(emptyImage!);
     for (var i = 0; i < 2; i++) {
-      final scale = (i + 1) * 2;
+      final scale = (i + 1) * emptyLinearScale;
       emptyCompose.clear();
       final jpeg = emptyImage!.image;
       final w = jpeg.width ~/ scale;
@@ -2506,6 +2512,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await loadAllButtonTextures();
 
     await Flame.images.load('base.png');
+    await Flame.images.load(textureMap['missing.png'] ?? 'missing.png');
     await Flame.images.load('empty.png');
 
     // Load effects
@@ -2686,8 +2693,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
           var downscaleTarget = defaultCellSize / cellSize;
           var i = 0;
 
-          while (downscaleTarget > 2) {
-            downscaleTarget /= 2;
+          while (downscaleTarget > emptyLinearEffect) {
+            downscaleTarget /= emptyLinearEffect;
             i++;
           }
 
@@ -2695,7 +2702,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
             i = empties.length - 1;
           }
 
-          var jpeg = i < empties.length ? empties[i] : null;
+          var jpeg = empties.elementAtOrNull(i);
           jpeg?.render(
             canvas,
             position: Vector2.zero(),
@@ -3219,7 +3226,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     }
 
     if (!ignoreSafety && !cells.contains(file)) {
-      file = "base";
+      file = "missing";
     }
 
     var sprite = Sprite(

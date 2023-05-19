@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
@@ -87,8 +85,7 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
             children: [
               for (var i = 0; i < ids.length; i++)
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,

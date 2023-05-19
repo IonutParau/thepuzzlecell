@@ -107,7 +107,7 @@ class MathManager {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.negativeInfinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.nan) return output(x, y, cell.rot, double.nan);
+      if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, abs(i));
     }, null, "math_abs");
     // Ceil
@@ -115,7 +115,7 @@ class MathManager {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
-      if (i == double.nan) return output(x, y, cell.rot, double.nan);
+      if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, ceil(i));
     }, null, "math_ceil");
     // Floor
@@ -123,7 +123,7 @@ class MathManager {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
-      if (i == double.nan) return output(x, y, cell.rot, double.nan);
+      if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, floor(i));
     }, null, "math_floor");
     // Natural Log
@@ -131,7 +131,7 @@ class MathManager {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
-      if (i == double.nan) return output(x, y, cell.rot, double.nan);
+      if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, log(i));
     }, null, "math_log");
     // LogN
@@ -139,11 +139,11 @@ class MathManager {
       final i = input(x, y, cell.rot - 1);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
       if (i == double.negativeInfinity) return output(x, y, cell.rot, double.negativeInfinity);
-      if (i == double.nan) return output(x, y, cell.rot, double.nan);
+      if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       final base = input(x, y, cell.rot + 1);
       if (base == double.infinity) return output(x, y, cell.rot, 0);
       if (base == double.negativeInfinity) return output(x, y, cell.rot, 0);
-      if (base == double.nan) return output(x, y, cell.rot, double.nan);
+      if (base is double && base.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, logn(i, base));
     }, null, "math_logn");
     // Max
@@ -259,10 +259,10 @@ class MathManager {
     // Doing nothing if indexies are invalid
     if (channel == double.infinity) return;
     if (channel == double.negativeInfinity) return;
-    if (channel == double.nan) return;
-    if (index == double.infinity) return;
+    if (channel is double && channel.isNaN) return;
+    if (index is double && channel.isNaN) return;
     if (index == double.negativeInfinity) return;
-    if (index == double.nan) return;
+    if (index is double && channel.isNaN) return;
 
     if (grid.memory[channel.toInt()] == null) grid.memory[channel.toInt()] = HashMap();
 
@@ -273,10 +273,10 @@ class MathManager {
     // Doing nothing if indexies are invalid
     if (channel == double.infinity) return 0;
     if (channel == double.negativeInfinity) return 0;
-    if (channel == double.nan) return 0;
+    if (channel is double && channel.isNaN) return 0;
     if (index == double.infinity) return 0;
     if (index == double.negativeInfinity) return 0;
-    if (index == double.nan) return 0;
+    if (index is double && channel.isNaN) return 0;
 
     if (grid.memory[channel.toInt()] == null) return 0;
     if (grid.memory[channel.toInt()]![index.toInt()] == null) return 0;

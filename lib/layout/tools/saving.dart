@@ -1069,7 +1069,7 @@ class P4 {
     if (value == double.infinity) {
       return "inf";
     }
-    if (value == double.nan) {
+    if (value is double && value.isNaN) {
       return "nan";
     }
     if (value == double.negativeInfinity) {
@@ -1556,7 +1556,7 @@ class TPCML {
     if (value == double.infinity) {
       return "inf";
     }
-    if (value == double.nan) {
+    if (value is double && value.isNaN) {
       return "nan";
     }
     if (value == double.negativeInfinity) {

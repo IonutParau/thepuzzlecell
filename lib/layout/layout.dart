@@ -31,8 +31,6 @@ import 'tools/tools.dart';
 export 'other/other.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'package:image/image.dart' as png;
-
 part 'game_ui.dart';
 part 'game_audio.dart';
 part 'puzzles.dart';
