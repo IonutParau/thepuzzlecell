@@ -28,7 +28,7 @@ class GenOptimizer {
 
   void skip(int x, int y, int dir) {
     if (!grid.inside(x, y)) return;
-    grid.tiles[x][y].opGen(dir);
+    grid.tiles[grid.x(x)][grid.y(y)].opGen(dir);
   }
 
   void remove(int x, int y) {

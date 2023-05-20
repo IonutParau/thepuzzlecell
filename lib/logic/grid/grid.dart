@@ -468,14 +468,15 @@ class Grid {
   void rotate(int x, int y, int rot) {
     genOptimizer.remove(x, y);
     if (!inside(x, y)) return;
-    final id = at(x, y).id;
+    var c = at(x, y);
+    final id = c.id;
     if (id == "anchor") {
       doAnchor(x, y, rot);
       return;
     }
     if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
     if (!breakable(
-      at(x, y),
+      c,
       x,
       y,
       rot,
@@ -483,8 +484,8 @@ class Grid {
     )) {
       return;
     }
-    at(x, y).rot += rot;
-    at(x, y).rot %= 4;
+    c.rot += rot;
+    c.rot %= 4;
   }
 
   void handleBrokenCellSounds() {
@@ -695,11 +696,9 @@ class GridClip {
   void optimize() {
     var optimized = true;
     while (optimized) {
-      print("Optimizing");
       optimized = false;
 
       if (isFullyEmpty(0, true)) {
-        print("Optimization 1");
         for (var x = 0; x < width; x++) {
           cells[x].removeAt(0);
         }
@@ -707,13 +706,11 @@ class GridClip {
         optimized = true;
       }
       if (isFullyEmpty(0, false)) {
-        print("Optimization 2");
         cells.removeAt(0);
         width--;
         optimized = true;
       }
       if (isFullyEmpty(height - 1, true)) {
-        print("Optimization 3");
         for (var x = 0; x < width; x++) {
           cells[x].removeAt(height - 1);
         }
@@ -721,7 +718,6 @@ class GridClip {
         optimized = true;
       }
       if (isFullyEmpty(width - 1, false)) {
-        print("Optimization 4");
         cells.removeAt(width - 1);
         width--;
         optimized = true;

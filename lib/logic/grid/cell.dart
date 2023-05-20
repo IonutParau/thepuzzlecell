@@ -134,7 +134,7 @@ class Cell extends Equatable {
       "id": id,
       "rot": rot,
       "data": {...data},
-      "tags": {...tags},
+      "tags": <String>{...tags},
       "lifespan": lifespan,
       "invisible": invisible,
     };
@@ -146,7 +146,7 @@ class Cell extends Equatable {
     cell.id = map["id"] ?? "empty";
     cell.rot = (map["rot"] ?? 0).toInt();
     cell.data = map["data"] as Map<String, dynamic>;
-    cell.tags = map["tags"] ?? {};
+    cell.tags = HashSet.from(((map["tags"] ?? <String>{}) as Set).whereType<String>().toSet());
     cell.lifespan = map["lifespan"] ?? 0;
     cell.invisible = map["invisible"] ?? false;
     cell.lastvars = LastVars(cell.rot, x, y, cell.id);
