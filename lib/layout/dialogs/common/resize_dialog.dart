@@ -122,6 +122,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                     (_, x, y) {
                       if (grid.inside(x, y)) {
                         g.set(x, y, grid.at(x, y));
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -130,6 +131,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                     (cell, x, y) {
                       if (g.inside(x, y)) {
                         g.set(x, y, cell);
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -142,6 +144,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cx = x + grid.width - g.width;
                       if (grid.inside(cx, y)) {
                         g.set(x, y, grid.at(cx, y));
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -151,6 +154,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cx = x + g.width - grid.width;
                       if (g.inside(cx, y)) {
                         g.set(cx, y, cell);
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -164,6 +168,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cy = y + grid.height - g.height;
                       if (grid.inside(cx, cy)) {
                         g.set(x, y, grid.at(cx, cy));
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -174,6 +179,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cy = y + g.height - grid.height;
                       if (g.inside(cx, cy)) {
                         g.set(cx, cy, cell);
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -186,6 +192,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cy = y + grid.height - g.height;
                       if (grid.inside(x, cy)) {
                         g.set(x, y, grid.at(x, cy));
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
@@ -195,6 +202,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                       final cy = y + g.height - grid.height;
                       if (g.inside(x, cy)) {
                         g.set(x, cy, cell);
+                        g.setPlace(x, y, grid.placeable(x, y));
                       }
                     },
                   );
