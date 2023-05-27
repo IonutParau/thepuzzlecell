@@ -1,10 +1,10 @@
 part of layout;
 
-final flightMusic = AssetSource("audio/Flight.ogg");
+final flightMusic = AssetSource("audio/Flight.wav");
 final destroySound = AssetSource("audio/destroy.wav");
-final pingSound = AssetSource("audio/ping.ogg");
-final floatMusic = AssetSource("audio/Float.ogg");
-final driftMusic = AssetSource("audio/Drift.ogg");
+final pingSound = AssetSource("audio/ping.wav");
+final floatMusic = AssetSource("audio/Float.wav");
+final driftMusic = AssetSource("audio/Drift.wav");
 
 // This will play only one sound at once via the power of magic
 final sfxPlayer = AudioPlayer();
