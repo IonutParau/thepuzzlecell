@@ -222,7 +222,7 @@ Future<void> fixStorage() async {
   await applyTexturePackSettings();
 }
 
-List parseJointCellStr(String str) {
+List<dynamic> parseJointCellStr(String str) {
   final s = str.split('!');
   if (s.length == 1) s.add("0");
 
