@@ -43,16 +43,17 @@ class Grid {
 
   List<FakeCell> fakeCells = [];
 
-  void addBroken(Cell cell, int dx, int dy,
-      [String type = "normal", int? rlvx, int? rlvy]) {
-    if (cell.invisible && game.edType == EditorType.loaded) return;
-    if (cell.id == "empty") return;
+  void addBroken(Cell cell, int dx, int dy, [String type = "normal", int? rlvx, int? rlvy]) {
+    if (cell.invisible && game.edType == EditorType.loaded) {
+      return;
+    }
+    if (cell.id == "empty") {
+      return;
+    }
 
-    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type,
-        cell.data, cell.invisible);
+    final b = BrokenCell(cell.id, cell.rot, dx, dy, cell.lastvars, type, cell.data, cell.invisible);
 
-    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx,
-        rlvy?.toDouble() ?? b.lv.lastPos.dy);
+    b.lv.lastPos = Offset(rlvx?.toDouble() ?? b.lv.lastPos.dx, rlvy?.toDouble() ?? b.lv.lastPos.dy);
 
     brokenCells.add(b);
   }
@@ -75,8 +76,7 @@ class Grid {
     final cx = ceil(width / chunkSize);
     final cy = ceil(height / chunkSize);
 
-    chunks =
-        List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
+    chunks = List.generate(cx, (_) => List.generate(cy, (_) => HashSet<String>()));
 
     quadChunk = QuadChunk(0, 0, width - 1, height - 1);
   }
@@ -85,7 +85,9 @@ class Grid {
   int y(int rawY) => wrap ? ((rawY + height) % height) : rawY;
 
   bool inside(int x, int y) {
-    if (wrap) return true;
+    if (wrap) {
+      return true;
+    }
 
     return (x >= 0 && x < width && y >= 0 && y < height);
   }
@@ -105,7 +107,9 @@ class Grid {
   }
 
   void set(int x, int y, Cell cell) {
-    if (cell != get(x, y)) genOptimizer.remove(x, y);
+    if (cell != get(x, y)) {
+      genOptimizer.remove(x, y);
+    }
     cells.add(cell.id);
 
     x = this.x(x);
@@ -143,7 +147,9 @@ class Grid {
   int chunkToCellY(int y) => y * chunkSize;
 
   void setChunk(int x, int y, String id) {
-    if (id == "empty") return;
+    if (id == "empty") {
+      return;
+    }
     cells.add(id);
     chunks[cx(x)][cy(y)].add(id);
     quadChunk.insert(x, y, id);
@@ -153,7 +159,9 @@ class Grid {
     if (wrap) {
       return tiles[(x + width) % width][(y + height) % height].background;
     }
-    if (!inside(x, y)) return "empty";
+    if (!inside(x, y)) {
+      return "empty";
+    }
     return tiles[x][y].background;
   }
 
@@ -176,24 +184,44 @@ class Grid {
   }
 
   bool get movable {
-    if (cells.contains("empty")) return true;
-    for (var passThrough in justMoveInsideOf) {
-      if (cells.contains(passThrough)) return true;
+    if (cells.contains("empty")) {
+      return true;
     }
-    if (cells.containsAny(trashes)) return true;
-    if (cells.containsAny(enemies)) return true;
-    if (cells.containsAny(movables)) return true;
+    for (var passThrough in justMoveInsideOf) {
+      if (cells.contains(passThrough)) {
+        return true;
+      }
+    }
+    if (cells.containsAny(trashes)) {
+      return true;
+    }
+    if (cells.containsAny(enemies)) {
+      return true;
+    }
+    if (cells.containsAny(movables)) {
+      return true;
+    }
     return false;
   }
 
   bool typesContainMovable(Set<String> cells) {
-    if (cells.contains("empty")) return true;
-    for (var passThrough in justMoveInsideOf) {
-      if (cells.contains(passThrough)) return true;
+    if (cells.contains("empty")) {
+      return true;
     }
-    if (cells.containsAny(trashes)) return true;
-    if (cells.containsAny(enemies)) return true;
-    if (cells.containsAny(movables)) return true;
+    for (var passThrough in justMoveInsideOf) {
+      if (cells.contains(passThrough)) {
+        return true;
+      }
+    }
+    if (cells.containsAny(trashes)) {
+      return true;
+    }
+    if (cells.containsAny(enemies)) {
+      return true;
+    }
+    if (cells.containsAny(movables)) {
+      return true;
+    }
     return false;
   }
 
@@ -210,11 +238,7 @@ class Grid {
 
   bool useExperimentalUpdating = true;
 
-  void updateCell(
-      void Function(Cell cell, int x, int y) callback, int? rot, String id,
-      {bool invertOrder = false,
-      bool useQuadChunks = false,
-      bool modded = false}) {
+  void updateCell(void Function(Cell cell, int x, int y) callback, int? rot, String id, {bool invertOrder = false, bool useQuadChunks = false, bool modded = false}) {
     if (!cells.contains(id)) return;
 
     if (useQuadChunks) {
@@ -286,10 +310,7 @@ class Grid {
     return chunks[cx(x)][cy(y)].contains(id);
   }
 
-  void loopChunks(String chunkID, GridAlignment alignment,
-      void Function(Cell cell, int x, int y) callback,
-      {bool Function(Cell cell, int x, int y)? filter,
-      bool shouldUpdate = true}) {
+  void loopChunks(String chunkID, GridAlignment alignment, void Function(Cell cell, int x, int y) callback, {bool Function(Cell cell, int x, int y)? filter, bool shouldUpdate = true}) {
     if (chunkID == "all") {
       if (cells.isEmpty) return;
     } else if (chunkID != "*") {
@@ -485,8 +506,7 @@ class Grid {
       doAnchor(x, y, rot);
       return;
     }
-    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost")
-      return;
+    if (id == "empty" || id == "wall_puzzle" || id == "wall" || id == "ghost") return;
     if (!breakable(
       c,
       x,
@@ -531,8 +551,9 @@ class Grid {
       }
     } else {
       for (var subtick in subticks) {
-        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded)
+        if ((puzzleWin || puzzleLost) && game.edType == EditorType.loaded) {
           return;
+        }
         if (subtick is void Function(Set<String>)) {
           // QueueManager.add("subticks", () => subtick(cells));
           subtick(cells);
@@ -546,8 +567,9 @@ class Grid {
   }
 
   String encode() {
-    if (currentSavingFormat == CurrentSavingFormat.vx)
+    if (currentSavingFormat == CurrentSavingFormat.VX) {
       return VX.encodeGrid(this, title: title, desc: desc);
+    }
 
     return SavingFormat.encodeGrid(this, title: title, description: desc);
   }
@@ -591,17 +613,9 @@ class GridClip {
         final sx = cx + x;
         final sy = cy + y;
         if (grid.inside(sx, sy) && cells[cx][cy].id != "empty") {
-          cells[cx][cy].lastvars =
-              LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
+          cells[cx][cy].lastvars = LastVars(cells[cx][cy].rot, sx, sy, cells[cx][cy].id);
           if (!game.isMultiplayer) grid.set(sx, sy, cells[cx][cy].copy);
-          game.sendToServer('place', {
-            "x": sx,
-            "y": sy,
-            "id": cells[cx][cy].id,
-            "rot": cells[cx][cy].rot,
-            "data": cells[cx][cy].data,
-            "size": 0
-          });
+          game.sendToServer('place', {"x": sx, "y": sy, "id": cells[cx][cy].id, "rot": cells[cx][cy].rot, "data": cells[cx][cy].data, "size": 0});
         }
       }
     }
@@ -623,8 +637,7 @@ class GridClip {
               sy %= grid.height;
             }
             final off = rotateOff(
-                  Offset(sx * cellSize + cellSize / 2,
-                      sy * cellSize + cellSize / 2),
+                  Offset(sx * cellSize + cellSize / 2, sy * cellSize + cellSize / 2),
                   -rot,
                 ) -
                 Offset(
@@ -633,11 +646,8 @@ class GridClip {
                     ) /
                     2;
             canvas.rotate(rot);
-            final file = textureMap['${cells[cx][cy].id}.png'] ??
-                '${cells[cx][cy].id}.png';
-            (Sprite(Flame.images.fromCache(file))
-                  ..paint = (Paint()..color = Colors.white.withOpacity(0.2)))
-                .render(
+            final file = textureMap['${cells[cx][cy].id}.png'] ?? '${cells[cx][cy].id}.png';
+            (Sprite(Flame.images.fromCache(file))..paint = (Paint()..color = Colors.white.withOpacity(0.2))).render(
               canvas,
               position: Vector2(off.dx, off.dy),
               size: Vector2.all(

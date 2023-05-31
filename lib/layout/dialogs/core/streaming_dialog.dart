@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 class StreamingDialog extends StatefulWidget {
-  final Stream stream;
+  final Stream<dynamic> stream;
   final String title;
 
-  StreamingDialog({Key? key, required this.stream, required this.title})
-      : super(key: key);
+  const StreamingDialog({Key? key, required this.stream, required this.title}) : super(key: key);
 
+  @override
   State<StreamingDialog> createState() => _StreamingDialogState();
 }
 
 class _StreamingDialogState extends State<StreamingDialog> {
-  List<String> _messages = [];
+  final List<String> _messages = [];
 
+  @override
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(widget.title),
@@ -26,17 +27,12 @@ class _StreamingDialogState extends State<StreamingDialog> {
             stream: widget.stream,
             builder: (ctx, snap) {
               if (snap.hasError) {
-                return SingleChildScrollView(
-                    child: Text(snap.error!.toString(),
-                        style: TextStyle(fontSize: 7.sp)));
+                return SingleChildScrollView(child: Text(snap.error!.toString(), style: TextStyle(fontSize: 7.sp)));
               }
 
               if (snap.hasData) {
                 _messages.add(snap.data.toString());
-                return SingleChildScrollView(
-                    reverse: true,
-                    child: Text(_messages.join("\n\n"),
-                        style: TextStyle(fontSize: 7.sp)));
+                return SingleChildScrollView(reverse: true, child: Text(_messages.join("\n\n"), style: TextStyle(fontSize: 7.sp)));
               }
 
               return CircularProgressIndicator.adaptive();

@@ -9,8 +9,7 @@ class ModInfo {
   Set<String> cells;
   String? readme;
 
-  ModInfo(this.title, this.desc, this.author, this.icon, this.dir, this.cells,
-      this.readme);
+  ModInfo(this.title, this.desc, this.author, this.icon, this.dir, this.cells, this.readme);
 }
 
 class ScriptingManager {
@@ -31,15 +30,19 @@ class ScriptingManager {
   bool hasChannel(String id) => channels.containsKey(id);
 
   void listenToChannel(String id, void Function(String) callback) {
-    if (!hasChannel(id)) createChannel(id);
+    if (!hasChannel(id)) {
+      createChannel(id);
+    }
 
     channels[id]!.add(callback);
   }
 
   void loadScripts([List<String> blocked = const []]) {
-    if (!Directory('dlls').existsSync()) return;
+    if (!Directory('dlls').existsSync()) {
+      return;
+    }
     final subitems = directory.listSync();
-    final subdirs = subitems.where((e) => e is Directory).cast<Directory>();
+    final subdirs = subitems.whereType<Directory>().cast<Directory>();
 
     for (var subdir in subdirs) {
       final id = path.split(subdir.path).last;
@@ -55,10 +58,7 @@ class ScriptingManager {
   }
 
   Set<String> getScripts() {
-    final luas = luaScripts.map((e) => e.id);
-    final arrows = [];
-
-    return {...luas, ...arrows};
+    return luaScripts.map((e) => e.id).toSet();
   }
 
   final loaded = <String>{};
@@ -66,7 +66,9 @@ class ScriptingManager {
   List<void Function()> postInit = [];
 
   Future<void> initScripts() async {
-    if (!Directory('dlls').existsSync()) return;
+    if (!Directory('dlls').existsSync()) {
+      return;
+    }
 
     LuaState.loadLibLua(
       windows: 'dlls/lua54.dll',
@@ -85,7 +87,7 @@ class ScriptingManager {
     return;
   }
 
-  void OnMsg(String id, String msg) {
+  void onMsg(String id, String msg) {
     for (var script in luaScripts) {
       if (script.id == id) {
         script.OnMsg(msg);
@@ -115,8 +117,7 @@ class ScriptingManager {
     return false;
   }
 
-  void handleInside(
-      int x, int y, int dir, int force, Cell moving, MoveType mt) {
+  void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
     final destroyer = grid.at(x, y);
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(destroyer.id)) {
@@ -125,20 +126,17 @@ class ScriptingManager {
     }
   }
 
-  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx,
-      int my) {
+  bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
-        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ??
-            false;
+        return lua.isAcidicModded(cell, dir, force, mt.name, melting, mx, my) ?? false;
       }
     }
 
     return false;
   }
 
-  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting,
-      int mx, int my) {
+  void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, int my) {
     for (var lua in luaScripts) {
       if (lua.definedCells.contains(cell.id)) {
         return lua.handleAcidModded(cell, dir, force, mt.name, melting, mx, my);
@@ -159,8 +157,7 @@ class ScriptingManager {
         }
         current = found.first;
       } else {
-        final found = current.items
-            .where((cat) => cat is CellCategory && cat.title == parts.first);
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
         if (found.isEmpty) {
           return;
         }
@@ -185,8 +182,7 @@ class ScriptingManager {
         }
         current = found.first;
       } else {
-        final found = current.items
-            .where((cat) => cat is CellCategory && cat.title == parts.first);
+        final found = current.items.where((cat) => cat is CellCategory && cat.title == parts.first);
         if (found.isEmpty) {
           return null;
         }
@@ -199,11 +195,12 @@ class ScriptingManager {
   }
 
   void addToCats(List<String> cats, String cell) {
-    cats.forEach((cat) => addToCat(cat, cell));
+    for (var cat in cats) {
+      addToCat(cat, cell);
+    }
   }
 
-  bool canMove(
-      Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
+  bool canMove(Cell cell, int x, int y, int dir, int side, int force, MoveType mt) {
     for (var lua in luaScripts) {
       return lua.canMoveModded(cell, x, y, dir, side, force, mt.name) ?? true;
     }
@@ -213,7 +210,9 @@ class ScriptingManager {
 
   String modOrigin(String id) {
     for (var lua in luaScripts) {
-      if (lua.definedCells.contains(id)) return lua.id;
+      if (lua.definedCells.contains(id)) {
+        return lua.id;
+      }
     }
 
     return "";
@@ -253,9 +252,7 @@ class ScriptingManager {
     for (var lua in luaScripts) {
       if (lua.id == id) {
         final p = path.join(lua.dir.path, 'icon.png');
-        return File(p).existsSync()
-            ? "mods/${id}/icon.png"
-            : 'assets/images/modDefaultIcon.png';
+        return File(p).existsSync() ? "mods/$id/icon.png" : 'assets/images/modDefaultIcon.png';
       }
     }
 
@@ -295,26 +292,20 @@ class ScriptingManager {
     return null;
   }
 
-  bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack,
-      int originX, int originY) {
+  bool isSticky(Cell cell, int x, int y, int dir, bool base, bool checkedAsBack, int originX, int originY) {
     for (var lua in luaScripts) {
       if (lua.hasDefinedCell(cell.id)) {
-        return lua.isSticky(
-                cell, x, y, dir, base, checkedAsBack, originX, originY) ??
-            false;
+        return lua.isSticky(cell, x, y, dir, base, checkedAsBack, originX, originY) ?? false;
       }
     }
 
     return false;
   }
 
-  bool sticksTo(Cell cell, Cell to, int dir, bool base, bool checkedAsBack,
-      int originX, int originY) {
+  bool sticksTo(Cell cell, Cell to, int dir, bool base, bool checkedAsBack, int originX, int originY) {
     for (var lua in luaScripts) {
       if (lua.hasDefinedCell(cell.id)) {
-        return lua.sticksTo(
-                cell, to, dir, base, checkedAsBack, originX, originY) ??
-            false;
+        return lua.sticksTo(cell, to, dir, base, checkedAsBack, originX, originY) ?? false;
       }
     }
 
@@ -381,15 +372,14 @@ class ScriptingManager {
     return false;
   }
 
-  void createCategory(
-      String host, String name, String desc, String look, int max) {
+  void createCategory(String host, String name, String desc, String look, int max) {
     if (host.isEmpty) {
       categories.add(CellCategory(name, desc, [], look, max: max));
       return;
     }
 
     final parts = host.split('/');
-    List cats = categories;
+    List<dynamic> cats = categories;
 
     while (parts.isNotEmpty) {
       final curr = parts.removeAt(0);
@@ -397,14 +387,18 @@ class ScriptingManager {
       var found = false;
 
       for (var cat in cats) {
-        if (cat is! CellCategory) continue;
+        if (cat is! CellCategory) {
+          continue;
+        }
         if (cat.title == curr) {
           cats = cat.items;
           found = true;
           break;
         }
       }
-      if (!found) return;
+      if (!found) {
+        return;
+      }
     }
     cats.add(CellCategory(name, desc, [], look, max: max));
   }

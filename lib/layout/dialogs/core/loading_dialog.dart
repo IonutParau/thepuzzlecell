@@ -3,21 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 class LoadingDialog extends StatefulWidget {
-  final Future future;
+  final Future<dynamic> future;
   final String title;
   final String? completionMessage;
 
-  LoadingDialog(
-      {Key? key,
-      required this.future,
-      required this.title,
-      this.completionMessage})
-      : super(key: key);
+  const LoadingDialog({Key? key, required this.future, required this.title, this.completionMessage}) : super(key: key);
 
+  @override
   State<LoadingDialog> createState() => _LoadingDialogState();
 }
 
 class _LoadingDialogState extends State<LoadingDialog> {
+  @override
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(widget.title),
@@ -37,11 +34,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                   Navigator.pop(ctx);
                   return Text("");
                 } else {
-                  return SingleChildScrollView(
-                      child: Text(
-                          widget.completionMessage!
-                              .replaceAll("%value", snap.data.toString()),
-                          style: TextStyle(fontSize: 7.sp)));
+                  return SingleChildScrollView(child: Text(widget.completionMessage!.replaceAll("%value", snap.data.toString()), style: TextStyle(fontSize: 7.sp)));
                 }
               }
 

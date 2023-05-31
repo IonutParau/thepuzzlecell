@@ -88,7 +88,7 @@ class LangsUI extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (ctx) => LangsDownloader(),
                 ),
               );
@@ -124,9 +124,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
           Spacer(),
           MaterialButton(
             child: Text(
-              locallyExists
-                  ? lang('update', 'Update')
-                  : lang('install', 'Install'),
+              locallyExists ? lang('update', 'Update') : lang('install', 'Install'),
               style: TextStyle(
                 fontSize: 5.sp,
                 color: Colors.white,
@@ -137,14 +135,13 @@ class _LangsDownloaderState extends State<LangsDownloader> {
               final f = downloadLanguage(name);
 
               f.then((v) {
-                showDialog(
+                showDialog<void>(
                   context: context,
                   builder: (ctx) {
                     return ContentDialog(
                       title: Text(
                         locallyExists
-                            ? lang("local_update", "Locally updated $name",
-                                {"name": name})
+                            ? lang("local_update", "Locally updated $name", {"name": name})
                             : lang("local_install", "Locally installed $name", {
                                 "name": name,
                               }),
@@ -171,8 +168,8 @@ class _LangsDownloaderState extends State<LangsDownloader> {
                 );
                 setState(() {});
                 langEvents.sink.add(true);
-              }).catchError((v) {
-                showDialog(
+              }).catchError((dynamic v) {
+                showDialog<void>(
                   context: context,
                   builder: (ctx) {
                     return ContentDialog(
@@ -217,7 +214,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
               ),
               onPressed: () {
                 f.deleteSync();
-                showDialog(
+                showDialog<void>(
                   context: context,
                   builder: (ctx) {
                     return ContentDialog(
@@ -260,9 +257,7 @@ class _LangsDownloaderState extends State<LangsDownloader> {
       builder: (ctx, snap) {
         if (snap.hasData) {
           return ListView(
-            children: (snap.data as List<String>)
-                .map((str) => versionTile(str))
-                .toList(),
+            children: (snap.data as List<String>).map((str) => versionTile(str)).toList(),
             itemExtent: 8.h,
           );
         } else if (snap.hasError) {
