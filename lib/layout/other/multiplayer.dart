@@ -3,16 +3,15 @@ import 'package:http/http.dart' as http;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart'
-    show Icons, MaterialButton, MaterialPageRoute;
+import 'package:flutter/material.dart' show Icons, MaterialButton, MaterialPageRoute;
 import 'package:fluent_ui/fluent_ui.dart';
-import '../../logic/logic.dart' show Grid, grid, lang, storage;
+import 'package:the_puzzle_cell/logic/logic.dart' show Grid, grid, lang, storage;
 
 class MultiplayerPage extends StatefulWidget {
   const MultiplayerPage({Key? key}) : super(key: key);
 
   @override
-  _MultiplayerPageState createState() => _MultiplayerPageState();
+  State<MultiplayerPage> createState() => _MultiplayerPageState();
 }
 
 class _MultiplayerPageState extends State<MultiplayerPage> {
@@ -24,7 +23,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     var pingIp = ip.replaceAll('wss', 'https').replaceAll('ws', 'http');
 
     if (!pingIp.startsWith('http://') && !pingIp.startsWith('https://')) {
-      pingIp = "https://" + pingIp;
+      pingIp = "https://$pingIp";
     }
 
     if (!pingIp.contains(':')) {
@@ -181,7 +180,7 @@ void connectMultiplayer(BuildContext context, String ip) {
   grid = Grid(100, 100);
 
   Navigator.of(context).push(
-    MaterialPageRoute(
+    MaterialPageRoute<void>(
       builder: (ctx) {
         return GameUI(editorType: EditorType.making, ip: ip);
       },
