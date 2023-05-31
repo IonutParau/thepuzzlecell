@@ -20,7 +20,14 @@ class StabletonData {
   });
 }
 
-final stabletonOrder = ["stable_a", "stable_b", "stable_i", "stable_j", "stable_k", "stable_n"];
+final stabletonOrder = [
+  "stable_a",
+  "stable_b",
+  "stable_i",
+  "stable_j",
+  "stable_k",
+  "stable_n"
+];
 final stabletonData = <String, StabletonData>{
   "stable_a": StabletonData(
     unitConstant: 1,
@@ -116,7 +123,8 @@ final stabletonData = <String, StabletonData>{
   ),
 };
 
-int calculateStability(int x, int y, List<int> layerConstants, int? ix, int? iy) {
+int calculateStability(
+    int x, int y, List<int> layerConstants, int? ix, int? iy) {
   int stability = 0;
 
   for (var i = 0; i < layerConstants.length; i++) {
@@ -208,18 +216,23 @@ class StabletonMove {
   StabletonMove(this.newID, this.newX, this.newY, this.score);
 }
 
-List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonData data, bool isDecay, int current, int depth, int maxDepth) {
+List<StabletonMove> calculateMostStableMoves(String id, int x, int y,
+    StabletonData data, bool isDecay, int current, int depth, int maxDepth) {
   var bestMoves = <StabletonMove>[];
   var bestScore = data.stationary ? current : (1 << 63);
 
   if (isDecay) {
-    final inactiveScore = calculateStability(x, y, data.layerConstants, null, null);
+    final inactiveScore =
+        calculateStability(x, y, data.layerConstants, null, null);
     bestMoves.add(StabletonMove(id, x, y, inactiveScore));
     bestScore = inactiveScore;
   }
 
   if (depth < maxDepth) {
-    var bestDecayMoves = data.decaysInto.map((did) => calculateMostStableMoves(id, x, y, stabletonData[did]!, true, current, depth + 1, maxDepth)).toList();
+    var bestDecayMoves = data.decaysInto
+        .map((did) => calculateMostStableMoves(
+            id, x, y, stabletonData[did]!, true, current, depth + 1, maxDepth))
+        .toList();
     bestDecayMoves.removeWhere((moves) => moves.isEmpty);
 
     for (var bestDecay in bestDecayMoves) {
@@ -255,7 +268,8 @@ void stabletons() {
       final data = stabletonData[stableton]!;
       final current = calculateStability(x, y, data.layerConstants, null, null);
 
-      final bestMoves = calculateMostStableMoves(cell.id, x, y, data, false, current, 0, data.decayRecursion);
+      final bestMoves = calculateMostStableMoves(
+          cell.id, x, y, data, false, current, 0, data.decayRecursion);
 
       if (!data.clonable && bestMoves.length > 1 && data.stationary) {
         return; // If there is a tie in the stableton possible moves, do nothing.

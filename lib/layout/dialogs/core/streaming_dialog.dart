@@ -6,7 +6,8 @@ class StreamingDialog extends StatefulWidget {
   final Stream stream;
   final String title;
 
-  StreamingDialog({Key? key, required this.stream, required this.title}) : super(key: key);
+  StreamingDialog({Key? key, required this.stream, required this.title})
+      : super(key: key);
 
   State<StreamingDialog> createState() => _StreamingDialogState();
 }
@@ -25,12 +26,17 @@ class _StreamingDialogState extends State<StreamingDialog> {
             stream: widget.stream,
             builder: (ctx, snap) {
               if (snap.hasError) {
-                return SingleChildScrollView(child: Text(snap.error!.toString(), style: TextStyle(fontSize: 7.sp)));
+                return SingleChildScrollView(
+                    child: Text(snap.error!.toString(),
+                        style: TextStyle(fontSize: 7.sp)));
               }
 
               if (snap.hasData) {
                 _messages.add(snap.data.toString());
-                return SingleChildScrollView(reverse: true, child: Text(_messages.join("\n\n"), style: TextStyle(fontSize: 7.sp)));
+                return SingleChildScrollView(
+                    reverse: true,
+                    child: Text(_messages.join("\n\n"),
+                        style: TextStyle(fontSize: 7.sp)));
               }
 
               return CircularProgressIndicator.adaptive();

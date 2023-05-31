@@ -6,7 +6,9 @@ void doFactory(Cell cell, int x, int y) {
 
   cell.data['interval'] ??= 1;
 
-  if (cell.data['interval'] <= 0) return;
+  if (cell.data['interval'] <= 0) {
+    return;
+  }
 
   while (cell.data['t'] >= cell.data['interval']) {
     cell.data['t'] -= cell.data['interval'];
@@ -24,10 +26,11 @@ void doFactory(Cell cell, int x, int y) {
     final c = cell.data['cell'] ?? "push!0";
     final addRot = cell.data['addrot'] ?? false;
 
-    final id = parseJointCellStr(c)[0] as String;
-    final r = parseJointCellStr(c)[1];
+    final (id, r) = parseJointCellStr(c);
     var rot = r;
-    if (addRot) rot += cell.rot;
+    if (addRot) {
+      rot += cell.rot;
+    }
     rot %= 4;
 
     final output = Cell(x, y);
@@ -51,10 +54,16 @@ void doFactory(Cell cell, int x, int y) {
     if (quantized) {
       unstableGen(x, y, cell.rot, output.copy);
     } else if (!push(ox, oy, cell.rot, 1, replaceCell: output)) {
-      if (!physical) return;
-      if (!push(x, y, (cell.rot + 2) % 4, 1)) return;
+      if (!physical) {
+        return;
+      }
+      if (!push(x, y, (cell.rot + 2) % 4, 1)) {
+        return;
+      }
       output.lastvars.lastPos = cell.lastvars.lastPos.scale(1, 1);
-      if (!push(x, y, cell.rot, 1, replaceCell: output)) return;
+      if (!push(x, y, cell.rot, 1, replaceCell: output)) {
+        return;
+      }
     }
     x = cell.cx ?? x;
     y = cell.cy ?? y;

@@ -22,9 +22,11 @@ final Map<String, Achievement> achievementData = {
 };
 
 class AchievementManager {
-  static List<String> get achievements => storage.getStringList("achievements") ?? [];
+  static List<String> get achievements =>
+      storage.getStringList("achievements") ?? [];
 
-  static bool hasAchievement(String achievement) => achievements.contains(achievement);
+  static bool hasAchievement(String achievement) =>
+      achievements.contains(achievement);
 
   static void complete(String achievement) {
     if (hasAchievement(achievement)) return;

@@ -24,7 +24,8 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
               width: constraints.maxWidth,
               child: ListView.builder(
                 itemCount: online.length,
-                padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
+                padding:
+                    EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
                 itemBuilder: (context, index) {
                   final cursorTexture = game.cursors[online[index]]?.texture;
                   final role = game.roles[online[index]] ?? UserRole.guest;
@@ -45,7 +46,11 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                     width: constraints.maxWidth * 0.8,
                     child: ListTile(
                       leading: Image.asset(
-                        "assets/images/" + ((cursorTexture ?? "cursor") == "cursor" ? "interface/cursor.png" : (textureMap["$cursorTexture.png"] ?? "$cursorTexture.png")),
+                        "assets/images/" +
+                            ((cursorTexture ?? "cursor") == "cursor"
+                                ? "interface/cursor.png"
+                                : (textureMap["$cursorTexture.png"] ??
+                                    "$cursorTexture.png")),
                         width: 5.h,
                         height: 5.h,
                         filterQuality: FilterQuality.none,
@@ -56,8 +61,11 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                       tileColor: ConstantColorButtonState(Colors.grey[130]),
                       onPressed: () {
                         final ourRole = game.roles[game.clientID];
-                        if (ourRole == UserRole.admin || ourRole == UserRole.owner) {
-                          showDialog(context: context, builder: (ctx) => EditUserDialog(online[index]));
+                        if (ourRole == UserRole.admin ||
+                            ourRole == UserRole.owner) {
+                          showDialog(
+                              context: context,
+                              builder: (ctx) => EditUserDialog(online[index]));
                         }
                       },
                     ),

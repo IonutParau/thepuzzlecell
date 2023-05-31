@@ -22,11 +22,15 @@ class SearchQueryResult {
   bool get isModded => modded.contains(cell);
 
   bool fromModID(String modID) {
-    return scriptingManager.modOrigin(cell).toLowerCase() == modID.toLowerCase();
+    return scriptingManager.modOrigin(cell).toLowerCase() ==
+        modID.toLowerCase();
   }
 
   bool fromModName(String name) {
-    return scriptingManager.modName(scriptingManager.modOrigin(cell)).toLowerCase() == name.toLowerCase();
+    return scriptingManager
+            .modName(scriptingManager.modOrigin(cell))
+            .toLowerCase() ==
+        name.toLowerCase();
   }
 }
 

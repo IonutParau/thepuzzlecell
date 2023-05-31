@@ -25,7 +25,8 @@ class BenchmarkResults {
   TPSType largeSuperNukeTPS = 0;
   TPSType largeRandomTPS = 0;
 
-  BenchmarkResults small(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
+  BenchmarkResults small(TPSType laserTPS, TPSType nukeTPS,
+      TPSType superNukeTPS, TPSType randomTPS) {
     smallLaserTPS = laserTPS;
     smallNukeTPS = nukeTPS;
     smallSuperNukeTPS = superNukeTPS;
@@ -33,7 +34,8 @@ class BenchmarkResults {
     return this;
   }
 
-  BenchmarkResults medium(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
+  BenchmarkResults medium(TPSType laserTPS, TPSType nukeTPS,
+      TPSType superNukeTPS, TPSType randomTPS) {
     mediumLaserTPS = laserTPS;
     mediumNukeTPS = nukeTPS;
     mediumSuperNukeTPS = superNukeTPS;
@@ -41,7 +43,8 @@ class BenchmarkResults {
     return this;
   }
 
-  BenchmarkResults large(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
+  BenchmarkResults large(TPSType laserTPS, TPSType nukeTPS,
+      TPSType superNukeTPS, TPSType randomTPS) {
     largeLaserTPS = laserTPS;
     largeNukeTPS = nukeTPS;
     largeSuperNukeTPS = superNukeTPS;
@@ -98,7 +101,8 @@ Future<TPSType> benchmarkGrid(GridBenchmarkData data) async {
 
     stopwatch.stop();
 
-    return debug(data.settings.tickCount / max(stopwatch.elapsedMilliseconds / 1000, double.minPositive));
+    return debug(data.settings.tickCount /
+        max(stopwatch.elapsedMilliseconds / 1000, double.minPositive));
   } catch (e) {
     print(e);
     return 0;

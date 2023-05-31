@@ -280,7 +280,8 @@ class CodeCellManager {
 
           final segs = code.split(" ");
 
-          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0], segs.length <= 1 ? [] : segs.sublist(1));
+          m[i] = CodeCellInstruction(segs.isEmpty ? "" : segs[0],
+              segs.length <= 1 ? [] : segs.sublist(1));
         } else {
           break;
         }
@@ -293,7 +294,8 @@ class CodeCellManager {
   }
 
   // Returns which instruction to go to.
-  int runInstruction(int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
+  int runInstruction(
+      int i, CodeCellInstruction? instruction, CodeRuntimeContext context) {
     if (instruction == null) return i + 1;
 
     if (instruction.name == "pop") {
@@ -301,7 +303,8 @@ class CodeCellManager {
     }
 
     if (instruction.name == "link") {
-      context.stack.link(int.parse(instruction.params[0]), int.parse(instruction.params[1]));
+      context.stack.link(
+          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
     if (instruction.name == "pushNum") {
@@ -373,11 +376,13 @@ class CodeCellManager {
     }
 
     if (instruction.name == "index") {
-      context.stack.index(int.parse(instruction.params[0]), int.parse(instruction.params[1]));
+      context.stack.index(
+          int.parse(instruction.params[0]), int.parse(instruction.params[1]));
     }
 
     if (instruction.name == "setIndex") {
-      context.stack.setIndex(int.parse(instruction.params[0]), int.parse(instruction.params[1]), int.parse(instruction.params[2]));
+      context.stack.setIndex(int.parse(instruction.params[0]),
+          int.parse(instruction.params[1]), int.parse(instruction.params[2]));
     }
 
     if (instruction.name == "pushFrom") {
@@ -530,12 +535,16 @@ class CodeCellManager {
       final map = context.stack.get(m);
 
       if (map is Map<String, dynamic>) {
-        context.stack.push(map.entries.map((entry) => <String, dynamic>{"key": entry.key, "value": entry.value}).toList());
+        context.stack.push(map.entries
+            .map((entry) =>
+                <String, dynamic>{"key": entry.key, "value": entry.value})
+            .toList());
       }
     }
 
     if (instruction.name == "isNull") {
-      context.stack.push(context.stack.isNull(int.parse(instruction.params[0])));
+      context.stack
+          .push(context.stack.isNull(int.parse(instruction.params[0])));
     }
 
     if (instruction.name == "isNumber") {
@@ -547,11 +556,13 @@ class CodeCellManager {
     }
 
     if (instruction.name == "isJump") {
-      context.stack.push(context.stack.isJump(int.parse(instruction.params[0])));
+      context.stack
+          .push(context.stack.isJump(int.parse(instruction.params[0])));
     }
 
     if (instruction.name == "isList") {
-      context.stack.push(context.stack.isList(int.parse(instruction.params[0])));
+      context.stack
+          .push(context.stack.isList(int.parse(instruction.params[0])));
     }
 
     if (instruction.name == "isMap") {
@@ -559,11 +570,13 @@ class CodeCellManager {
     }
 
     if (instruction.name == "isBool") {
-      context.stack.push(context.stack.isBool(int.parse(instruction.params[0])));
+      context.stack
+          .push(context.stack.isBool(int.parse(instruction.params[0])));
     }
 
     if (instruction.name == "ioCreate") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
 
       if (!context.buffers.containsKey(buffName)) {
         context.buffers[buffName] = null;
@@ -571,34 +584,41 @@ class CodeCellManager {
     }
 
     if (instruction.name == "ioErase") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
 
       context.buffers.remove(buffName);
     }
 
     if (instruction.name == "ioGet") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
 
       context.stack.push(context.buffers[buffName]);
     }
 
     if (instruction.name == "ioSet") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
       final val = context.stack.get(int.parse(instruction.params[1]));
 
       context.buffers[buffName] = val;
     }
 
     if (instruction.name == "ioGetExternal") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
-      final programName = context.stack.get(int.parse(instruction.params[1])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
+      final programName =
+          context.stack.get(int.parse(instruction.params[1])).toString();
 
       context.stack.push(getBuffer(programName, buffName));
     }
 
     if (instruction.name == "ioSetExternal") {
-      final buffName = context.stack.get(int.parse(instruction.params[0])).toString();
-      final programName = context.stack.get(int.parse(instruction.params[1])).toString();
+      final buffName =
+          context.stack.get(int.parse(instruction.params[0])).toString();
+      final programName =
+          context.stack.get(int.parse(instruction.params[1])).toString();
       final val = context.stack.get(int.parse(instruction.params[2]));
 
       setBuffer(programName, buffName, val);
@@ -641,7 +661,8 @@ class CodeCellManager {
         print("Code Pointer: $idx");
         print("[ Code ]");
         instructions.entries.toList().forEach((entry) {
-          print("${entry.key}. ${entry.value.name} ${entry.value.params.join(" ")}");
+          print(
+              "${entry.key}. ${entry.value.name} ${entry.value.params.join(" ")}");
         });
         print(
           "Faulty Instruction: ${instructions[idx]?.name} ${instructions[idx]?.params.join(" ")}",

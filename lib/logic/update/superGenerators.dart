@@ -1,6 +1,7 @@
 part of logic;
 
-void doSupGen(int x, int y, int dir, int gendir, [int offX = 0, int offY = 0, int preaddedRot = 0]) {
+void doSupGen(int x, int y, int dir, int gendir,
+    [int offX = 0, int offY = 0, int preaddedRot = 0]) {
   if (!grid.isMovableInDir(x, y, dir)) return;
   dir %= 4;
   gendir %= 4;

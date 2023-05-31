@@ -5,7 +5,8 @@ void mechs(Set<String> cells) {
   for (var rot in rotOrder) {
     grid.updateCell(
       (cell, x, y) {
-        if (mathManager.input(x, y, cell.rot + 2) > (cell.data['offset'] ?? 0)) {
+        if (mathManager.input(x, y, cell.rot + 2) >
+            (cell.data['offset'] ?? 0)) {
           MechanicalManager.spread(
             frontX(
               x,
@@ -48,7 +49,8 @@ void mechs(Set<String> cells) {
       (cell, x, y) {
         if (cell.rot != rot) return;
         final off = cell.data['offset'] ?? 1;
-        final front = grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
+        final front =
+            grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
         if (front == null) return;
         if (front.id != "empty") {
           MechanicalManager.spread(
@@ -75,10 +77,12 @@ void mechs(Set<String> cells) {
       (cell, x, y) {
         if (cell.rot != rot) return;
         final off = cell.data['offset'] ?? 1;
-        final front = grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
+        final front =
+            grid.get(frontX(x, cell.rot, off), frontY(y, cell.rot, off));
         final back = grid.get(frontX(x, cell.rot, -1), frontY(y, cell.rot, -1));
         if (front == null || back == null) return;
-        if (front.id != "empty" && (front.id == back.id && front.rot == back.rot)) {
+        if (front.id != "empty" &&
+            (front.id == back.id && front.rot == back.rot)) {
           MechanicalManager.spread(
             frontX(
               x,
@@ -244,7 +248,14 @@ class MechanicalManager {
     if (cell.id == "mech_grabber") return dir != (cell.rot + 2) % 4;
     if (cell.id == "mech_to_math") return dir == cell.rot;
     if (cell.id == "mech_debt") return true;
-    if (cell.id.startsWith('mech_') && !["mech_gen", "mech_keyleft", "mech_keyright", "mech_keyup", "mech_keydown"].contains(cell.id)) return true;
+    if (cell.id.startsWith('mech_') &&
+        ![
+          "mech_gen",
+          "mech_keyleft",
+          "mech_keyright",
+          "mech_keyup",
+          "mech_keydown"
+        ].contains(cell.id)) return true;
     if (cell.id == "keylimit") return true;
     if (cell.id == "keyforce") return true;
     if (cell.id == "keyfake") return true;
@@ -288,16 +299,24 @@ class MechanicalManager {
       travelTime();
     } else if (cell.id == "mech_rotator_cw") {
       cell.updated = true;
-      grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), 1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), 1);
+      grid.rotate(
+          frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+          frontY(cell.cy ?? y, cell.rot + 1), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+          frontY(cell.cy ?? y, cell.rot + 2), 1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+          frontY(cell.cy ?? y, cell.rot + 3), 1);
     } else if (cell.id == "mech_rotator_ccw") {
       cell.updated = true;
-      grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), -1);
-      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), -1);
+      grid.rotate(
+          frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+          frontY(cell.cy ?? y, cell.rot + 1), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+          frontY(cell.cy ?? y, cell.rot + 2), -1);
+      grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+          frontY(cell.cy ?? y, cell.rot + 3), -1);
     } else if (cell.id == "mech_p_gen") {
       cell.updated = true;
       doGen(x, y, cell.rot, cell.rot);
@@ -318,19 +337,34 @@ class MechanicalManager {
 
       push(fx, fy, cell.rot, 1);
     } else if (cell.id == "keylimit") {
-      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+      final keysToCheck = [
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.arrowLeft
+      ];
 
       if (keys[keysToCheck[cell.rot].keyLabel] == true) {
         puzzleLost = true;
       }
     } else if (cell.id == "keyforce") {
-      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+      final keysToCheck = [
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.arrowLeft
+      ];
 
       if (keys[keysToCheck[cell.rot].keyLabel] != true) {
         puzzleLost = true;
       }
     } else if (cell.id == "keyfake") {
-      final keysToCheck = [LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft];
+      final keysToCheck = [
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.arrowLeft
+      ];
 
       final key = keysToCheck[cell.rot];
 
@@ -351,7 +385,8 @@ class MechanicalManager {
         }
       }
     } else if (cell.id == "mech_to_math") {
-      mathManager.output(x, y, cell.rot, mathManager.customCount(cell, x, y, cell.rot) ?? 0);
+      mathManager.output(
+          x, y, cell.rot, mathManager.customCount(cell, x, y, cell.rot) ?? 0);
     } else if (cell.id == "mech_checkpoint") {
       enableCheckpoint(cell, x, y);
     } else if (cell.id == "mech_mirror") {
@@ -374,7 +409,8 @@ class MechanicalManager {
     onMasterPowered(cell, x, y);
   }
 
-  static void spread(int x, int y, [int depth = 0, bool continueFirst = false, int? sentDir]) {
+  static void spread(int x, int y,
+      [int depth = 0, bool continueFirst = false, int? sentDir]) {
     AchievementManager.complete("circuitry");
     if (depth == 99) return;
     if (!grid.inside(x, y)) return;
@@ -411,7 +447,8 @@ class MechanicalManager {
     if (!cell.updated) {
       whenPowered(cell, cell.cx!, cell.cy!);
     }
-    if (cell.id == "mech_gear" && depth < 99) grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+    if (cell.id == "mech_gear" && depth < 99)
+      grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
     if (cell.id == "mech_gear" || (depth <= 0 && continueFirst)) {
@@ -430,7 +467,9 @@ class MechanicalManager {
     }
   }
 
-  static bool on(Cell cell, [bool freshly = false]) => (cell.data['power'] ?? 0) > (freshly ? 1 : 0);
+  static bool on(Cell cell, [bool freshly = false]) =>
+      (cell.data['power'] ?? 0) > (freshly ? 1 : 0);
 
-  static bool onAt(int x, int y, [bool freshly = false]) => grid.inside(x, y) ? on(grid.at(x, y), freshly) : false;
+  static bool onAt(int x, int y, [bool freshly = false]) =>
+      grid.inside(x, y) ? on(grid.at(x, y), freshly) : false;
 }

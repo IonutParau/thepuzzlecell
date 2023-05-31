@@ -124,7 +124,8 @@ class RaycastInfo {
   late int x;
   late int y;
 
-  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y) : successful = true {
+  RaycastInfo.successful(Cell cell, this.distance, this.x, this.y)
+      : successful = true {
     hitCell = cell.copy;
   }
 
@@ -162,10 +163,12 @@ class QuantumInteraction {
   num? flipDist;
   int? distOff;
 
-  QuantumInteraction(this.scale, this.flipWhenClose, {this.flipDist, this.distOff});
+  QuantumInteraction(this.scale, this.flipWhenClose,
+      {this.flipDist, this.distOff});
 
   QuantumInteraction operator *(num other) {
-    return QuantumInteraction(scale * other, flipWhenClose, flipDist: flipDist, distOff: distOff);
+    return QuantumInteraction(scale * other, flipWhenClose,
+        flipDist: flipDist, distOff: distOff);
   }
 }
 
@@ -292,7 +295,10 @@ void quantums() {
         (cell, x, y) {
           if (cell.rot == rot) unstableMove(x, y, cell.rot);
         },
-        filter: (cell, x, y) => cell.id == "unstable_mover" && cell.rot == rot && cell.updated == false,
+        filter: (cell, x, y) =>
+            cell.id == "unstable_mover" &&
+            cell.rot == rot &&
+            cell.updated == false,
       );
       grid.updateCell(
         (cell, x, y) {

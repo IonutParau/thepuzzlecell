@@ -65,7 +65,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     if (!canMove(x - 1, y + 1, 2, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y, 3, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y - 1, 3, 1, MoveType.gear)) return;
-    
+
     // save
     final cells = [];
     cells.add(grid.at(x, y - 1).copy);
@@ -76,7 +76,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     cells.add(grid.at(x - 1, y + 1).copy);
     cells.add(grid.at(x - 1, y).copy);
     cells.add(grid.at(x - 1, y - 1).copy);
-    
+
     // move
     grid.set(x + 1, y - 1, cells[0]);
     grid.set(x + 1, y, cells[1]);
@@ -100,7 +100,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     if (!canMove(x - 1, y + 1, 1, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y, 1, 1, MoveType.gear)) return;
     if (!canMove(x - 1, y - 1, 2, 1, MoveType.gear)) return;
-    
+
     // save
     final cells = [];
     cells.add(grid.at(x, y - 1).copy);
@@ -111,7 +111,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     cells.add(grid.at(x + 1, y + 1).copy);
     cells.add(grid.at(x + 1, y).copy);
     cells.add(grid.at(x + 1, y - 1).copy);
-    
+
     // move
     grid.set(x - 1, y - 1, cells[0]);
     grid.set(x - 1, y, cells[1]);

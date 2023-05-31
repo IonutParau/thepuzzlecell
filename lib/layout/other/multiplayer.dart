@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
-import 'package:flutter/material.dart' show Icons, MaterialButton, MaterialPageRoute;
+import 'package:flutter/material.dart'
+    show Icons, MaterialButton, MaterialPageRoute;
 import 'package:fluent_ui/fluent_ui.dart';
 import '../../logic/logic.dart' show Grid, grid, lang, storage;
 

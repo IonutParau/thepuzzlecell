@@ -122,7 +122,8 @@ class GlueScript {
         m["last-id"] = m['id'] ?? GlueString("empty");
       }
 
-      return GlueTable(m.map((k, v) => MapEntry(GlueString(k), v))).toValue(vm, stack);
+      return GlueTable(m.map((k, v) => MapEntry(GlueString(k), v)))
+          .toValue(vm, stack);
     });
 
     vm.globals['grid-get-cell'] = GlueExternalFunction((vm, stack, args) {

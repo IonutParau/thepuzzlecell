@@ -38,7 +38,9 @@ List<File> get langs {
     langDir.createSync();
   }
 
-  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json"))).map<File>((item) => item as File).toList();
+  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json")))
+      .map<File>((item) => item as File)
+      .toList();
 }
 
 void loadLangByName(String name) {
@@ -51,7 +53,8 @@ void loadLangByName(String name) {
 }
 
 Future<List<String>> downloadableLanguages() async {
-  final url = 'https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/languages.txt';
+  final url =
+      'https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/languages.txt';
 
   final response = await http.get(Uri.parse(url));
 
@@ -67,7 +70,8 @@ Future<List<String>> downloadableLanguages() async {
 }
 
 Future downloadLanguage(String languageName) async {
-  final url = "https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/$languageName.json";
+  final url =
+      "https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/$languageName.json";
 
   final response = await http.get(Uri.parse(url));
 

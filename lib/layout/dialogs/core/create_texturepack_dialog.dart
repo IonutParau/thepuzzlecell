@@ -8,7 +8,8 @@ import 'package:path/path.dart' as path;
 
 class CreateTexturePackDialog extends StatefulWidget {
   @override
-  State<CreateTexturePackDialog> createState() => _CreateTexturePackDialogState();
+  State<CreateTexturePackDialog> createState() =>
+      _CreateTexturePackDialogState();
 }
 
 class _CreateTexturePackDialogState extends State<CreateTexturePackDialog> {
@@ -42,14 +43,16 @@ class _CreateTexturePackDialogState extends State<CreateTexturePackDialog> {
           return ListView(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                 child: TextBox(
                   prefix: Text('ID'),
                   controller: idController,
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                 child: TextBox(
                   prefix: Text(lang('title_box', 'Title')),
                   controller: titleController,
@@ -67,16 +70,20 @@ class _CreateTexturePackDialogState extends State<CreateTexturePackDialog> {
         Button(
           child: Text(lang('create', 'Create')),
           onPressed: () {
-            final texturepackDir = Directory(path.join(tpDir.path, idController.text))..createSync();
+            final texturepackDir =
+                Directory(path.join(tpDir.path, idController.text))
+                  ..createSync();
 
-            final file = File(path.join(texturepackDir.path, 'pack.json'))..createSync();
+            final file = File(path.join(texturepackDir.path, 'pack.json'))
+              ..createSync();
 
             file.writeAsStringSync(jsonEncode({
               "title": titleController.text,
               "icon": "icon.png",
             }));
 
-            File(path.join(assetsPath, 'assets', 'images', 'logo.png')).copySync(path.join(texturepackDir.path, 'icon.png'));
+            File(path.join(assetsPath, 'assets', 'images', 'logo.png'))
+                .copySync(path.join(texturepackDir.path, 'icon.png'));
 
             Navigator.pop(context);
           },

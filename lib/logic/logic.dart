@@ -12,12 +12,13 @@ import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
+import 'package:shared_preferences/shared_preferences.dart'
+    show SharedPreferences;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:http/http.dart' as http show get;
 import 'package:the_puzzle_cell/scripts/scripts.dart';
 import 'package:yaml/yaml.dart' show loadYaml;
-import '../layout/tools/tools.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:toml/toml.dart';
 import 'package:window_manager/window_manager.dart';
@@ -125,7 +126,9 @@ String findAssetDirPath({String? p}) {
   ];
 
   for (var checking in toCheck) {
-    if (dirExists(checking)) return computePath(checking);
+    if (dirExists(checking)) {
+      return computePath(checking);
+    }
   }
 
   return path.join('data', 'flutter_assets');
@@ -222,11 +225,13 @@ Future<void> fixStorage() async {
   await applyTexturePackSettings();
 }
 
-List<dynamic> parseJointCellStr(String str) {
+(String, int) parseJointCellStr(String str) {
   final s = str.split('!');
-  if (s.length == 1) s.add("0");
+  if (s.length == 1) {
+    s.add("0");
+  }
 
-  return [s[0], int.parse(s[1])];
+  return (s[0], int.parse(s[1]));
 }
 
 String rotToString(int rot) {
@@ -264,15 +269,19 @@ String getAssetPathOfOtherGame(Directory dir) {
 }
 
 // Async so we can have epic loading thing
-Future<void> transferTexturePacks(Directory game, [bool destructive = false]) async {
+Future<void> transferTexturePacks(Directory game,
+    [bool destructive = false]) async {
   final gameAssetPath = getAssetPathOfOtherGame(game);
 
-  final gameTp = Directory(path.join(gameAssetPath, 'assets', 'images', 'texture_packs'));
-  final ourTp = Directory(path.join(assetsPath, 'assets', 'images', 'texture_packs'));
+  final gameTp =
+      Directory(path.join(gameAssetPath, 'assets', 'images', 'texture_packs'));
+  final ourTp =
+      Directory(path.join(assetsPath, 'assets', 'images', 'texture_packs'));
   final files = await gameTp.list(recursive: true);
 
   await for (var file in files) {
-    final p = path.join(ourTp.path, path.relative(file.path, from: gameTp.path));
+    final p =
+        path.join(ourTp.path, path.relative(file.path, from: gameTp.path));
 
     if (file is File) {
       if (!destructive) {
@@ -315,7 +324,8 @@ Future<void> transferModules(Directory game) async {
 
   await for (var file in files) {
     if (file is File) {
-      final p = path.join(ourModules.path, path.relative(file.path, from: modules.path));
+      final p = path.join(
+          ourModules.path, path.relative(file.path, from: modules.path));
       await file.copy(p);
     }
   }
@@ -323,7 +333,8 @@ Future<void> transferModules(Directory game) async {
   return;
 }
 
-Future<void> transferGameMods(Directory game, [bool destructive = false]) async {
+Future<void> transferGameMods(Directory game,
+    [bool destructive = false]) async {
   final gameAssetPath = getAssetPathOfOtherGame(game);
 
   final gameMods = Directory(path.join(gameAssetPath, 'mods'));
@@ -331,7 +342,8 @@ Future<void> transferGameMods(Directory game, [bool destructive = false]) async 
   final files = await gameMods.list(recursive: true);
 
   await for (var file in files) {
-    final p = path.join(ourMods.path, path.relative(file.path, from: gameMods.path));
+    final p =
+        path.join(ourMods.path, path.relative(file.path, from: gameMods.path));
 
     if (file is File) {
       if (!destructive) {
@@ -349,15 +361,15 @@ Future<void> transferGameMods(Directory game, [bool destructive = false]) async 
 Stream<String> transferGame(Directory game) async* {
   yield lang("transfering_blueprints", "Transfering Blueprints...");
   await transferBlueprints(game);
-  await Future.delayed(Duration(milliseconds: 500));
+  await Future<void>.delayed(Duration(milliseconds: 500));
 
   yield lang("transfering_texture_packs", "Transfering Texture Packs...");
   await transferTexturePacks(game);
-  await Future.delayed(Duration(milliseconds: 500));
+  await Future<void>.delayed(Duration(milliseconds: 500));
 
   yield lang("transfering_mods", "Transfering Game Mods...");
   await transferGameMods(game);
-  await Future.delayed(Duration(milliseconds: 500));
+  await Future<void>.delayed(Duration(milliseconds: 500));
 
   yield lang("transfering_modules", "Transfering Modules...");
   await transferModules(game);
@@ -367,13 +379,19 @@ Stream<String> transferGame(Directory game) async* {
 
 String get fileManagerCommand {
   // File Explorer's GUI may have changed name, but it's executable hasn't.
-  if (Platform.isWindows) return 'explorer';
+  if (Platform.isWindows) {
+    return 'explorer';
+  }
 
   // xdg-open tells the Desktop Environment to open the file manager.
-  if (Platform.isLinux) return 'xdg-open';
+  if (Platform.isLinux) {
+    return 'xdg-open';
+  }
 
   // MacOS is very creative with its naming, as you can see.
-  if (Platform.isMacOS) return 'open';
+  if (Platform.isMacOS) {
+    return 'open';
+  }
 
   return "";
 }
@@ -381,11 +399,14 @@ String get fileManagerCommand {
 // This opens the file manager on all desktop platforms.
 // You have no idea how much I googled to find out I can do this
 void openFileManager(Directory dir) {
-  Process.start(fileManagerCommand, [dir.path], runInShell: true, includeParentEnvironment: true, mode: ProcessStartMode.detached);
+  Process.start(fileManagerCommand, [dir.path],
+      runInShell: true, mode: ProcessStartMode.detached);
 }
 
 enum CurrentSavingFormat {
+  // ignore: constant_identifier_names
   P6,
+  // ignore: constant_identifier_names
   VX,
 }
 
@@ -398,9 +419,13 @@ Map<String, CurrentSavingFormat> _csfCache = {};
 CurrentSavingFormat get currentSavingFormat {
   final setting = storage.getString("current_saving_format");
 
-  if (setting == null) return CurrentSavingFormat.P6;
+  if (setting == null) {
+    return CurrentSavingFormat.P6;
+  }
 
-  if (_csfCache[setting] != null) return _csfCache[setting]!;
+  if (_csfCache[setting] != null) {
+    return _csfCache[setting]!;
+  }
 
   for (var format in CurrentSavingFormat.values) {
     if (format.name == setting) {
@@ -412,6 +437,8 @@ CurrentSavingFormat get currentSavingFormat {
   return CurrentSavingFormat.P6;
 }
 
-List<String> get quickPlayOptions => storage.getStringList("quickplay_options") ?? [];
+List<String> get quickPlayOptions =>
+    storage.getStringList("quickplay_options") ?? [];
 
-set quickPlayOptions(List<String> other) => storage.setStringList("quickplay_options", other);
+set quickPlayOptions(List<String> other) =>
+    storage.setStringList("quickplay_options", other);

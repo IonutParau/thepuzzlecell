@@ -17,7 +17,8 @@ bool isPuzzleKeyDown(int d) {
   return false;
 }
 
-void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "normal", int force = 1]) {
+void doPuzzleSide(int x, int y, int dir, Set<String> cells,
+    [String type = "normal", int force = 1]) {
   AchievementManager.complete("incontrol");
   dir += 4;
   dir %= 4;
@@ -28,7 +29,10 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
   if (!grid.inside(ox, oy)) return;
 
   final o = grid.at(ox, oy);
-  if (o.id.endsWith("puzzle") && o.id != "propuzzle" && o.id != "antipuzzle" && type != "robot") {
+  if (o.id.endsWith("puzzle") &&
+      o.id != "propuzzle" &&
+      o.id != "antipuzzle" &&
+      type != "robot") {
     var nextType = "normal";
     if (o.rot == puzzle.rot && isPuzzleKeyDown((dir - o.rot) % 4)) {
       if (o.id == "trash_puzzle") nextType = "trash";
@@ -49,7 +53,8 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       }
       force++;
       o.updated = true;
-    } else if (o.rot == ((puzzle.rot + 2) % 4) && isPuzzleKeyDown((dir - puzzle.rot) % 4)) {
+    } else if (o.rot == ((puzzle.rot + 2) % 4) &&
+        isPuzzleKeyDown((dir - puzzle.rot) % 4)) {
       force--;
     }
     if (force == 0) return;
@@ -69,7 +74,9 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
       o.id = "unlock";
     }
   } else if (o.id == "flag") {
-    if (!cells.containsAny([...enemies]..removeWhere(friendlyEnemies.contains)) && !grid.cells.containsAny(moddedEnemy)) {
+    if (!cells
+            .containsAny([...enemies]..removeWhere(friendlyEnemies.contains)) &&
+        !grid.cells.containsAny(moddedEnemy)) {
       puzzleWin = true;
       if (game.edType == EditorType.loaded) game.itime = game.delay;
     }
@@ -83,7 +90,8 @@ void doPuzzleSide(int x, int y, int dir, Set<String> cells, [String type = "norm
     return;
   }
 
-  if (push(x, y, dir, 1, mt: type == "robot" ? MoveType.push : MoveType.puzzle)) {
+  if (push(x, y, dir, 1,
+      mt: type == "robot" ? MoveType.push : MoveType.puzzle)) {
     // DO stuff
   } else {
     if (type == "trash") {
@@ -208,7 +216,8 @@ void doAssistant(Cell cell, int x, int y) {
     }
   }
 
-  if (grid.cells.containsAny(["push", "unlock"]) && grid.cells.containsAny(enemies)) {
+  if (grid.cells.containsAny(["push", "unlock"]) &&
+      grid.cells.containsAny(enemies)) {
     final pushPos = findCell(x, y, ["push", "unlock"], range);
     if (pushPos != null) {
       final pushX = pushPos.dx.toInt();
@@ -409,13 +418,17 @@ void puzzles(Set<String> cells) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.keyT.keyLabel] == true) {
           if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot - 1) % 4, (cell.rot - 1) % 4, 0, 0, cell.data['offset'] ?? 1, 0);
+            doTransformer(x, y, (cell.rot - 1) % 4, (cell.rot - 1) % 4, 0, 0,
+                cell.data['offset'] ?? 1, 0);
           } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4, 0, 0, cell.data['offset'] ?? 1, 0);
+            doTransformer(x, y, (cell.rot + 1) % 4, (cell.rot + 1) % 4, 0, 0,
+                cell.data['offset'] ?? 1, 0);
           } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
-            doTransformer(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4, 0, 0, cell.data['offset'] ?? 1, 0);
+            doTransformer(x, y, (cell.rot + 2) % 4, (cell.rot + 2) % 4, 0, 0,
+                cell.data['offset'] ?? 1, 0);
           } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
-            doTransformer(x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1, 0);
+            doTransformer(
+                x, y, cell.rot, cell.rot, 0, 0, cell.data['offset'] ?? 1, 0);
           }
         } else {
           if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {

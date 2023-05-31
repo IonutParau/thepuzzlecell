@@ -8,10 +8,10 @@ var playerKeys = 0;
 var puzzleWin = false;
 var puzzleLost = false;
 
-const _UP = Offset(0, -1);
-const _DOWN = Offset(0, 1);
-const _LEFT = Offset(-1, 0);
-const _RIGHT = Offset(1, 0);
+const _up = Offset(0, -1);
+const _down = Offset(0, 1);
+const _left = Offset(-1, 0);
+const _right = Offset(1, 0);
 
 Offset fromDir(int dir) {
   dir += 4;
@@ -19,13 +19,13 @@ Offset fromDir(int dir) {
 
   switch (dir) {
     case 0:
-      return _RIGHT;
+      return _right;
     case 2:
-      return _LEFT;
+      return _left;
     case 1:
-      return _DOWN;
+      return _down;
     case 3:
-      return _UP;
+      return _up;
     default:
       return Offset.zero;
   }
@@ -48,11 +48,13 @@ bool isUngennable(Cell cell, int x, int y, int dir) {
   dir %= 4;
   /* Special code here */
 
-  if (modded.contains(cell.id)) {
+  final id = cell.id;
+
+  if (modded.contains(id)) {
     return scriptingManager.isUngeneratable(cell, x, y, dir);
   }
 
-  return ungennable.contains(cell.id);
+  return ungennable.contains(id);
 }
 
 enum RotationalType {
@@ -69,7 +71,12 @@ class CellTypeManager {
     "mem_gen_triple",
   ];
 
-  static List<String> movers = ["mover", "slow_mover", "fast_mover", "releaser"];
+  static List<String> movers = [
+    "mover",
+    "slow_mover",
+    "fast_mover",
+    "releaser"
+  ];
 
   static List<String> puller = [
     "puller",
@@ -196,7 +203,17 @@ class CellTypeManager {
     "keyfake",
   ];
 
-  static List<String> gates = ["and_gate", "or_gate", "xor_gate", "not_gate", "nand_gate", "nor_gate", "xnor_gate", "imply_gate", "nimply_gate"];
+  static List<String> gates = [
+    "and_gate",
+    "or_gate",
+    "xor_gate",
+    "not_gate",
+    "nand_gate",
+    "nor_gate",
+    "xnor_gate",
+    "imply_gate",
+    "nimply_gate"
+  ];
 
   static List<String> mirrors = [
     "mirror",
@@ -213,7 +230,9 @@ class CellTypeManager {
 }
 
 Cell? safeAt(int x, int y) {
-  if (!grid.inside(x, y)) return null;
+  if (!grid.inside(x, y)) {
+    return null;
+  }
   return grid.at(x, y);
 }
 
@@ -223,21 +242,27 @@ class CellStructure {
 
   bool inStructure(int x, int y) {
     for (var coord in coords) {
-      if (coord.x == x && coord.y == y) return true;
+      if (coord.x == x && coord.y == y) {
+        return true;
+      }
     }
     return false;
   }
 
   void build(int x, int y) {
-    if (!grid.inside(x, y)) return;
-    if (grid.at(x, y).id == "empty") return;
+    if (!grid.inside(x, y)) {
+      return;
+    }
+    if (grid.at(x, y).id == "empty") {
+      return;
+    }
     if (!inStructure(x, y)) {
       coords.add(Vector2(x.toDouble(), y.toDouble()));
       cells.add(grid.at(x, y));
-      this.build(x + 1, y);
-      this.build(x - 1, y);
-      this.build(x, y + 1);
-      this.build(x, y - 1);
+      build(x + 1, y);
+      build(x - 1, y);
+      build(x, y + 1);
+      build(x, y - 1);
     }
   }
 }
@@ -245,7 +270,9 @@ class CellStructure {
 int dirFromOff(int ox, int oy) {
   var dir = (atan2(oy, ox) / halfPi);
 
-  while (dir < 0) dir += 4;
+  while (dir < 0) {
+    dir += 4;
+  }
 
   bool within(double a, double b) => (dir >= a && dir <= b);
 
@@ -279,7 +306,8 @@ void doAnchor(int x, int y, int amount) {
     final nv = Vector2.all(0);
     final dx = v.x.toInt() - x;
     final dy = v.y.toInt() - y;
-    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1, MoveType.unknown_move)) {
+    if (!canMove(v.x.toInt(), v.y.toInt(), (dirFromOff(dx, dy) + amount) % 4, 1,
+        MoveType.unknown_move)) {
       return;
     }
     if (amount == 1) {
@@ -292,7 +320,9 @@ void doAnchor(int x, int y, int amount) {
       nv.x = x - dx.toDouble();
       nv.y = y - dy.toDouble();
     }
-    if (!grid.inside(nv.x.toInt(), nv.y.toInt())) return;
+    if (!grid.inside(nv.x.toInt(), nv.y.toInt())) {
+      return;
+    }
     if (nv != v) {
       if (!structure.inStructure(nv.x.toInt(), nv.y.toInt())) {
         if (grid.at(nv.x.toInt(), nv.y.toInt()).id != "empty") {
@@ -304,7 +334,9 @@ void doAnchor(int x, int y, int amount) {
 
   for (var i = 0; i < structure.coords.length; i++) {
     final v = structure.coords[i];
-    if (v != center) grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
+    if (v != center) {
+      grid.set(v.x.toInt(), v.y.toInt(), Cell(v.x.toInt(), v.y.toInt()));
+    }
   }
 
   for (var i = 0; i < structure.coords.length; i++) {
@@ -372,38 +404,31 @@ Offset? findCell(int x, int y, List<String> targets, int maxDepth) {
     }
     first = false;
     d = d - 1;
-    if (d == 0) return null;
+    if (d == 0) {
+      return null;
+    }
   }
 
   return null;
 }
 
-int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
-  if (x == dx && y == dy) return null;
-  if (!grid.inside(x, y)) return null;
+int? getPathFindingDirection(
+    int x, int y, int dx, int dy, bool first, Map<String, bool> visited) {
+  if (x == dx && y == dy) {
+    return null;
+  }
+  if (!grid.inside(x, y)) {
+    return null;
+  }
   final Map<String, bool> visited = {};
   visited["$x $y"] = true;
-  final List<List> toVisit = [
-    [
-      x + 1,
-      y,
-      [0]
-    ],
-    [
-      x,
-      y + 1,
-      [1]
-    ],
-    [
-      x - 1,
-      y,
-      [2]
-    ],
-    [
-      x,
-      y - 1,
-      [3]
-    ],
+
+  /// Using records, as well as has memory optimizations
+  final List<(int, int, int)> toVisit = [
+    (x + 1, y, 0),
+    (x, y + 1, 1),
+    (x - 1, y, 2),
+    (x, y - 1, 3),
   ];
 
   var maxDepth = grid.width * grid.height;
@@ -411,43 +436,27 @@ int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<Strin
 
   while (toVisit.isNotEmpty) {
     final cur = toVisit.removeAt(0);
-    final cx = cur[0];
-    final cy = cur[1];
-    final path = cur[2];
+    final (cx, cy, path) = cur;
     if (grid.inside(cx, cy)) {
       final cell = grid.at(cx, cy);
       if (cx == dx && cy == dy) {
-        return path[0];
+        return path;
       }
       if (cell.id == "empty") {
         if (!visited.containsKey("$cx $cy")) {
           visited["$cx $cy"] = true;
-          toVisit.add([
-            cx + 1,
-            cy,
-            [...path, 0]
-          ]);
-          toVisit.add([
-            cx,
-            cy + 1,
-            [...path, 1]
-          ]);
-          toVisit.add([
-            cx - 1,
-            cy,
-            [...path, 2]
-          ]);
-          toVisit.add([
-            cx,
-            cy - 1,
-            [...path, 3]
-          ]);
+          toVisit.add((cx + 1, cy, path));
+          toVisit.add((cx, cy + 1, path));
+          toVisit.add((cx - 1, cy, path));
+          toVisit.add((cx, cy - 1, path));
           d += 4;
         }
       }
     }
     d--;
-    if (d == 0) return null;
+    if (d == 0) {
+      return null;
+    }
   }
 
   return null;
@@ -455,7 +464,9 @@ int? getPathFindingDirection(int x, int y, int dx, int dy, bool first, Map<Strin
 
 int? pathFindToCell(int x, int y, List<String> targets, int maxDepth) {
   final cell = findCell(x, y, targets, maxDepth);
-  if (cell == null) return null;
+  if (cell == null) {
+    return null;
+  }
 
   final cx = cell.dx.toInt();
   final cy = cell.dy.toInt();

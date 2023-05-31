@@ -2,11 +2,13 @@ part of logic;
 
 void doMirror(int x, int y, int dir) {
   if (dir == 0) {
-    if (canMove(x + 1, y, 2, 1, MoveType.mirror) && canMove(x - 1, y, 0, 1, MoveType.mirror)) {
+    if (canMove(x + 1, y, 2, 1, MoveType.mirror) &&
+        canMove(x - 1, y, 0, 1, MoveType.mirror)) {
       swapCells(x + 1, y, x - 1, y);
     }
   } else {
-    if (canMove(x, y + 1, 3, 1, MoveType.mirror) && canMove(x, y - 1, 1, 1, MoveType.mirror)) {
+    if (canMove(x, y + 1, 3, 1, MoveType.mirror) &&
+        canMove(x, y - 1, 1, 1, MoveType.mirror)) {
       swapCells(x, y - 1, x, y + 1);
     }
   }
@@ -32,7 +34,8 @@ void doSuperMirror(int x, int y, int dir) {
 
     if (c1.id == "empty" && c2.id == "empty") return;
 
-    if (!canMove(x1, y1, odir, 1, MoveType.mirror) || !canMove(x2, y2, dir, 1, MoveType.mirror)) return;
+    if (!canMove(x1, y1, odir, 1, MoveType.mirror) ||
+        !canMove(x2, y2, dir, 1, MoveType.mirror)) return;
     swapCells(x1, y1, x2, y2);
   }
 }
@@ -53,7 +56,8 @@ void mirrors() {
       (cell, x, y) {
         if (cell.rot % 2 == i) doSuperMirror(x, y, i);
       },
-      filter: (c, x, y) => c.id == "super_mirror" && c.rot % 2 == i && !c.updated,
+      filter: (c, x, y) =>
+          c.id == "super_mirror" && c.rot % 2 == i && !c.updated,
     );
   }
 }

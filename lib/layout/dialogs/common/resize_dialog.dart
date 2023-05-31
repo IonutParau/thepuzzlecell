@@ -73,14 +73,17 @@ class _ResizeDialogState extends State<ResizeDialog> {
                   width: constraints.maxWidth / 1.2,
                   height: 7.h,
                   child: DropDownButton(
-                    title: Text(lang("resize_corner", "Resizing Corner") + ": " + cornerToString(corner.index)),
+                    title: Text(lang("resize_corner", "Resizing Corner") +
+                        ": " +
+                        cornerToString(corner.index)),
                     items: [
                       for (var i = 0; i < 4; i++)
                         MenuFlyoutItem(
                           text: Text(cornerToString(i)),
                           onPressed: () {
                             setState(() {
-                              corner = ResizeCorner.values[i % ResizeCorner.values.length];
+                              corner = ResizeCorner
+                                  .values[i % ResizeCorner.values.length];
                             });
                           },
                         ),
@@ -215,7 +218,10 @@ class _ResizeDialogState extends State<ResizeDialog> {
             if (game.isMultiplayer) {
               game.sendToServer(
                 'setinit',
-                {"code": SavingFormat.encodeGrid(g, title: g.title, description: g.desc)},
+                {
+                  "code": SavingFormat.encodeGrid(g,
+                      title: g.title, description: g.desc)
+                },
               );
             } else {
               grid = g;

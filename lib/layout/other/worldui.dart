@@ -4,7 +4,7 @@ import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:flutter/material.dart' show MaterialButton;
 import 'package:fluent_ui/fluent_ui.dart';
-import '../../logic/logic.dart' show grid, lang, worldIndex, worldManager;
+import 'package:the_puzzle_cell/logic/logic.dart' show grid, lang, worldIndex, worldManager;
 
 class WorldUI extends StatefulWidget {
   const WorldUI({Key? key}) : super(key: key);
@@ -66,7 +66,7 @@ class _WorldUIState extends State<WorldUI> {
 
 class WorldTile extends StatelessWidget {
   final int index;
-  final Function() whenPressed;
+  final void Function() whenPressed;
 
   const WorldTile({Key? key, required this.index, required this.whenPressed}) : super(key: key);
 
@@ -156,13 +156,13 @@ class WorldTile extends StatelessWidget {
                     builder: (ctx) {
                       return ContentDialog(
                         title: Text(
-                          "${lang(
+                          lang(
                             "world_del_title",
                             "Are you sure you want to delete \"${worldPart[1]}\"?",
                             {
                               "world": worldPart[1],
                             },
-                          )}",
+                          ),
                         ),
                         content: Text(
                           lang(

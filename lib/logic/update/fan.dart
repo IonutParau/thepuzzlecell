@@ -14,7 +14,8 @@ void doVacuum(Cell cell, int x, int y) {
 
   if (front != null) {
     if (front.id == "empty") {
-      pull(frontX(x, cell.rot, 2), frontY(y, cell.rot, 2), (cell.rot + 2) % 4, 1);
+      pull(frontX(x, cell.rot, 2), frontY(y, cell.rot, 2), (cell.rot + 2) % 4,
+          1);
     }
   }
 }
@@ -39,7 +40,8 @@ void doSuperFan(Cell cell, int x, int y) {
 }
 
 bool isFlowThrough(Cell cell, int x, int y, int dir) {
-  if (["airflow", "inverse_airflow", "nudging_airflow"].contains(cell.id) && (cell.rot % 2 == dir % 2)) {
+  if (["airflow", "inverse_airflow", "nudging_airflow"].contains(cell.id) &&
+      (cell.rot % 2 == dir % 2)) {
     return true;
   }
 

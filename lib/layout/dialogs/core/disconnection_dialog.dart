@@ -6,7 +6,8 @@ class DisconnectionDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(lang('disconnected', 'Disconnected')),
-      content: Text(lang('disconnected_desc', 'You got kicked. This means either the server closed or your internet cut off')),
+      content: Text(lang('disconnected_desc',
+          'You got kicked. This means either the server closed or your internet cut off')),
       actions: [
         Button(
           child: Text('Ok'),

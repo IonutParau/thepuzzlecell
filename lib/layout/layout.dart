@@ -14,13 +14,15 @@ import 'package:flame/image_composition.dart';
 import 'package:flame/input.dart' hide ButtonState;
 import 'package:fluent_ui/fluent_ui.dart' hide showDialog, Tab, TabView;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' hide Colors, ButtonStyle, Slider, SliderThemeData, Chip, ListTile;
+import 'package:flutter/material.dart'
+    hide Colors, ButtonStyle, Slider, SliderThemeData, Chip, ListTile;
 import 'package:flutter/services.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:the_puzzle_cell/layout/other/other.dart';
-import 'package:the_puzzle_cell/logic/core/lan.dart' show setupLanServer, closeLanServer;
+import 'package:the_puzzle_cell/logic/core/lan.dart'
+    show setupLanServer, closeLanServer;
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/logic/performance/grid_benchmark.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';

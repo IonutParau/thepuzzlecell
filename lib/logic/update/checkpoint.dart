@@ -23,11 +23,12 @@ void doCheckpoint(Cell cell, int x, int y) {
 
   if (!grid.cells.containsAny(CellTypeManager.puzzles)) {
     final o = (cell.copy..id = "puzzle");
-    if(cell.data['reset_rot'] == true) {
+    if (cell.data['reset_rot'] == true) {
       o.rot = 0;
       o.lastvars.lastRot = 0;
     }
-    push(frontX(x, cell.rot), frontY(y, cell.rot), cell.rot, 1, mt: MoveType.puzzle, replaceCell: o);
+    push(frontX(x, cell.rot), frontY(y, cell.rot), cell.rot, 1,
+        mt: MoveType.puzzle, replaceCell: o);
   }
 }
 

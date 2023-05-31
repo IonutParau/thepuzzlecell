@@ -14,7 +14,9 @@ Set<String> getPlant(int x, int y, int plantID, [Set<String>? plant]) {
 
   final c = grid.at(x, y);
 
-  if (c.id.startsWith('plant_') && c.id != "plant_spore" && c.data['plant_id'] == plantID) {
+  if (c.id.startsWith('plant_') &&
+      c.id != "plant_spore" &&
+      c.data['plant_id'] == plantID) {
     plant.add('$x $y');
 
     getPlant(x - 1, y, plantID, plant);
@@ -46,7 +48,8 @@ bool checkPlantDeath(Cell cell, int x, int y) {
   return false;
 }
 
-void buildPlant(int x, int y, int dir, double lChance, int plantID, [int depth = 0]) {
+void buildPlant(int x, int y, int dir, double lChance, int plantID,
+    [int depth = 0]) {
   if (!grid.inside(x, y)) return;
   if (depth > 200) return;
   if (rng.nextBool()) {
@@ -78,7 +81,8 @@ void buildPlant(int x, int y, int dir, double lChance, int plantID, [int depth =
           ..data = {"plant_id": plantID});
     buildPlant(fx, fy, dir, lChance, plantID, depth + 1);
     if (rng.nextDouble() < 0.5) {
-      buildPlant(fx, fy, dir + (rng.nextBool() ? 1 : -1), lChance, plantID, depth + 1);
+      buildPlant(
+          fx, fy, dir + (rng.nextBool() ? 1 : -1), lChance, plantID, depth + 1);
     }
   }
 }
@@ -89,8 +93,10 @@ void doPlantSeed(Cell cell, int x, int y) {
   if (vars['energy'] == null) vars['energy'] = 0;
   if (vars['deathtime'] == null) vars['deathtime'] = 0;
   if (vars['spore_rate'] == null) vars['spore_rate'] = rng.nextDouble() * 0.1;
-  if (vars['growth_rate'] == null) vars['growth_rate'] = rng.nextDouble() * 0.001;
-  if (vars['spore_percentage'] == null) vars['spore_percentage'] = rng.nextDouble();
+  if (vars['growth_rate'] == null)
+    vars['growth_rate'] = rng.nextDouble() * 0.001;
+  if (vars['spore_percentage'] == null)
+    vars['spore_percentage'] = rng.nextDouble();
   if (vars['length_chance'] == null) vars['length_chance'] = rng.nextDouble();
   if (vars['plant_id'] == null) {
     vars['plant_id'] = plantID;
@@ -136,7 +142,8 @@ void doPlantSeed(Cell cell, int x, int y) {
     }
   }
 
-  var eToAdd = extraEnergy / max(plant.length, 1); // No division by 0 exception for u
+  var eToAdd =
+      extraEnergy / max(plant.length, 1); // No division by 0 exception for u
 
   // Energy
   for (var part in plant) {
@@ -197,7 +204,9 @@ void doPlantBodyKill(int x, int y, int pid) {
   if (rng.nextDouble() < 0.1) {
     final cell = grid.at(x, y);
 
-    if (!cell.id.startsWith('plant_') && cell.id != "darty" && cell.id != "karl") return;
+    if (!cell.id.startsWith('plant_') &&
+        cell.id != "darty" &&
+        cell.id != "karl") return;
 
     if (cell.data['plant_id'] == pid) {
       return;

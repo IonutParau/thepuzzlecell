@@ -85,7 +85,8 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
             children: [
               for (var i = 0; i < ids.length; i++)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,

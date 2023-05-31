@@ -111,7 +111,11 @@ class _SkinTileState extends State<SkinTile> {
               Spacer(),
               MaterialButton(
                 child: Text(
-                  SkinManager.hasSkin(widget.skin) ? (SkinManager.skinEnabled(widget.skin) ? lang("disequip", "Disequip") : lang("equip", "Equip")) : lang("unlock", "Unlock"),
+                  SkinManager.hasSkin(widget.skin)
+                      ? (SkinManager.skinEnabled(widget.skin)
+                          ? lang("disequip", "Disequip")
+                          : lang("equip", "Equip"))
+                      : lang("unlock", "Unlock"),
                   style: TextStyle(
                     fontSize: 5.sp,
                     color: Colors.white,
@@ -160,7 +164,8 @@ class _SkinTileState extends State<SkinTile> {
             ],
           ),
           subtitle: Text(
-            lang('price', 'Price: ${widget.price} Puzzle Points', {"price": "${widget.price} Puzzle Points"}),
+            lang('price', 'Price: ${widget.price} Puzzle Points',
+                {"price": "${widget.price} Puzzle Points"}),
             style: TextStyle(
               fontSize: 4.sp,
             ),

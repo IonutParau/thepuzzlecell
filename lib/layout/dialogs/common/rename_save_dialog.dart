@@ -26,7 +26,8 @@ class _RenameSaveDialogState extends State<RenameSaveDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(lang("change_name_and_description", "Change Name & Description")),
+      title: Text(
+          lang("change_name_and_description", "Change Name & Description")),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {

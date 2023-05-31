@@ -103,7 +103,8 @@ bool isValidID(String id) {
   return true;
 }
 
-UserRole getRole(WebSocketChannel ws) => game.roles[clientIDs[ws] ?? "Unknown"] ?? UserRole.member;
+UserRole getRole(WebSocketChannel ws) =>
+    game.roles[clientIDs[ws] ?? "Unknown"] ?? UserRole.member;
 
 void sendRoles() {
   for (var ws in webSockets) {
@@ -157,7 +158,8 @@ void execPacket(String data, WebSocketChannel sender) {
 
       try {
         final signed = packet["author"].toString();
-        if (signed.toLowerCase() == "server") throw "User attempted to forge a message as server";
+        if (signed.toLowerCase() == "server")
+          throw "User attempted to forge a message as server";
 
         final id = clientIDs[sender];
         if (id == null) throw "Pending User tried to send message";

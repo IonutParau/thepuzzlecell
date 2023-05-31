@@ -67,7 +67,8 @@ class _ModsUIState extends State<ModsUI> {
           final info = modsInfo[i];
 
           return ListTile(
-            title: Text(info.title + ' (' + info.author + ')', style: fontSize(7.sp)),
+            title: Text(info.title + ' (' + info.author + ')',
+                style: fontSize(7.sp)),
             subtitle: Text(info.desc, style: fontSize(5.sp)),
             leading: Image.asset(
               info.icon,
@@ -80,7 +81,8 @@ class _ModsUIState extends State<ModsUI> {
               children: [
                 if (info.readme != null)
                   Button(
-                    child: Text(lang("view_readme", "View README"), style: fontSize(7.sp)),
+                    child: Text(lang("view_readme", "View README"),
+                        style: fontSize(7.sp)),
                     onPressed: () async {
                       await showDialog(
                         context: context,
@@ -112,9 +114,12 @@ class _ModsUIState extends State<ModsUI> {
                     },
                   ),
                 Button(
-                  child: Text(lang('view_cells', 'View Cells'), style: fontSize(7.sp)),
+                  child: Text(lang('view_cells', 'View Cells'),
+                      style: fontSize(7.sp)),
                   onPressed: () async {
-                    await showDialog(context: context, builder: (ctx) => ViewModCellsDialog(info));
+                    await showDialog(
+                        context: context,
+                        builder: (ctx) => ViewModCellsDialog(info));
                     setState(() {});
                   },
                 ),

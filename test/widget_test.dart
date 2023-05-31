@@ -21,11 +21,19 @@ void main() {
     expect(TPCML.decodeValue('false'), false);
     expect(TPCML.decodeValue('nd1.5'), 1.5);
     expect(TPCML.decodeValue('l(true:false:nd1.5:ni0)'), [true, false, 1.5, 0]);
-    expect(TPCML.decodeValue('m(key="value":test=l(this:is:a:list):someMap=m(someKey="someValue":someNumber=ni0:someDouble=nd5.3:someBoolean=false))'), {
-      'key': 'value',
-      'test': ['this', 'is', 'a', 'list'],
-      'someMap': {'someKey': 'someValue', 'someNumber': 0, 'someDouble': 5.3, 'someBoolean': false}
-    });
+    expect(
+        TPCML.decodeValue(
+            'm(key="value":test=l(this:is:a:list):someMap=m(someKey="someValue":someNumber=ni0:someDouble=nd5.3:someBoolean=false))'),
+        {
+          'key': 'value',
+          'test': ['this', 'is', 'a', 'list'],
+          'someMap': {
+            'someKey': 'someValue',
+            'someNumber': 0,
+            'someDouble': 5.3,
+            'someBoolean': false
+          }
+        });
   });
 
   test('Test P4 encoding', () {

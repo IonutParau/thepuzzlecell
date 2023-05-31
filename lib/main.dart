@@ -45,10 +45,12 @@ Future<void> benchmarkSelf() async {
   stopwatch.stop();
 
   print("Ticks Executed: ${grid.tickCount}");
-  print("Average Tick Execution: ${(stopwatch.elapsedMilliseconds / grid.tickCount) / 1000}s");
+  print(
+      "Average Tick Execution: ${(stopwatch.elapsedMilliseconds / grid.tickCount) / 1000}s");
   print("Slowest Tick Execution: ${slowest}s");
   print("Fastest Tick Execution: ${fastest}s");
-  print("Average Ticks Per Second: ${grid.tickCount / (stopwatch.elapsedMilliseconds / 1000)}");
+  print(
+      "Average Ticks Per Second: ${grid.tickCount / (stopwatch.elapsedMilliseconds / 1000)}");
   print("Slowest Ticks Per Second: ${1 / slowest}");
   print("Fastest Ticks Per Second: ${1 / fastest}");
 }
@@ -76,18 +78,26 @@ void main(List<String> args) async {
 
   final defaultMaterialTheme = MaterialStuff.ThemeData().textTheme;
 
-  final font = GoogleFonts.oxygen; // Just grab the constructor, nothing too cursed
+  final font =
+      GoogleFonts.oxygen; // Just grab the constructor, nothing too cursed
 
   // Text stuff
   final typography = Typography.raw(
     body: font(textStyle: defaultMaterialTheme.bodyMedium, color: Colors.white),
-    bodyLarge: font(textStyle: defaultMaterialTheme.bodyLarge, color: Colors.white),
-    bodyStrong: font(textStyle: defaultMaterialTheme.bodyMedium, color: Colors.white),
-    title: font(textStyle: defaultMaterialTheme.titleMedium, color: Colors.white),
-    titleLarge: font(textStyle: defaultMaterialTheme.titleLarge, color: Colors.white),
-    subtitle: font(textStyle: defaultMaterialTheme.titleSmall, color: Colors.white),
-    caption: font(textStyle: defaultMaterialTheme.headlineSmall, color: Colors.white),
-    display: font(textStyle: defaultMaterialTheme.displayMedium, color: Colors.white),
+    bodyLarge:
+        font(textStyle: defaultMaterialTheme.bodyLarge, color: Colors.white),
+    bodyStrong:
+        font(textStyle: defaultMaterialTheme.bodyMedium, color: Colors.white),
+    title:
+        font(textStyle: defaultMaterialTheme.titleMedium, color: Colors.white),
+    titleLarge:
+        font(textStyle: defaultMaterialTheme.titleLarge, color: Colors.white),
+    subtitle:
+        font(textStyle: defaultMaterialTheme.titleSmall, color: Colors.white),
+    caption: font(
+        textStyle: defaultMaterialTheme.headlineSmall, color: Colors.white),
+    display: font(
+        textStyle: defaultMaterialTheme.displayMedium, color: Colors.white),
   );
 
   td = FluentThemeData(
@@ -142,7 +152,9 @@ class _MyAppState extends State<MyApp> {
             automaticallyImplyLeading: false,
           ),
           body: Text(
-            details.stack != null ? "Stack Trace:\n${details.stack.toString()}" : "No stack trace available",
+            details.stack != null
+                ? "Stack Trace:\n${details.stack.toString()}"
+                : "No stack trace available",
             textAlign: TextAlign.left,
           ),
         );

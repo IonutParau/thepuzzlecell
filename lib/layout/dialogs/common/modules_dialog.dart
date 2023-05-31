@@ -20,7 +20,11 @@ class _ModulesDialogState extends State<ModulesDialog> {
 
   void getModules() {
     if (isDesktop) {
-      _modules = Directory(path.join(assetsPath, 'modules')).listSync().whereType<File>().where((e) => e.path.endsWith('.lua')).toList();
+      _modules = Directory(path.join(assetsPath, 'modules'))
+          .listSync()
+          .whereType<File>()
+          .where((e) => e.path.endsWith('.lua'))
+          .toList();
     }
   }
 
@@ -74,7 +78,8 @@ class _ModulesDialogState extends State<ModulesDialog> {
                 for (var platformFile in result.paths) {
                   final file = File(platformFile!);
 
-                  file.copySync(path.absolute(assetsPath, 'modules', '${path.split(file.path).last}'));
+                  file.copySync(path.absolute(
+                      assetsPath, 'modules', '${path.split(file.path).last}'));
                 }
               }
             }

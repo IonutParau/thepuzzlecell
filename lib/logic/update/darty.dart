@@ -4,7 +4,8 @@ void doDartySide(int x, int y, int dir) {
   final cell = grid.at(x, y);
   final front = inFront(x, y, cell.rot);
   if (front != null) {
-    if (moveInsideOf(front, frontX(x, dir), frontY(y, dir), dir, 1, MoveType.push)) {
+    if (moveInsideOf(
+        front, frontX(x, dir), frontY(y, dir), dir, 1, MoveType.push)) {
       moveFront(x, y, cell.rot);
     } else if (front.id != "darty") {
       if (rng.nextDouble() < 0.2) {

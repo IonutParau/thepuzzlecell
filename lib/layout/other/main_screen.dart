@@ -153,7 +153,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     title: Text(lang('loadLevel', 'Load Level')),
                     onTap: () {
                       final now = DateTime.now();
-                      if (now.millisecondsSinceEpoch - lastLoadTime.millisecondsSinceEpoch < 500) {
+                      if (now.millisecondsSinceEpoch -
+                              lastLoadTime.millisecondsSinceEpoch <
+                          500) {
                         return;
                       }
                       lastLoadTime = now;
@@ -178,7 +180,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                               showDialog(
                                 context: context,
                                 builder: (ctx) {
-                                  return LoadSaveErrorDialog("Clipboard does not contain text");
+                                  return LoadSaveErrorDialog(
+                                      "Clipboard does not contain text");
                                 },
                               );
                             }

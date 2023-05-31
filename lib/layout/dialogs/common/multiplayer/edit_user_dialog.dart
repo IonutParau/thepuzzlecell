@@ -57,13 +57,22 @@ class _EditUserDialogState extends State<EditUserDialog> {
                     RadioButton(
                       content: Text(roleName(userRole)),
                       checked: role == userRole,
-                      onChanged: (((role == UserRole.owner || role == UserRole.admin || userRole == UserRole.owner) && ourRole == UserRole.admin) || widget.user == game.clientID)
+                      onChanged: (((role == UserRole.owner ||
+                                      role == UserRole.admin ||
+                                      userRole == UserRole.owner) &&
+                                  ourRole == UserRole.admin) ||
+                              widget.user == game.clientID)
                           ? null
                           : (value) {
                               setState(
                                 () {
                                   role = userRole;
-                                  game.sendToServer('set-role', {"id": widget.user, "role": role.toString().replaceAll('UserRole.', '')});
+                                  game.sendToServer('set-role', {
+                                    "id": widget.user,
+                                    "role": role
+                                        .toString()
+                                        .replaceAll('UserRole.', '')
+                                  });
                                 },
                               );
                             },

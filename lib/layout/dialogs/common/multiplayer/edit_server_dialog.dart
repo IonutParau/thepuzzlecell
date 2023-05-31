@@ -67,7 +67,8 @@ class _EditServerDialogState extends State<EditServerDialog> {
           onPressed: () async {
             final strList = storage.getStringList("servers")!;
 
-            strList[widget.i] = "${_titleController.text};${_ipController.text}";
+            strList[widget.i] =
+                "${_titleController.text};${_ipController.text}";
 
             storage.setStringList('servers', strList);
 

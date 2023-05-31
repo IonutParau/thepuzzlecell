@@ -11,14 +11,16 @@ class ModifyTexturePackDialog extends StatefulWidget {
   ModifyTexturePackDialog(this.tp);
 
   @override
-  State<ModifyTexturePackDialog> createState() => _ModifyTexturePackDialogState();
+  State<ModifyTexturePackDialog> createState() =>
+      _ModifyTexturePackDialogState();
 }
 
 class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(lang('modify_tp', 'Modify ${widget.tp.title}', {'name': widget.tp.title})),
+      title: Text(lang(
+          'modify_tp', 'Modify ${widget.tp.title}', {'name': widget.tp.title})),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (ctx, constraints) {
@@ -31,7 +33,8 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
               final isMade = tpCells.contains(cell);
 
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                padding:
+                    EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                 child: SizedBox(
                   width: constraints.maxWidth * 0.7,
                   height: 7.h,
@@ -45,7 +48,9 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
                     ),
                     title: Text(idToString(cell)),
                     trailing: Button(
-                      child: Text(isMade ? lang("delete", "Delete") : lang("create", "Create")),
+                      child: Text(isMade
+                          ? lang("delete", "Delete")
+                          : lang("create", "Create")),
                       onPressed: () {
                         if (isMade) {
                           final p = widget.tp.fix(cell);
@@ -56,11 +61,15 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
                           widget.tp.setMap(m);
                           setState(() {});
                         } else {
-                          final relativeFilePath = textureMapBackup['$cell.png'] ?? '$cell.png';
+                          final relativeFilePath =
+                              textureMapBackup['$cell.png'] ?? '$cell.png';
 
-                          final f = File(path.join(widget.tp.dir.path, path.joinAll(relativeFilePath.split('/'))));
+                          final f = File(path.join(widget.tp.dir.path,
+                              path.joinAll(relativeFilePath.split('/'))));
                           f.createSync(recursive: true);
-                          final bytes = assetToFile('images/' + relativeFilePath).readAsBytesSync();
+                          final bytes =
+                              assetToFile('images/' + relativeFilePath)
+                                  .readAsBytesSync();
                           f.writeAsBytesSync(bytes);
                           final m = widget.tp.getMap();
                           m[cell] = relativeFilePath;

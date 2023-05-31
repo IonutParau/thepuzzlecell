@@ -11,8 +11,14 @@ class QuadChunk {
   List<QuadChunk> subs = [];
   bool get subd => subs.isNotEmpty;
   int sx, sy, ex, ey;
-  int get width => ex - sx + 1; // If sx and ex are equal, the width is 1 (useful for subdivision)
-  int get height => ey - sy + 1; // If sy and ey are equal, the height is 1 (useful for subdivision)
+  int get width =>
+      ex -
+      sx +
+      1; // If sx and ex are equal, the width is 1 (useful for subdivision)
+  int get height =>
+      ey -
+      sy +
+      1; // If sy and ey are equal, the height is 1 (useful for subdivision)
 
   // OOP stuff
   QuadChunk(this.sx, this.sy, this.ex, this.ey);
@@ -62,7 +68,8 @@ class QuadChunk {
     return types.contains(id);
   }
 
-  List<List<int>> fetch(String id, [int? minx, int? miny, int? maxx, int? maxy]) {
+  List<List<int>> fetch(String id,
+      [int? minx, int? miny, int? maxx, int? maxy]) {
     // Stop if the type is not within the node
     if (!containsType(id)) return [];
 
@@ -96,7 +103,8 @@ class QuadChunk {
     }
   }
 
-  void iterateX(int y, String chunkType, bool reversed, void callback(Cell cell, int x, int y)) {
+  void iterateX(int y, String chunkType, bool reversed,
+      void callback(Cell cell, int x, int y)) {
     if (y != -1 && !(y >= sy && y <= ey)) return;
     if (!containsType(chunkType)) return;
 
@@ -125,7 +133,8 @@ class QuadChunk {
     }
   }
 
-  void iterateY(int x, String chunkType, bool reversed, void callback(Cell cell, int x, int y)) {
+  void iterateY(int x, String chunkType, bool reversed,
+      void callback(Cell cell, int x, int y)) {
     if (x != -1 && !(x >= sx && x <= ex)) return;
     if (!containsType(chunkType)) return;
 
@@ -154,7 +163,8 @@ class QuadChunk {
     }
   }
 
-  void iterate(Grid grid, GridAlignment alignment, String chunkType, void callback(Cell cell, int x, int y)) {
+  void iterate(Grid grid, GridAlignment alignment, String chunkType,
+      void callback(Cell cell, int x, int y)) {
     if (alignment == GridAlignment.bottomright) {
       for (var y = 0; y < grid.height; y++) {
         iterateX(y, chunkType, false, callback);

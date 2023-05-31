@@ -38,17 +38,21 @@ Music getCurrentMusicData() {
 Source get music {
   final m = storage.getString("music") ?? (musics.first.id);
 
-  if (m == "flight") return flightMusic;
-  if (m == "float") return floatMusic;
-  if (m == "drift") return driftMusic;
-
-  return flightMusic;
+  // Dart 3!!!!
+  return switch (m) {
+    "flight" => flightMusic,
+    "float" => floatMusic,
+    "drift" => driftMusic,
+    _ => flightMusic,
+  };
 }
 
-Future changeMusic(String newMusic) async {
+Future<void> changeMusic(String newMusic) async {
   final volume = getMusicVolume();
   await storage.setString("music", newMusic);
-  if (_isMusicPlaying) await musicPlayer.stop();
+  if (_isMusicPlaying) {
+    await musicPlayer.stop();
+  }
   _isMusicPlaying = false;
   await setLoopSoundVolume(
     music,
@@ -69,13 +73,17 @@ void initSound() {
 }
 
 Future<void> playSound(Source sound, [double? volume]) async {
-  if (volume == 0) return;
+  if (volume == 0) {
+    return;
+  }
   await sfxPlayer.play(sound, volume: (volume ?? (storage.getDouble("sfx_volume") ?? 1)));
   return;
 }
 
 Future<void> playOnLoop(Source sound, double volume) async {
-  if (_isMusicPlaying) musicPlayer.stop();
+  if (_isMusicPlaying) {
+    musicPlayer.stop();
+  }
   _isMusicPlaying = false;
   if (volume > 0) {
     await musicPlayer.play(sound, volume: volume);

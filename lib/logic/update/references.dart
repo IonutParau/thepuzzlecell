@@ -5,10 +5,14 @@ void references() {
     for (var rot in rotOrder) {
       grid.updateCell(
         (cell, x, y) {
-          grid.rotate(frontX(cell.cx ?? x, cell.rot), frontY(cell.cy ?? y, cell.rot), 1);
-          grid.rotate(frontX(cell.cx ?? x, cell.rot + 1), frontY(cell.cy ?? y, cell.rot + 1), 1);
-          grid.rotate(frontX(cell.cx ?? x, cell.rot + 2), frontY(cell.cy ?? y, cell.rot + 2), 1);
-          grid.rotate(frontX(cell.cx ?? x, cell.rot + 3), frontY(cell.cy ?? y, cell.rot + 3), 1);
+          grid.rotate(frontX(cell.cx ?? x, cell.rot),
+              frontY(cell.cy ?? y, cell.rot), 1);
+          grid.rotate(frontX(cell.cx ?? x, cell.rot + 1),
+              frontY(cell.cy ?? y, cell.rot + 1), 1);
+          grid.rotate(frontX(cell.cx ?? x, cell.rot + 2),
+              frontY(cell.cy ?? y, cell.rot + 2), 1);
+          grid.rotate(frontX(cell.cx ?? x, cell.rot + 3),
+              frontY(cell.cy ?? y, cell.rot + 3), 1);
 
           final a = grid.get(x - 1, y);
           final b = grid.get(x + 1, y);
@@ -17,7 +21,8 @@ void references() {
 
           if (a != null && a.id != "empty" && !isUngennable(a, x, y, 0)) {
             Cell ac = a.copy;
-            ac.updated = ac.updated || shouldHaveGenBias(ac.id, toSide(0, ac.rot));
+            ac.updated =
+                ac.updated || shouldHaveGenBias(ac.id, toSide(0, ac.rot));
             push(
               x + 1,
               y,
@@ -28,7 +33,8 @@ void references() {
           }
           if (b != null && b.id != "empty" && !isUngennable(b, x, y, 2)) {
             Cell bc = b.copy;
-            bc.updated = bc.updated || shouldHaveGenBias(bc.id, toSide(2, bc.rot));
+            bc.updated =
+                bc.updated || shouldHaveGenBias(bc.id, toSide(2, bc.rot));
             push(
               x - 1,
               y,
@@ -39,7 +45,8 @@ void references() {
           }
           if (c != null && c.id != "empty" && !isUngennable(c, x, y, 1)) {
             Cell cc = c.copy;
-            cc.updated = cc.updated || shouldHaveGenBias(cc.id, toSide(2, cc.rot));
+            cc.updated =
+                cc.updated || shouldHaveGenBias(cc.id, toSide(2, cc.rot));
             push(
               x,
               y + 1,
@@ -50,7 +57,8 @@ void references() {
           }
           if (d != null && d.id != "empty" && !isUngennable(d, x, y, 3)) {
             Cell dc = d.copy;
-            dc.updated = dc.updated || shouldHaveGenBias(dc.id, toSide(2, dc.rot));
+            dc.updated =
+                dc.updated || shouldHaveGenBias(dc.id, toSide(2, dc.rot));
             push(
               x,
               y - 1,

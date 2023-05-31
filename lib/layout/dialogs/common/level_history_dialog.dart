@@ -13,7 +13,9 @@ class _LevelHistoryDialogState extends State<LevelHistoryDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(game.isMultiplayer ? lang('session_history', 'Session History') : lang('grid_history', 'Grid History')),
+      title: Text(game.isMultiplayer
+          ? lang('session_history', 'Session History')
+          : lang('grid_history', 'Grid History')),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
@@ -32,7 +34,8 @@ class _LevelHistoryDialogState extends State<LevelHistoryDialog> {
                 final segs = lvl.split(';');
 
                 return ListTile(
-                  title: Wrap(children: [Text(segs[1] == "" ? "Unnamed" : segs[1])]),
+                  title: Wrap(
+                      children: [Text(segs[1] == "" ? "Unnamed" : segs[1])]),
                   subtitle: Text(segs[2]),
                   trailing: Row(
                     children: [
@@ -58,7 +61,8 @@ class _LevelHistoryDialogState extends State<LevelHistoryDialog> {
                       context: context,
                       builder: (ctx) {
                         return ContentDialog(
-                          title: Text(lang('level_from_history', 'Stored Level $i', {"index": i.toString()})),
+                          title: Text(lang('level_from_history',
+                              'Stored Level $i', {"index": i.toString()})),
                           content: Text(lvl),
                           actions: [
                             Button(

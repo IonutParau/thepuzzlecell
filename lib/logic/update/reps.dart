@@ -1,6 +1,7 @@
 part of logic;
 
-void doRep(int x, int y, int dir, int gendir, [int offX = 0, int offY = 0, bool physical = false]) {
+void doRep(int x, int y, int dir, int gendir,
+    [int offX = 0, int offY = 0, bool physical = false]) {
   var lvxo = physical ? frontX(0, dir) * 2 : 0;
   var lvyo = physical ? frontY(0, dir) * 2 : 0;
   doGen(x, y, dir, gendir + 2, offX, offY, 2, physical, lvxo, lvyo, true);

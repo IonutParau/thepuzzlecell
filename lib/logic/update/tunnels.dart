@@ -108,7 +108,8 @@ bool doTunnel(int x, int y, int dir, [int? odir]) {
     moving.rot = (moving.rot + addedRot) % 4;
     moving.tags.add("tunneled");
 
-    if (CellTypeManager.tunnels.contains(moving.id) && moving.rot == odir) moving.updated = true;
+    if (CellTypeManager.tunnels.contains(moving.id) && moving.rot == odir)
+      moving.updated = true;
     if (push(fx, fy, odir, 1, mt: MoveType.tunnel, replaceCell: moving)) {
       grid.set(bx, by, Cell(bx, by));
       return true;

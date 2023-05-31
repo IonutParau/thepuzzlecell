@@ -86,7 +86,8 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               final events = packageDirectory(whereToSave, tp.dir);
               showDialog(
                 context: context,
-                builder: (ctx) => StreamingDialog(stream: events, title: "Packaging... (may take a while)"),
+                builder: (ctx) => StreamingDialog(
+                    stream: events, title: "Packaging... (may take a while)"),
               );
             },
           ),
@@ -127,7 +128,8 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
         children: [
           Spacer(),
           Button(
-            child: Text(lang("install_from_file", "Install from File"), style: TextStyle(fontSize: 7.sp)),
+            child: Text(lang("install_from_file", "Install from File"),
+                style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
               FilePickerResult? result = await FilePicker.platform.pickFiles(
                 type: FileType.custom,
@@ -137,7 +139,8 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               // Result is null if user cancelled the file picking attempt
               if (result != null) {
                 final zip = File(result.files.single.path!);
-                final dir = Directory(path.join(assetsPath, "assets", "images", "texture_packs"));
+                final dir = Directory(
+                    path.join(assetsPath, "assets", "images", "texture_packs"));
 
                 final future = unzipOnThread(dir, zip);
                 // Rerender once done, if we should still... well... exist
@@ -153,14 +156,17 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
                 await showDialog(
                   context: context,
                   builder: (ctx) {
-                    return LoadingDialog(future: future, title: "Unzipping... (may take a while)");
+                    return LoadingDialog(
+                        future: future,
+                        title: "Unzipping... (may take a while)");
                   },
                 );
               }
             },
           ),
           Button(
-            child: Text(lang("enable_all", "Enable All"), style: TextStyle(fontSize: 7.sp)),
+            child: Text(lang("enable_all", "Enable All"),
+                style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
               await storage.remove("disabled_texturepacks");
               await applyTexturePackSettings();
@@ -169,7 +175,8 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
             },
           ),
           Button(
-            child: Text(lang("reload", "Reload"), style: TextStyle(fontSize: 7.sp)),
+            child: Text(lang("reload", "Reload"),
+                style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
               loadTexturePacks();
               await applyTexturePackSettings();
@@ -178,9 +185,12 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
             },
           ),
           Button(
-            child: Text(lang("create", "Create"), style: TextStyle(fontSize: 7.sp)),
+            child: Text(lang("create", "Create"),
+                style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
-              await showDialog(context: context, builder: (ctx) => CreateTexturePackDialog());
+              await showDialog(
+                  context: context,
+                  builder: (ctx) => CreateTexturePackDialog());
               loadTexturePacks();
               await applyTexturePackSettings();
               applyTexturePacks();
@@ -191,7 +201,9 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
       ),
       content: texturePacks.isEmpty
           ? Center(
-              child: Text(lang("no_texturepacks", "Couldn't find texture packs"), style: TextStyle(fontSize: 12.sp)),
+              child: Text(
+                  lang("no_texturepacks", "Couldn't find texture packs"),
+                  style: TextStyle(fontSize: 12.sp)),
             )
           : ListView(
               children: texturePacks.map<Widget>(tile).toList(),

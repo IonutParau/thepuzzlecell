@@ -34,7 +34,9 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x + 1, y)) {
     final cell = grid.at(x + 1, y);
-    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x + 1, y, 0, BreakType.burn)) {
+    if (cell.id != "empty" &&
+        (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) &&
+        breakable(cell, x + 1, y, 0, BreakType.burn)) {
       grid.addBroken(cell, x + 1, y, "silent");
       grid.set(x + 1, y, spreader.copy);
       hasSpread = true;
@@ -43,7 +45,9 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x - 1, y)) {
     final cell = grid.at(x - 1, y);
-    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x - 1, y, 2, BreakType.burn)) {
+    if (cell.id != "empty" &&
+        (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) &&
+        breakable(cell, x - 1, y, 2, BreakType.burn)) {
       grid.addBroken(cell, x - 1, y, "silent");
       grid.set(x - 1, y, spreader.copy);
       hasSpread = true;
@@ -52,7 +56,9 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x, y + 1)) {
     final cell = grid.at(x, y + 1);
-    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x, y + 1, 1, BreakType.burn)) {
+    if (cell.id != "empty" &&
+        (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) &&
+        breakable(cell, x, y + 1, 1, BreakType.burn)) {
       grid.addBroken(cell, x, y + 1, "silent");
       grid.set(x, y + 1, spreader.copy);
       hasSpread = true;
@@ -61,7 +67,9 @@ bool spread(int x, int y, Cell spreader) {
 
   if (grid.inside(x, y - 1)) {
     final cell = grid.at(x, y - 1);
-    if (cell.id != "empty" && (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) && breakable(cell, x, y - 1, 3, BreakType.burn)) {
+    if (cell.id != "empty" &&
+        (cell.id != spreader.id || (cell.data['id'] ?? 0) != id) &&
+        breakable(cell, x, y - 1, 3, BreakType.burn)) {
       grid.addBroken(cell, x, y - 1, "silent");
       grid.set(x, y - 1, spreader.copy);
       hasSpread = true;
@@ -154,7 +162,8 @@ void doConfigurableFiller(Cell cell, int x, int y) {
       if (safeAt(fx, fy)?.id == "empty") {
         grid.set(fx, fy, toSpread(dir));
       } else {
-        if (safeAt(fx, fy)?.id == "configurable_filler" && safeAt(fx, fy)?.data['id'] != id) {
+        if (safeAt(fx, fy)?.id == "configurable_filler" &&
+            safeAt(fx, fy)?.data['id'] != id) {
           if (rng.nextDouble() <= attackChance / 100) {
             grid.addBroken(grid.at(fx, fy), fx, fy, "silent");
             grid.set(fx, fy, toSpread(dir));
@@ -174,12 +183,17 @@ void doConfigurableFiller(Cell cell, int x, int y) {
 void spreaders() {
   grid.updateCell(doCancer, null, "cancer");
   grid.updateCell(doFire, null, "fire");
-  grid.loopChunks("lava", fromRot(1), doLava, filter: (c, x, y) => c.id == "lava" && !c.updated);
-  grid.loopChunks("plasma", fromRot(3), doPlasma, filter: (c, x, y) => c.id == "plasma" && !c.updated);
+  grid.loopChunks("lava", fromRot(1), doLava,
+      filter: (c, x, y) => c.id == "lava" && !c.updated);
+  grid.loopChunks("plasma", fromRot(3), doPlasma,
+      filter: (c, x, y) => c.id == "plasma" && !c.updated);
 
   grid.updateCell(doFiller, null, "filler");
 
-  grid.updateCell((cell, x, y) => ((rng.nextBool()) ? doFiller(cell, x, y) : null), null, "random_filler");
+  grid.updateCell(
+      (cell, x, y) => ((rng.nextBool()) ? doFiller(cell, x, y) : null),
+      null,
+      "random_filler");
 
   grid.updateCell(doConfigurableFiller, null, "configurable_filler");
 }

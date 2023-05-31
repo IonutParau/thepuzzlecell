@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Colors, ListTile;
-import 'package:fluent_ui/fluent_ui.dart' show Colors, FluentIcons, ScaffoldPage, ListTile;
+import 'package:fluent_ui/fluent_ui.dart'
+    show Colors, FluentIcons, ScaffoldPage, ListTile;
 import '../../logic/logic.dart';
 import '../../utils/ScaleAssist.dart';
 

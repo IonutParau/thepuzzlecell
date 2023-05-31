@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart' show MaterialButton, CircularProgressIndicator;
+import 'package:flutter/material.dart'
+    show MaterialButton, CircularProgressIndicator;
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/dialogs/core/streaming_dialog.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../logic/logic.dart' show getVersion, higherVersion, lang, transferGame, versionToCheck;
+import '../../logic/logic.dart'
+    show getVersion, higherVersion, lang, transferGame, versionToCheck;
 import '../../utils/ScaleAssist.dart';
 
 class UpdateUI extends StatefulWidget {
@@ -79,7 +81,8 @@ class _UpdateUIState extends State<UpdateUI> {
                           ),
                         ),
                         onPressed: () {
-                          launchUrlString("https://ionut-alexandru.itch.io/the-puzzle-cell");
+                          launchUrlString(
+                              "https://ionut-alexandru.itch.io/the-puzzle-cell");
                         },
                         color: Colors.red,
                       );
@@ -95,7 +98,8 @@ class _UpdateUIState extends State<UpdateUI> {
                           ),
                         ),
                         onPressed: () {
-                          launchUrlString("https://ionut-alexandru.itch.io/the-puzzle-cell");
+                          launchUrlString(
+                              "https://ionut-alexandru.itch.io/the-puzzle-cell");
                         },
                         color: Colors.green,
                       );
@@ -134,7 +138,8 @@ class _UpdateUIState extends State<UpdateUI> {
         children: [
           Spacer(),
           Button(
-            child: Text(lang("copy_old_instance", "Copy Old Instance"), style: TextStyle(fontSize: 7.sp)),
+            child: Text(lang("copy_old_instance", "Copy Old Instance"),
+                style: TextStyle(fontSize: 7.sp)),
             onPressed: () async {
               final fpResult = await FilePicker.platform.getDirectoryPath();
 
@@ -148,7 +153,9 @@ class _UpdateUIState extends State<UpdateUI> {
 
               await showDialog(
                 context: context,
-                builder: (ctx) => StreamingDialog(stream: transfer, title: lang("copy_old_instance", "Copy Old Instance")),
+                builder: (ctx) => StreamingDialog(
+                    stream: transfer,
+                    title: lang("copy_old_instance", "Copy Old Instance")),
               );
             },
           ),

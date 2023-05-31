@@ -30,7 +30,8 @@ class BrokenCell {
   Map<String, dynamic> data;
   bool invisible;
 
-  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data, this.invisible);
+  BrokenCell(this.id, this.rot, this.x, this.y, this.lv, this.type, this.data,
+      this.invisible);
 
   void render(Canvas canvas, double t) {
     final screenRot = lerpRotation(lv.lastRot, rot, t) * halfPi;
@@ -64,23 +65,30 @@ class BrokenCell {
       id = trickAs;
     }
 
-    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(canvas, position: screenPos, size: screenSize, overridePaint: paint);
+    Sprite(Flame.images.fromCache(textureMap['$id.png'] ?? '$id.png')).render(
+        canvas,
+        position: screenPos,
+        size: screenSize,
+        overridePaint: paint);
 
     if (trickAs != null && game.edType == EditorType.making) {
-      final texture = textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
+      final texture =
+          textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
       final rotoff = (data["trick_rot"] ?? 0) * halfPi;
-      var trick_off = rotateOff(Offset(screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2), -rotoff);
+      var trick_off = rotateOff(
+          Offset(
+              screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2),
+          -rotoff);
 
       canvas.rotate(rotoff);
 
-      Sprite(Flame.images.fromCache(texture))
-        ..render(
-          canvas,
-          position: Vector2(trick_off.dx, trick_off.dy),
-          size: screenSize / 2,
-          anchor: Anchor.center,
-          overridePaint: paint,
-        );
+      Sprite(Flame.images.fromCache(texture)).render(
+        canvas,
+        position: Vector2(trick_off.dx, trick_off.dy),
+        size: screenSize / 2,
+        anchor: Anchor.center,
+        overridePaint: paint,
+      );
 
       canvas.rotate(-rotoff);
     }
@@ -98,7 +106,8 @@ class FakeCell {
   num sy;
   num rot;
 
-  FakeCell(this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
+  FakeCell(
+      this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
 
   void render(Canvas canvas) {
     game.renderCell(cell, x, y, null, sx, sy, rot);
@@ -146,7 +155,8 @@ class Cell extends Equatable {
     cell.id = map["id"] ?? "empty";
     cell.rot = (map["rot"] ?? 0).toInt();
     cell.data = map["data"] as Map<String, dynamic>;
-    cell.tags = HashSet.from(((map["tags"] ?? <String>{}) as Set).whereType<String>().toSet());
+    cell.tags = HashSet.from(
+        ((map["tags"] ?? <String>{}) as Set).whereType<String>().toSet());
     cell.lifespan = map["lifespan"] ?? 0;
     cell.invisible = map["invisible"] ?? false;
     cell.lastvars = LastVars(cell.rot, x, y, cell.id);
@@ -174,7 +184,8 @@ class Cell extends Equatable {
     return c;
   }
 
-  String toString() => "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
+  String toString() =>
+      "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
 
   void rotate(int amount) {
     lastvars.lastRot = rot;
@@ -198,7 +209,9 @@ String countToString(num? count) {
 String textToRenderOnCell(Cell cell, num x, num y) {
   var text = "";
 
-  if (cell.id == "counter" || cell.id == "math_number" || cell.id == "math_safe_number") {
+  if (cell.id == "counter" ||
+      cell.id == "math_number" ||
+      cell.id == "math_safe_number") {
     text = countToString(cell.data['count']);
   }
 
@@ -206,7 +219,8 @@ String textToRenderOnCell(Cell cell, num x, num y) {
     text = countToString(cell.data['bias']);
   }
 
-  if ((cell.id == "debt" || cell.id == "mech_debt") && (cell.data['debt'] != 1)) {
+  if ((cell.id == "debt" || cell.id == "mech_debt") &&
+      (cell.data['debt'] != 1)) {
     text = (cell.data['debt'] ?? 1).toString();
   }
 
@@ -236,7 +250,8 @@ String textToRenderOnCell(Cell cell, num x, num y) {
   }
 
   if (cell.id == "spikefactory") {
-    text = "${countToString(cell.data['interval'] ?? 1)}\n${cell.data['radius'] ?? 1}";
+    text =
+        "${countToString(cell.data['interval'] ?? 1)}\n${cell.data['radius'] ?? 1}";
     if ((cell.data['interval'] ?? 1) == 1 || (cell.data['radius'] ?? 1) == 1) {
       text = "";
     }
@@ -246,11 +261,21 @@ String textToRenderOnCell(Cell cell, num x, num y) {
     text = "${cell.data['remaining'] ?? 10}";
   }
 
-  if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id) && (cell.data['id'] ?? 0) != 0) {
+  if (["fire", "plasma", "lava", "cancer", "crystal"].contains(cell.id) &&
+      (cell.data['id'] ?? 0) != 0) {
     text = "${cell.data['id'] ?? 0}";
   }
 
-  if (["transformer", "transformer_cw", "transformer_ccw", "triple_transformer", "mech_comparator", "mech_sensor", "transform_puzzle"].contains(cell.id) && (cell.data['offset'] ?? 1) != 1) {
+  if ([
+        "transformer",
+        "transformer_cw",
+        "transformer_ccw",
+        "triple_transformer",
+        "mech_comparator",
+        "mech_sensor",
+        "transform_puzzle"
+      ].contains(cell.id) &&
+      (cell.data['offset'] ?? 1) != 1) {
     text = "${cell.data['offset'] ?? 1}";
   }
 
@@ -290,7 +315,8 @@ String textToRenderOnCell(Cell cell, num x, num y) {
 
     final v = grid.codeManager.getBuffer(prog, buff);
 
-    text = v is num ? v.toString() : "[Undefined Behavior - Buffer is not number]";
+    text =
+        v is num ? v.toString() : "[Undefined Behavior - Buffer is not number]";
   }
 
   if (modded.contains(cell.id)) {

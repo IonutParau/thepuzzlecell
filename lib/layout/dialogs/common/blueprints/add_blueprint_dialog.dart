@@ -26,7 +26,8 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(lang("blueprint_name_and_description", "Blueprint Name & Description")),
+      title: Text(lang(
+          "blueprint_name_and_description", "Blueprint Name & Description")),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
@@ -64,7 +65,9 @@ class _AddBlueprintDialogState extends State<AddBlueprintDialog> {
             final title = _titleController.text;
             final desc = _descController.text;
 
-            final bpCode = widget.bpCode.replaceFirst("Unnamed Blueprint", title).replaceFirst("This blueprint currently has no name", desc);
+            final bpCode = widget.bpCode
+                .replaceFirst("Unnamed Blueprint", title)
+                .replaceFirst("This blueprint currently has no name", desc);
 
             await FlutterClipboard.copy(bpCode);
 

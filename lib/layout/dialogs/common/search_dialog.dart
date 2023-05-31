@@ -23,11 +23,15 @@ class SearchQueryResult {
   bool get isModded => modded.contains(cell);
 
   bool fromModID(String modID) {
-    return scriptingManager.modOrigin(cell).toLowerCase() == modID.toLowerCase();
+    return scriptingManager.modOrigin(cell).toLowerCase() ==
+        modID.toLowerCase();
   }
 
   bool fromModName(String name) {
-    return scriptingManager.modName(scriptingManager.modOrigin(cell)).toLowerCase() == name.toLowerCase();
+    return scriptingManager
+            .modName(scriptingManager.modOrigin(cell))
+            .toLowerCase() ==
+        name.toLowerCase();
   }
 }
 
@@ -78,7 +82,8 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
             for (var subitem in item.items) {
               if (!visited.contains(subitem)) {
                 visited.add(subitem);
-                results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
+                results.add(
+                    SearchQueryResult(subitem, '${cat.title}/${item.title}'));
               }
             }
           }
@@ -164,7 +169,10 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       if (filter.name == "vanilla") {
         results.retainWhere((result) => result.isVanilla);
       }
-      if (filter.name == "category" || filter.name == "cat" || filter.name == "categories" || filter.name == "cats") {
+      if (filter.name == "category" ||
+          filter.name == "cat" ||
+          filter.name == "categories" ||
+          filter.name == "cats") {
         final stuff = fancySplit(filter.content, ',').map((e) {
           var s = e;
 
@@ -207,7 +215,10 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
 
           return s;
         }).toList();
-        results.retainWhere((result) => stuff.every((modStuff) => modStuff.startsWith('\"') && modStuff.endsWith('\"') ? result.fromModName(modStuff) : result.fromModID(modStuff)));
+        results.retainWhere((result) => stuff.every((modStuff) =>
+            modStuff.startsWith('\"') && modStuff.endsWith('\"')
+                ? result.fromModName(modStuff)
+                : result.fromModID(modStuff)));
       }
     }
 
@@ -257,7 +268,10 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                           ),
                           title: Text(idToString(result.cell)),
                           subtitle: Text(idToDesc(result.cell)),
-                          tileColor: game.currentSelection == result.cell ? ConstantColorButtonState(Colors.successPrimaryColor) : ConstantColorButtonState(Colors.grey[130]),
+                          tileColor: game.currentSelection == result.cell
+                              ? ConstantColorButtonState(
+                                  Colors.successPrimaryColor)
+                              : ConstantColorButtonState(Colors.grey[130]),
                           onPressed: () {
                             game.currentSelection = result.cell;
                             setState(() {});

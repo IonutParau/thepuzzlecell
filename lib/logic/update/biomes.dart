@@ -22,49 +22,69 @@ final biomes = [
 void biome() {
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 1);
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_cw");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "biome_cw");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 3);
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_ccw");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "biome_ccw");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.rotate(x, y, 2);
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_180");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "biome_180");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     final rng = Random();
     int randRot() => rng.nextBool() ? 1 : 3;
     grid.rotate(x, y, randRot());
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "biome_rand");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "biome_rand");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data['heat'] = (cell.data['heat'] ?? 0) + 1;
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "desert");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "desert");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data['heat'] = (cell.data['heat'] ?? 0) - 1;
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "snowy");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "snowy");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.data.remove("heat");
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "forest");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "forest");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.updated = true;
     cell.tags.add("stopped");
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "freezing");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "freezing");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.addBroken(cell, x, y, "shrinking");
     grid.set(x, y, Cell(x, y));
     grid.setPlace(x, y, "empty");
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "spiketrap_biome");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "spiketrap_biome");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     grid.addBroken(cell, x, y, "shrinking");
     grid.set(x, y, Cell(x, y));
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "trash_biome");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "trash_biome");
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     if (cell.id != "empty") {
@@ -87,5 +107,7 @@ void biome() {
 
   grid.loopChunks("all", GridAlignment.topleft, (cell, x, y) {
     cell.tags.add("consistent");
-  }, filter: (cell, x, y) => cell.id != "empty" && grid.placeable(x, y) == "consistency_biome");
+  },
+      filter: (cell, x, y) =>
+          cell.id != "empty" && grid.placeable(x, y) == "consistency_biome");
 }

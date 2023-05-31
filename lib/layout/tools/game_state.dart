@@ -23,7 +23,8 @@ class CellCursor {
   String texture;
   Map<String, dynamic> data;
 
-  CellCursor(this.x, this.y, this.selection, this.rotation, this.texture, this.data);
+  CellCursor(
+      this.x, this.y, this.selection, this.rotation, this.texture, this.data);
 
   Vector2 get pos => Vector2(x, y);
 }

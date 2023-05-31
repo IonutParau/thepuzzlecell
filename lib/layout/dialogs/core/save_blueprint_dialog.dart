@@ -23,14 +23,18 @@ class SaveBlueprintDialog extends StatelessWidget {
           child: Text(lang('add_to_builtin', 'Add to\nbuilt-in')),
           onPressed: () {
             Navigator.pop(context);
-            showDialog(context: context, builder: (ctx) => AddBlueprintDialog(bpSave));
+            showDialog(
+                context: context, builder: (ctx) => AddBlueprintDialog(bpSave));
           },
         ),
         Button(
-          child: Text(lang('change_name_and_description', 'Change Name & Description')),
+          child: Text(
+              lang('change_name_and_description', 'Change Name & Description')),
           onPressed: () {
             Navigator.pop(context);
-            showDialog(context: context, builder: (ctx) => RenameBlueprintDialog(bpSave));
+            showDialog(
+                context: context,
+                builder: (ctx) => RenameBlueprintDialog(bpSave));
           },
         ),
         Button(

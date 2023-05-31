@@ -111,7 +111,11 @@ class _EditorState extends State<Editor> {
                           keyboardType: TextInputType.number,
                           placeholder: '100',
                           onChanged: (v) => setState(
-                            () => width = clamp(int.tryParse(v) ?? (v == "" ? 100 : width), 1, 999).toInt(),
+                            () => width = clamp(
+                                    int.tryParse(v) ?? (v == "" ? 100 : width),
+                                    1,
+                                    999)
+                                .toInt(),
                           ),
                           keyboardAppearance: Brightness.dark,
                           decoration: BoxDecoration(
@@ -127,7 +131,11 @@ class _EditorState extends State<Editor> {
                           keyboardType: TextInputType.number,
                           placeholder: '100',
                           onChanged: (v) => setState(
-                            () => height = clamp(int.tryParse(v) ?? (v == "" ? 100 : height), 1, 999).toInt(),
+                            () => height = clamp(
+                                    int.tryParse(v) ?? (v == "" ? 100 : height),
+                                    1,
+                                    999)
+                                .toInt(),
                           ),
                           keyboardAppearance: Brightness.dark,
                           decoration: BoxDecoration(

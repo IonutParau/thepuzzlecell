@@ -30,7 +30,8 @@ class _TerminalDialogState extends State<TerminalDialog> {
     if (terminalSession.output.isEmpty) return;
     Future.delayed(Duration(milliseconds: 250)).then((v) {
       try {
-        scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
+        scrollController.animateTo(scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
       } catch (e) {
         print(e);
       }
@@ -70,15 +71,19 @@ class _TerminalDialogState extends State<TerminalDialog> {
                                   child: ListView.builder(
                                     controller: scrollController,
                                     itemCount: terminalSession.output.length,
-                                    padding: EdgeInsets.symmetric(vertical: 0.7.h, horizontal: 0.7.w),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 0.7.h, horizontal: 0.7.w),
                                     itemBuilder: (context, index) {
                                       return SizedBox(
                                         width: constraints.maxWidth * 0.8,
                                         child: ListTile(
-                                          title: SelectableText(terminalSession.output[index]),
-                                          tileColor: ConstantColorButtonState(Colors.grey[130]),
+                                          title: SelectableText(
+                                              terminalSession.output[index]),
+                                          tileColor: ConstantColorButtonState(
+                                              Colors.grey[130]),
                                           onPressed: () {
-                                            inputController.text += terminalSession.output[index];
+                                            inputController.text +=
+                                                terminalSession.output[index];
                                           },
                                         ),
                                       );

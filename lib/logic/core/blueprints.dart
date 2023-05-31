@@ -8,14 +8,16 @@ Future<void> loadBlueprints() async {
 }
 
 Future<void> saveBlueprints() async {
-  File(path.join(assetsPath, 'assets', 'blueprints.txt')).writeAsStringSync(blueprints.join('\n'));
+  File(path.join(assetsPath, 'assets', 'blueprints.txt'))
+      .writeAsStringSync(blueprints.join('\n'));
   return;
 }
 
 void loadBlueprint(int i) {
   final g = loadStr(blueprints[i], false);
   final gc = GridClip();
-  gc.activate(g.width, g.height, g.tiles.map((row) => row.map((tile) => tile.cell).toList()).toList());
+  gc.activate(g.width, g.height,
+      g.tiles.map((row) => row.map((tile) => tile.cell).toList()).toList());
   gc.optimize();
 
   game.gridClip = gc;
