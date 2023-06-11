@@ -4,9 +4,7 @@ final rng = Random();
 var plantID = 0;
 
 Set<String> getPlant(int x, int y, int plantID, [Set<String>? plant]) {
-  if (plant == null) {
-    plant = {};
-  }
+  plant ??= {};
 
   if (!grid.inside(x, y)) return plant;
 
@@ -93,10 +91,12 @@ void doPlantSeed(Cell cell, int x, int y) {
   if (vars['energy'] == null) vars['energy'] = 0;
   if (vars['deathtime'] == null) vars['deathtime'] = 0;
   if (vars['spore_rate'] == null) vars['spore_rate'] = rng.nextDouble() * 0.1;
-  if (vars['growth_rate'] == null)
+  if (vars['growth_rate'] == null) {
     vars['growth_rate'] = rng.nextDouble() * 0.001;
-  if (vars['spore_percentage'] == null)
+  }
+  if (vars['spore_percentage'] == null) {
     vars['spore_percentage'] = rng.nextDouble();
+  }
   if (vars['length_chance'] == null) vars['length_chance'] = rng.nextDouble();
   if (vars['plant_id'] == null) {
     vars['plant_id'] = plantID;

@@ -389,10 +389,9 @@ final cells = {
 
 final modded = <String>[];
 
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]
-  ..removeWhere((e) => e == "empty");
+final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
-final textureMapBackup = HashMap.from(textureMap);
+final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
   "electric_puller.png": "electrical/electric_puller.png",
@@ -804,13 +803,13 @@ class CellCategory {
   String title;
   String description;
   String look;
-  List items;
+  List<dynamic> items;
   bool opened = false;
   int max;
 
-  CellCategory(this.title, this.description, this.items, this.look,
-      {this.max = 3});
+  CellCategory(this.title, this.description, this.items, this.look, {this.max = 3});
 
+  @override
   String toString() => title.toLowerCase().replaceAll(" ", "_");
 }
 
@@ -855,7 +854,6 @@ final categories = [
           "custom_weight",
         ],
         "push",
-        max: 3,
       ),
       CellCategory(
         "Sticky Cells",
@@ -865,7 +863,6 @@ final categories = [
           "carbon",
         ],
         "sticky",
-        max: 3,
       ),
       CellCategory(
         "Constraints",
@@ -909,7 +906,6 @@ final categories = [
           "rotatable",
         ],
         "place",
-        max: 3,
       ),
       CellCategory(
         "Biomes",
@@ -955,7 +951,6 @@ final categories = [
           "bulldozer",
         ],
         "mover",
-        max: 3,
       ),
       CellCategory(
         "Pullers",
@@ -1439,7 +1434,6 @@ final categories = [
           "math_switch",
         ],
         "math_equal",
-        max: 3,
       ),
       CellCategory(
         "Variables",
@@ -3271,263 +3265,131 @@ class CellProperty {
 
 Map<String, List<CellProperty>> props = {
   "math_number": [
-    CellProperty("Count", "The number held by this cell.", "count",
-        CellPropertyType.number, 0),
+    CellProperty("Count", "The number held by this cell.", "count", CellPropertyType.number, 0),
   ],
   "counter": [
-    CellProperty("Count", "The number held by this cell.", "count",
-        CellPropertyType.number, 0),
-    CellProperty("Silent", "Whether this Counter is silent or not.", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Count", "The number held by this cell.", "count", CellPropertyType.number, 0),
+    CellProperty("Silent", "Whether this Counter is silent or not.", "silent", CellPropertyType.boolean, false),
   ],
   "mech_trash": [
-    CellProperty(
-        "Countdown",
-        "The amount of cells it can eat before emitting signals.",
-        "countdown",
-        CellPropertyType.integer,
-        0),
-    CellProperty("Silent", "Whether it is silent or not.", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Countdown", "The amount of cells it can eat before emitting signals.", "countdown", CellPropertyType.integer, 0),
+    CellProperty("Silent", "Whether it is silent or not.", "silent", CellPropertyType.boolean, false),
   ],
   "mech_enemy_gen": [
-    CellProperty("Countdown", "The amount of cells it can eat before dying.",
-        "countdown", CellPropertyType.integer, 0),
+    CellProperty("Countdown", "The amount of cells it can eat before dying.", "countdown", CellPropertyType.integer, 0),
   ],
   "math_memwriter": [
-    CellProperty("Channel", "The channel it is linked to.", "channel",
-        CellPropertyType.integer, 0),
-    CellProperty(
-        "Index",
-        "The index, in its linked channel, that it is linked to.",
-        "index",
-        CellPropertyType.integer,
-        0),
+    CellProperty("Channel", "The channel it is linked to.", "channel", CellPropertyType.integer, 0),
+    CellProperty("Index", "The index, in its linked channel, that it is linked to.", "index", CellPropertyType.integer, 0),
   ],
   "math_memreader": [
-    CellProperty("Channel", "The channel it is linked to.", "channel",
-        CellPropertyType.integer, 0),
-    CellProperty(
-        "Index",
-        "The index, in its linked channel, that it is linked to.",
-        "index",
-        CellPropertyType.integer,
-        0),
+    CellProperty("Channel", "The channel it is linked to.", "channel", CellPropertyType.integer, 0),
+    CellProperty("Index", "The index, in its linked channel, that it is linked to.", "index", CellPropertyType.integer, 0),
   ],
   "math_to_mech": [
-    CellProperty(
-        "Offset",
-        "How much to offset the input by. This can be used to make it only emit a signal if it is above some specific number.",
-        "offset",
-        CellPropertyType.number,
-        0),
+    CellProperty("Offset", "How much to offset the input by. This can be used to make it only emit a signal if it is above some specific number.", "offset", CellPropertyType.number, 0),
   ],
   "mech_to_math": [
-    CellProperty(
-        "Scale", "The number to output.", "scale", CellPropertyType.number, 1),
+    CellProperty("Scale", "The number to output.", "scale", CellPropertyType.number, 1),
   ],
   "spikefactory": [
     CellProperty(
-        "Interval",
-        "An interval (in ticks) that determines how frequently it will spawn a spike. If less than 1, it may place multiple times a tick.",
-        "interval",
-        CellPropertyType.number,
-        1),
-    CellProperty(
-        "Radius",
-        "The radius it may spawn the spike in. It is not a circular radius, but a square radius.",
-        "radius",
-        CellPropertyType.integer,
-        1),
+        "Interval", "An interval (in ticks) that determines how frequently it will spawn a spike. If less than 1, it may place multiple times a tick.", "interval", CellPropertyType.number, 1),
+    CellProperty("Radius", "The radius it may spawn the spike in. It is not a circular radius, but a square radius.", "radius", CellPropertyType.integer, 1),
   ],
   "explosive": [
-    CellProperty(
-        "Radius",
-        "A circular / square radius in which it may break cells",
-        "radius",
-        CellPropertyType.integer,
-        1),
-    CellProperty("Effectiveness", "The odds it will actually break a cell",
-        "effectiveness", CellPropertyType.number, 100),
-    CellProperty("By-product", "The cell to leave behind if it breaks a cell",
-        "byproduct", CellPropertyType.cell, "empty!0"),
-    CellProperty(
-        "Circular",
-        "Determines wheather the radius is circular or square",
-        "circular",
-        CellPropertyType.boolean,
-        false),
-    CellProperty("Mobile", "Whether it should behave like a Mobile Enemy.",
-        "mobile", CellPropertyType.boolean, false),
-    CellProperty("Pseudo-Random", "Makes sure it always explodes the same way.",
-        "pseudorandom", CellPropertyType.boolean, false),
+    CellProperty("Radius", "A circular / square radius in which it may break cells", "radius", CellPropertyType.integer, 1),
+    CellProperty("Effectiveness", "The odds it will actually break a cell", "effectiveness", CellPropertyType.number, 100),
+    CellProperty("By-product", "The cell to leave behind if it breaks a cell", "byproduct", CellPropertyType.cell, "empty!0"),
+    CellProperty("Circular", "Determines wheather the radius is circular or square", "circular", CellPropertyType.boolean, false),
+    CellProperty("Mobile", "Whether it should behave like a Mobile Enemy.", "mobile", CellPropertyType.boolean, false),
+    CellProperty("Pseudo-Random", "Makes sure it always explodes the same way.", "pseudorandom", CellPropertyType.boolean, false),
   ],
   "factory": [
-    CellProperty(
-        "Cell", "The cell to create", "cell", CellPropertyType.cell, "push!0"),
-    CellProperty(
-        "Interval",
-        "The interval to create it at (in ticks), can be fractional",
-        "interval",
-        CellPropertyType.number,
-        1),
-    CellProperty(
-        "Add Rotation",
-        "Whether to add the current rotation of the factory to the output cell.",
-        "addrot",
-        CellPropertyType.boolean,
-        false),
-    CellProperty(
-        "Physical",
-        "Whether it should behave like a physical generator.",
-        "physical",
-        CellPropertyType.boolean,
-        false),
-    CellProperty(
-        "Quantized",
-        "Whether it should behave like a quantum generator.",
-        "quantized",
-        CellPropertyType.boolean,
-        false),
+    CellProperty("Cell", "The cell to create", "cell", CellPropertyType.cell, "push!0"),
+    CellProperty("Interval", "The interval to create it at (in ticks), can be fractional", "interval", CellPropertyType.number, 1),
+    CellProperty("Add Rotation", "Whether to add the current rotation of the factory to the output cell.", "addrot", CellPropertyType.boolean, false),
+    CellProperty("Physical", "Whether it should behave like a physical generator.", "physical", CellPropertyType.boolean, false),
+    CellProperty("Quantized", "Whether it should behave like a quantum generator.", "quantized", CellPropertyType.boolean, false),
   ],
   "checkpoint": [
-    CellProperty(
-        "Reset other checkpoints",
-        "Whether to reset other checkpoints.",
-        "checkpoint_reset",
-        CellPropertyType.boolean,
-        true),
-    CellProperty("Enabled", "Whether it is already enabled.",
-        "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation",
-        "Whether to reset the rotation of the out-coming Puzzle Cell.",
-        "reset_rot",
-        CellPropertyType.boolean,
-        false),
+    CellProperty("Reset other checkpoints", "Whether to reset other checkpoints.", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "Whether it is already enabled.", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "Whether to reset the rotation of the out-coming Puzzle Cell.", "reset_rot", CellPropertyType.boolean, false),
   ],
   "mech_checkpoint": [
-    CellProperty(
-        "Reset other checkpoints",
-        "Whether to reset other checkpoints.",
-        "checkpoint_reset",
-        CellPropertyType.boolean,
-        true),
-    CellProperty("Enabled", "Whether it is already enabled.",
-        "checkpoint_enabled", CellPropertyType.boolean, false),
-    CellProperty(
-        "Reset Rotation",
-        "Whether to reset the rotation of the out-coming Puzzle Cell.",
-        "reset_rot",
-        CellPropertyType.boolean,
-        false),
+    CellProperty("Reset other checkpoints", "Whether to reset other checkpoints.", "checkpoint_reset", CellPropertyType.boolean, true),
+    CellProperty("Enabled", "Whether it is already enabled.", "checkpoint_enabled", CellPropertyType.boolean, false),
+    CellProperty("Reset Rotation", "Whether to reset the rotation of the out-coming Puzzle Cell.", "reset_rot", CellPropertyType.boolean, false),
   ],
   "trash_can": [
-    CellProperty(
-        "Remaining",
-        "The amount of cells to eat before it stops being a trash cell.",
-        "remaining",
-        CellPropertyType.integer,
-        10),
-    CellProperty("Silent", "Whether it is silent.", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Remaining", "The amount of cells to eat before it stops being a trash cell.", "remaining", CellPropertyType.integer, 10),
+    CellProperty("Silent", "Whether it is silent.", "silent", CellPropertyType.boolean, false),
   ],
   "mech_enemy": [
-    CellProperty("Silent", "Whether it is silent.", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Silent", "Whether it is silent.", "silent", CellPropertyType.boolean, false),
   ],
   "mech_p_trash": [
-    CellProperty("Silent", "Whether it is silent.", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Silent", "Whether it is silent.", "silent", CellPropertyType.boolean, false),
   ],
   "bulldozer": [
-    CellProperty("Bias", "How much force to push with.", "bias",
-        CellPropertyType.integer, 1),
+    CellProperty("Bias", "How much force to push with.", "bias", CellPropertyType.integer, 1),
   ],
   "math_wireless_tunnel": [
-    CellProperty(
-        "ID", "The ID of the tunnel", "id", CellPropertyType.integer, 0),
-    CellProperty(
-        "Target ID",
-        "The ID of the tunnel to teleport the number over to.",
-        "target",
-        CellPropertyType.integer,
-        0),
+    CellProperty("ID", "The ID of the tunnel", "id", CellPropertyType.integer, 0),
+    CellProperty("Target ID", "The ID of the tunnel to teleport the number over to.", "target", CellPropertyType.integer, 0),
   ],
   "math_safe_number": [
-    CellProperty("Count", "The number currently stored in the cell.", "count",
-        CellPropertyType.number, 0),
+    CellProperty("Count", "The number currently stored in the cell.", "count", CellPropertyType.number, 0),
   ],
   "master_has_id": [
-    CellProperty(
-        "ID", "The ID to check", "id", CellPropertyType.cellID, "empty"),
+    CellProperty("ID", "The ID to check", "id", CellPropertyType.cellID, "empty"),
   ],
   "crystal": [
-    CellProperty(
-        "ID", "The ID of the crystal", "id", CellPropertyType.integer, 0),
+    CellProperty("ID", "The ID of the crystal", "id", CellPropertyType.integer, 0),
   ],
   "cancer": [
-    CellProperty(
-        "ID", "The ID of the cancer", "id", CellPropertyType.integer, 0),
+    CellProperty("ID", "The ID of the cancer", "id", CellPropertyType.integer, 0),
   ],
   "fire": [
     CellProperty("ID", "The ID of the fire", "id", CellPropertyType.integer, 0),
   ],
   "plasma": [
-    CellProperty(
-        "ID", "The ID of the plasma", "id", CellPropertyType.integer, 0),
+    CellProperty("ID", "The ID of the plasma", "id", CellPropertyType.integer, 0),
   ],
   "lava": [
     CellProperty("ID", "The ID of the lava", "id", CellPropertyType.integer, 0),
   ],
   "mech_sensor": [
-    CellProperty("Offset", "The depth to look at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to look at", "offset", CellPropertyType.integer, 1),
   ],
   "mech_comparator": [
-    CellProperty("Offset", "The depth to look at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to look at", "offset", CellPropertyType.integer, 1),
   ],
   "transformer": [
-    CellProperty("Offset", "The depth to modify the cell at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to modify the cell at", "offset", CellPropertyType.integer, 1),
   ],
   "transformer_cw": [
-    CellProperty("Offset", "The depth to modify the cell at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to modify the cell at", "offset", CellPropertyType.integer, 1),
   ],
   "transformer_ccw": [
-    CellProperty("Offset", "The depth to modify the cell at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to modify the cell at", "offset", CellPropertyType.integer, 1),
   ],
   "transform_puzzle": [
-    CellProperty("Offset", "The depth to modify the cell at", "offset",
-        CellPropertyType.integer, 1),
+    CellProperty("Offset", "The depth to modify the cell at", "offset", CellPropertyType.integer, 1),
   ],
   "master_set_id": [
     CellProperty("ID", "The ID", "id", CellPropertyType.cellID, "empty"),
   ],
   "master_push": [
-    CellProperty("Force", "The force to push with", "force",
-        CellPropertyType.integer, 1),
+    CellProperty("Force", "The force to push with", "force", CellPropertyType.integer, 1),
   ],
   "debt": [
-    CellProperty(
-        "Debt",
-        "The amount of keys the Puzzle Cell is unfortunately in debt over.",
-        "debt",
-        CellPropertyType.integer,
-        1),
-    CellProperty("Immovable", "Whether it is immovable or not", "immovable",
-        CellPropertyType.boolean, false),
+    CellProperty("Debt", "The amount of keys the Puzzle Cell is unfortunately in debt over.", "debt", CellPropertyType.integer, 1),
+    CellProperty("Immovable", "Whether it is immovable or not", "immovable", CellPropertyType.boolean, false),
   ],
   "mech_debt": [
-    CellProperty(
-        "Debt",
-        "The amount of keys the Puzzle Cell is unfortunately in debt over.",
-        "debt",
-        CellPropertyType.integer,
-        1),
+    CellProperty("Debt", "The amount of keys the Puzzle Cell is unfortunately in debt over.", "debt", CellPropertyType.integer, 1),
     CellProperty(
       "Self-Destruct",
       "Whether it should destroy itself",
@@ -3535,84 +3397,47 @@ Map<String, List<CellProperty>> props = {
       CellPropertyType.boolean,
       true,
     ),
-    CellProperty("Immovable", "Whether it is immovable", "immovable",
-        CellPropertyType.boolean, false),
+    CellProperty("Immovable", "Whether it is immovable", "immovable", CellPropertyType.boolean, false),
   ],
   "debt_enemy": [
-    CellProperty(
-        "Debt",
-        "The amount of keys the Puzzle Cell is unfortunately in debt over.",
-        "debt",
-        CellPropertyType.integer,
-        1),
+    CellProperty("Debt", "The amount of keys the Puzzle Cell is unfortunately in debt over.", "debt", CellPropertyType.integer, 1),
   ],
   "configurable_filler": [
-    CellProperty("ID", "The ID of the Configurable Filler", "id",
-        CellPropertyType.integer, 0),
-    CellProperty("Rotate", "Whether it should rotate its copies", "rotate",
-        CellPropertyType.boolean, false),
-    CellProperty("Mutation Chance", "The odds of a mutation to occur",
-        "mutationChance", CellPropertyType.number, 0),
-    CellProperty(
-        "Attack Chance",
-        "The odds it will attack configurable fillers of a different ID",
-        "attackChance",
-        CellPropertyType.number,
-        100),
-    CellProperty("Consistency", "The odds it will spread", "consistency",
-        CellPropertyType.number, 100),
-    CellProperty("Left Spread Odds", "The odds it will spread to its left",
-        "leftSpread", CellPropertyType.number, 100),
-    CellProperty("Right Spread Odds", "The odds it will spread to its right",
-        "rightSpread", CellPropertyType.number, 100),
-    CellProperty("Up Spread Odds", "The odds it will spread to its up",
-        "upSpread", CellPropertyType.number, 100),
-    CellProperty("Down Spread Odds", "The odds it will spread to its down",
-        "downSpread", CellPropertyType.number, 100),
+    CellProperty("ID", "The ID of the Configurable Filler", "id", CellPropertyType.integer, 0),
+    CellProperty("Rotate", "Whether it should rotate its copies", "rotate", CellPropertyType.boolean, false),
+    CellProperty("Mutation Chance", "The odds of a mutation to occur", "mutationChance", CellPropertyType.number, 0),
+    CellProperty("Attack Chance", "The odds it will attack configurable fillers of a different ID", "attackChance", CellPropertyType.number, 100),
+    CellProperty("Consistency", "The odds it will spread", "consistency", CellPropertyType.number, 100),
+    CellProperty("Left Spread Odds", "The odds it will spread to its left", "leftSpread", CellPropertyType.number, 100),
+    CellProperty("Right Spread Odds", "The odds it will spread to its right", "rightSpread", CellPropertyType.number, 100),
+    CellProperty("Up Spread Odds", "The odds it will spread to its up", "upSpread", CellPropertyType.number, 100),
+    CellProperty("Down Spread Odds", "The odds it will spread to its down", "downSpread", CellPropertyType.number, 100),
   ],
   "code_instruction": [
-    CellProperty("Line", "The line this instruction should be represented as",
-        "line", CellPropertyType.integer, 0),
-    CellProperty("Code", "The line of code stored in this cell", "code",
-        CellPropertyType.text, ""),
+    CellProperty("Line", "The line this instruction should be represented as", "line", CellPropertyType.integer, 0),
+    CellProperty("Code", "The line of code stored in this cell", "code", CellPropertyType.text, ""),
   ],
   "code_program": [
-    CellProperty(
-        "Program ID",
-        "The ID of the program (useful for external use)",
-        "id",
-        CellPropertyType.text,
-        "default"),
-    CellProperty(
-        "Instructions Per Tick",
-        "The amount of instructions to execute per tick",
-        "ipt",
-        CellPropertyType.integer,
-        100),
-    CellProperty("Code Pointer", "The current instruction", "ip",
-        CellPropertyType.integer, 0),
+    CellProperty("Program ID", "The ID of the program (useful for external use)", "id", CellPropertyType.text, "default"),
+    CellProperty("Instructions Per Tick", "The amount of instructions to execute per tick", "ipt", CellPropertyType.integer, 100),
+    CellProperty("Code Pointer", "The current instruction", "ip", CellPropertyType.integer, 0),
   ],
   "text": [
-    CellProperty(
-        "Text", "The text to display", "text", CellPropertyType.text, ""),
+    CellProperty("Text", "The text to display", "text", CellPropertyType.text, ""),
   ],
   "custom_weight": [
     CellProperty("Mass", "The weight", "mass", CellPropertyType.integer, 1),
   ],
   "portal_c": [
     CellProperty("ID", "The ID of the portal", "id", CellPropertyType.text, ""),
-    CellProperty("Target ID", "The ID of the portal it is linked with",
-        "target_id", CellPropertyType.text, ""),
+    CellProperty("Target ID", "The ID of the portal it is linked with", "target_id", CellPropertyType.text, ""),
   ],
   "enemy": [
-    CellProperty("Silent", "Whether it is silent", "silent",
-        CellPropertyType.boolean, false),
+    CellProperty("Silent", "Whether it is silent", "silent", CellPropertyType.boolean, false),
   ],
   "electric_generator": [
-    CellProperty("Interval", "The interval to generate power at", "interval",
-        CellPropertyType.number, 1),
-    CellProperty("Power", "The amount of power to generate", "power_to_give",
-        CellPropertyType.number, 1),
+    CellProperty("Interval", "The interval to generate power at", "interval", CellPropertyType.number, 1),
+    CellProperty("Power", "The amount of power to generate", "power_to_give", CellPropertyType.number, 1),
   ],
   "electric_mover": [
     CellProperty(
@@ -3622,8 +3447,7 @@ Map<String, List<CellProperty>> props = {
       CellPropertyType.boolean,
       false,
     ),
-    CellProperty("Cost", "The amount of power required to move", "cost",
-        CellPropertyType.number, 1),
+    CellProperty("Cost", "The amount of power required to move", "cost", CellPropertyType.number, 1),
   ],
   "electric_puller": [
     CellProperty(
@@ -3633,8 +3457,7 @@ Map<String, List<CellProperty>> props = {
       CellPropertyType.boolean,
       false,
     ),
-    CellProperty("Cost", "The amount of power required to move", "cost",
-        CellPropertyType.number, 1),
+    CellProperty("Cost", "The amount of power required to move", "cost", CellPropertyType.number, 1),
   ],
   "electric_battery": [
     CellProperty(
@@ -3667,25 +3490,17 @@ Map<String, List<CellProperty>> props = {
     ),
   ],
   "code_text": [
-    CellProperty("Program ID", "The ID of the program to read the buffer from",
-        "progID", CellPropertyType.text, "default"),
-    CellProperty("Buffer ID", "The ID of the buffer to read", "buffID",
-        CellPropertyType.text, "txt"),
+    CellProperty("Program ID", "The ID of the program to read the buffer from", "progID", CellPropertyType.text, "default"),
+    CellProperty("Buffer ID", "The ID of the buffer to read", "buffID", CellPropertyType.text, "txt"),
   ],
   "code_number": [
-    CellProperty("Program ID", "The ID of the program to read the buffer from",
-        "progID", CellPropertyType.text, "default"),
-    CellProperty("Buffer ID", "The ID of the buffer to read", "buffID",
-        CellPropertyType.text, "txt"),
+    CellProperty("Program ID", "The ID of the program to read the buffer from", "progID", CellPropertyType.text, "default"),
+    CellProperty("Buffer ID", "The ID of the buffer to read", "buffID", CellPropertyType.text, "txt"),
   ],
   "configurable_redirector": [
-    CellProperty("Forward", "The rotation for the cell forwards", "forward",
-        CellPropertyType.integer, 0),
-    CellProperty("Backward", "The rotation for the cell backwards", "backward",
-        CellPropertyType.integer, 0),
-    CellProperty("Left", "The rotation for the cell to the left", "left",
-        CellPropertyType.integer, 0),
-    CellProperty("Right", "The rotation for the cell to the right", "right",
-        CellPropertyType.integer, 0),
+    CellProperty("Forward", "The rotation for the cell forwards", "forward", CellPropertyType.integer, 0),
+    CellProperty("Backward", "The rotation for the cell backwards", "backward", CellPropertyType.integer, 0),
+    CellProperty("Left", "The rotation for the cell to the left", "left", CellPropertyType.integer, 0),
+    CellProperty("Right", "The rotation for the cell to the right", "right", CellPropertyType.integer, 0),
   ],
 };

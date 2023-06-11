@@ -6,7 +6,7 @@ import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as path;
 
-import '../../../logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 class ModulesDialog extends StatefulWidget {
   @override
@@ -79,7 +79,7 @@ class _ModulesDialogState extends State<ModulesDialog> {
                   final file = File(platformFile!);
 
                   file.copySync(path.absolute(
-                      assetsPath, 'modules', '${path.split(file.path).last}'));
+                      assetsPath, 'modules', path.split(file.path).last));
                 }
               }
             }

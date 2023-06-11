@@ -4,7 +4,7 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 
 class DeleteBlueprintDialog extends StatefulWidget {
   @override
-  _StateDeleteBlueprintDialog createState() => _StateDeleteBlueprintDialog();
+  State<DeleteBlueprintDialog> createState() => _StateDeleteBlueprintDialog();
 }
 
 class _StateDeleteBlueprintDialog extends State<DeleteBlueprintDialog> {
@@ -47,7 +47,9 @@ class _StateDeleteBlueprintDialog extends State<DeleteBlueprintDialog> {
             final toDelete = <String>{};
 
             _blueprints.forEach((index, v) {
-              if (v) toDelete.add(blueprints[index]);
+              if (v) {
+                toDelete.add(blueprints[index]);
+              }
             });
 
             toDelete.forEach(removeBlueprint);

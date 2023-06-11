@@ -447,8 +447,9 @@ class MechanicalManager {
     if (!cell.updated) {
       whenPowered(cell, cell.cx!, cell.cy!);
     }
-    if (cell.id == "mech_gear" && depth < 99)
+    if (cell.id == "mech_gear" && depth < 99) {
       grid.rotate(x, y, (depth % 2 == 0) ? 1 : -1);
+    }
     if (cell.id == "mech_gear" && cell.updated) return;
     depth++;
     if (cell.id == "mech_gear" || (depth <= 0 && continueFirst)) {

@@ -10,7 +10,9 @@ class AchievementRenderer {
   }
 
   static void draw(Canvas canvas, Vector2 canvasSize) {
-    if (_latest == null) return;
+    if (_latest == null) {
+      return;
+    }
     final title = achievementData[_latest]!.title;
     var description = achievementData[_latest]!.description;
     final prize = achievementData[_latest]!.prize;
@@ -22,9 +24,7 @@ class AchievementRenderer {
       description += "\n$prize Puzzle Points";
     }
 
-    final titleTP = TextPainter(
-        textWidthBasis: TextWidthBasis.longestLine,
-        textDirection: TextDirection.ltr);
+    final titleTP = TextPainter(textWidthBasis: TextWidthBasis.longestLine, textDirection: TextDirection.ltr);
     final descriptionTP = TextPainter(textDirection: TextDirection.ltr);
 
     titleTP.text = TextSpan(
@@ -69,8 +69,7 @@ class AchievementRenderer {
       Paint()..color = Colors.grey[180],
     );
     canvas.drawRect(
-      (off + Offset(0, height + border * 2)) &
-          Size(size.width * (_time / 2), border),
+      (off + Offset(0, height + border * 2)) & Size(size.width * (_time / 2), border),
       Paint()..color = Colors.green,
     );
     titleTP.paint(canvas, Offset(off.dx + border, off.dy + border));

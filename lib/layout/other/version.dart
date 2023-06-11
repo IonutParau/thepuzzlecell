@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart' hide Colors, ListTile;
 import 'package:fluent_ui/fluent_ui.dart'
-    show Colors, FluentIcons, ScaffoldPage, ListTile;
-import '../../logic/logic.dart';
-import '../../utils/ScaleAssist.dart';
+    show Colors, FluentIcons, ListTile, ScaffoldPage;
+import 'package:the_puzzle_cell/logic/logic.dart';
+import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 String currentVersion = '2.3.0.1 Configurable QuickFix 1';
 

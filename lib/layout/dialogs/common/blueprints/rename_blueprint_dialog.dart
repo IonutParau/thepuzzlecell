@@ -6,10 +6,10 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 class RenameBlueprintDialog extends StatefulWidget {
   final String bpCode;
 
-  RenameBlueprintDialog(this.bpCode);
+  const RenameBlueprintDialog(this.bpCode);
 
   @override
-  _RenameBlueprintDialogState createState() => _RenameBlueprintDialogState();
+  State<RenameBlueprintDialog> createState() => _RenameBlueprintDialogState();
 }
 
 class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
@@ -26,8 +26,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(lang(
-          "blueprint_name_and_description", "Blueprint Name & Description")),
+      title: Text(lang("blueprint_name_and_description", "Blueprint Name & Description")),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
@@ -65,9 +64,7 @@ class _RenameBlueprintDialogState extends State<RenameBlueprintDialog> {
             final title = _titleController.text;
             final desc = _descController.text;
 
-            final bpCode = widget.bpCode
-                .replaceFirst("Unnamed Blueprint", title)
-                .replaceFirst("This blueprint currently has no name", desc);
+            final bpCode = widget.bpCode.replaceFirst("Unnamed Blueprint", title).replaceFirst("This blueprint currently has no name", desc);
 
             await FlutterClipboard.copy(bpCode);
 

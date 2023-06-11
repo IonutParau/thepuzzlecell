@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 
 import 'package:the_puzzle_cell/layout/layout.dart';
-import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:flutter/material.dart' show Icons, MaterialButton, MaterialPageRoute;
 import 'package:fluent_ui/fluent_ui.dart';
@@ -182,7 +181,7 @@ void connectMultiplayer(BuildContext context, String ip) {
   Navigator.of(context).push(
     MaterialPageRoute<void>(
       builder: (ctx) {
-        return GameUI(editorType: EditorType.making, ip: ip);
+        return GameUI(ip: ip);
       },
     ),
   );

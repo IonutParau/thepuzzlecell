@@ -15,6 +15,7 @@ class _ClearDialogState extends State<ClearDialog> {
   final _widthController = TextEditingController();
   final _heightController = TextEditingController();
 
+  @override
   void dispose() {
     _widthController.dispose();
     _heightController.dispose();

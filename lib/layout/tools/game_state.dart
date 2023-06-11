@@ -38,7 +38,7 @@ enum UserRole {
 
 UserRole? getRoleStr(String role) {
   for (var r in UserRole.values) {
-    if (r.toString() == ("UserRole." + role.toLowerCase())) {
+    if (r.toString() == ("UserRole.${role.toLowerCase()}")) {
       return r;
     }
   }

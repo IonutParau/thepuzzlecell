@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../layout/tools/tools.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 
 typedef TPSType = num;
 
@@ -25,37 +25,32 @@ class BenchmarkResults {
   TPSType largeSuperNukeTPS = 0;
   TPSType largeRandomTPS = 0;
 
-  BenchmarkResults small(TPSType laserTPS, TPSType nukeTPS,
-      TPSType superNukeTPS, TPSType randomTPS) {
+  void small(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
     smallLaserTPS = laserTPS;
     smallNukeTPS = nukeTPS;
     smallSuperNukeTPS = superNukeTPS;
     smallRandomTPS = randomTPS;
-    return this;
   }
 
-  BenchmarkResults medium(TPSType laserTPS, TPSType nukeTPS,
-      TPSType superNukeTPS, TPSType randomTPS) {
+  void medium(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
     mediumLaserTPS = laserTPS;
     mediumNukeTPS = nukeTPS;
     mediumSuperNukeTPS = superNukeTPS;
     mediumRandomTPS = randomTPS;
-    return this;
   }
 
-  BenchmarkResults large(TPSType laserTPS, TPSType nukeTPS,
-      TPSType superNukeTPS, TPSType randomTPS) {
+  void large(TPSType laserTPS, TPSType nukeTPS, TPSType superNukeTPS, TPSType randomTPS) {
     largeLaserTPS = laserTPS;
     largeNukeTPS = nukeTPS;
     largeSuperNukeTPS = superNukeTPS;
     largeRandomTPS = randomTPS;
-    return this;
   }
 
+  @override
   String toString() {
-    final small = "Small";
-    final medium = "Medium";
-    final large = "Large";
+    const small = "Small";
+    const medium = "Medium";
+    const large = "Large";
     return '''
 Laser ($small): $smallLaserTPS
 Laser ($medium): $mediumLaserTPS
@@ -97,12 +92,13 @@ Future<TPSType> benchmarkGrid(GridBenchmarkData data) async {
     grid = loadStr(data.levelCode, false);
     final stopwatch = Stopwatch()..start();
 
-    for (var i = 0; i < data.settings.tickCount; i++) grid.update();
+    for (var i = 0; i < data.settings.tickCount; i++) {
+      grid.update();
+    }
 
     stopwatch.stop();
 
-    return debug(data.settings.tickCount /
-        max(stopwatch.elapsedMilliseconds / 1000, double.minPositive));
+    return debug(data.settings.tickCount / max(stopwatch.elapsedMilliseconds / 1000, double.minPositive));
   } catch (e) {
     print(e);
     return 0;
@@ -230,6 +226,6 @@ Future<BenchmarkResults> benchmark(BenchmarkSettings settings) async {
   return results;
 }
 
-Future benchmarkOnThread(BenchmarkSettings settings) {
+Future<void> benchmarkOnThread(BenchmarkSettings settings) {
   return compute(benchmark, settings);
 }

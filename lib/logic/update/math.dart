@@ -106,8 +106,9 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
+      if (i == double.negativeInfinity) {
         return output(x, y, cell.rot, double.infinity);
+      }
       if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, abs(i));
     }, null, "math_abs");
@@ -115,8 +116,9 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
+      if (i == double.negativeInfinity) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, ceil(i));
     }, null, "math_ceil");
@@ -124,8 +126,9 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
+      if (i == double.negativeInfinity) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, floor(i));
     }, null, "math_floor");
@@ -133,8 +136,9 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot + 2);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
+      if (i == double.negativeInfinity) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       output(x, y, cell.rot, log(i));
     }, null, "math_log");
@@ -142,14 +146,16 @@ class MathManager {
     grid.updateCell((cell, x, y) {
       final i = input(x, y, cell.rot - 1);
       if (i == double.infinity) return output(x, y, cell.rot, double.infinity);
-      if (i == double.negativeInfinity)
+      if (i == double.negativeInfinity) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i is double && i.isNaN) return output(x, y, cell.rot, double.nan);
       final base = input(x, y, cell.rot + 1);
       if (base == double.infinity) return output(x, y, cell.rot, 0);
       if (base == double.negativeInfinity) return output(x, y, cell.rot, 0);
-      if (base is double && base.isNaN)
+      if (base is double && base.isNaN) {
         return output(x, y, cell.rot, double.nan);
+      }
       output(x, y, cell.rot, logn(i, base));
     }, null, "math_logn");
     // Max
@@ -215,8 +221,9 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
 
       if (i1 > 0 && i2 == 0) return output(x, y, cell.rot, double.infinity);
-      if (i1 < 0 && i2 == 0)
+      if (i1 < 0 && i2 == 0) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i1 == 0 && i2 == 0) return output(x, y, cell.rot, double.nan);
 
       output(x, y, cell.rot, i1 / i2);
@@ -228,8 +235,9 @@ class MathManager {
       final i2 = input(x, y, cell.rot + 1);
 
       if (i1 > 0 && i2 == 0) return output(x, y, cell.rot, double.infinity);
-      if (i1 < 0 && i2 == 0)
+      if (i1 < 0 && i2 == 0) {
         return output(x, y, cell.rot, double.negativeInfinity);
+      }
       if (i1 == 0 && i2 == 0) return output(x, y, cell.rot, double.nan);
 
       output(x, y, cell.rot, i1 % i2);
@@ -272,8 +280,9 @@ class MathManager {
     if (index == double.negativeInfinity) return;
     if (index is double && channel.isNaN) return;
 
-    if (grid.memory[channel.toInt()] == null)
+    if (grid.memory[channel.toInt()] == null) {
       grid.memory[channel.toInt()] = HashMap();
+    }
 
     grid.memory[channel.toInt()]![index.toInt()] = value;
   }
@@ -396,8 +405,9 @@ class MathManager {
     if (cell.id == "math_tick") return grid.tickCount;
     if (cell.id == "math_time") return grid.tickCount * game.delay;
 
-    if (cell.id == "math_memreader")
+    if (cell.id == "math_memreader") {
       return getGlobal(cell.data['channel'], cell.data['index']);
+    }
     if (cell.id == "math_memget") {
       final channel = input(x, y, dir - 1);
       final index = input(x, y, dir + 1);
@@ -427,8 +437,9 @@ class MathManager {
     if (cell.id == "counter" ||
         cell.id == "math_number" ||
         cell.id == "math_safe_number") return true;
-    if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot)
+    if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) {
       return true;
+    }
 
     return false;
   }
@@ -508,8 +519,9 @@ class MathManager {
     final ty = t[1];
 
     if (isWritable(tx, ty, dir)) {
-      if (autoApplyCount(grid.at(tx, ty), tx, ty, dir, count, x, y))
+      if (autoApplyCount(grid.at(tx, ty), tx, ty, dir, count, x, y)) {
         grid.at(tx, ty).data['count'] = count;
+      }
       whenWritten(grid.at(tx, ty), tx, ty, dir, count);
     }
   }

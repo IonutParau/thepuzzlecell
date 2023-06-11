@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
-import '../../logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 class AchievementsUI extends StatelessWidget {
   @override

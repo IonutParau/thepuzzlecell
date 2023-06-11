@@ -22,7 +22,9 @@ class _ChatDialogState extends State<ChatDialog> {
   }
 
   void jumpToEnd() {
-    if (game.msgs.isEmpty) return;
+    if (game.msgs.isEmpty) {
+      return;
+    }
     Future<void>.delayed(Duration(milliseconds: 250)).then((v) {
       try {
         scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);

@@ -1,4 +1,4 @@
-import "dart:io" show File, Directory;
+import "dart:io" show Directory, File;
 import "package:archive/archive.dart" show Archive, ArchiveFile, ZipEncoder;
 import "package:path/path.dart" as path show relative;
 
@@ -22,7 +22,7 @@ Stream<String> packageDirectory(String whereToSave, Directory dir) async* {
 
         archive.addFile(archiveFile);
 
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(Duration(milliseconds: 50));
       }
     }
 

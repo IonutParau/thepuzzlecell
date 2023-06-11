@@ -14,8 +14,8 @@ void memGen(int x, int y, int indir, int outdir) {
   final bx = frontX(x, indir, -1);
   final by = frontY(y, indir, -1);
 
-  final fx = frontX(x, outdir, 1);
-  final fy = frontY(y, outdir, 1);
+  final fx = frontX(x, outdir);
+  final fy = frontY(y, outdir);
 
   if (!grid.inside(bx, by)) return;
 
@@ -33,7 +33,9 @@ void memGen(int x, int y, int indir, int outdir) {
 
   var addedRot = (outdir - indir) % 4;
 
-  while (addedRot < 0) addedRot += 4;
+  while (addedRot < 0) {
+    addedRot += 4;
+  }
 
   if (c.data["memcell"] != null) {
     final tgc = Cell.fromMap(c.data["memcell"]!, x, y)..rotate(addedRot);

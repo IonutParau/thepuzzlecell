@@ -3,8 +3,8 @@ import 'package:the_puzzle_cell/scripts/scripts.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../layout.dart';
-import '../../tools/tools.dart';
+import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 
 class SearchFilter {
   String name;
@@ -23,15 +23,11 @@ class SearchQueryResult {
   bool get isModded => modded.contains(cell);
 
   bool fromModID(String modID) {
-    return scriptingManager.modOrigin(cell).toLowerCase() ==
-        modID.toLowerCase();
+    return scriptingManager.modOrigin(cell).toLowerCase() == modID.toLowerCase();
   }
 
   bool fromModName(String name) {
-    return scriptingManager
-            .modName(scriptingManager.modOrigin(cell))
-            .toLowerCase() ==
-        name.toLowerCase();
+    return scriptingManager.modName(scriptingManager.modOrigin(cell)).toLowerCase() == name.toLowerCase();
   }
 }
 
@@ -82,8 +78,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
             for (var subitem in item.items) {
               if (!visited.contains(subitem)) {
                 visited.add(subitem);
-                results.add(
-                    SearchQueryResult(subitem, '${cat.title}/${item.title}'));
+                results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
               }
             }
           }
@@ -103,7 +98,9 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
     final filters = <SearchFilter>[];
 
     while (true) {
-      if (parts.isEmpty) break;
+      if (parts.isEmpty) {
+        break;
+      }
       if (parts.first.startsWith('@')) {
         final str = parts.first.substring(1);
 
@@ -130,8 +127,10 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
     var i = 0;
     var descs = <String>[];
     while (true) {
-      if (i >= parts.length) break;
-      if (parts[i].startsWith('\"') && parts[i].endsWith('\"')) {
+      if (i >= parts.length) {
+        break;
+      }
+      if (parts[i].startsWith('"') && parts[i].endsWith('"')) {
         descs.add(parts.removeAt(i));
       } else {
         i++;
@@ -146,7 +145,9 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       final desc = idToDesc(result.cell).toLowerCase();
 
       for (var d in descs) {
-        if (desc.contains(d.toLowerCase())) return true;
+        if (desc.contains(d.toLowerCase())) {
+          return true;
+        }
       }
 
       return descs.isEmpty;
@@ -169,10 +170,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
       if (filter.name == "vanilla") {
         results.retainWhere((result) => result.isVanilla);
       }
-      if (filter.name == "category" ||
-          filter.name == "cat" ||
-          filter.name == "categories" ||
-          filter.name == "cats") {
+      if (filter.name == "category" || filter.name == "cat" || filter.name == "categories" || filter.name == "cats") {
         final stuff = fancySplit(filter.content, ',').map((e) {
           var s = e;
 
@@ -183,7 +181,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
             s = s.substring(0, s.length - 1);
           }
 
-          if (s.startsWith('\"') && s.endsWith('\"')) {
+          if (s.startsWith('"') && s.endsWith('"')) {
             s = s.substring(1, s.length - 1);
           }
 
@@ -191,7 +189,9 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
         }).toList();
         results.retainWhere((result) {
           for (var thing in stuff) {
-            if (result.categoryPath.contains(thing)) return true;
+            if (result.categoryPath.contains(thing)) {
+              return true;
+            }
           }
 
           return stuff.isEmpty;
@@ -209,16 +209,13 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
             s = s.substring(0, s.length - 1);
           }
 
-          if (s.startsWith('\"') && s.endsWith('\"')) {
+          if (s.startsWith('"') && s.endsWith('"')) {
             s = s.substring(1, s.length - 1);
           }
 
           return s;
         }).toList();
-        results.retainWhere((result) => stuff.every((modStuff) =>
-            modStuff.startsWith('\"') && modStuff.endsWith('\"')
-                ? result.fromModName(modStuff)
-                : result.fromModID(modStuff)));
+        results.retainWhere((result) => stuff.every((modStuff) => modStuff.startsWith('"') && modStuff.endsWith('"') ? result.fromModName(modStuff) : result.fromModID(modStuff)));
       }
     }
 
@@ -239,7 +236,6 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                   width: constraints.maxWidth,
                   height: 3.h,
                   child: TextBox(
-                    autocorrect: true,
                     controller: _searchController,
                     onChanged: (value) {
                       search(value);
@@ -268,10 +264,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                           ),
                           title: Text(idToString(result.cell)),
                           subtitle: Text(idToDesc(result.cell)),
-                          tileColor: game.currentSelection == result.cell
-                              ? ConstantColorButtonState(
-                                  Colors.successPrimaryColor)
-                              : ConstantColorButtonState(Colors.grey[130]),
+                          tileColor: game.currentSelection == result.cell ? ConstantColorButtonState(Colors.successPrimaryColor) : ConstantColorButtonState(Colors.grey[130]),
                           onPressed: () {
                             game.currentSelection = result.cell;
                             setState(() {});

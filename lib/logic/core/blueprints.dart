@@ -8,16 +8,14 @@ Future<void> loadBlueprints() async {
 }
 
 Future<void> saveBlueprints() async {
-  File(path.join(assetsPath, 'assets', 'blueprints.txt'))
-      .writeAsStringSync(blueprints.join('\n'));
+  File(path.join(assetsPath, 'assets', 'blueprints.txt')).writeAsStringSync(blueprints.join('\n'));
   return;
 }
 
 void loadBlueprint(int i) {
   final g = loadStr(blueprints[i], false);
   final gc = GridClip();
-  gc.activate(g.width, g.height,
-      g.tiles.map((row) => row.map((tile) => tile.cell).toList()).toList());
+  gc.activate(g.width, g.height, g.tiles.map((row) => row.map((tile) => tile.cell).toList()).toList());
   gc.optimize();
 
   game.gridClip = gc;
@@ -44,7 +42,7 @@ void addBlueprints() {
   //game.loadAllButtons();
 }
 
-Future addBlueprint(String blueprint) async {
+Future<void> addBlueprint(String blueprint) async {
   blueprints.add(blueprint);
   final file = File(path.join(assetsPath, 'assets', 'blueprints.txt'));
   if (file.existsSync()) {
@@ -59,7 +57,7 @@ Future addBlueprint(String blueprint) async {
   game.loadCellButtons();
 }
 
-Future removeBlueprint(String blueprint) async {
+Future<void> removeBlueprint(String blueprint) async {
   blueprints.remove(blueprint);
   final file = File(path.join(assetsPath, 'assets', 'blueprints.txt'));
   if (file.existsSync()) {

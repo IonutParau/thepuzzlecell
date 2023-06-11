@@ -57,7 +57,9 @@ class QuadChunk {
     types.add(id);
     if (isNodeOnly) {
       divide();
-      for (var sub in subs) sub.insert(x, y, id);
+      for (var sub in subs) {
+        sub.insert(x, y, id);
+      }
     }
   }
 
@@ -104,7 +106,7 @@ class QuadChunk {
   }
 
   void iterateX(int y, String chunkType, bool reversed,
-      void callback(Cell cell, int x, int y)) {
+      void Function(Cell cell, int x, int y) callback) {
     if (y != -1 && !(y >= sy && y <= ey)) return;
     if (!containsType(chunkType)) return;
 
@@ -116,7 +118,9 @@ class QuadChunk {
           subs[i].iterateX(y, chunkType, reversed, callback);
         }
       } else {
-        for (var sub in subs) sub.iterateX(y, chunkType, reversed, callback);
+        for (var sub in subs) {
+          sub.iterateX(y, chunkType, reversed, callback);
+        }
       }
     } else {
       if (reversed) {
@@ -134,7 +138,7 @@ class QuadChunk {
   }
 
   void iterateY(int x, String chunkType, bool reversed,
-      void callback(Cell cell, int x, int y)) {
+      void Function(Cell cell, int x, int y) callback) {
     if (x != -1 && !(x >= sx && x <= ex)) return;
     if (!containsType(chunkType)) return;
 
@@ -146,7 +150,9 @@ class QuadChunk {
           subs[i].iterateY(x, chunkType, reversed, callback);
         }
       } else {
-        for (var sub in subs) sub.iterateY(x, chunkType, reversed, callback);
+        for (var sub in subs) {
+          sub.iterateY(x, chunkType, reversed, callback);
+        }
       }
     } else {
       if (reversed) {
@@ -164,7 +170,7 @@ class QuadChunk {
   }
 
   void iterate(Grid grid, GridAlignment alignment, String chunkType,
-      void callback(Cell cell, int x, int y)) {
+      void Function(Cell cell, int x, int y) callback) {
     if (alignment == GridAlignment.bottomright) {
       for (var y = 0; y < grid.height; y++) {
         iterateX(y, chunkType, false, callback);

@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 class ModifyTexturePackDialog extends StatefulWidget {
   final TexturePack tp;
 
-  ModifyTexturePackDialog(this.tp);
+  const ModifyTexturePackDialog(this.tp);
 
   @override
   State<ModifyTexturePackDialog> createState() =>
@@ -68,7 +68,7 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
                               path.joinAll(relativeFilePath.split('/'))));
                           f.createSync(recursive: true);
                           final bytes =
-                              assetToFile('images/' + relativeFilePath)
+                              assetToFile('images/$relativeFilePath')
                                   .readAsBytesSync();
                           f.writeAsBytesSync(bytes);
                           final m = widget.tp.getMap();

@@ -341,8 +341,8 @@ void quantums() {
   final justRepell = QuantumInteraction(-1, false);
   final gravitonAttract = QuantumInteraction(64, false);
   final orbitalAttract = QuantumInteraction(1, false, distOff: 5);
-  final muonMass = 2;
-  final tauMass = 4;
+  const muonMass = 2;
+  const tauMass = 4;
 
   // My brain hurts
   grid.updateCell(

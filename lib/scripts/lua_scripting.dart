@@ -771,7 +771,7 @@ class LuaScript {
         definedCells.add(cell);
         cells.add(cell);
         modded.add(cell);
-        print("Defined Cell: " + cell);
+        print("Defined Cell: $cell");
         cellInfo[cell] = CellProfile(name, desc);
         textureMap['$cell.png'] = "../../mods/$id/$texture";
         textureMapBackup['$cell.png'] = textureMap['$cell.png']!;

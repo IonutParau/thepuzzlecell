@@ -12,7 +12,7 @@ import 'package:the_puzzle_cell/scripts/scripts.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 
-import 'logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 late FluentThemeData td;
 
@@ -78,7 +78,7 @@ void main(List<String> args) async {
 
   final defaultMaterialTheme = MaterialStuff.ThemeData().textTheme;
 
-  final font =
+  const font =
       GoogleFonts.oxygen; // Just grab the constructor, nothing too cursed
 
   // Text stuff

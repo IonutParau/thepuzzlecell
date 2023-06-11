@@ -6,10 +6,10 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 class RenameSaveDialog extends StatefulWidget {
   final String saveCode;
 
-  RenameSaveDialog(this.saveCode);
+  const RenameSaveDialog(this.saveCode);
 
   @override
-  _RenameSaveDialogState createState() => _RenameSaveDialogState();
+  State<RenameSaveDialog> createState() => _RenameSaveDialogState();
 }
 
 class _RenameSaveDialogState extends State<RenameSaveDialog> {
@@ -26,8 +26,7 @@ class _RenameSaveDialogState extends State<RenameSaveDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(
-          lang("change_name_and_description", "Change Name & Description")),
+      title: Text(lang("change_name_and_description", "Change Name & Description")),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {

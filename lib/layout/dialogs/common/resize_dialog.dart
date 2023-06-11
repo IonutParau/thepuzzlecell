@@ -2,8 +2,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../layout.dart';
-import '../../tools/tools.dart';
+import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 
 enum ResizeCorner {
   topleft,
@@ -14,7 +14,7 @@ enum ResizeCorner {
 
 class ResizeDialog extends StatefulWidget {
   @override
-  _ResizeDialogState createState() => _ResizeDialogState();
+  State<ResizeDialog> createState() => _ResizeDialogState();
 }
 
 class _ResizeDialogState extends State<ResizeDialog> {
@@ -22,6 +22,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
   final _heightController = TextEditingController();
   var corner = ResizeCorner.topleft;
 
+  @override
   void dispose() {
     _widthController.dispose();
     _heightController.dispose();
@@ -73,17 +74,14 @@ class _ResizeDialogState extends State<ResizeDialog> {
                   width: constraints.maxWidth / 1.2,
                   height: 7.h,
                   child: DropDownButton(
-                    title: Text(lang("resize_corner", "Resizing Corner") +
-                        ": " +
-                        cornerToString(corner.index)),
+                    title: Text("${lang("resize_corner", "Resizing Corner")}: ${cornerToString(corner.index)}"),
                     items: [
                       for (var i = 0; i < 4; i++)
                         MenuFlyoutItem(
                           text: Text(cornerToString(i)),
                           onPressed: () {
                             setState(() {
-                              corner = ResizeCorner
-                                  .values[i % ResizeCorner.values.length];
+                              corner = ResizeCorner.values[i % ResizeCorner.values.length];
                             });
                           },
                         ),
@@ -218,10 +216,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
             if (game.isMultiplayer) {
               game.sendToServer(
                 'setinit',
-                {
-                  "code": SavingFormat.encodeGrid(g,
-                      title: g.title, description: g.desc)
-                },
+                {"code": SavingFormat.encodeGrid(g, title: g.title, description: g.desc)},
               );
             } else {
               grid = g;

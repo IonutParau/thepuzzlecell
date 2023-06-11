@@ -3,7 +3,7 @@ part of error_dialogs;
 class BasicErrorDialog extends StatelessWidget {
   final String error;
 
-  BasicErrorDialog(this.error);
+  const BasicErrorDialog(this.error);
 
   @override
   Widget build(BuildContext context) {

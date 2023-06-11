@@ -208,11 +208,13 @@ class GlueScript {
       if (rot is! GlueNumber) return GlueNull();
       if (rot.n.isInfinite || rot.n.isNaN) return GlueNull();
 
-      if (ccx is GlueNumber && (ccx.n.isInfinite || ccx.n.isNaN))
+      if (ccx is GlueNumber && (ccx.n.isInfinite || ccx.n.isNaN)) {
         return GlueNull();
+      }
 
-      if (ccy is GlueNumber && (ccy.n.isInfinite || ccy.n.isNaN))
+      if (ccy is GlueNumber && (ccy.n.isInfinite || ccy.n.isNaN)) {
         return GlueNull();
+      }
 
       if (lifespan is! GlueNumber) return GlueNull();
       if (lifespan.n.isInfinite || lifespan.n.isNaN) return GlueNull();
@@ -318,12 +320,16 @@ class GlueScript {
         if (s == e) return cb(s);
 
         if (s > e) {
-          for (var n = s; n >= e; n--) cb(n);
+          for (var n = s; n >= e; n--) {
+            cb(n);
+          }
           return;
         }
 
         if (s < e) {
-          for (var n = s; n <= e; n++) cb(n);
+          for (var n = s; n <= e; n++) {
+            cb(n);
+          }
           return;
         }
       }

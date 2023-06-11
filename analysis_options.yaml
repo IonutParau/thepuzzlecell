@@ -39,7 +39,6 @@ linter:
   rules:
     cancel_subscriptions: true
     always_declare_return_types: true
-    avoid_print: true
     always_use_package_imports: true
     avoid_relative_lib_imports: true
     avoid_slow_async_io: true

@@ -3,7 +3,7 @@ import 'package:the_puzzle_cell/scripts/scripts.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../layout.dart';
+import 'package:the_puzzle_cell/layout/layout.dart';
 
 class SearchFilter {
   String name;
@@ -37,7 +37,7 @@ class SearchQueryResult {
 class ViewModCellsDialog extends StatefulWidget {
   final ModInfo info;
 
-  ViewModCellsDialog(this.info);
+  const ViewModCellsDialog(this.info);
 
   @override
   State<StatefulWidget> createState() => _ViewModCellsDialog();
@@ -47,7 +47,7 @@ class _ViewModCellsDialog extends State<ViewModCellsDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text(widget.info.title + ' (${widget.info.cells.length})'),
+      title: Text('${widget.info.title} (${widget.info.cells.length})'),
       content: SizedBox(
         height: 20.h,
         child: LayoutBuilder(

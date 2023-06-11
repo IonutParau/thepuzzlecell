@@ -7,7 +7,7 @@ import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
 
-import '../../logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 class TexturePacksUI extends StatefulWidget {
   @override
@@ -78,7 +78,7 @@ class _TexturePacksUIState extends State<TexturePacksUI> {
               final whereToSave = await FilePicker.platform.saveFile(
                 initialDirectory: tpDir.path,
                 allowedExtensions: ['.zip'],
-                fileName: path.split(tp.dir.path).last + '.zip',
+                fileName: '${path.split(tp.dir.path).last}.zip',
               );
 
               if (whereToSave == null) return;

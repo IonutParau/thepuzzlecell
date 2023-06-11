@@ -1,12 +1,12 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
-import '../common/blueprints/add_blueprint_dialog.dart';
-import '../common/blueprints/rename_blueprint_dialog.dart';
+import 'package:the_puzzle_cell/layout/dialogs/common/blueprints/add_blueprint_dialog.dart';
+import 'package:the_puzzle_cell/layout/dialogs/common/blueprints/rename_blueprint_dialog.dart';
 
 class SaveBlueprintDialog extends StatelessWidget {
   final String bpSave;
 
-  SaveBlueprintDialog(this.bpSave);
+  const SaveBlueprintDialog(this.bpSave);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class SaveBlueprintDialog extends StatelessWidget {
       content: Text(
         lang(
           'saved_blueprint_desc',
-          'The blueprint has been saved to your clipboard. You can change \"Unnamed Blueprint\" and \"This blueprint currently has no name\" to change title and description. Then you can put it in your blueprints file to use it later.',
+          'The blueprint has been saved to your clipboard. You can change "Unnamed Blueprint" and "This blueprint currently has no name" to change title and description. Then you can put it in your blueprints file to use it later.',
         ),
       ),
       actions: [

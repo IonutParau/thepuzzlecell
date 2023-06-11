@@ -13,13 +13,13 @@ class MasterState {
   MasterState(this.cell, this.x, this.y, this.lastVars, this.fakelifespan,
       this.fakecellScaleX, this.fakecellScaleY);
 
-  static List<MasterState> _states = [
+  static final List<MasterState> _states = [
     MasterState(Cell(0, 0).toMap, 0, 0, LastVars(0, 0, 0, "empty"), 0, 1, 1)
   ];
 
   static bool get isCurrentActive => _states.last.active;
   static MasterState get current => _states.last;
-  static void set current(MasterState state) => _states.last = state;
+  static set current(MasterState state) => _states.last = state;
   static void push(MasterState state) => _states.add(state);
   static MasterState pop() {
     final s = _states.removeLast();
@@ -232,16 +232,20 @@ void onMasterPowered(Cell cell, int x, int y) {
 }
 
 num? customMasterNum(Cell cell, int x, int y, int dir) {
-  if (cell.id == "master_get_camx")
+  if (cell.id == "master_get_camx") {
     return game.pixelToCellX(game.canvasSize.x ~/ 2);
-  if (cell.id == "master_get_camy")
+  }
+  if (cell.id == "master_get_camy") {
     return game.pixelToCellY(game.canvasSize.y ~/ 2);
+  }
   if (cell.id == "master_get_mousex") return game.cellMouseX;
   if (cell.id == "master_get_mousey") return game.cellMouseY;
-  if (cell.id == "master_get_rot")
+  if (cell.id == "master_get_rot") {
     return MasterState.usable ? (MasterState.current.cell['rot'] ?? 0) : 0;
-  if (cell.id == "master_get_lastrot")
+  }
+  if (cell.id == "master_get_lastrot") {
     return MasterState.usable ? (MasterState.current.lastVars.lastRot) : 0;
+  }
   if (cell.id == "master_get_x") return (cell.cx ?? x);
   if (cell.id == "master_get_y") return (cell.cy ?? y);
   if (cell.id == "master_get_width") return grid.width;

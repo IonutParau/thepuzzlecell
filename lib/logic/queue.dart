@@ -1,7 +1,7 @@
 part of logic;
 
 class QueueManager {
-  static Map<String, List<void Function()>> _queue = {};
+  static final Map<String, List<void Function()>> _queue = {};
 
   static void add(String key, void Function() callback) {
     if (!_queue.containsKey(key)) {

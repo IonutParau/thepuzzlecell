@@ -40,7 +40,7 @@ class TexturePack {
 
   bool enabled = true;
 
-  Future toggle() async {
+  Future<void> toggle() async {
     var l = storage.getStringList("disabled_texturepacks") ?? [];
     if (l.contains(id)) {
       l.remove(id);
@@ -69,12 +69,12 @@ class TexturePack {
       for (var file in f) {
         var allowed = false;
 
-        for (var fileExt in allowedFiles)
+        for (var fileExt in allowedFiles) {
           if (file.endsWith(fileExt)) allowed = true;
+        }
 
         if (allowed) {
-          textureMap[file.split(path.separator).last.split('.').first +
-              '.png'] = fixPath(file);
+          textureMap['${file.split(path.separator).last.split('.').first}.png'] = fixPath(file);
         }
       }
     }
@@ -82,8 +82,7 @@ class TexturePack {
     m.forEach(
       (id, p) {
         if (p is String) {
-          textureMap['$id.png'] =
-              'texture_packs/${(dir.path.split(path.separator).last)}/$p';
+          textureMap['$id.png'] = 'texture_packs/${(dir.path.split(path.separator).last)}/$p';
         }
       },
     );
@@ -97,10 +96,7 @@ class TexturePack {
   String fixPath(String p) {
     final i = path.split(p).indexOf('texture_packs');
 
-    return 'texture_packs/' +
-        dir.path.split(path.separator).last +
-        "/" +
-        path.split(p).sublist(i + 2).join('/');
+    return 'texture_packs/' + dir.path.split(path.separator).last + "/" + path.split(p).sublist(i + 2).join('/');
   }
 
   List<String> getFiles(String p) {
@@ -110,14 +106,13 @@ class TexturePack {
 
     final parts = <String>[];
 
-    l.forEach((subentry) {
+    for (var subentry in l) {
       if (subentry is File) {
         parts.add(subentry.path);
       } else if (subentry is Directory) {
-        parts.addAll(getFiles(subentry.path)
-            .map((str) => path.join(subentry.path, str)));
+        parts.addAll(getFiles(subentry.path).map((str) => path.join(subentry.path, str)));
       }
-    });
+    }
 
     return parts;
   }
@@ -181,15 +176,13 @@ final tpDir = Directory(
 
 List<TexturePack> texturePacks = [];
 
-List<TexturePack> get enabledTexturePacks =>
-    [...texturePacks]..removeWhere((tp) => !tp.enabled);
+List<TexturePack> get enabledTexturePacks => [...texturePacks]..removeWhere((tp) => !tp.enabled);
 
 void loadTexturePacks() {
   if (tpDir.existsSync()) {
     final l = tpDir.listSync();
     l.removeWhere((e) => e is File);
-    texturePacks =
-        l.map<TexturePack>((e) => TexturePack(e as Directory)).toList();
+    texturePacks = l.map<TexturePack>((e) => TexturePack(e as Directory)).toList();
   }
 }
 
@@ -201,7 +194,7 @@ void applyTexturePacks() {
   }
 }
 
-Future applyTexturePackSettings() async {
+Future<void> applyTexturePackSettings() async {
   if (storage.getStringList("disabled_texturepacks") == null) {
     await storage.setStringList("disabled_texturepacks", []);
   }

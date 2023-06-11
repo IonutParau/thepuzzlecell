@@ -46,11 +46,10 @@ class _SeeOnlineDialogState extends State<SeeOnlineDialog> {
                     width: constraints.maxWidth * 0.8,
                     child: ListTile(
                       leading: Image.asset(
-                        "assets/images/" +
-                            ((cursorTexture ?? "cursor") == "cursor"
+                        "assets/images/${(cursorTexture ?? "cursor") == "cursor"
                                 ? "interface/cursor.png"
                                 : (textureMap["$cursorTexture.png"] ??
-                                    "$cursorTexture.png")),
+                                    "$cursorTexture.png")}",
                         width: 5.h,
                         height: 5.h,
                         filterQuality: FilterQuality.none,

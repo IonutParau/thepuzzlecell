@@ -3,7 +3,7 @@ part of error_dialogs;
 class LoadBlueprintErrorDialog extends StatelessWidget {
   final String error;
 
-  LoadBlueprintErrorDialog(this.error);
+  const LoadBlueprintErrorDialog(this.error);
 
   @override
   Widget build(BuildContext context) {

@@ -72,6 +72,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     vsync: this,
   )..repeat();
 
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -91,7 +92,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               pane: NavigationPane(
                 selected: _navIndex,
                 onChanged: (i) => setState(() => _navIndex = i),
-                displayMode: PaneDisplayMode.auto,
                 header: Padding(
                   padding: EdgeInsets.all(0.1.w),
                   child: Column(

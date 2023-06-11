@@ -9,22 +9,26 @@ void karls() {
       var velX = 0;
       var velY = 0;
       if (grid.inside(x - 1, y) && grid.inside(x + 1, y)) {
-        if (grid.at(x - 1, y).id != "empty" && grid.at(x - 1, y).id != "wall")
+        if (grid.at(x - 1, y).id != "empty" && grid.at(x - 1, y).id != "wall") {
           velX++;
+        }
         if (grid.at(x + 1, y).id == "wall") velX++; // Get to food dammit
 
-        if (grid.at(x + 1, y).id != "empty" && grid.at(x + 1, y).id != "wall")
+        if (grid.at(x + 1, y).id != "empty" && grid.at(x + 1, y).id != "wall") {
           velX--;
+        }
         if (grid.at(x - 1, y).id == "wall") velX--; // Get to food dammit
       }
 
       if (grid.inside(x, y - 1) && grid.inside(x, y + 1)) {
-        if (grid.at(x, y - 1).id != "empty" && grid.at(x, y - 1).id != "wall")
+        if (grid.at(x, y - 1).id != "empty" && grid.at(x, y - 1).id != "wall") {
           velY++;
+        }
         if (grid.at(x, y + 1).id == "wall") velY++; // Get to food dammit
 
-        if (grid.at(x, y + 1).id != "empty" && grid.at(x, y + 1).id != "wall")
+        if (grid.at(x, y + 1).id != "empty" && grid.at(x, y + 1).id != "wall") {
           velY--;
+        }
         if (grid.at(x, y - 1).id == "wall") velY--; // Get to food dammit
       }
 

@@ -21,14 +21,18 @@ void loadLang(File file) {
 const _noData = <String, String>{};
 
 String lang(String key, String fallback, [Map<String, String> data = _noData]) {
-  if (storage.getBool('translator_mode') == true) return key;
+  if (storage.getBool('translator_mode') == true) {
+    return key;
+  }
   var v = currentLang[key] as String?;
-  if (v == null) return fallback;
+  if (v == null) {
+    return fallback;
+  }
   currentLang.forEach((key, value) {
-    v = v!.replaceAll("\#$key", value);
+    v = v!.replaceAll("#$key", value);
   });
   data.forEach((key, value) {
-    v = v!.replaceAll("\@$key", value);
+    v = v!.replaceAll("@$key", value);
   });
   return v!;
 }
@@ -38,9 +42,7 @@ List<File> get langs {
     langDir.createSync();
   }
 
-  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json")))
-      .map<File>((item) => item as File)
-      .toList();
+  return (langDir.listSync()..removeWhere((f) => !f.path.endsWith(".json"))).map<File>((item) => item as File).toList();
 }
 
 void loadLangByName(String name) {
@@ -53,8 +55,7 @@ void loadLangByName(String name) {
 }
 
 Future<List<String>> downloadableLanguages() async {
-  final url =
-      'https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/languages.txt';
+  const url = 'https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/languages.txt';
 
   final response = await http.get(Uri.parse(url));
 
@@ -69,9 +70,8 @@ Future<List<String>> downloadableLanguages() async {
   return r;
 }
 
-Future downloadLanguage(String languageName) async {
-  final url =
-      "https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/$languageName.json";
+Future<void> downloadLanguage(String languageName) async {
+  final url = "https://raw.githubusercontent.com/IonutParau/tpc-langs-repo/main/$languageName.json";
 
   final response = await http.get(Uri.parse(url));
 

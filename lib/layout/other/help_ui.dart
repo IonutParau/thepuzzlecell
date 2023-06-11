@@ -2,7 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 import "package:flutter_markdown/flutter_markdown.dart";
 

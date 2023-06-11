@@ -11,7 +11,7 @@ void doGear(int x, int y, RotationalType rt) {
     grid.rotate(x, y, 1); // Cool stuff
 
     // Save cells
-    final cells = [];
+    final cells = <Cell>[];
     cells.add(grid.at(x, y + 1).copy);
     cells.add(grid.at(x + 1, y).copy);
     cells.add(grid.at(x, y - 1).copy);
@@ -36,7 +36,7 @@ void doGear(int x, int y, RotationalType rt) {
     grid.rotate(x, y, -1); // Cool stuff
 
     // Save cells
-    final cells = [];
+    final cells = <Cell>[];
     cells.add(grid.at(x, y - 1).copy);
     cells.add(grid.at(x - 1, y).copy);
     cells.add(grid.at(x, y + 1).copy);
@@ -67,7 +67,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     if (!canMove(x - 1, y - 1, 3, 1, MoveType.gear)) return;
 
     // save
-    final cells = [];
+    final cells = <Cell>[];
     cells.add(grid.at(x, y - 1).copy);
     cells.add(grid.at(x + 1, y - 1).copy);
     cells.add(grid.at(x + 1, y).copy);
@@ -102,7 +102,7 @@ void doMegagear(int x, int y, RotationalType rt) {
     if (!canMove(x - 1, y - 1, 2, 1, MoveType.gear)) return;
 
     // save
-    final cells = [];
+    final cells = <Cell>[];
     cells.add(grid.at(x, y - 1).copy);
     cells.add(grid.at(x - 1, y - 1).copy);
     cells.add(grid.at(x - 1, y).copy);
@@ -128,7 +128,7 @@ void doMegagear(int x, int y, RotationalType rt) {
   }
 }
 
-void gears(cells) {
+void gears(Set<String> cells) {
   if (!grid.movable) return;
   if (cells.contains("gear_cw")) {
     grid.updateCell(

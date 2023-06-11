@@ -27,7 +27,9 @@ class _TerminalDialogState extends State<TerminalDialog> {
   }
 
   void jumpToEnd() {
-    if (terminalSession.output.isEmpty) return;
+    if (terminalSession.output.isEmpty) {
+      return;
+    }
     Future<void>.delayed(Duration(milliseconds: 250)).then((v) {
       try {
         scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);

@@ -65,9 +65,7 @@ void timetravel() {
     },
   );
 
-  if (timeGrid == null) {
-    timeGrid = game.initial.copy;
-  }
+  timeGrid ??= game.initial.copy;
 
   grid.loopChunks(
     "time_hole",
@@ -107,16 +105,16 @@ void timetravel() {
       (Cell cell, int x, int y) {
         if (cell.data['time_travelled'] == true) {
           final s = CellStructure()..build(x, y);
-          s.coords.forEach(
-            (pos) => timeGrid!.set(
+          for (var pos in s.coords) {
+            timeGrid!.set(
               pos.x.toInt(),
               pos.y.toInt(),
               grid.at(
                 pos.x.toInt(),
                 pos.y.toInt(),
               ),
-            ),
-          );
+            );
+          }
         }
       },
       filter: (c, x, y) => c.id == "time_machine",

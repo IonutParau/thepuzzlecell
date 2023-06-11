@@ -5,7 +5,7 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 
 class ReplaceCellDialog extends StatefulWidget {
   @override
-  _ReplaceCellDialogState createState() => _ReplaceCellDialogState();
+  State<ReplaceCellDialog> createState() => _ReplaceCellDialogState();
 }
 
 class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
@@ -18,7 +18,9 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
 
   @override
   void dispose() {
-    controllers.forEach((v) => v.dispose());
+    for (var v in controllers) {
+      v.dispose();
+    }
     super.dispose();
   }
 
@@ -41,7 +43,6 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
     final currentID = controllers[i].text;
     final tp = textureMap['$currentID.png'] ?? '$currentID.png';
     return DropDownButton(
-      placement: FlyoutPlacementMode.bottomCenter,
       leading: Image.asset(
         'assets/images/$tp',
         fit: BoxFit.fill,
@@ -51,7 +52,7 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
         width: 3.h,
         height: 3.h,
       ),
-      title: Text("$displayName: " + idToString(currentID), style: textStyle),
+      title: Text("$displayName: ${idToString(currentID)}", style: textStyle),
       items: [
         for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
           MenuFlyoutItem(
@@ -85,8 +86,7 @@ class _ReplaceCellDialogState extends State<ReplaceCellDialog> {
             children: [
               for (var i = 0; i < ids.length; i++)
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
+                  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.25.h),
                   child: SizedBox(
                     width: constraints.maxWidth * 0.7,
                     height: 7.h,

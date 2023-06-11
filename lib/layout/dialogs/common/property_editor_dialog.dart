@@ -8,7 +8,7 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 
 class PropertyEditorDialog extends StatefulWidget {
   @override
-  _PropertyEditorDialogState createState() => _PropertyEditorDialogState();
+  State<PropertyEditorDialog> createState() => _PropertyEditorDialogState();
 }
 
 class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
@@ -16,7 +16,9 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
   @override
   void dispose() {
-    controllers.forEach((v) => v.dispose());
+    for (var v in controllers) {
+      v.dispose();
+    }
     super.dispose();
   }
 
@@ -28,7 +30,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
 
     for (var i = 0; i < p.length; i++) {
       final v = game.currentData[p[i].key] ?? p[i].def;
-      controllers.add(TextEditingController(text: v == null ? null : v.toString()));
+      controllers.add(TextEditingController(text: v?.toString()));
     }
   }
 
@@ -43,7 +45,6 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final currentID = controllers[i].text;
       final tp = textureMap['$currentID.png'] ?? '$currentID.png';
       return DropDownButton(
-        placement: FlyoutPlacementMode.bottomCenter,
         leading: Image.asset(
           'assets/images/$tp',
           fit: BoxFit.fill,
@@ -53,7 +54,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
           width: 3.h,
           height: 3.h,
         ),
-        title: Text("$displayName: " + idToString(currentID), style: textStyle),
+        title: Text("$displayName: ${idToString(currentID)}", style: textStyle),
         items: [
           for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
             MenuFlyoutItem(
@@ -80,8 +81,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
       final rot = int.tryParse(currentID) ?? 0;
 
       return DropDownButton(
-        placement: FlyoutPlacementMode.bottomCenter,
-        title: Text("$displayName: " + rotToString(rot)),
+        title: Text("$displayName: ${rotToString(rot)}"),
         items: [
           for (var r = 0; r < 4; r++)
             MenuFlyoutItem(

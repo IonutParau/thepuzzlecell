@@ -75,7 +75,7 @@ class BrokenCell {
       final texture =
           textureMap[data["trick_as"] + '.png'] ?? "${data["trick_as"]}.png";
       final rotoff = (data["trick_rot"] ?? 0) * halfPi;
-      var trick_off = rotateOff(
+      var trickOff = rotateOff(
           Offset(
               screenPos.x + screenSize.y / 2, screenPos.y + screenSize.y / 2),
           -rotoff);
@@ -84,7 +84,7 @@ class BrokenCell {
 
       Sprite(Flame.images.fromCache(texture)).render(
         canvas,
-        position: Vector2(trick_off.dx, trick_off.dy),
+        position: Vector2(trickOff.dx, trickOff.dy),
         size: screenSize / 2,
         anchor: Anchor.center,
         overridePaint: paint,
@@ -184,13 +184,16 @@ class Cell extends Equatable {
     return c;
   }
 
+  @override
   String toString() =>
       "[Cell]\nID: $id\nRot: $rot\nData: $data\nTags: $tags\nInvisible: $invisible\nStored CX: $cx\nStored CY: $cy";
 
   void rotate(int amount) {
     lastvars.lastRot = rot;
     rot += amount;
-    while (rot < 0) rot += 4;
+    while (rot < 0) {
+      rot += 4;
+    }
     rot %= 4;
   }
 
@@ -234,7 +237,7 @@ String textToRenderOnCell(Cell cell, num x, num y) {
   }
 
   if (cell.id == "math_to_mech") {
-    text = "${countToString(cell.data['offset'])}";
+    text = countToString(cell.data['offset']);
     if ((cell.data['offset'] ?? 0) == 0) {
       text = "";
     }

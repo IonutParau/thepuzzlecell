@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart'
-    show MaterialButton, CircularProgressIndicator;
+    show CircularProgressIndicator, MaterialButton;
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/dialogs/core/streaming_dialog.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../logic/logic.dart'
+import 'package:the_puzzle_cell/logic/logic.dart'
     show getVersion, higherVersion, lang, transferGame, versionToCheck;
-import '../../utils/ScaleAssist.dart';
+import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
 class UpdateUI extends StatefulWidget {
   const UpdateUI({Key? key}) : super(key: key);

@@ -8,7 +8,9 @@ void doSupGen(int x, int y, int dir, int gendir,
   final toGen = <Cell>[];
 
   var addedRot = (dir - gendir + preaddedRot) % 4;
-  while (addedRot < 0) addedRot += 4;
+  while (addedRot < 0) {
+    addedRot += 4;
+  }
 
   gendir += 2;
   gendir %= 4;

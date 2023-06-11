@@ -24,12 +24,14 @@ class ElectricPath {
       // This might look weird, it means "Don't immediately return to the last point"
       if (fullPath.isNotEmpty) if (endDir == (i + 2) % 4) continue;
 
-      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source))
+      if (!electricManager.canTransfer(grid.at(x, y), x, y, i, source)) {
         continue;
+      }
 
       // Some cells might block where they can transfer to.
-      if (host != null && electricManager.blockedByHost(host!, x, y, i, source))
+      if (host != null && electricManager.blockedByHost(host!, x, y, i, source)) {
         continue;
+      }
 
       final p = copy;
 
@@ -37,8 +39,9 @@ class ElectricPath {
       p.x = frontX(p.x, i);
       p.y = frontY(p.y, i);
       if (p.host != null &&
-          electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source))
+          electricManager.blockedByReceiver(p.host!, p.x, p.y, i, source)) {
         continue;
+      }
 
       l.add(p);
       visited.add("${p.x} ${p.y}");
@@ -99,8 +102,9 @@ class ElectricManager {
   }
 
   bool blockedByReceiver(Cell receiver, int x, int y, int dir, Cell source) {
-    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0)
+    if (receiver.id == "electric_wire" && readPower(receiver, x, y) > 0) {
       return true;
+    }
 
     return false;
   }

@@ -4,7 +4,7 @@ class Shop extends StatefulWidget {
   const Shop({Key? key}) : super(key: key);
 
   @override
-  _ShopState createState() => _ShopState();
+  State<Shop> createState() => _ShopState();
 }
 
 class _ShopState extends State<Shop> {
@@ -111,11 +111,7 @@ class _SkinTileState extends State<SkinTile> {
               Spacer(),
               MaterialButton(
                 child: Text(
-                  SkinManager.hasSkin(widget.skin)
-                      ? (SkinManager.skinEnabled(widget.skin)
-                          ? lang("disequip", "Disequip")
-                          : lang("equip", "Equip"))
-                      : lang("unlock", "Unlock"),
+                  SkinManager.hasSkin(widget.skin) ? (SkinManager.skinEnabled(widget.skin) ? lang("disequip", "Disequip") : lang("equip", "Equip")) : lang("unlock", "Unlock"),
                   style: TextStyle(
                     fontSize: 5.sp,
                     color: Colors.white,
@@ -138,7 +134,7 @@ class _SkinTileState extends State<SkinTile> {
                           widget.purchaseCallback();
                           SkinManager.addSkin(widget.skin);
                         } else {
-                          showDialog(
+                          showDialog<void>(
                             context: context,
                             builder: (ctx) {
                               return ContentDialog(
@@ -164,8 +160,7 @@ class _SkinTileState extends State<SkinTile> {
             ],
           ),
           subtitle: Text(
-            lang('price', 'Price: ${widget.price} Puzzle Points',
-                {"price": "${widget.price} Puzzle Points"}),
+            lang('price', 'Price: ${widget.price} Puzzle Points', {"price": "${widget.price} Puzzle Points"}),
             style: TextStyle(
               fontSize: 4.sp,
             ),

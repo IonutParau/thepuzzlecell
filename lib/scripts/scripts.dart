@@ -10,8 +10,8 @@ import 'package:the_puzzle_cell/layout/dialogs/common/search_dialog.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
-import '../layout/layout.dart';
-import '../logic/logic.dart';
+import 'package:the_puzzle_cell/layout/layout.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 part 'scripting.dart';
 part 'lua_scripting.dart';

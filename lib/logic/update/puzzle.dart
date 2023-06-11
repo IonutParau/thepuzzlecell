@@ -138,7 +138,7 @@ void doRobot(Cell cell, int x, int y) {
   if (grid.cells.contains("key")) {
     final dirToKey = pathFindToCell(x, y, ["key"], range);
     if (dirToKey != null) {
-      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot", 1);
+      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot");
     }
   }
 
@@ -161,7 +161,7 @@ void doRobot(Cell cell, int x, int y) {
                 ..rot = f.rot);
         }
       } else {
-        push(x, y, dirToLock, 1, mt: MoveType.push);
+        push(x, y, dirToLock, 1);
       }
     }
   }
@@ -177,7 +177,7 @@ void doRobot(Cell cell, int x, int y) {
   if (grid.cells.contains("flag")) {
     final dirToFlag = pathFindToCell(x, y, ["flag"], range);
     if (dirToFlag != null) {
-      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
+      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot");
       return;
     }
   }
@@ -188,7 +188,7 @@ void doAssistant(Cell cell, int x, int y) {
   if (grid.cells.contains("key")) {
     final dirToKey = pathFindToCell(x, y, ["key"], range);
     if (dirToKey != null) {
-      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot", 1);
+      return doPuzzleSide(x, y, dirToKey, grid.cells, "robot");
     }
   }
 
@@ -211,7 +211,7 @@ void doAssistant(Cell cell, int x, int y) {
                 ..rot = f.rot);
         }
       } else {
-        push(x, y, dirToLock, 1, mt: MoveType.push);
+        push(x, y, dirToLock, 1);
       }
     }
   }
@@ -227,26 +227,26 @@ void doAssistant(Cell cell, int x, int y) {
         if (enemies.contains(grid.get(pushX + 1, pushY)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX - 1, pushY, true, {});
           if (dir != null) {
-            if (push(x, y, dir, 1, mt: MoveType.push)) return;
+            if (push(x, y, dir, 1)) return;
           }
         } else if (enemies.contains(grid.get(pushX - 1, pushY)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX + 1, pushY, true, {});
           if (dir != null) {
-            if (push(x, y, dir, 1, mt: MoveType.push)) return;
+            if (push(x, y, dir, 1)) return;
           }
         } else if (enemies.contains(grid.get(pushX, pushY + 1)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX, pushY - 1, true, {});
           if (dir != null) {
-            if (push(x, y, dir, 1, mt: MoveType.push)) return;
+            if (push(x, y, dir, 1)) return;
           }
         } else if (enemies.contains(grid.get(pushX, pushY - 1)?.id)) {
           final dir = getPathFindingDirection(x, y, pushX, pushY + 1, true, {});
           if (dir != null) {
-            if (push(x, y, dir, 1, mt: MoveType.push)) return;
+            if (push(x, y, dir, 1)) return;
           }
         }
 
-        if (push(x, y, dirToEnemy, 1, mt: MoveType.push)) return;
+        if (push(x, y, dirToEnemy, 1)) return;
       }
     }
   }
@@ -254,7 +254,7 @@ void doAssistant(Cell cell, int x, int y) {
   if (grid.cells.contains("flag")) {
     final dirToFlag = pathFindToCell(x, y, ["flag"], range);
     if (dirToFlag != null) {
-      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot", 1);
+      doPuzzleSide(x, y, dirToFlag, grid.cells, "robot");
       return;
     }
   }

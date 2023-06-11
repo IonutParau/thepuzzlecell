@@ -12,7 +12,7 @@ import 'package:flutter/rendering.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../main.dart';
+import 'package:the_puzzle_cell/main.dart';
 
 part 'game_state.dart';
 part 'saving.dart';

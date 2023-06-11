@@ -317,12 +317,10 @@ class Grid {
       if (!cells.contains(chunkID)) return;
     }
 
-    if (filter == null) {
-      filter = (Cell c, int x, int y) {
+    filter ??= (Cell c, int x, int y) {
         if (chunkID == "all") return true;
         return c.id == chunkID;
       };
-    }
 
     // 0,0 to w,h
     if (alignment == fromRot(2)) {
@@ -331,7 +329,7 @@ class Grid {
 
       while (y < height) {
         while (x < width) {
-          if (this.inChunk(x, y, chunkID)) {
+          if (inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
               if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
@@ -353,7 +351,7 @@ class Grid {
 
       while (y >= 0) {
         while (x >= 0) {
-          if (this.inChunk(x, y, chunkID)) {
+          if (inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
               if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
@@ -375,7 +373,7 @@ class Grid {
 
       while (x < width) {
         while (y >= 0) {
-          if (this.inChunk(x, y, chunkID)) {
+          if (inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
               if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
@@ -397,7 +395,7 @@ class Grid {
 
       while (x >= 0) {
         while (y < height) {
-          if (this.inChunk(x, y, chunkID)) {
+          if (inChunk(x, y, chunkID)) {
             if (filter(at(x, y), x, y)) {
               if (chunkID != "all" && shouldUpdate) at(x, y).updated = true;
               callback(at(x, y), x, y);
@@ -445,8 +443,12 @@ class Grid {
   Set<String> prepareTick() {
     brokenCells = [];
     final cells = <String>{};
-    columns.forEach((column) => column.clear());
-    rows.forEach((row) => row.clear());
+    for (var column in columns) {
+      column.clear();
+    }
+    for (var row in rows) {
+      row.clear();
+    }
 
     final cellPos = quadChunk.fetch("all");
 
@@ -604,7 +606,7 @@ class GridClip {
     this.width = width;
     this.height = height;
     this.cells = cells;
-    this.active = true;
+    active = true;
   }
 
   void place(int x, int y) {
@@ -673,13 +675,13 @@ class GridClip {
 
       for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
-          copy[y][x] = this.cells[x][height - y - 1].copy;
+          copy[y][x] = cells[x][height - y - 1].copy;
           copy[y][x].rot += 1;
           copy[y][x].rot %= 4;
         }
       }
 
-      this.cells = copy;
+      cells = copy;
       game.selH = width;
       game.selW = height;
       final tmp = width;
@@ -696,13 +698,13 @@ class GridClip {
 
       for (var x = 0; x < width; x++) {
         for (var y = 0; y < height; y++) {
-          copy[y][x] = this.cells[width - x - 1][y];
+          copy[y][x] = cells[width - x - 1][y];
           copy[y][x].rot += 3;
           copy[y][x].rot %= 4;
         }
       }
 
-      this.cells = copy;
+      cells = copy;
       game.selH = width;
       game.selW = height;
       final tmp = width;

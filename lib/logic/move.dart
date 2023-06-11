@@ -341,7 +341,7 @@ T debug<T>(T value) {
   return value;
 }
 
-final int enemyParticleCounts = 50;
+const int enemyParticleCounts = 50;
 
 void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
   if (moving.id == "empty") return;
@@ -708,9 +708,7 @@ void handleInside(int x, int y, int dir, int force, Cell moving, MoveType mt) {
 bool moveCell(int ox, int oy, int nx, int ny, [int? dir, Cell? isMoving, MoveType mt = MoveType.unknown_move, int force = 1]) {
   final moving = isMoving ?? grid.at(ox, oy).copy;
 
-  if (dir == null) {
-    dir = dirFromOff(nx - ox, ny - oy);
-  }
+  dir ??= dirFromOff(nx - ox, ny - oy);
   final movingTo = grid.at(nx, ny).copy;
 
   if (moveInsideOf(movingTo, nx, ny, dir, force, mt) && movingTo.id != "empty") {

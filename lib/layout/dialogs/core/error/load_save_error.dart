@@ -3,7 +3,7 @@ part of error_dialogs;
 class LoadSaveErrorDialog extends StatelessWidget {
   final String error;
 
-  LoadSaveErrorDialog(this.error);
+  const LoadSaveErrorDialog(this.error);
 
   @override
   Widget build(BuildContext context) {

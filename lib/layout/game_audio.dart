@@ -29,7 +29,9 @@ Music getCurrentMusicData() {
   final current = storage.getString("music") ?? (musics.first.id);
 
   for (var m in musics) {
-    if (m.id == current) return m;
+    if (m.id == current) {
+      return m;
+    }
   }
 
   return musics.first;

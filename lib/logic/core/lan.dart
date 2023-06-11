@@ -88,7 +88,9 @@ Future<HttpServer> setupLanServer() async {
 
 Future<void> closeLanServer() async {
   await server?.close();
-  for (var ws in webSockets) await ws.sink.close();
+  for (var ws in webSockets) {
+    await ws.sink.close();
+  }
   webSockets.clear();
   clientIDs.clear();
   clientIDList.clear();
@@ -158,8 +160,9 @@ void execPacket(String data, WebSocketChannel sender) {
 
       try {
         final signed = packet["author"].toString();
-        if (signed.toLowerCase() == "server")
+        if (signed.toLowerCase() == "server") {
           throw "User attempted to forge a message as server";
+        }
 
         final id = clientIDs[sender];
         if (id == null) throw "Pending User tried to send message";

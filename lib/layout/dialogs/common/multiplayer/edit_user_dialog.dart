@@ -6,7 +6,7 @@ import 'package:the_puzzle_cell/logic/logic.dart';
 
 class EditUserDialog extends StatefulWidget {
   final String user;
-  EditUserDialog(this.user, {Key? key}) : super(key: key);
+  const EditUserDialog(this.user, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EditUserDialogState();

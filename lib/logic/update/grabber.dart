@@ -49,8 +49,9 @@ bool doGrabber(int x, int y, int dir) {
 bool hasGrabberBias(Cell cell, int x, int y, int dir, int mdir) {
   final odir = (dir + 2) % 4;
 
-  if (cell.id == "mech_grabber" && (cell.rot == odir || cell.rot == dir))
+  if (cell.id == "mech_grabber" && (cell.rot == odir || cell.rot == dir)) {
     return MechanicalManager.on(cell, true);
+  }
 
   if (modded.contains(cell.id)) {
     return scriptingManager.hasGrabberBias(cell, x, y, dir, mdir);
@@ -74,8 +75,9 @@ bool grabSide(int x, int y, int mdir, int dir) {
         if (moveInsideOf(grid.at(x, y), x, y, dir, 1, MoveType.grab)) {
           break;
         } else {
-          if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir))
+          if (hasGrabberBias(grid.at(x, y), x, y, dir, mdir)) {
             grid.at(x, y).updated = true;
+          }
           if (!canMove(x, y, dir, 1, MoveType.grab)) break;
           final fx = frontX(x, dir);
           final fy = frontY(y, dir);

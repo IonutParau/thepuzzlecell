@@ -5,7 +5,7 @@ import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../logic/logic.dart';
+import 'package:the_puzzle_cell/logic/logic.dart';
 
 class ModsUI extends StatefulWidget {
   @override
@@ -67,7 +67,7 @@ class _ModsUIState extends State<ModsUI> {
           final info = modsInfo[i];
 
           return ListTile(
-            title: Text(info.title + ' (' + info.author + ')',
+            title: Text('${info.title} (${info.author})',
                 style: fontSize(7.sp)),
             subtitle: Text(info.desc, style: fontSize(5.sp)),
             leading: Image.asset(

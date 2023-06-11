@@ -2,12 +2,12 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
-import '../../tools/tools.dart';
+import 'package:the_puzzle_cell/layout/tools/tools.dart';
 
 class SaveLevelDialog extends StatelessWidget {
   final String saveCode;
 
-  SaveLevelDialog(this.saveCode);
+  const SaveLevelDialog(this.saveCode);
 
   @override
   Widget build(BuildContext context) {

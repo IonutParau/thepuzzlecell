@@ -10,10 +10,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart'
-    show SharedPreferences;
+import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:http/http.dart' as http show get;
 import 'package:the_puzzle_cell/scripts/scripts.dart';
@@ -22,6 +21,19 @@ import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:toml/toml.dart';
 import 'package:window_manager/window_manager.dart';
+
+// Game shit
+import 'package:flame/input.dart' hide ButtonState;
+import 'dart:ui' as ui;
+import 'package:clipboard/clipboard.dart';
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:flame/game.dart';
+import 'package:flame/image_composition.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
+import 'package:uuid/uuid.dart';
+import 'package:fluent_ui/fluent_ui.dart' hide Tab, TabView, showDialog;
+import 'package:flutter/gestures.dart';
 
 // Grid stuff
 part 'grid/grid.dart';
@@ -43,6 +55,7 @@ part 'core/achievements.dart';
 part 'updatechecker.dart';
 part 'queue.dart';
 part 'core/markdown.dart';
+part 'core/game.dart';
 
 // Update methods
 part 'update/mover.dart';
@@ -269,19 +282,15 @@ String getAssetPathOfOtherGame(Directory dir) {
 }
 
 // Async so we can have epic loading thing
-Future<void> transferTexturePacks(Directory game,
-    [bool destructive = false]) async {
+Future<void> transferTexturePacks(Directory game, [bool destructive = false]) async {
   final gameAssetPath = getAssetPathOfOtherGame(game);
 
-  final gameTp =
-      Directory(path.join(gameAssetPath, 'assets', 'images', 'texture_packs'));
-  final ourTp =
-      Directory(path.join(assetsPath, 'assets', 'images', 'texture_packs'));
-  final files = await gameTp.list(recursive: true);
+  final gameTp = Directory(path.join(gameAssetPath, 'assets', 'images', 'texture_packs'));
+  final ourTp = Directory(path.join(assetsPath, 'assets', 'images', 'texture_packs'));
+  final files = gameTp.list(recursive: true);
 
   await for (var file in files) {
-    final p =
-        path.join(ourTp.path, path.relative(file.path, from: gameTp.path));
+    final p = path.join(ourTp.path, path.relative(file.path, from: gameTp.path));
 
     if (file is File) {
       if (!destructive) {
@@ -320,12 +329,11 @@ Future<void> transferModules(Directory game) async {
 
   final ourModules = Directory(path.join(assetsPath, 'modules'));
 
-  final files = modules.list(recursive: false);
+  final files = modules.list();
 
   await for (var file in files) {
     if (file is File) {
-      final p = path.join(
-          ourModules.path, path.relative(file.path, from: modules.path));
+      final p = path.join(ourModules.path, path.relative(file.path, from: modules.path));
       await file.copy(p);
     }
   }
@@ -333,17 +341,15 @@ Future<void> transferModules(Directory game) async {
   return;
 }
 
-Future<void> transferGameMods(Directory game,
-    [bool destructive = false]) async {
+Future<void> transferGameMods(Directory game, [bool destructive = false]) async {
   final gameAssetPath = getAssetPathOfOtherGame(game);
 
   final gameMods = Directory(path.join(gameAssetPath, 'mods'));
   final ourMods = Directory(path.join(assetsPath, 'mods'));
-  final files = await gameMods.list(recursive: true);
+  final files = gameMods.list(recursive: true);
 
   await for (var file in files) {
-    final p =
-        path.join(ourMods.path, path.relative(file.path, from: gameMods.path));
+    final p = path.join(ourMods.path, path.relative(file.path, from: gameMods.path));
 
     if (file is File) {
       if (!destructive) {
@@ -399,8 +405,7 @@ String get fileManagerCommand {
 // This opens the file manager on all desktop platforms.
 // You have no idea how much I googled to find out I can do this
 void openFileManager(Directory dir) {
-  Process.start(fileManagerCommand, [dir.path],
-      runInShell: true, mode: ProcessStartMode.detached);
+  Process.start(fileManagerCommand, [dir.path], runInShell: true, mode: ProcessStartMode.detached);
 }
 
 enum CurrentSavingFormat {
@@ -437,8 +442,6 @@ CurrentSavingFormat get currentSavingFormat {
   return CurrentSavingFormat.P6;
 }
 
-List<String> get quickPlayOptions =>
-    storage.getStringList("quickplay_options") ?? [];
+List<String> get quickPlayOptions => storage.getStringList("quickplay_options") ?? [];
 
-set quickPlayOptions(List<String> other) =>
-    storage.setStringList("quickplay_options", other);
+set quickPlayOptions(List<String> other) => storage.setStringList("quickplay_options", other);

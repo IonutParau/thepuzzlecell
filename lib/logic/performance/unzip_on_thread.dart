@@ -1,5 +1,5 @@
-import "dart:io" show File, Directory;
-import "package:archive/archive.dart" show ZipDecoder, ArchiveFile;
+import "dart:io" show Directory, File;
+import "package:archive/archive.dart" show ArchiveFile, ZipDecoder;
 import 'package:flutter/foundation.dart' show compute;
 import "package:path/path.dart" as path show join, joinAll, split;
 
@@ -56,6 +56,6 @@ Future<bool> unzip(ZipInfo info) async {
   }
 }
 
-Future unzipOnThread(Directory unzipIn, File zip) {
-  return compute(unzip, ZipInfo(unzipIn, zip));
+Future<bool> unzipOnThread(Directory unzipIn, File zip) {
+  return compute<ZipInfo, bool>(unzip, ZipInfo(unzipIn, zip));
 }

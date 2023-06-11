@@ -6,8 +6,7 @@ String encodeColor(Color color) {
 
 Color decodeColor(String string) {
   final parts = string.split(":");
-  return Color.fromARGB(int.parse(parts[3]), int.parse(parts[0]),
-      int.parse(parts[1]), int.parse(parts[2]));
+  return Color.fromARGB(int.parse(parts[3]), int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
 }
 
 Color settingsColor(String id, Color defaultColor) {
@@ -22,14 +21,12 @@ class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage>
-    with TickerProviderStateMixin {
+class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
   final TextEditingController _delayController = TextEditingController();
-  final TextEditingController _updateQueueRunsController =
-      TextEditingController();
+  final TextEditingController _updateQueueRunsController = TextEditingController();
   final TextEditingController _clientIDController = TextEditingController();
   final textStyle = TextStyle(
     fontSize: 9.sp,
@@ -39,8 +36,7 @@ class _SettingsPageState extends State<SettingsPage>
     fontSize: 7.sp,
   );
 
-  Widget colorSetting(
-      String id, String langKey, String title, Color defaultValue) {
+  Widget colorSetting(String id, String langKey, String title, Color defaultValue) {
     return Row(
       children: [
         Text(
@@ -52,34 +48,27 @@ class _SettingsPageState extends State<SettingsPage>
             child: Container(
               width: 2.5.w,
               height: 2.5.w,
-              color: decodeColor(
-                  storage.getString(id) ?? encodeColor(defaultValue)),
+              color: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
             ),
             onTap: () {
-              showDialog(
+              showDialog<void>(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
                     title: Text(lang('choose_color', 'Choose a Color')),
                     content: SingleChildScrollView(
                       child: ColorPicker(
-                        pickerColor: decodeColor(
-                            storage.getString(id) ?? encodeColor(defaultValue)),
+                        pickerColor: decodeColor(storage.getString(id) ?? encodeColor(defaultValue)),
                         onColorChanged: (color) {
-                          storage
-                              .setString(id, encodeColor(color))
-                              .then((v) => setState(() {}));
+                          storage.setString(id, encodeColor(color)).then((v) => setState(() {}));
                         },
                       ),
                     ),
                     actions: [
                       Button(
-                        child:
-                            Text(lang('restore_default', 'Restore to Default')),
+                        child: Text(lang('restore_default', 'Restore to Default')),
                         onPressed: () {
-                          storage
-                              .setString(id, encodeColor(defaultValue))
-                              .then((v) => setState(() {}));
+                          storage.setString(id, encodeColor(defaultValue)).then((v) => setState(() {}));
                           Navigator.of(context).pop();
                         },
                       ),
@@ -100,9 +89,7 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Widget checkboxSetting(
-      String id, String langKey, String title, bool defaultValue,
-      [void Function(bool v)? callback]) {
+  Widget checkboxSetting(String id, String langKey, String title, bool defaultValue, [void Function(bool v)? callback]) {
     return Row(
       children: [
         Text(
@@ -135,8 +122,7 @@ class _SettingsPageState extends State<SettingsPage>
     super.initState();
 
     _delayController.text = (storage.getDouble("delay") ?? 0.15).toString();
-    _updateQueueRunsController.text =
-        storage.getInt("update_queue_runs").toString();
+    _updateQueueRunsController.text = storage.getInt("update_queue_runs").toString();
     _clientIDController.text = storage.getString("clientID") ?? "@uuid";
     _tabController = TabController(vsync: this, length: 1);
   }
@@ -248,9 +234,7 @@ class _SettingsPageState extends State<SettingsPage>
                       child: Row(
                         children: [
                           Text(
-                            lang('current_saving_format',
-                                    'Current Saving Format') +
-                                ': ',
+                            '${lang('current_saving_format', 'Current Saving Format')}: ',
                             style: textStyle,
                           ),
                           SizedBox(
@@ -258,7 +242,6 @@ class _SettingsPageState extends State<SettingsPage>
                             child: DropDownButton(
                               leading: Icon(FluentIcons.save),
                               title: Text(currentSavingFormat.name),
-                              placement: FlyoutPlacementMode.bottomCenter,
                               items: [
                                 for (var format in CurrentSavingFormat.values)
                                   MenuFlyoutItem(
@@ -291,8 +274,7 @@ class _SettingsPageState extends State<SettingsPage>
                                       child: TextBox(
                                         placeholder: option,
                                         onSubmitted: (newOption) {
-                                          final i =
-                                              quickPlayOptions.indexOf(option);
+                                          final i = quickPlayOptions.indexOf(option);
                                           final l = quickPlayOptions;
                                           l[i] = newOption;
                                           quickPlayOptions = l;
@@ -307,8 +289,7 @@ class _SettingsPageState extends State<SettingsPage>
                                         ),
                                       ),
                                       onPressed: () {
-                                        final i =
-                                            quickPlayOptions.indexOf(option);
+                                        final i = quickPlayOptions.indexOf(option);
                                         final l = quickPlayOptions;
                                         l.removeAt(i);
                                         quickPlayOptions = l;
@@ -348,8 +329,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('cursor_scroll_scale', 'Cursor Scroll Scale') +
-                              ': ',
+                          '${lang('cursor_scroll_scale', 'Cursor Scroll Scale')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -357,7 +337,6 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("cursor_scroll_scale")!,
-                            min: 0,
                             max: 10,
                             divisions: 100,
                             onChanged: (v) => storage
@@ -366,8 +345,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   double.parse(v.toStringAsFixed(1)),
                                 )
                                 .then((v) => setState(() {})),
-                            label:
-                                'x${storage.getDouble('cursor_scroll_scale')}',
+                            label: 'x${storage.getDouble('cursor_scroll_scale')}',
                           ),
                         ),
                       ],
@@ -379,7 +357,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('music_volume', 'Music Volume') + ': ',
+                          '${lang('music_volume', 'Music Volume')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -387,17 +365,13 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("music_volume")!,
-                            min: 0,
                             max: 1,
                             onChanged: (v) async {
-                              await storage.setDouble(
-                                  "music_volume", (v * 100 ~/ 1) / 100);
-                              await setLoopSoundVolume(
-                                  music, storage.getDouble("music_volume")!);
+                              await storage.setDouble("music_volume", (v * 100 ~/ 1) / 100);
+                              await setLoopSoundVolume(music, storage.getDouble("music_volume")!);
                               setState(() {});
                             },
-                            label:
-                                '${storage.getDouble('music_volume')! * 100}%',
+                            label: '${storage.getDouble('music_volume')! * 100}%',
                           ),
                         ),
                       ],
@@ -405,7 +379,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('sfx_volume', 'SFX Volume') + ': ',
+                          '${lang('sfx_volume', 'SFX Volume')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -413,7 +387,6 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("sfx_volume") ?? 1,
-                            min: 0,
                             max: 1,
                             onChanged: (v) => storage
                                 .setDouble(
@@ -423,8 +396,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${(storage.getDouble('sfx_volume') ?? 1) * 100}%',
+                            label: '${(storage.getDouble('sfx_volume') ?? 1) * 100}%',
                           ),
                         ),
                       ],
@@ -434,7 +406,7 @@ class _SettingsPageState extends State<SettingsPage>
                       child: Row(
                         children: [
                           Text(
-                            lang('music_type', 'Music') + ': ',
+                            '${lang('music_type', 'Music')}: ',
                             style: textStyle,
                           ),
                           SizedBox(
@@ -442,7 +414,6 @@ class _SettingsPageState extends State<SettingsPage>
                             child: DropDownButton(
                               leading: Icon(FluentIcons.music_note),
                               title: Text(getCurrentMusicData().name),
-                              placement: FlyoutPlacementMode.bottomCenter,
                               items: [
                                 for (var music in musics)
                                   MenuFlyoutItem(
@@ -466,7 +437,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('grid_opacity', 'Grid Opacity') + ': ',
+                          '${lang('grid_opacity', 'Grid Opacity')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -474,7 +445,6 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("grid_opacity")!,
-                            min: 0,
                             max: 1,
                             onChanged: (v) => storage
                                 .setDouble(
@@ -484,8 +454,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${storage.getDouble("grid_opacity")! * 100 ~/ 1}%',
+                            label: '${storage.getDouble("grid_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -493,7 +462,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('ui_button_opacity', 'UI Button Opacity') + ': ',
+                          '${lang('ui_button_opacity', 'UI Button Opacity')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -501,7 +470,6 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("ui_button_opacity")!,
-                            min: 0,
                             max: 1,
                             onChanged: (v) => storage
                                 .setDouble(
@@ -511,8 +479,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${storage.getDouble("ui_button_opacity")! * 100 ~/ 1}%',
+                            label: '${storage.getDouble("ui_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -520,8 +487,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('cell_button_opacity', 'Cell Button Opacity') +
-                              ': ',
+                          '${lang('cell_button_opacity', 'Cell Button Opacity')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -529,7 +495,6 @@ class _SettingsPageState extends State<SettingsPage>
                           height: 5.h,
                           child: Slider(
                             value: storage.getDouble("cell_button_opacity")!,
-                            min: 0,
                             max: 1,
                             onChanged: (v) => storage
                                 .setDouble(
@@ -539,8 +504,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${storage.getDouble("cell_button_opacity")! * 100 ~/ 1}%',
+                            label: '${storage.getDouble("cell_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
@@ -548,18 +512,14 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('editor_menu_button_opacity',
-                                  'Editor Menu Button Opacity') +
-                              ': ',
+                          '${lang('editor_menu_button_opacity', 'Editor Menu Button Opacity')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: storage
-                                .getDouble("editor_menu_button_opacity")!,
-                            min: 0,
+                            value: storage.getDouble("editor_menu_button_opacity")!,
                             max: 1,
                             onChanged: (v) => storage
                                 .setDouble(
@@ -569,38 +529,21 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${storage.getDouble("editor_menu_button_opacity")! * 100 ~/ 1}%',
+                            label: '${storage.getDouble("editor_menu_button_opacity")! * 100 ~/ 1}%',
                           ),
                         ),
                       ],
                     ),
-                    colorSetting('game_bg', 'game_bg', 'Game Background',
-                        Color.fromARGB(255, 27, 27, 27)),
-                    colorSetting('cellbar_background', 'cellbar_background',
-                        'Cell Bar Background', Colors.grey[180]),
-                    colorSetting('cellbar_border', 'cellbar_border',
-                        'Cell Bar Border', Colors.grey[60]),
-                    colorSetting('infobox_background', 'infobox_background',
-                        'Info Box Background', Colors.grey[180]),
-                    colorSetting('infobox_border', 'infobox_border',
-                        'Info Box Border', Colors.white),
-                    colorSetting('infobox_title', 'infobox_title',
-                        'Info Box Title', Colors.white),
-                    colorSetting('infobox_desc', 'infobox_desc',
-                        'Info Box Description', Colors.white),
-                    colorSetting('editor_menu_bg', 'editor_menu_bg',
-                        'Editor Menu Background', Colors.grey.withOpacity(0.7)),
-                    colorSetting(
-                        'editor_menu_slider_active',
-                        'editor_menu_slider_active',
-                        'Editor Menu Slider Active Color',
-                        Colors.blue),
-                    colorSetting(
-                        'editor_menu_slider_inactive',
-                        'editor_menu_slider_inactive',
-                        'Editor Menu Slider Inactive Color',
-                        Colors.black),
+                    colorSetting('game_bg', 'game_bg', 'Game Background', Color.fromARGB(255, 27, 27, 27)),
+                    colorSetting('cellbar_background', 'cellbar_background', 'Cell Bar Background', Colors.grey[180]),
+                    colorSetting('cellbar_border', 'cellbar_border', 'Cell Bar Border', Colors.grey[60]),
+                    colorSetting('infobox_background', 'infobox_background', 'Info Box Background', Colors.grey[180]),
+                    colorSetting('infobox_border', 'infobox_border', 'Info Box Border', Colors.white),
+                    colorSetting('infobox_title', 'infobox_title', 'Info Box Title', Colors.white),
+                    colorSetting('infobox_desc', 'infobox_desc', 'Info Box Description', Colors.white),
+                    colorSetting('editor_menu_bg', 'editor_menu_bg', 'Editor Menu Background', Colors.grey.withOpacity(0.7)),
+                    colorSetting('editor_menu_slider_active', 'editor_menu_slider_active', 'Editor Menu Slider Active Color', Colors.blue),
+                    colorSetting('editor_menu_slider_inactive', 'editor_menu_slider_inactive', 'Editor Menu Slider Inactive Color', Colors.black),
                   ],
                 ),
                 ListView(
@@ -615,7 +558,7 @@ class _SettingsPageState extends State<SettingsPage>
                       Row(
                         children: [
                           Text(
-                            lang('lerp_speed', 'Lerp Speed') + ': ',
+                            '${lang('lerp_speed', 'Lerp Speed')}: ',
                             style: textStyle,
                           ),
                           SizedBox(
@@ -632,8 +575,7 @@ class _SettingsPageState extends State<SettingsPage>
                                     (v * 10 ~/ 1) / 10,
                                   )
                                   .then((v) => setState(() {})),
-                              label:
-                                  '${storage.getDouble('lerp_speed') ?? 10.0}x',
+                              label: '${storage.getDouble('lerp_speed') ?? 10.0}x',
                             ),
                           ),
                         ],
@@ -647,7 +589,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('ui_scale', 'UI Scale') + ': ',
+                          '${lang('ui_scale', 'UI Scale')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -672,7 +614,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('infobox_scale', 'InfoBox Scale') + ': ',
+                          '${lang('infobox_scale', 'InfoBox Scale')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -689,8 +631,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   (v * 100).round() / 100,
                                 )
                                 .then((v) => setState(() {})),
-                            label:
-                                '${storage.getDouble('infobox_scale')! * 100}%',
+                            label: '${storage.getDouble('infobox_scale')! * 100}%',
                           ),
                         ),
                       ],
@@ -698,7 +639,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('cell_scale', 'Cell Scale') + ': ',
+                          '${lang('cell_scale', 'Cell Scale')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -764,8 +705,7 @@ class _SettingsPageState extends State<SettingsPage>
                         ),
                       ],
                     ),
-                    checkboxSetting('local_packet_mirror', 'preprocess_packets',
-                        'Preprocess Sent Packets', false),
+                    checkboxSetting('local_packet_mirror', 'preprocess_packets', 'Preprocess Sent Packets', false),
                     SizedBox(
                       width: 60.w,
                       child: Row(
@@ -778,14 +718,9 @@ class _SettingsPageState extends State<SettingsPage>
                             height: 5.h,
                             child: DropDownButton(
                               leading: Image.asset(
-                                "assets/images/" +
-                                    ((storage.getString("cursor_texture") ??
-                                                "cursor") ==
-                                            "cursor"
+                                "assets/images/${(storage.getString("cursor_texture") ?? "cursor") == "cursor"
                                         ? "interface/cursor.png"
-                                        : (textureMap[
-                                                "${storage.getString("cursor_texture")!}.png"] ??
-                                            "${storage.getString("cursor_texture")!}.png")),
+                                        : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png")}",
                                 fit: BoxFit.fill,
                                 colorBlendMode: BlendMode.clear,
                                 filterQuality: FilterQuality.none,
@@ -793,26 +728,13 @@ class _SettingsPageState extends State<SettingsPage>
                                 width: 3.h,
                                 height: 3.h,
                               ),
-                              title: Text((storage
-                                              .getString("cursor_texture") ??
-                                          "cursor") ==
-                                      "cursor"
-                                  ? "Default"
-                                  : (idToString(
-                                      storage.getString("cursor_texture")!))),
-                              placement: FlyoutPlacementMode.bottomCenter,
+                              title: Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!))),
                               items: [
                                 for (var texture in cursorTextures)
                                   MenuFlyoutItem(
-                                    text: Text(texture == "cursor"
-                                        ? "Default"
-                                        : idToString(texture)),
+                                    text: Text(texture == "cursor" ? "Default" : idToString(texture)),
                                     leading: Image.asset(
-                                      "assets/images/" +
-                                          (texture == "cursor"
-                                              ? "interface/cursor.png"
-                                              : (textureMap["$texture.png"] ??
-                                                  "$texture.png")),
+                                      "assets/images/${texture == "cursor" ? "interface/cursor.png" : (textureMap["$texture.png"] ?? "$texture.png")}",
                                       fit: BoxFit.fill,
                                       colorBlendMode: BlendMode.clear,
                                       filterQuality: FilterQuality.none,
@@ -821,8 +743,7 @@ class _SettingsPageState extends State<SettingsPage>
                                       height: 3.h,
                                     ),
                                     onPressed: () async {
-                                      await storage.setString(
-                                          "cursor_texture", texture);
+                                      await storage.setString("cursor_texture", texture);
                                       setState(() {});
                                     },
                                   ),
@@ -835,15 +756,14 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('cursor_precision', 'Cursor Precision') + ': ',
+                          '${lang('cursor_precision', 'Cursor Precision')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value:
-                                storage.getInt("cursor_precision")!.toDouble(),
+                            value: storage.getInt("cursor_precision")!.toDouble(),
                             min: 1,
                             max: 9,
                             divisions: 9,
@@ -861,18 +781,14 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('packet_queue_limit',
-                                  'Packet Queue Limit (KB/s)') +
-                              ': ',
+                          '${lang('packet_queue_limit', 'Packet Queue Limit (KB/s)')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 50.w,
                           height: 5.h,
                           child: Slider(
-                            value: storage
-                                .getInt("packet_queue_limit")!
-                                .toDouble(),
+                            value: storage.getInt("packet_queue_limit")!.toDouble(),
                             min: 1000,
                             max: 5000000,
                             divisions: 5000,
@@ -882,8 +798,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   (v + 0.5).toInt(),
                                 )
                                 .then((v) => setState(() {})),
-                            label:
-                                '${storage.getInt('packet_queue_limit')! ~/ 1000} KB/s',
+                            label: '${storage.getInt('packet_queue_limit')! ~/ 1000} KB/s',
                           ),
                         ),
                       ],
@@ -908,8 +823,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 storage
                                     .setDouble(
                                       "delay",
-                                      max(min(num.tryParse(str)!.toDouble(), 5),
-                                          0.001),
+                                      max(min(num.tryParse(str)!.toDouble(), 5), 0.001),
                                     )
                                     .then(
                                       (e) => setState(
@@ -937,7 +851,7 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('min_node_size', 'Minimum Node Size') + ': ',
+                          '${lang('min_node_size', 'Minimum Node Size')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
@@ -946,7 +860,6 @@ class _SettingsPageState extends State<SettingsPage>
                           child: Slider(
                             value: (QuadChunk.minSize).toDouble(),
                             min: 3,
-                            max: 100,
                             onChanged: (v) => storage
                                 .setInt(
                                   "min_node_size",
@@ -963,17 +876,15 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('chunk_size', 'Chunk Size') + ': ',
+                          '${lang('chunk_size', 'Chunk Size')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value:
-                                (storage.getInt("chunk_size") ?? 25).toDouble(),
+                            value: (storage.getInt("chunk_size") ?? 25).toDouble(),
                             min: 5,
-                            max: 100,
                             onChanged: (v) => storage
                                 .setInt(
                                   "chunk_size",
@@ -990,16 +901,14 @@ class _SettingsPageState extends State<SettingsPage>
                     Row(
                       children: [
                         Text(
-                          lang('benchmark_length', 'Benchmark Length (Ticks)') +
-                              ': ',
+                          '${lang('benchmark_length', 'Benchmark Length (Ticks)')}: ',
                           style: textStyle,
                         ),
                         SizedBox(
                           width: 20.w,
                           height: 5.h,
                           child: Slider(
-                            value: (storage.getInt("benchmark_length") ?? 100)
-                                .toDouble(),
+                            value: (storage.getInt("benchmark_length") ?? 100).toDouble(),
                             min: 10,
                             max: 1000,
                             onChanged: (v) => storage
@@ -1010,8 +919,7 @@ class _SettingsPageState extends State<SettingsPage>
                                 .then(
                                   (v) => setState(() {}),
                                 ),
-                            label:
-                                '${storage.getInt("benchmark_length") ?? 100}',
+                            label: '${storage.getInt("benchmark_length") ?? 100}',
                           ),
                         ),
                       ],
@@ -1020,19 +928,13 @@ class _SettingsPageState extends State<SettingsPage>
                       alignment: Alignment.topLeft,
                       child: SizedBox(
                         child: Button(
-                          child: Text(lang("benchmark", "Benchmark"),
-                              style: textStyle),
+                          child: Text(lang("benchmark", "Benchmark"), style: textStyle),
                           onPressed: () {
-                            final f = benchmarkOnThread(BenchmarkSettings(
-                                storage.getInt("benchmark_length") ?? 100,
-                                storage));
-                            showDialog(
+                            final f = benchmarkOnThread(BenchmarkSettings(storage.getInt("benchmark_length") ?? 100, storage));
+                            showDialog<void>(
                               context: context,
                               builder: (ctx) {
-                                return LoadingDialog(
-                                    future: f,
-                                    completionMessage: "%value",
-                                    title: lang("benchmark", "Benchmark"));
+                                return LoadingDialog(future: f, completionMessage: "%value", title: lang("benchmark", "Benchmark"));
                               },
                             );
                           },
@@ -1058,12 +960,11 @@ class _SettingsPageState extends State<SettingsPage>
               style: fontSize(7.sp),
             ),
             onPressed: () {
-              showDialog(
+              showDialog<void>(
                 context: context,
                 builder: (ctx) {
                   return ContentDialog(
-                    title: Text(lang('warning_storage_del',
-                        'Warning: This will delete all save files!')),
+                    title: Text(lang('warning_storage_del', 'Warning: This will delete all save files!')),
                     content: Text(lang('warning_del_msg',
                         'This will erase your save files. This means your settings will reset, your worlds will be deleted, the server list will be erased. This will also apply to all installations since they share the save files')),
                     actions: [
