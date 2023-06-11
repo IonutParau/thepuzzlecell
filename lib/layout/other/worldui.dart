@@ -4,7 +4,7 @@ import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:flutter/material.dart' show MaterialButton;
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:the_puzzle_cell/logic/logic.dart' show grid, lang, worldIndex, worldManager;
+import 'package:the_puzzle_cell/logic/logic.dart' show PuzzleGame, grid, lang, worldIndex, worldManager;
 
 class WorldUI extends StatefulWidget {
   const WorldUI({Key? key}) : super(key: key);
