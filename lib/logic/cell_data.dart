@@ -385,6 +385,9 @@ final cells = {
   "stable_j",
   "stable_k",
   "stable_n",
+  "stable_c",
+  "stable_d",
+  "stable_p",
 }.toList();
 
 final modded = <String>[];
@@ -401,6 +404,9 @@ HashMap<String, String> textureMap = HashMap.from({
   "stable_j.png": "stableton/stable_j.png",
   "stable_k.png": "stableton/stable_k.png",
   "stable_n.png": "stableton/stable_n.png",
+  "stable_c.png": "stableton/stable_c.png",
+  "stable_d.png": "stableton/stable_d.png",
+  "stable_p.png": "stableton/stable_p.png",
   "configurable_redirector.png": "rotators/configurable_redirector.png",
   "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
   "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
@@ -1360,10 +1366,13 @@ final categories = [
         [
           "stable_a",
           "stable_b",
+          "stable_c",
+          "stable_d",
           "stable_i",
           "stable_j",
           "stable_k",
           "stable_n",
+          "stable_p",
         ],
         "stable_a",
       ),
@@ -3239,6 +3248,14 @@ final cellInfo = <String, CellProfile>{
   "stable_n": CellProfile(
     "Stableton N",
     "Adjacent offsets, has a unit constant of -5, layer constants of (1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1), is not stationary but not clonable.",
+  ),
+  "stable_c": CellProfile(
+    "Stableton C",
+    "Stableton A but can decay into Stableton D",
+  ),
+  "stable_d": CellProfile(
+    "Stableton D",
+    "Stableton B but can decay into Stableton C",
   ),
 };
 
