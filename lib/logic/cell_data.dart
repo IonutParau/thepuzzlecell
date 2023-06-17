@@ -3263,6 +3263,18 @@ final cellInfo = <String, CellProfile>{
     "Stableton D",
     "Stableton B but can decay into Stableton C",
   ),
+  "stable_p": CellProfile(
+    "Stableton P",
+    "It may swap diagonally with other stabletons to achieve true stability. Decays into Stableton S and Stableton O",
+  ),
+  "stable_s": CellProfile(
+    "Stableton S",
+    "Like Stableton P but swaps orthogonally. Decays into Stableton P",
+  ),
+  "stable_o": CellProfile(
+    "Stableton O",
+    "Combination of Stableton P and Stableton S. Decays into Stableton S and Stableton P",
+  ),
 };
 
 enum CellPropertyType {
