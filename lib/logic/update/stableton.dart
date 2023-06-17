@@ -22,7 +22,7 @@ class StabletonData {
   });
 }
 
-final stabletonOrder = ["stable_a", "stable_b", "stable_c", "stable_d", "stable_i", "stable_j", "stable_k", "stable_n", "stable_p"];
+final stabletonOrder = ["stable_a", "stable_b", "stable_c", "stable_d", "stable_i", "stable_j", "stable_k", "stable_n", "stable_p", "stable_s", "stable_o"];
 final stabletonData = <String, StabletonData>{
   "stable_a": StabletonData(
     unitConstant: 1,
@@ -164,7 +164,41 @@ final stabletonData = <String, StabletonData>{
     ],
     stationary: true,
     clonable: true,
-    decaysInto: [],
+    decaysInto: ["stable_s", "stable_o"],
+    decayRecursion: 1,
+  ),
+  "stable_s": StabletonData(
+    unitConstant: -1,
+    layerConstants: [-1, 1, 2, -2],
+    offsets: [], // only moves diagonally
+    swapOffsets: [
+      (0, 2),
+      (2, 0),
+      (0, -2),
+      (-2, 0),
+    ],
+    stationary: true,
+    clonable: true,
+    decaysInto: ["stable_p"],
+    decayRecursion: 1,
+  ),
+  "stable_o": StabletonData(
+    unitConstant: 1,
+    layerConstants: [1, -1, -2, 2],
+    offsets: [], // only moves diagonally
+    swapOffsets: [
+      (-2, 2),
+      (2, -2),
+      (-2, -2),
+      (2, 2),
+      (0, 2),
+      (2, 0),
+      (0, -2),
+      (-2, 0),
+    ],
+    stationary: true,
+    clonable: true,
+    decaysInto: ["stable_s", "stable_p"],
     decayRecursion: 1,
   ),
 };
@@ -322,7 +356,7 @@ List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonD
     if (!grid.inside(cx, cy)) {
       continue;
     }
-    if (grid.at(cx, cy).id != "empty") {
+    if (!stabletonOrder.contains(grid.at(cx, cy).id)) {
       continue;
     }
 
@@ -332,7 +366,7 @@ List<StabletonMove> calculateMostStableMoves(String id, int x, int y, StabletonD
       bestMoves = [StabletonMove(id, cx, cy, score, StabletonMoveType.swap)];
       bestScore = score;
     } else if (score == bestScore) {
-      bestMoves = [StabletonMove(id, cx, cy, score, StabletonMoveType.swap)];
+      bestMoves.add(StabletonMove(id, cx, cy, score, StabletonMoveType.swap));
     }
   }
 

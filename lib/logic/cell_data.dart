@@ -388,6 +388,8 @@ final cells = {
   "stable_c",
   "stable_d",
   "stable_p",
+  "stable_s",
+  "stable_o",
 }.toList();
 
 final modded = <String>[];
@@ -407,6 +409,8 @@ HashMap<String, String> textureMap = HashMap.from({
   "stable_c.png": "stableton/stable_c.png",
   "stable_d.png": "stableton/stable_d.png",
   "stable_p.png": "stableton/stable_p.png",
+  "stable_s.png": "stableton/stable_s.png",
+  "stable_o.png": "stableton/stable_o.png",
   "configurable_redirector.png": "rotators/configurable_redirector.png",
   "balanced_enemy.png": "destroyers/enemy/balanced_enemy.png",
   "mech_enemy_gen.png": "mechanical/mech_enemy_gen.png",
@@ -1373,6 +1377,8 @@ final categories = [
           "stable_k",
           "stable_n",
           "stable_p",
+          "stable_s",
+          "stable_o",
         ],
         "stable_a",
       ),
@@ -1382,7 +1388,7 @@ final categories = [
       "text",
       "shield",
     ],
-    "code_program",
+    "sandbox",
   ),
   CellCategory(
     "Mathematical Cells",
