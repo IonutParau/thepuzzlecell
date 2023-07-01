@@ -45,6 +45,15 @@ class LuaScript {
         cell.id = id!;
         return 0;
       },
+      "setID": (LuaState ls) {
+        final id = ls.toStr(-1);
+        cell.id = id!;
+        return 0;
+      },
+      "getID": (LuaState ls) {
+        ls.pushString(cell.id);
+        return 1;
+      },
       "lifespan": (LuaState ls) {
         if (ls.top == 0) {
           ls.pushInteger(cell.lifespan);
@@ -53,6 +62,15 @@ class LuaScript {
         final lifespan = ls.toInteger(-1);
         cell.lifespan = lifespan;
         return 0;
+      },
+      "setLifespan": (LuaState ls) {
+        final lifespan = ls.toInteger(-1);
+        cell.lifespan = lifespan;
+        return 0;
+      },
+      "getLifespan": (LuaState ls) {
+        ls.pushInteger(cell.lifespan);
+        return 1;
       },
       "rot": (LuaState ls) {
         if (ls.top == 0) {
@@ -63,6 +81,15 @@ class LuaScript {
         cell.rot = rot % 4;
         return 0;
       },
+      "setRotation": (LuaState ls) {
+        final rot = ls.toInteger(-1);
+        cell.rot = rot;
+        return 0;
+      },
+      "getRotation": (LuaState ls) {
+        ls.pushInteger(cell.rot);
+        return 1;
+      },
       "updated": (LuaState ls) {
         if (ls.top == 0) {
           ls.pushBoolean(cell.updated);
@@ -70,6 +97,15 @@ class LuaScript {
         }
         cell.updated = ls.toBoolean(-1);
         return 0;
+      },
+      "setUpdated": (LuaState ls) {
+        final updated = ls.toBoolean(-1);
+        cell.updated = updated;
+        return 0;
+      },
+      "getUpdated": (LuaState ls) {
+        ls.pushBoolean(cell.updated);
+        return 1;
       },
       "copy": (LuaState ls) {
         pushCell(cell.copy, ls);
@@ -83,6 +119,15 @@ class LuaScript {
         final invisible = ls.toBoolean(-1);
         cell.invisible = invisible;
         return 0;
+      },
+      "setInvisible": (LuaState ls) {
+        final invis = ls.toBoolean(-1);
+        cell.invisible = invis;
+        return 0;
+      },
+      "getInvisible": (LuaState ls) {
+        ls.pushBoolean(cell.invisible);
+        return 1;
       },
       "tags": (LuaState ls) {
         ls.createTable(cell.tags.length, cell.tags.length);
@@ -102,11 +147,8 @@ class LuaScript {
         return 0;
       },
       "tagged": (LuaState ls) {
-        if (ls.top == 1) {
-          ls.pushBoolean(cell.tags.contains(ls.toStr(-1)!));
-          return 1;
-        }
-        return 0;
+        ls.pushBoolean(cell.tags.contains(ls.toStr(-1)!));
+        return 1;
       },
       "cx": (LuaState ls) {
         ls.pushInteger(cell.cx ?? 0);
@@ -114,6 +156,50 @@ class LuaScript {
       },
       "cy": (LuaState ls) {
         ls.pushInteger(cell.cy ?? 0);
+        return 1;
+      },
+      "setInt": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final val = ls.toInteger(-1);
+        cell.data[key] = val;
+        return 0;
+      },
+      "setDouble": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final val = ls.toNumber(-1);
+        cell.data[key] = val;
+        return 0;
+      },
+      "setString": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final val = ls.toStr(-1);
+        cell.data[key] = val;
+        return 0;
+      },
+      "setBoolean": (LuaState ls) {
+        final key = ls.toStr(-2)!;
+        final val = ls.toBoolean(-1);
+        cell.data[key] = val;
+        return 0;
+      },
+      "getInt": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+        ls.pushInteger(cell.data[key]);
+        return 1;
+      },
+      "getDouble": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+        ls.pushNumber(cell.data[key]);
+        return 1;
+      },
+      "getString": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+        ls.pushString(cell.data[key]);
+        return 1;
+      },
+      "getBoolean": (LuaState ls) {
+        final key = ls.toStr(-1)!;
+        ls.pushBoolean(cell.data[key]);
         return 1;
       },
       "field": (LuaState ls) {
@@ -947,12 +1033,28 @@ class LuaScript {
         ls.pushInteger(grid.tickCount);
         return 1;
       },
+      "setTitle": (LuaState ls) {
+        grid.title = ls.toStr(-1)!;
+        return 0;
+      },
+      "getTitle": (LuaState ls) {
+        ls.pushString(grid.title);
+        return 1;
+      },
       "title": (LuaState ls) {
         if (ls.top == 1) {
           grid.title = ls.toStr(-1)!;
           return 0;
         }
         ls.pushString(grid.title);
+        return 1;
+      },
+      "setDesc": (LuaState ls) {
+        grid.desc = ls.toStr(-1)!;
+        return 0;
+      },
+      "getDesc": (LuaState ls) {
+        ls.pushString(grid.desc);
         return 1;
       },
       "desc": (LuaState ls) {
@@ -1025,6 +1127,19 @@ class LuaScript {
 
         grid.addBroken(cell, dx, dy, type, rlvx, rlvy);
         return 0;
+      },
+      "setMemory": (LuaState ls) {
+        final channel = ls.toInteger(-3);
+        final idx = ls.toInteger(-2);
+        final val = ls.toNumber(-1);
+        grid.memory[channel]?[idx] = val;
+        return 0;
+      },
+      "getMemory": (LuaState ls) {
+        final channel = ls.toNumber(-2).toInt();
+        final idx = ls.toNumber(-1).toInt();
+        ls.pushNumber(grid.memory[channel]?[idx]?.toDouble() ?? 0);
+        return 1;
       },
       "memory": (LuaState ls) {
         if (ls.top == 3) {
