@@ -121,5 +121,6 @@ flutter:
     - assets/audio/
     - languages/
     - mods/
+    - mods/testmod/
     - modules/
     - markdown/

@@ -20,6 +20,10 @@ class StabletonData {
     required this.decaysInto,
     required this.decayRecursion,
   });
+
+  @override
+  String toString() =>
+      "UNIT: $unitConstant\nLAYERS: $layerConstants\nOffsets: $offsets\nSwaps: $swapOffsets\nStationary: $stationary\nClonable: $clonable\nDecays Into: $decaysInto\nDecay Recursion: $decayRecursion";
 }
 
 final stabletonOrder = ["stable_a", "stable_b", "stable_c", "stable_d", "stable_i", "stable_j", "stable_k", "stable_n", "stable_p", "stable_s", "stable_o"];

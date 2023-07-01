@@ -1922,9 +1922,122 @@ class LuaScript {
       "Channel": channelAPI(),
       "Types": typesAPI(),
       "Time": timeAPI(),
+      "Stableton": stabletonAPI(),
     };
 
     ls.makeLib("TPC", tpcAPI);
+  }
+
+  Map<String, dynamic> stabletonAPI() {
+    return {
+      "registerStableton": (LuaState ls) {
+        int top = ls.top;
+        int arg(int i) {
+          return i - top - (ls.top - top);
+        }
+
+        final id = ls.toStr(arg(1))!;
+        final unitConstant = ls.toInteger(arg(2));
+        var i = 0;
+        final layerConstants = <int>[];
+
+        while (true) {
+          i++;
+          ls.pushInteger(i);
+          ls.getTable(arg(3));
+          if (ls.isNilOrNone(-1)) {
+            break; // end of list reached
+          }
+          layerConstants.add(ls.toInteger(-1));
+          ls.pop();
+        }
+
+        final offsets = <(int, int)>[];
+
+        i = 0;
+        while (true) {
+          i++;
+          ls.pushInteger(i);
+          ls.getTable(arg(4));
+          if (ls.isNilOrNone(-1)) {
+            break;
+          }
+          ls.pushString("x");
+          ls.getTable(-2);
+          final x = ls.toInteger(-1);
+          ls.pop();
+
+          ls.pushString("y");
+          ls.getTable(-2);
+          final y = ls.toInteger(-1);
+          ls.pop();
+
+          ls.pop();
+
+          offsets.add((x, y));
+        }
+
+        final swapOffsets = <(int, int)>[];
+
+        i = 0;
+        while (true) {
+          i++;
+          ls.pushInteger(i);
+          ls.getTable(arg(5));
+          if (ls.isNilOrNone(-1)) {
+            break;
+          }
+          ls.pushString("x");
+          ls.getTable(-2);
+          final x = ls.toInteger(-1);
+          ls.pop();
+
+          ls.pushString("y");
+          ls.getTable(-2);
+          final y = ls.toInteger(-1);
+          ls.pop();
+
+          ls.pop();
+
+          swapOffsets.add((x, y));
+        }
+
+        final stationary = ls.toBoolean(arg(6));
+        final clonable = ls.toBoolean(arg(7));
+
+        final decaysInto = <String>[];
+
+        i = 0;
+        while (true) {
+          i++;
+          ls.pushInteger(i);
+          ls.getTable(arg(8));
+          if (ls.isNilOrNone(-1)) {
+            break;
+          }
+
+          decaysInto.add(ls.toStr(-1)!);
+          ls.pop();
+        }
+
+        final decaysRecursion = ls.toInteger(arg(9));
+
+        stabletonOrder.add(id);
+        stabletonData[id] = StabletonData(
+          unitConstant: unitConstant,
+          layerConstants: layerConstants,
+          offsets: offsets,
+          swapOffsets: swapOffsets,
+          stationary: stationary,
+          clonable: clonable,
+          decaysInto: decaysInto,
+          decayRecursion: decaysRecursion,
+        );
+        print(stabletonOrder);
+        print(stabletonData[id]);
+        return 0;
+      },
+    };
   }
 
   int importOther(LuaState ls) {
