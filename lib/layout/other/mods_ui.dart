@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:the_puzzle_cell/layout/layout.dart';
 import 'package:the_puzzle_cell/scripts/scripts.dart';
@@ -6,6 +9,10 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:the_puzzle_cell/logic/logic.dart';
+
+import 'package:path/path.dart' as path;
+
+import '../../logic/performance/unzip_on_thread.dart';
 
 class ModsUI extends StatefulWidget {
   @override
@@ -16,11 +23,18 @@ class ModsUI extends StatefulWidget {
 
 class _ModsUIState extends State<ModsUI> {
   List<ModInfo> modsInfo = [];
+  bool disposed = false;
 
   @override
   void initState() {
     getModsInfo();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    disposed = true;
+    super.dispose();
   }
 
   void getModsInfo() {
@@ -67,8 +81,7 @@ class _ModsUIState extends State<ModsUI> {
           final info = modsInfo[i];
 
           return ListTile(
-            title: Text('${info.title} (${info.author})',
-                style: fontSize(7.sp)),
+            title: Text('${info.title} (${info.author})', style: fontSize(7.sp)),
             subtitle: Text(info.desc, style: fontSize(5.sp)),
             leading: Image.asset(
               info.icon,
@@ -81,8 +94,7 @@ class _ModsUIState extends State<ModsUI> {
               children: [
                 if (info.readme != null)
                   Button(
-                    child: Text(lang("view_readme", "View README"),
-                        style: fontSize(7.sp)),
+                    child: Text(lang("view_readme", "View README"), style: fontSize(7.sp)),
                     onPressed: () async {
                       await showDialog(
                         context: context,
@@ -114,12 +126,9 @@ class _ModsUIState extends State<ModsUI> {
                     },
                   ),
                 Button(
-                  child: Text(lang('view_cells', 'View Cells'),
-                      style: fontSize(7.sp)),
+                  child: Text(lang('view_cells', 'View Cells'), style: fontSize(7.sp)),
                   onPressed: () async {
-                    await showDialog(
-                        context: context,
-                        builder: (ctx) => ViewModCellsDialog(info));
+                    await showDialog(context: context, builder: (ctx) => ViewModCellsDialog(info));
                     setState(() {});
                   },
                 ),
@@ -137,6 +146,55 @@ class _ModsUIState extends State<ModsUI> {
       bottomBar: Row(
         children: [
           Spacer(),
+          Button(
+            child: Text(
+              'Install Mod from ZIP',
+              style: TextStyle(
+                fontSize: 10.sp,
+              ),
+            ),
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                type: FileType.custom,
+                allowedExtensions: ['zip'],
+              );
+
+              // Result is null if user cancelled the file picking attempt
+              if (result != null) {
+                final zip = File(result.files.single.path!);
+                final dir = Directory(path.join(assetsPath, "mods"));
+
+                final future = unzipOnThread(dir, zip);
+                // Rerender once done, if we should still... well... exist
+                future.then((v) async {
+                  if (!disposed) {
+                    loadTexturePacks();
+                    await applyTexturePackSettings();
+                    applyTexturePacks();
+                    setState(() {});
+                  }
+                });
+
+                await showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return LoadingDialog(future: future, title: "Unzipping... (may take a while)");
+                  },
+                );
+              }
+            },
+          ),
+          Button(
+            child: Text(
+              'Open Mods Folder',
+              style: TextStyle(
+                fontSize: 10.sp,
+              ),
+            ),
+            onPressed: () {
+              openFileManager(Directory(path.join(assetsPath, 'mods')));
+            },
+          ),
           Button(
             child: Text(
               lang('view_modules', 'View Modules'),
