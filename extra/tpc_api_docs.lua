@@ -645,6 +645,16 @@ function TPC.Time.Travel() return end
 ---@field movable fun(cell: CellBinding, x: integer, y: integer, dir: integer, side: integer, force: integer, mt: MoveType):boolean
 --- Whether the cell is meant to be in References
 ---@field isReference boolean
+--- Code to be executed when a math cell writes a number to this cell
+---@field mathWhenWritten fun(cell: CellBinding, x: integer, y: integer, dir: integer, amount: number)
+--- Allows the cell to choose its own way of determening its count. If nil is returned, it returns the one stored in the properties.
+---@field mathCustomCount fun(cell: CellBinding, x: integer, y: integer, dir: integer): number|nil
+--- Decides if the cell's count property should be automatically modified by TPC, or if the cell should do it itself in mathWhenWritten. Can be used to create safeNumbers.
+---@field mathAutoApplyCount fun(cell: CellBinding, cx: integer, cy: integer, dir: integer, amount: number, ox: integer, oy: integer): boolean
+--- Decides if count can be modified.
+---@field mathIsWritable fun(cell: CellBinding, x: integer, y: integer, dir: integer)
+--- Decides if the count can be read from that direction.
+---@field mathIsOutput fun(cell: CellBinding, x: integer, y: integer, dir: integer)
 --- A list of properties for the property editor to allow the modification of.
 ---@field properties CellProperty[]
 
