@@ -393,6 +393,10 @@ class MathManager {
       final index = input(x, y, dir + 1);
       setGlobal(channel, index, amount);
     }
+
+    if(modded.contains(cell.id)) {
+      return scriptingManager.mathWhenWritten(cell, x, y, dir, amount);
+    }
   }
 
   final num phi = (1 + sqrt(5)) / 2;
@@ -427,6 +431,10 @@ class MathManager {
       return v is num ? v.toDouble() : null;
     }
 
+    if(modded.contains(cell.id)) {
+      return scriptingManager.mathCustomCount(cell, x, y, dir);
+    }
+
     return customMasterNum(cell, x, y, dir);
   }
 
@@ -439,6 +447,10 @@ class MathManager {
         cell.id == "math_safe_number") return true;
     if (["math_memset", "math_memwriter"].contains(cell.id) && dir == cell.rot) {
       return true;
+    }
+
+    if(modded.contains(cell.id)) {
+      return scriptingManager.mathIsWritable(cell, x, y, dir);
     }
 
     return false;
@@ -501,12 +513,20 @@ class MathManager {
     // sync
     if (cell.id == "math_sync" && dir == cell.rot) return true;
 
+    if(modded.contains(cell.id)) {
+      return scriptingManager.mathIsOutput(cell, x, y, dir);
+    }
+
     return false;
   }
 
   bool autoApplyCount(
       Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
     if (cell.id == "math_safe_number") return false;
+
+    if(modded.contains(cell.id)) {
+      return scriptingManager.mathAutoApplyCount(cell, cx, cy, dir, count, ox, oy);
+    }
 
     return true;
   }

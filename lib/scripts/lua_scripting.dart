@@ -2243,4 +2243,97 @@ class LuaScript {
       return true;
     });
   }
+
+  void mathWhenWritten(Cell cell, int x, int y, int dir, num amount) {
+    return withDefinedCellProperty(cell.id, "mathWhenWritten", () {
+      if(ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        if(amount is double) {
+          ls.pushNumber(amount);
+        } else {
+          ls.pushInteger(amount as int);
+        }
+        ls.call(5, 0);
+      }
+    });
+  }
+
+
+  num? mathCustomCount(Cell cell, int x, int y, int dir) {
+    return withDefinedCellProperty(cell.id, "mathCustomCount", () {
+      if(ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.call(4, 1);
+        if(ls.isNilOrNone(-1)) {
+          ls.pop();
+          return null;
+        }
+        final res = ls.toNumber(-1);
+        ls.pop();
+        return res;
+      }
+      return null;
+    });
+  }
+
+  bool mathAutoApplyCount(Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
+    return withDefinedCellProperty(cell.id, "mathAutoApplyCount", () {
+      if(ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(cx);
+        ls.pushInteger(cy);
+        ls.pushInteger(dir);
+        if(count is double) {
+          ls.pushNumber(count);
+        } else {
+          ls.pushInteger(count as int);
+        }
+        ls.pushInteger(ox);
+        ls.pushInteger(oy);
+        ls.call(7, 1);
+        final res = ls.toBoolean(-1);
+        ls.pop();
+        return res;
+      }
+      return true;
+    });
+  }
+
+  bool mathIsWritable(Cell cell, int x, int y, int dir) {
+    return withDefinedCellProperty(cell.id, "mathIsWritable", () {
+      if(ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.call(4, 1);
+        final res = ls.toBoolean(-1);
+        ls.pop();
+        return res;
+      }
+      return false;
+    });
+  }
+
+  bool mathIsOutput(Cell cell, int x, int y, int dir) {
+    return withDefinedCellProperty(cell.id, "mathIsOutput", () {
+      if(ls.isFunction(-1)) {
+        pushCell(cell, ls);
+        ls.pushInteger(x);
+        ls.pushInteger(y);
+        ls.pushInteger(dir);
+        ls.call(4, 1);
+        final res = ls.toBoolean(-1);
+        ls.pop();
+        return res;
+      }
+      return false;
+    });
+  }
 }

@@ -402,6 +402,53 @@ class ScriptingManager {
     }
     cats.add(CellCategory(name, desc, [], look, max: max));
   }
+
+  void mathWhenWritten(Cell cell, int x, int y, int dir, num amount) {
+    for(var lua in luaScripts) {
+      if(lua.hasDefinedCell(cell.id)) {
+        lua.mathWhenWritten(cell, x, y, dir, amount);
+        return;
+      }
+    }
+  }
+
+
+  num? mathCustomCount(Cell cell, int x, int y, int dir) {
+    for(var lua in luaScripts) {
+      if(lua.hasDefinedCell(cell.id)) {
+        return lua.mathCustomCount(cell, x, y, dir);
+      }
+    }
+    
+    return null;
+  }
+
+  bool mathAutoApplyCount(Cell cell, int cx, int cy, int dir, num count, int ox, int oy) {
+    for(var lua in luaScripts) {
+      if(lua.hasDefinedCell(cell.id)) {
+        return lua.mathAutoApplyCount(cell, cx, cy, dir, count, ox, oy);
+      }
+    }
+    return true;
+  }
+
+  bool mathIsWritable(Cell cell, int x, int y, int dir) {
+    for(var lua in luaScripts) {
+      if(lua.hasDefinedCell(cell.id)) {
+        return lua.mathIsWritable(cell, x, y, dir);
+      }
+    }
+    return false;
+  }
+
+  bool mathIsOutput(Cell cell, int x, int y, int dir) {
+    for(var lua in luaScripts) {
+      if(lua.hasDefinedCell(cell.id)) {
+        return lua.mathIsOutput(cell, x, y, dir);
+      }
+    }
+    return false;
+  }
 }
 
 final scriptingManager = ScriptingManager();
