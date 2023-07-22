@@ -2033,8 +2033,7 @@ class LuaScript {
           decaysInto: decaysInto,
           decayRecursion: decaysRecursion,
         );
-        print(stabletonOrder);
-        print(stabletonData[id]);
+        
         return 0;
       },
     };
