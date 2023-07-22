@@ -47,6 +47,7 @@ dependencies:
   shelf_web_socket: ^1.0.4
   google_fonts: ^4.0.3
   image: ^4.0.17
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:

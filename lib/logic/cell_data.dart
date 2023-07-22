@@ -390,6 +390,7 @@ final cells = {
   "stable_p",
   "stable_s",
   "stable_o",
+  "anvil",
 }.toList();
 
 final modded = <String>[];
@@ -399,6 +400,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
+  "anvil.png": "movers/anvil.png",
   "electric_puller.png": "electrical/electric_puller.png",
   "stable_a.png": "stableton/stable_a.png",
   "stable_b.png": "stableton/stable_b.png",
@@ -1008,6 +1010,7 @@ final categories = [
         ],
         "liner",
       ),
+      "anvil",
     ],
     "mover",
   ),
@@ -3275,6 +3278,10 @@ final cellInfo = <String, CellProfile>{
     "Stableton O",
     "Combination of Stableton P and Stableton S. Decays into Stableton S and Stableton P",
   ),
+  "anvil": CellProfile(
+    "Anvil",
+    "Falls down, breaks stuff.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3537,5 +3544,12 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Backward", "The rotation for the cell backwards", "backward", CellPropertyType.integer, 0),
     CellProperty("Left", "The rotation for the cell to the left", "left", CellPropertyType.integer, 0),
     CellProperty("Right", "The rotation for the cell to the right", "right", CellPropertyType.integer, 0),
+  ],
+  "anvil": [
+    CellProperty("Gravity", "How quickly the cell accelerates downwards. By default it is 0.7 cell per tick.", "gravity", CellPropertyType.number, 0.7),
+    CellProperty("Velocity", "How fast it is currently going. Changes over time.", "velocity", CellPropertyType.number, 0.7),
+    CellProperty("Breaking Velocity", "The speed at which it can start breaking the cells it runs into instead of simply being stopped by them.", "breaking_velocity", CellPropertyType.number, 4),
+    CellProperty("Loss Upon Lethal Impact", "How quickly the cell accelerates downwards. By default it is 0.7 cell per tick.", "impact_loss", CellPropertyType.number, 0.3),
+    CellProperty("Terminal Velocity", "The limit of how fast it can fall downwards.", "speed_limit", CellPropertyType.number, 5),
   ],
 };

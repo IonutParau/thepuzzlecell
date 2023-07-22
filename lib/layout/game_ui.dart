@@ -50,20 +50,7 @@ class _GameUIState extends State<GameUI> with TickerProviderStateMixin {
   void initState() {
     game = PuzzleGame();
     game.edType = widget.editorType;
-    game.ip = widget.ip;
-    // editorMenuWidthController.addListener(
-    //   () {
-    //     print(editorMenuWidthController.text);
-    //     // game.overlays.remove('EditorMenu');
-    //     // game.overlays.add('EditorMenu');
-    //   },
-    // );
-    // editorMenuHeightController.addListener(
-    //   () {
-    //     // game.overlays.remove('EditorMenu');
-    //     // game.overlays.add('EditorMenu');
-    //   },
-    // );
+    game.ip = widget.ip; 
 
     super.initState();
   }

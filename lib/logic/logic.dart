@@ -8,7 +8,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:equatable/equatable.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter/services.dart';
@@ -26,7 +26,6 @@ import 'package:window_manager/window_manager.dart';
 import 'package:flame/input.dart' hide ButtonState;
 import 'dart:ui' as ui;
 import 'package:clipboard/clipboard.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -110,6 +109,7 @@ part 'update/platform.dart';
 part 'update/carriers.dart';
 part 'update/stableton.dart';
 part 'update/releasers.dart';
+part 'update/anvil.dart';
 
 extension SetX on Set<String> {
   bool containsAny(Iterable<String> strings) {

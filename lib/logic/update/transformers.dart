@@ -127,6 +127,7 @@ enum BreakType {
   transform,
   burn,
   explode,
+  gravity,
 }
 
 bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
@@ -146,7 +147,7 @@ bool breakable(Cell c, int x, int y, int dir, BreakType bt) {
     return false;
   }
 
-  if (bt == BreakType.transform) {
+  if (bt == BreakType.transform || bt == BreakType.gravity) {
     if (c.id == "pushable") {
       return false;
     } else if (c.id == "pullable") {

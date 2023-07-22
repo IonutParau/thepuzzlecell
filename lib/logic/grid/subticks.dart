@@ -30,6 +30,7 @@ final subticks = [
   transformers,
   rots,
   gears,
+  anvil,
   grabbers,
   speeds,
   drillers,
