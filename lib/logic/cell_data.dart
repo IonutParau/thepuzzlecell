@@ -3548,8 +3548,8 @@ Map<String, List<CellProperty>> props = {
   "anvil": [
     CellProperty("Gravity", "How quickly the cell accelerates downwards. By default it is 0.7 cell per tick.", "gravity", CellPropertyType.number, 0.7),
     CellProperty("Velocity", "How fast it is currently going. Changes over time.", "velocity", CellPropertyType.number, 0.7),
-    CellProperty("Breaking Velocity", "The speed at which it can start breaking the cells it runs into instead of simply being stopped by them.", "breaking_velocity", CellPropertyType.number, 4),
-    CellProperty("Loss Upon Lethal Impact", "How quickly the cell accelerates downwards. By default it is 0.7 cell per tick.", "impact_loss", CellPropertyType.number, 0.3),
+    CellProperty("Breaking Velocity", "The speed at which it can start breaking the cells it falls onto instead of simply stopping all velocity.", "breaking_velocity", CellPropertyType.number, 4),
+    CellProperty("Loss Upon Lethal Impact", "How much velocity is lost upon breaking a cell. 0 is no change, 0.3 (default) is 30%, 1 is all velocity lost.", "impact_loss", CellPropertyType.number, 0.3),
     CellProperty("Terminal Velocity", "The limit of how fast it can fall downwards.", "speed_limit", CellPropertyType.number, 5),
   ],
 };
