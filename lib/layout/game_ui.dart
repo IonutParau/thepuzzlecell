@@ -11,6 +11,7 @@ TextStyle fontSize(double fontSize) {
 }
 
 Map<String, bool> keys = {};
+Map<String ,bool> lastTickKeys = {};
 
 const halfPi = pi / 2;
 

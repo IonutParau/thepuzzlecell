@@ -1371,7 +1371,7 @@ class P6 {
       }
     }
 
-    final encodedList = <String>[];
+    final encodedList = [];
 
     for (var compressedCellList in cellList) {
       final (cell, bg, count) = compressedCellList;
@@ -1758,7 +1758,7 @@ class VX {
     str += "${base64.encode(zlib.encode(utf8.encode(json.encode(gridData))))};";
 
     str += (grid.width == 100) ? ";" : "${grid.width};";
-    str += (grid.width == grid.height) ? ";" : "${grid.width};";
+    str += (grid.width == grid.height) ? ";" : "${grid.height};";
 
     return str;
   }

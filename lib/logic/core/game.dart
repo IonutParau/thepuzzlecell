@@ -1632,6 +1632,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     if (worldIndex != null) {
       gridTabIndex = worldIndex!;
     }
+  
+    lastTickKeys.clear();
 
     await loadAllButtonTextures();
 
@@ -2627,6 +2629,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
               itime = 0;
             } else {
               grid.update(); // Update the cells boizz
+              lastTickKeys = {...keys}; // not good for GC
             }
           }
         }

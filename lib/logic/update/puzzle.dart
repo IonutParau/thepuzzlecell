@@ -3,16 +3,16 @@ part of logic;
 bool isPuzzleKeyDown(int d) {
   d %= 4;
   if (d == 0) {
-    return keys[LogicalKeyboardKey.arrowRight.keyLabel] == true;
+    return keys[LogicalKeyboardKey.arrowRight.keyLabel] == true || lastTickKeys[LogicalKeyboardKey.arrowRight.keyLabel] == false;
   }
   if (d == 2) {
-    return keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true;
+    return keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true || lastTickKeys[LogicalKeyboardKey.arrowLeft.keyLabel] == false;
   }
   if (d == 1) {
-    return keys[LogicalKeyboardKey.arrowDown.keyLabel] == true;
+    return keys[LogicalKeyboardKey.arrowDown.keyLabel] == true || lastTickKeys[LogicalKeyboardKey.arrowDown.keyLabel] == false;
   }
   if (d == 3) {
-    return keys[LogicalKeyboardKey.arrowUp.keyLabel] == true;
+    return keys[LogicalKeyboardKey.arrowUp.keyLabel] == true || lastTickKeys[LogicalKeyboardKey.arrowUp.keyLabel] == false;
   }
   return false;
 }

@@ -18,6 +18,7 @@ final List<String> changes = [
   "QuickFix: Made the modding API not add subticks AFTER time reset",
   "Reworked rendering and the background image to make it extremely much faster",
   "QuickFix: Fixed several modding API problems",
+  "Reworked how TPC puzzle movement are computed",
 ];
 
 IconData getTrailing(String change) {
