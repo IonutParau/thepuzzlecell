@@ -777,6 +777,13 @@ int addedForce(Cell cell, int dir, int force, MoveType mt) {
     return scriptingManager.addedForce(cell, dir, force, mt);
   }
 
+  if(cell.id == "anvil") {
+    final d = (cell.rot-1)%4;
+    if(dir == d) {
+      return -cell.data["velocity"].toInt();
+    }
+  }
+
   if (cell.id == "weight") {
     return -1;
   }
@@ -1095,21 +1102,22 @@ bool nudge(int x, int y, int rot, {MoveType mt = MoveType.unknown_move}) {
   return false;
 }
 
-void doSpeedMover(int x, int y, int dir, int force, int speed) {
+bool doSpeedMover(int x, int y, int dir, int force, int speed) {
   final o = grid.at(x, y).copy;
   for (var i = 0; i < speed; i++) {
     if (!grid.inside(x, y)) {
-      return;
+      return false;
     }
     if (grid.at(x, y).id != o.id) {
-      return;
+      return false;
     }
     if (!push(x, y, dir, force)) {
-      return;
+      return false;
     }
     x = frontX(x, dir);
     y = frontY(y, dir);
   }
+  return true;
 }
 
 void doSpeedPuller(int x, int y, int dir, int force, int speed) {

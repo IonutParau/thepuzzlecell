@@ -1718,11 +1718,7 @@ class VX {
   }
 
   static String encodeID(String id) {
-    if (stdIDs.containsKey(id) && stdIDs[id] != id) {
-      return '@$id';
-    }
-
-    return inverseIds[id] ?? id;
+    return inverseIds[id] ?? '@$id';
   }
 
   static int decodeRot(String id, num rot) {
@@ -1866,6 +1862,15 @@ class VX {
     "onedir": "onedir",
     "ghost": "ghost",
     "ungeneratable": "ungeneratable",
+    "mobile_trash": "mobile_trash",
+    "mobile_enemy": "mobile_enemy",
+    "strong_enemy": "strong_enemy",
+    "weak_enemy": "weak_enemy",
+    "driller": "driller",
+    "balanced_enemy": "balanced_enemy",
+    "rotational_player": "puzzle",
+    "controllable_mover": "mover_puzzle",
+    "rot_180": "rotator_180",
   };
 
   static final inverseIds = stdIDs.map((key, value) => MapEntry(value, key));
