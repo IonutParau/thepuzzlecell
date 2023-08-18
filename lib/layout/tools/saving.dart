@@ -1679,9 +1679,9 @@ class VX {
 
   static Cell decodeLayer(List<dynamic> layer) {
     final c = Cell(0, 0);
-    final id = decodeID(layer[0].toString());
     final rot = decodeRot(layer[0].toString(), layer[1]);
     final Map<String, dynamic> rawdata = layer[2] is Map ? layer[2] : {};
+    final id = decodeID(layer[0].toString(), rawdata);
 
     c.invisible = rawdata['@invis'] ?? false;
     c.lifespan = (rawdata['@life'] as num?)?.toInt() ?? 0;
@@ -1697,7 +1697,7 @@ class VX {
   }
 
   static List<dynamic> encodeLayer(Cell cell) {
-    final id = encodeID(cell.id);
+    final id = encodeID(cell.id, cell.data);
     return [
       id,
       encodeRot(id, cell.rot),
@@ -1709,7 +1709,12 @@ class VX {
     ];
   }
 
-  static String decodeID(String id) {
+  static String decodeID(String id, Map<String, dynamic> outData) {
+    if(id == "bomb-3") {
+      outData["radius"] = 1;
+      return "explosive";
+    }
+    
     if (id.startsWith('@')) {
       return id.substring(1);
     }
@@ -1717,7 +1722,11 @@ class VX {
     return stdIDs[id] ?? id;
   }
 
-  static String encodeID(String id) {
+  static String encodeID(String id, Map<String, dynamic> data) {
+    if(id == "explosive" && data["radius"] == 1) {
+      return "bomb-3";
+    }
+
     return inverseIds[id] ?? '@$id';
   }
 
