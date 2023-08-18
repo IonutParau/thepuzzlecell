@@ -23,6 +23,7 @@ void anvil() {
       final dy = frontY(y, dir);
       if(grid.inside(dx, dy) && breakable(grid.at(dx, dy), dx, dy, dir, BreakType.gravity)) {
         grid.addBroken(grid.at(dx, dy), dx, dy);
+        grid.set(dx, dy, Cell(dx, dy));
         cell.data["velocity"] = velocity * (1 - lossUponLethalImpact);
         return;
       }
