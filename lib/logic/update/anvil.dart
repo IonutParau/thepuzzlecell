@@ -13,14 +13,16 @@ void anvil() {
     if(velocity > terminalVelocity) {
       velocity = terminalVelocity;
     }
-    cell.data["velocity"] = velocity;
-
-    if(doSpeedMover(x, y, dir, velocity.toInt(), velocity.toInt())) return;
+    
+    if(doSpeedMover(x, y, dir, velocity.toInt(), velocity.toInt())) {
+      cell.data["velocity"] = velocity;
+      return;
+    }
     if(velocity >= breakingVelocity) {
       final dx = frontX(x, dir);
       final dy = frontY(y, dir);
       if(grid.inside(dx, dy) && breakable(grid.at(dx, dy), dx, dy, dir, BreakType.gravity)) {
-        grid.set(dx, dy, Cell(dx, dy));
+        grid.addBroken(grid.at(dx, dy), dx, dy);
         cell.data["velocity"] = velocity * (1 - lossUponLethalImpact);
         return;
       }
