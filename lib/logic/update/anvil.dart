@@ -13,22 +13,26 @@ void anvil() {
     if(velocity > terminalVelocity) {
       velocity = terminalVelocity;
     }
-    final int intVelocity = velocity.toInt();
+    final int intVelocity = velocity.toInt()
     
-    if(doSpeedMover(x, y, dir, intVelocity, intVelocity)) {
-      cell.data["velocity"] = velocity;
-      return;
-    }
-    if(velocity >= breakingVelocity) {
-      final dx = frontX(x, dir, intVelocity + 1);
-      final dy = frontY(y, dir, intVelocity + 1);
-      if(grid.inside(dx, dy) && breakable(grid.at(dx, dy), dx, dy, dir, BreakType.gravity)) {
-        grid.addBroken(grid.at(dx, dy), dx, dy);
-        grid.set(dx, dy, Cell(dx, dy));
-        cell.data["velocity"] = velocity * (1 - lossUponLethalImpact);
+    for (var i = 0; i < intVelocity; i++) {
+      if (!push(x, y, dir, intVelocity)) {
+        if(velocity >= breakingVelocity) {
+          final dx = frontX(x, dir);
+          final dy = frontY(y, dir);
+          if(grid.inside(dx, dy) && breakable(grid.at(dx, dy), dx, dy, dir, BreakType.gravity)) {
+            grid.addBroken(grid.at(dx, dy), dx, dy);
+            grid.set(dx, dy, Cell(dx, dy));
+            cell.data["velocity"] = velocity * (1 - lossUponLethalImpact);
+            return;
+          }
+        }
+        cell.data["velocity"] = 0;
         return;
       }
+      x = frontX(x, dir);
+      y = frontY(y, dir);
     }
-    cell.data["velocity"] = 0;
+    cell.data["velocity"] = velocity;
   }, null, "anvil");
 }
