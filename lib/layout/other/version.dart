@@ -4,21 +4,11 @@ import 'package:fluent_ui/fluent_ui.dart'
 import 'package:the_puzzle_cell/logic/logic.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 
-String currentVersion = '2.3.0.1 Configurable QuickFix 1';
+String currentVersion = '2.3.1.0 Configurable';
 
 final List<String> changes = [
-  "QuickFix: Fixed skin textures being out of date",
-  "QuickFix: Deleted Test-Mod",
-  "QuickFix: Fixed a problem with the description of Anti-Generators",
-  "Made generators faster with an amazing optimization",
-  "QuickFix: Made generators not commit die",
-  "QuickFix: Made multiplayer pasting not broken",
-  "QuickFix: Changed order of subticks so Releaser can work better",
-  "QuickFix: Fixed VX implementation being horribly bugged",
-  "QuickFix: Made the modding API not add subticks AFTER time reset",
-  "Reworked rendering and the background image to make it extremely much faster",
-  "QuickFix: Fixed several modding API problems",
   "Reworked how TPC puzzle movement are computed",
+  "Fixed VX implementation being bugged and made it more up-to-date",
 ];
 
 IconData getTrailing(String change) {
