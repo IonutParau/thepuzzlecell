@@ -13,7 +13,7 @@ void anvil() {
     if(velocity > terminalVelocity) {
       velocity = terminalVelocity;
     }
-    final int intVelocity = velocity.toInt()
+    final int intVelocity = velocity.toInt();
     
     for (var i = 0; i < intVelocity; i++) {
       if (!push(x, y, dir, intVelocity)) {
