@@ -1371,7 +1371,7 @@ class P6 {
       }
     }
 
-    final encodedList = [];
+    final encodedList = <dynamic>[];
 
     for (var compressedCellList in cellList) {
       final (cell, bg, count) = compressedCellList;
