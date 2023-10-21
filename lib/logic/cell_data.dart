@@ -3285,10 +3285,10 @@ final cellInfo = <String, CellProfile>{
     "Anvil",
     "Falls down, breaks stuff.",
   ),
-  "flipped_puzzle" CellProfile(
+  "flipped_puzzle": CellProfile(
     "Flipped Puzzle",
     "A flipped puzzle cell. Movements on one axis (left-right or up-down) will be inverted."
-  )
+  ),
 };
 
 enum CellPropertyType {
