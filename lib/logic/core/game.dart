@@ -164,7 +164,49 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   void increaseTemp() => brushTemp++;
   void decreaseTemp() => brushTemp--;
 
+  void syncFavorites() {
+    final favorites = storage.getStringList("favorites") ?? [];
+
+    late CellCategory favoritesCategory;
+
+    for(var cat in categories.first.items) {
+      if(cat is CellCategory && cat.title == "Favorites") {
+        favoritesCategory = cat;
+      }
+    }
+
+    favoritesCategory.opened = false;
+    buttonManager.clear();
+    favoritesCategory.items.clear();
+    favoritesCategory.items.addAll(favorites);
+  }
+
+  void manageFavorites(String cell) async {
+    final favorites = storage.getStringList("favorites") ?? [];
+
+    if(favorites.contains(cell)) {
+      // Remove cell
+      favorites.remove(cell);
+    } else {
+      favorites.add(cell);
+    }
+
+    if(favorites.isEmpty) {
+      await storage.remove("favorites");
+    } else {
+      await storage.setStringList("favorites", favorites);
+    }
+
+    syncFavorites();
+
+    loadAllButtons();
+  }
+
   void whenSelected(String newSelection) {
+    if(keys[LogicalKeyboardKey.controlLeft.keyLabel] == true) {
+      manageFavorites(newSelection);
+    }
+
     if (newSelection.startsWith("blueprint ")) {
       // Blueprint code
       loadBlueprint(int.parse(newSelection.split(' ')[1]));
@@ -1629,6 +1671,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     initial = grid.copy;
 
+
     if (worldIndex != null) {
       gridTabIndex = worldIndex!;
     }
@@ -1640,7 +1683,6 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.load('base.png');
     await Flame.images.load(textureMap['missing.png'] ?? 'missing.png');
     await Flame.images.load('empty.png');
-
     // Load effects
     await Flame.images.loadAll([
       "effects/stopped.png",
@@ -1726,6 +1768,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.load('mechanical/pixel_on.png');
     await Flame.images.load('electrical/electric_wire_on.png');
 
+    buttonManager = ButtonManager(this);
+    syncFavorites();
     loadAllButtons();
 
     wantedCellSize = defaultCellSize;

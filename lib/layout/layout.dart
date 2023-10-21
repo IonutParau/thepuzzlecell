@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide ButtonState;
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
@@ -36,16 +36,17 @@ part 'shopui.dart';
 part 'achievement.dart';
 
 class ConstantColorButtonState extends ButtonState<Color> {
-  final Color color;
+  final Color? color;
 
   ConstantColorButtonState(this.color) : super();
 
   @override
   Color resolve(Set<ButtonStates> states) {
-    return color;
+    return color ?? Colors.white;
   }
 }
 
-extension on Color {
+extension on Color? {
   ConstantColorButtonState get state => ConstantColorButtonState(this);
 }
+

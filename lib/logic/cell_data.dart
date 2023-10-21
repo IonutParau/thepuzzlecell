@@ -844,6 +844,7 @@ final categories = [
       "inctab",
       "invis_tool",
       "trick_tool",
+      CellCategory("Favorites", "Your favorite cells! Hold Shift while selecting a cell to add it to your favorites, unless its already there, then it will be removed from your favorites!", [], "flag"),
     ],
     "tool",
   ),

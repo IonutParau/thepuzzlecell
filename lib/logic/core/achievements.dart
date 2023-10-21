@@ -19,6 +19,7 @@ final Map<String, Achievement> achievementData = {
   "incontrol": Achievement("In control", "Move a puzzle cell around", 50),
   "friends": Achievement("Friends??", "Join a multiplayer server", 23),
   "circuitry": Achievement("Circuitry", "Use mechanical cells", 50),
+  "favoritism": Achievement("Favoritism", "You like it more than the others, do you?", 60),
 };
 
 class AchievementManager {
