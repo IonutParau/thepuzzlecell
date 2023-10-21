@@ -315,6 +315,22 @@ void puzzles(Set<String> cells) {
       (cell, x, y) {
         if (cell.rot != rot) return;
         if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot - 1, cells);
+        } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 1, cells);
+        } else if (keys[LogicalKeyboardKey.arrowLeft.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot, cells);
+        } else if (keys[LogicalKeyboardKey.arrowRight.keyLabel] == true) {
+          doPuzzleSide(x, y, cell.rot + 2, cells);
+        }
+      },
+      rot,
+      "flipped_puzzle",
+    );
+    grid.updateCell(
+      (cell, x, y) {
+        if (cell.rot != rot) return;
+        if (keys[LogicalKeyboardKey.arrowUp.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot - 1, cells, "trash");
         } else if (keys[LogicalKeyboardKey.arrowDown.keyLabel] == true) {
           doPuzzleSide(x, y, cell.rot + 1, cells, "trash");
