@@ -188,6 +188,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
       // Remove cell
       favorites.remove(cell);
     } else {
+      AchievementManager.complete("favoritism");
       favorites.add(cell);
     }
 
