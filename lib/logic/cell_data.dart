@@ -391,6 +391,7 @@ final cells = {
   "stable_s",
   "stable_o",
   "anvil",
+  "flipped_puzzle",
 }.toList();
 
 final modded = <String>[];
@@ -616,6 +617,7 @@ HashMap<String, String> textureMap = HashMap.from({
   "frozen_puzzle.png": "puzzle/frozen_puzzle.png",
   "unstable_puzzle.png": "puzzle/unstable_puzzle.png",
   "temporal_puzzle.png": "puzzle/temporal_puzzle.png",
+  "flipped_puzzle.png": "puzzle/flipped_puzzle.png",
   "mem_gen.png": "recreators/memory/mem_gen.png",
   "mem_gen_cw.png": "recreators/memory/mem_gen_cw.png",
   "mem_gen_ccw.png": "recreators/memory/mem_gen_ccw.png",
@@ -1651,6 +1653,7 @@ final categories = [
         "Merged",
         "Puzzle Cells with extra abilities",
         [
+          "flipped_puzzle",
           "molten_puzzle",
           "frozen_puzzle",
           "unstable_puzzle",
@@ -3282,6 +3285,10 @@ final cellInfo = <String, CellProfile>{
   "anvil": CellProfile(
     "Anvil",
     "Falls down, breaks stuff.",
+  ),
+  "flipped_puzzle": CellProfile(
+    "Flipped Puzzle",
+    "A flipped puzzle cell. Movements on one axis (left-right or up-down) will be inverted."
   ),
 };
 
