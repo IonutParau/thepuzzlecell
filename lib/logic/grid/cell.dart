@@ -110,7 +110,7 @@ class FakeCell {
       this.cell, this.x, this.y, this.rot, this.sx, this.sy, this.lifespan);
 
   void render(Canvas canvas) {
-    game.renderCell(cell, x, y, null, sx, sy, rot);
+    game.renderer.renderCell(cell, x, y, null, sx, sy, rot);
   }
 
   void tick() {

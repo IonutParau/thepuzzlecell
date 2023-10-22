@@ -55,6 +55,7 @@ part 'updatechecker.dart';
 part 'queue.dart';
 part 'core/markdown.dart';
 part 'core/game.dart';
+part 'core/rendering.dart';
 
 // Update methods
 part 'update/mover.dart';
