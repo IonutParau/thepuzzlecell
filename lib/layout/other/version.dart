@@ -9,6 +9,7 @@ String currentVersion = '2.3.1.0 Configurable';
 final List<String> changes = [
   "Reworked how TPC puzzle movement are computed",
   "Fixed VX implementation being bugged and made it more up-to-date",
+  "Added Favorite cells",
 ];
 
 IconData getTrailing(String change) {

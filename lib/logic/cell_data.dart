@@ -392,6 +392,8 @@ final cells = {
   "stable_o",
   "anvil",
   "flipped_puzzle",
+  "bullet",
+  "sentry",
 }.toList();
 
 final modded = <String>[];
@@ -401,6 +403,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
+  "sentry.png": "destroyers/sentry.png",
+  "bullet.png": "destroyers/bullet.png",
   "anvil.png": "movers/anvil.png",
   "electric_puller.png": "electrical/electric_puller.png",
   "stable_a.png": "stableton/stable_a.png",
@@ -1014,6 +1018,7 @@ final categories = [
         "liner",
       ),
       "anvil",
+      "bullet",
     ],
     "mover",
   ),
@@ -1282,6 +1287,7 @@ final categories = [
         "fire",
       ),
       "antigen",
+      "sentry",
     ],
     "trash",
   ),
@@ -1580,6 +1586,7 @@ final categories = [
       "electric_battery",
       "electric_mover",
       "electric_puller",
+      "sentry",
     ],
     "electric_wire",
   ),
@@ -3290,6 +3297,14 @@ final cellInfo = <String, CellProfile>{
     "Flipped Puzzle",
     "A flipped puzzle cell. Movements on one axis (left-right or up-down) will be inverted."
   ),
+  "bullet": CellProfile(
+    "Bullet",
+    "I have yet to meet someone who can outsmart bullet",
+  ),
+  "sentry": CellProfile(
+    "Sentry",
+    "Will kill enemies or players.",
+  ),
 };
 
 enum CellPropertyType {
@@ -3559,5 +3574,16 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Breaking Velocity", "The speed at which it can start breaking the cells it falls onto instead of simply stopping all velocity.", "breaking_velocity", CellPropertyType.number, 4),
     CellProperty("Loss Upon Lethal Impact", "How much velocity is lost upon breaking a cell. 0 is no change, 0.3 (default) is 30%, 1 is all velocity lost.", "impact_loss", CellPropertyType.number, 0.3),
     CellProperty("Terminal Velocity", "The limit of how fast it can fall downwards.", "speed_limit", CellPropertyType.number, 5),
+  ],
+  "bullet": [
+    CellProperty("Speed", "How fast the bullet is", "speed", CellPropertyType.integer, 1),
+  ],
+  "sentry": [
+    CellProperty("Shoot Interval", "The interval at which it shoots", "gun_interval", CellPropertyType.number, 2),
+    CellProperty("Bullet Speed", "The speed of the bullet it shoots", "bullet_speed", CellPropertyType.integer, 1),
+    CellProperty("Friendly", "If true, it will kill enemies. If not, it will kill puzzle cells and keys. There are also common targets it will kill either way.", "friendly", CellPropertyType.boolean, true),
+    CellProperty("Power Cost", "The amount of electric power the sentry consumes passively", "passive_cost", CellPropertyType.number, 1),
+    CellProperty("Shoot Cost", "The amount of electric power the sentry consumes when shooting", "gun_cost", CellPropertyType.number, 5),
+    CellProperty("Power", "The amount of electric power in the sentry gun", "electric_power", CellPropertyType.number, 500),
   ],
 };

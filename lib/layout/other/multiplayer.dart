@@ -33,6 +33,9 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
       pingIp += '/';
     }
 
+    final stopwatch = Stopwatch();
+    stopwatch.start();
+
     return Container(
       padding: EdgeInsets.all(0.5.w),
       decoration: BoxDecoration(
@@ -46,17 +49,19 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
             future: http.post(Uri.parse(pingIp)),
             builder: (ctx, snap) {
               if (snap.hasError) {
+                stopwatch.stop();
                 print(snap.error);
                 return Icon(Icons.error, color: Colors.red["light"]);
               }
               if (snap.hasData) {
+                stopwatch.stop();
                 final response = snap.data!;
                 if (response.statusCode != 200) {
                   return Icon(Icons.error, color: Colors.red["light"]);
                 }
                 return Icon(
                   Icons.check_box_rounded,
-                  color: Colors.green["light"],
+                  color: stopwatch.elapsedMilliseconds > 30 ? Colors.yellow["light"] : Colors.green["light"],
                 );
               }
               return Icon(FluentIcons.clock, color: Colors.blue);
