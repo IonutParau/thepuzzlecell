@@ -10,6 +10,13 @@ final List<String> changes = [
   "Reworked how TPC puzzle movement are computed",
   "Fixed VX implementation being bugged and made it more up-to-date",
   "Added Favorite cells",
+  "Added Sentry, Gun, Sentry Buster and Puzzle Buster",
+  "Fixed a multiplayer bug with invisible and trickster tools",
+  "Fixed a few visual things",
+  "Made active checkpoints appear green",
+  "Added Area Denial cell and Ticked Bomb",
+  "Improved cell selection menus",
+  "Made boolean properties have the checkbox next to the name in the property editor",
 ];
 
 IconData getTrailing(String change) {
