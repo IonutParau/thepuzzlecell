@@ -111,6 +111,7 @@ part 'update/carriers.dart';
 part 'update/stableton.dart';
 part 'update/releasers.dart';
 part 'update/anvil.dart';
+part 'update/weapons.dart';
 
 extension SetX on Set<String> {
   bool containsAny(Iterable<String> strings) {

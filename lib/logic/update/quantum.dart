@@ -132,7 +132,7 @@ class RaycastInfo {
   RaycastInfo.broken() : successful = false;
 }
 
-RaycastInfo raycast(int cx, int cy, int dx, int dy) {
+RaycastInfo raycast(int cx, int cy, int dx, int dy, [Set<String> ignore = const {}]) {
   var x = cx;
   var y = cy;
   var d = 0;
@@ -146,7 +146,7 @@ RaycastInfo raycast(int cx, int cy, int dx, int dy) {
 
     final cell = grid.at(x, y);
 
-    if (cell.id != "empty") {
+    if (cell.id != "empty" && !ignore.contains(cell.id)) {
       return RaycastInfo.successful(cell, d, x, y);
     }
   }

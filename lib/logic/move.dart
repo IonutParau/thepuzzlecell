@@ -768,6 +768,7 @@ final withBias = [
   "mystic_x",
   "platform",
   "carrier",
+  "bullet",
 ];
 
 int addedForce(Cell cell, int dir, int force, MoveType mt) {
@@ -931,7 +932,7 @@ bool acidic(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx, in
     return true;
   }
 
-  if (const ["mover_trash", "mover_enemy"].contains(cell.id) && cell.rot == dir) {
+  if (const ["mover_trash", "mover_enemy", "bullet"].contains(cell.id) && cell.rot == dir) {
     return true;
   }
 
@@ -952,7 +953,7 @@ void handleAcid(Cell cell, int dir, int force, MoveType mt, Cell melting, int mx
     grid.set(mx, my, cell);
   }
 
-  if (cell.id == "mobile_enemy" || cell.id == "mover_enemy" || cell.id == "explosive") {
+  if (cell.id == "mobile_enemy" || cell.id == "mover_enemy" || cell.id == "explosive" || cell.id == "bullet") {
     grid.addBroken(melting, mx, my, "shrinking");
     grid.addBroken(cell, mx, my, "shrinking");
     if (cell.id == "explosive") {
@@ -1161,12 +1162,12 @@ NextCell nextCell(int x, int y, int dir, [bool skipFirst = false]) {
   }
 }
 
-void doExplosive(Cell destroyer, int x, int y, [bool silent = false]) {
-  final radius = destroyer.data['radius'] ?? 1;
-  final effectiveness = (destroyer.data['effectiveness'] ?? 100) / 100;
-  final byproduct = destroyer.data['byproduct'] ?? "empty!0";
-  final circular = destroyer.data['circular'] ?? false;
-  final pseudoRandom = destroyer.data['pseudorandom'] ?? false;
+void doExplosive(Cell destroyer, int x, int y, [bool silent = false, Map<String, dynamic> data = const {}]) {
+  final radius = data['radius'] ?? destroyer.data['radius'] ?? 1;
+  final effectiveness = (data['effectiveness'] ?? destroyer.data['effectiveness'] ?? 100) / 100;
+  final byproduct = data['byproduct'] ?? destroyer.data['byproduct'] ?? "empty!0";
+  final circular = data['circular'] ?? destroyer.data['circular'] ?? false;
+  final pseudoRandom = data['pseudorandom'] ?? destroyer.data['pseudorandom'] ?? false;
 
   grid.addBroken(destroyer, x, y, silent ? "silent_shrinking" : "shrinking");
 

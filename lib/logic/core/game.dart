@@ -1685,6 +1685,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
     await Flame.images.load('base.png');
     await Flame.images.load(textureMap['missing.png'] ?? 'missing.png');
     await Flame.images.load('empty.png');
+    await Flame.images.load('destroyers/sentry_friendly.png');
     // Load effects
     await Flame.images.loadAll([
       "effects/stopped.png",

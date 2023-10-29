@@ -5,7 +5,7 @@ var puzzles = <String>[];
 int? puzzleIndex;
 
 Future<void> loadAllPuzzles() async {
-  puzzles = (await loadFileData('assets/puzzles.txt')).split('\n');
+  puzzles = (await loadFileData('assets/puzzles.txt')).split('\n')..removeWhere((l) => l.isEmpty);
 }
 
 Future<String> loadFileData(String path) async {

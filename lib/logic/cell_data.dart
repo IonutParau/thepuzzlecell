@@ -394,6 +394,8 @@ final cells = {
   "flipped_puzzle",
   "bullet",
   "sentry",
+  "sentry_buster",
+  "puzzle_buster",
 }.toList();
 
 final modded = <String>[];
@@ -403,6 +405,8 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
+  "sentry_buster.png": "destroyers/sentry_buster.png",
+  "puzzle_buster.png": "destroyers/puzzle_buster.png",
   "sentry.png": "destroyers/sentry.png",
   "bullet.png": "destroyers/bullet.png",
   "anvil.png": "movers/anvil.png",
@@ -1288,6 +1292,8 @@ final categories = [
       ),
       "antigen",
       "sentry",
+      "sentry_buster",
+      "puzzle_buster",
     ],
     "trash",
   ),
@@ -3305,6 +3311,14 @@ final cellInfo = <String, CellProfile>{
     "Sentry",
     "Will kill enemies or players.",
   ),
+  "sentry_buster": CellProfile(
+    "Sentry Buster",
+    "When the sentry buster enters the area, it will go to the nearest sentry and blow it up. It does NOT care if the sentry is friendly or not.",
+  ),
+  "puzzle_buster": CellProfile(
+    "Puzzle Buster",
+    "It will hunt down puzzle cells and blow up when it gets near them",
+  ),
 };
 
 enum CellPropertyType {
@@ -3581,7 +3595,7 @@ Map<String, List<CellProperty>> props = {
   "sentry": [
     CellProperty("Shoot Interval", "The interval at which it shoots", "gun_interval", CellPropertyType.number, 2),
     CellProperty("Bullet Speed", "The speed of the bullet it shoots", "bullet_speed", CellPropertyType.integer, 1),
-    CellProperty("Friendly", "If true, it will kill enemies. If not, it will kill puzzle cells and keys. There are also common targets it will kill either way.", "friendly", CellPropertyType.boolean, true),
+    CellProperty("Friendly", "If true, it will kill enemies. If not, it will kill puzzle cells and keys. There are also common targets it will kill either way.", "friendly", CellPropertyType.boolean, false),
     CellProperty("Power Cost", "The amount of electric power the sentry consumes passively", "passive_cost", CellPropertyType.number, 1),
     CellProperty("Shoot Cost", "The amount of electric power the sentry consumes when shooting", "gun_cost", CellPropertyType.number, 5),
     CellProperty("Power", "The amount of electric power in the sentry gun", "electric_power", CellPropertyType.number, 500),

@@ -580,6 +580,11 @@ class GameRendering {
       ignoreSafety = true;
     }
 
+    if(cell.id == "sentry" && cell.data['friendly'] == true) {
+      file = "destroyers/sentry_friendly";
+      ignoreSafety = true;
+    }
+
     if (file.startsWith('totrick_')) {
       file = "interface/tools/trick_tool";
       ignoreSafety = true;

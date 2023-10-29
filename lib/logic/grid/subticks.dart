@@ -50,6 +50,7 @@ final subticks = [
   dartys,
   floppys,
   puzzles,
+  weapons,
   pmerges,
   autoflag,
   checkpoints,
