@@ -1991,7 +1991,21 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
                 if (backgrounds.contains(currentSelection)) {
                   sendToServer('bg', {"x": mx, "y": my, "bg": currentSelection, "size": brushSize});
                 } else {
+                  if(currentSelection == "invis_tool") {
+                    for(var cx = mx - brushSize; cx <= mx + brushSize; cx++) {
+                      for(var cy = my - brushSize; cy <= my + brushSize; cy++) {
+                        sendToServer('invis', {"x": cx, "y": cy, "v": !grid.at(cx, cy).invisible});
+                      }
+                    }
+                  } else if(currentSelection.startsWith('totrick_')) {
+                    final c = grid.at(mx, my);
+                    final d = Map<String, dynamic>.from(c.data);
+                    d["trick_as"] = currentSelection.substring(8);
+                    d["trick_rot"] = (currentRotation - c.rot) % 4;
+                    sendToServer('place', {"x": mx, "y": my, "id": c.id, "rot": c.rot, "data": d, "size": brushSize});
+                  } else {
                   sendToServer('place', {"x": mx, "y": my, "id": currentSelection, "rot": currentRotation, "data": currentData, "size": brushSize});
+                  }
                 }
               }
               if (mouseButton == kSecondaryMouseButton) {
