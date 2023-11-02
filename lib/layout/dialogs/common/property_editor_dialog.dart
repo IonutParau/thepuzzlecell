@@ -34,199 +34,39 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
     }
   }
 
-  Widget propToTile(int i) {
+  Widget indexToBody(int i, BuildContext ctx) {
+    final textStyle = TextStyle(fontSize: 5.sp);
     final property = props[game.currentSelection]![i];
 
-    final displayName = lang("property.${game.currentSelection}.${property.key}.name", property.name);
-
-    final textStyle = TextStyle(fontSize: 5.sp);
-
     if (property.type == CellPropertyType.cellID) {
-      final currentID = controllers[i].text;
-      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
-      return DropDownButton(
-        leading: Image.asset(
-          'assets/images/$tp',
-          fit: BoxFit.fill,
-          colorBlendMode: BlendMode.clear,
-          filterQuality: FilterQuality.none,
-          isAntiAlias: true,
-          width: 3.h,
-          height: 3.h,
-        ),
-        title: Text("$displayName: ${idToString(currentID)}", style: textStyle),
-        items: [
-          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
-            MenuFlyoutItem(
-              leading: Image.asset(
-                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
-                fit: BoxFit.fill,
-                colorBlendMode: BlendMode.clear,
-                filterQuality: FilterQuality.none,
-                isAntiAlias: true,
-                width: 3.h,
-                height: 3.h,
-              ),
-              text: Text(idToString(id), style: textStyle),
-              onPressed: () {
-                controllers[i].text = id;
-                setState(() {});
-              },
+      var currentID = controllers[i].text;
+      var tp = textureMap['$currentID.png'] ?? '$currentID.png';
+      return StatefulBuilder(
+        builder: (ctx, setState) {
+          return ListTile(
+            leading: Image.asset(
+              'assets/images/$tp',
+              fit: BoxFit.fill,
+              colorBlendMode: BlendMode.clear,
+              filterQuality: FilterQuality.none,
+              isAntiAlias: true,
+              width: 3.h,
+              height: 3.h,
             ),
-        ],
-      );
-    }
-    if (property.type == CellPropertyType.cellRot) {
-      final currentID = controllers[i].text;
-      final rot = int.tryParse(currentID) ?? 0;
-
-      return DropDownButton(
-        title: Text("$displayName: ${rotToString(rot)}"),
-        items: [
-          for (var r = 0; r < 4; r++)
-            MenuFlyoutItem(
-              text: Text(rotToString(rot), style: textStyle),
-              onPressed: () {
-                controllers[i].text = r.toString();
-                setState(() {});
-              },
-            ),
-        ],
-      );
-    }
-    if (property.type == CellPropertyType.cell) {
-      final current = controllers[i].text;
-
-      final (currentId, currentRot) = parseJointCellStr(current);
-
-      return DropDownButton(
-        leading: Transform.rotate(
-          angle: currentRot * halfPi,
-          child: Image.asset(
-            idToTexture(currentId),
-            fit: BoxFit.fill,
-            colorBlendMode: BlendMode.clear,
-            filterQuality: FilterQuality.none,
-            isAntiAlias: true,
-            width: 3.h,
-            height: 3.h,
-          ),
-        ),
-        title: Text("$displayName: ${idToString(currentId)} (${rotToString(currentRot)})", style: textStyle),
-        items: [
-          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
-            for (var r = 0; r < 4; r++)
-              MenuFlyoutItem(
-                leading: Transform.rotate(
-                  angle: r * halfPi,
-                  child: Image.asset(
-                    idToTexture(id),
-                    fit: BoxFit.fill,
-                    colorBlendMode: BlendMode.clear,
-                    filterQuality: FilterQuality.none,
-                    isAntiAlias: true,
-                    width: 3.h,
-                    height: 3.h,
-                  ),
-                ),
-                text: Text("${idToString(id)} (${rotToString(r)})", style: textStyle),
-                onPressed: () {
-                  controllers[i].text = "$id!$r";
+            title: Text("Current: ${idToString(currentID)}", style: textStyle),
+            onPressed: () {
+              showDialog<String>(
+                builder: (ctx) => SearchCellDialog(currentSelection: currentID, onChanged: (value) { 
+                  controllers[i].text = value;
+                  currentID = value;
+                  tp = textureMap['$currentID.png'] ?? '$currentID.png';
                   setState(() {});
-                },
-              ),
-        ],
-      );
-    }
-    if (property.type == CellPropertyType.background) {
-      final currentID = controllers[i].text;
-      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
-      return DropDownButton(
-        leading: Image.asset(
-          'assets/images/$tp',
-          fit: BoxFit.fill,
-          colorBlendMode: BlendMode.clear,
-          filterQuality: FilterQuality.none,
-          isAntiAlias: true,
-          width: 3.h,
-          height: 3.h,
-        ),
-        title: Text("$displayName: ${idToString(currentID)}", style: textStyle),
-        items: [
-          for (var id in backgrounds)
-            MenuFlyoutItem(
-              leading: Image.asset(
-                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
-                fit: BoxFit.fill,
-                colorBlendMode: BlendMode.clear,
-                filterQuality: FilterQuality.none,
-                isAntiAlias: true,
-                width: 3.h,
-                height: 3.h,
-              ),
-              text: Text(idToString(id)),
-              onPressed: () {
-                controllers[i].text = id;
-                setState(() {});
-              },
-            ),
-        ],
-      );
-    }
-    if (property.type == CellPropertyType.boolean) {
-      return Checkbox(
-        checked: controllers[i].text == "true",
-        onChanged: (v) {
-          controllers[i].text = (v == true) ? "true" : "false";
-          setState(() {});
+                }),
+                context: ctx,
+              );
+            }
+          );
         },
-        content: Text(displayName, style: textStyle),
-      );
-    }
-    return TextBox(
-      prefix: Text(displayName, style: textStyle),
-      controller: controllers[i],
-      style: textStyle,
-    );
-  }
-
-  Widget indexToBody(int i) {
-    final textStyle = TextStyle(fontSize: 5.sp);
-    final property = props[game.currentSelection]![i];
-
-    if (property.type == CellPropertyType.cellID) {
-      final currentID = controllers[i].text;
-      final tp = textureMap['$currentID.png'] ?? '$currentID.png';
-      return DropDownButton(
-        leading: Image.asset(
-          'assets/images/$tp',
-          fit: BoxFit.fill,
-          colorBlendMode: BlendMode.clear,
-          filterQuality: FilterQuality.none,
-          isAntiAlias: true,
-          width: 3.h,
-          height: 3.h,
-        ),
-        title: Text("Current: ${idToString(currentID)}", style: textStyle),
-        items: [
-          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
-            MenuFlyoutItem(
-              leading: Image.asset(
-                'assets/images/${textureMap["$id.png"] ?? "$id.png"}',
-                fit: BoxFit.fill,
-                colorBlendMode: BlendMode.clear,
-                filterQuality: FilterQuality.none,
-                isAntiAlias: true,
-                width: 3.h,
-                height: 3.h,
-              ),
-              text: Text(idToString(id), style: textStyle),
-              onPressed: () {
-                controllers[i].text = id;
-                setState(() {});
-              },
-            ),
-        ],
       );
     }
     if (property.type == CellPropertyType.cellRot) {
@@ -238,7 +78,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
         items: [
           for (var r = 0; r < 4; r++)
             MenuFlyoutItem(
-              text: Text(rotToString(rot), style: textStyle),
+              text: Text(rotToString(r), style: textStyle),
               onPressed: () {
                 controllers[i].text = r.toString();
                 setState(() {});
@@ -250,44 +90,58 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
     if (property.type == CellPropertyType.cell) {
       final current = controllers[i].text;
 
-      final (currentId, currentRot) = parseJointCellStr(current);
+      var (currentId, currentRot) = parseJointCellStr(current);
 
-      return DropDownButton(
-        leading: Transform.rotate(
-          angle: currentRot * halfPi,
-          child: Image.asset(
-            idToTexture(currentId),
-            fit: BoxFit.fill,
-            colorBlendMode: BlendMode.clear,
-            filterQuality: FilterQuality.none,
-            isAntiAlias: true,
-            width: 3.h,
-            height: 3.h,
-          ),
-        ),
-        title: Text("Current: ${idToString(currentId)} (${rotToString(currentRot)})", style: textStyle),
-        items: [
-          for (var id in (cells..removeWhere((v) => backgrounds.contains(v))))
-            for (var r = 0; r < 4; r++)
-              MenuFlyoutItem(
-                leading: Transform.rotate(
-                  angle: r * halfPi,
-                  child: Image.asset(
-                    idToTexture(id),
-                    fit: BoxFit.fill,
-                    colorBlendMode: BlendMode.clear,
-                    filterQuality: FilterQuality.none,
-                    isAntiAlias: true,
-                    width: 3.h,
-                    height: 3.h,
+      return Row(
+        children: [
+          StatefulBuilder(
+            builder: (ctx, setState) {
+              return SizedBox(
+                width: 10.w,
+                child: ListTile(
+                  leading: Transform.rotate(
+                    angle: currentRot * halfPi,
+                    child: Image.asset(
+                      idToTexture(currentId),
+                      fit: BoxFit.fill,
+                      colorBlendMode: BlendMode.clear,
+                      filterQuality: FilterQuality.none,
+                      isAntiAlias: true,
+                      width: 3.h,
+                      height: 3.h,
+                    ),
                   ),
+                  title: Text("Current: ${idToString(currentId)}", style: textStyle),     
+                  onPressed: () {
+                    showDialog<String>(
+                      builder: (ctx) => SearchCellDialog(currentSelection: currentId, onChanged: (value) { 
+                        controllers[i].text = "$currentId!$currentRot";
+                        currentId = value;
+                        setState(() {});
+                      }),
+                      context: ctx,
+                    );
+                  },
                 ),
-                text: Text("${idToString(id)} (${rotToString(r)})", style: textStyle),
-                onPressed: () {
-                  controllers[i].text = "$id!$r";
-                  setState(() {});
-                },
-              ),
+              );
+            },
+          ),
+          SizedBox(
+            width: 7.w,
+            child: DropDownButton(
+              title: Text(rotToString(currentRot)),
+              items: [
+                for (var r = 0; r < 4; r++)
+                  MenuFlyoutItem(
+                    text: Text(rotToString(r), style: textStyle),
+                    onPressed: () {
+                      controllers[i].text = "$currentId!$currentRot";
+                      setState(() {});
+                    },
+                  ),
+              ],
+            ),
+          ),
         ],
       );
     }
@@ -407,7 +261,7 @@ class _PropertyEditorDialogState extends State<PropertyEditorDialog> {
                           style: TextStyle(fontSize: 7.sp),
                         ),
                       ),
-                      indexToBody(currentProperty!),
+                      indexToBody(currentProperty!, context),
                     ],
                   ),
                 ),

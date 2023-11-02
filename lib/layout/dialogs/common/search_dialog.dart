@@ -32,8 +32,13 @@ class SearchQueryResult {
 }
 
 class SearchCellDialog extends StatefulWidget {
+  final String? currentSelection;
+  final void Function(String value)? onChanged;
+
   @override
-  State<StatefulWidget> createState() => _SearchCellDialogState();
+  State<StatefulWidget> createState() => _SearchCellDialogState(currentSelection: currentSelection);
+
+  SearchCellDialog({this.currentSelection, this.onChanged}) : super();
 }
 
 final referenceCells = {
@@ -44,13 +49,177 @@ final referenceCells = {
   "mystic_x",
 };
 
+List<SearchQueryResult> handleCellQuery(String data) {
+  final parts = fancySplit(data, ' ');
+
+  final results = <SearchQueryResult>[];
+  final visited = <String>[];
+
+  for (var cat in categories) {
+    if (cat.title != "Tools") {
+      for (var item in cat.items) {
+        if (item is String) {
+          if (!visited.contains(item)) {
+            visited.add(item);
+            results.add(SearchQueryResult(item, cat.title));
+          }
+        } else if (item is CellCategory) {
+          for (var subitem in item.items) {
+            if (!visited.contains(subitem)) {
+              visited.add(subitem);
+              results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for (var ref in referenceCells) {
+    results.add(SearchQueryResult(ref, "References"));
+  }
+
+  if (parts.first == "") {
+    return results;
+  }
+
+  final filters = <SearchFilter>[];
+
+  while (true) {
+    if (parts.isEmpty) {
+      break;
+    }
+    if (parts.first.startsWith('@')) {
+      final str = parts.first.substring(1);
+
+      if (str.contains('(') && str.endsWith(')')) {
+        final i = str.indexOf('(');
+
+        final name = str.substring(0, i);
+        final content = str.substring(i + 1, str.length - 1);
+
+        filters.add(SearchFilter(name, content));
+      } else {
+        filters.add(SearchFilter(str, ""));
+      }
+      parts.removeAt(0);
+    } else {
+      break;
+    }
+  }
+
+  if (parts.isEmpty) {
+    parts.add("");
+  }
+
+  var i = 0;
+  var descs = <String>[];
+  while (true) {
+    if (i >= parts.length) {
+      break;
+    }
+    if (parts[i].startsWith('"') && parts[i].endsWith('"')) {
+      descs.add(parts.removeAt(i));
+    } else {
+      i++;
+    }
+  }
+
+  if (parts.isEmpty) {
+    parts.add("");
+  }
+
+  results.retainWhere((result) {
+    final desc = idToDesc(result.cell).toLowerCase();
+
+    for (var d in descs) {
+      if (desc.contains(d.toLowerCase())) {
+        return true;
+      }
+    }
+
+    return descs.isEmpty;
+  });
+
+  final name = parts.join(" ");
+  if (name.replaceAll(' ', '') != "") {
+    results.retainWhere(
+      (result) => idToString(
+        result.cell,
+      ).toLowerCase().contains(
+            name.toLowerCase(),
+          ),
+    );
+  }
+  for (var filter in filters) {
+    if (filter.name == "modded") {
+      results.retainWhere((result) => result.isModded);
+    }
+    if (filter.name == "vanilla") {
+      results.retainWhere((result) => result.isVanilla);
+    }
+    if (filter.name == "category" || filter.name == "cat" || filter.name == "categories" || filter.name == "cats") {
+      final stuff = fancySplit(filter.content, ',').map((e) {
+        var s = e;
+
+        while (s.startsWith(' ')) {
+          s = s.substring(1);
+        }
+        while (s.endsWith(' ')) {
+          s = s.substring(0, s.length - 1);
+        }
+
+        if (s.startsWith('"') && s.endsWith('"')) {
+          s = s.substring(1, s.length - 1);
+        }
+
+        return s;
+      }).toList();
+      results.retainWhere((result) {
+        for (var thing in stuff) {
+          if (result.categoryPath.contains(thing)) {
+            return true;
+          }
+        }
+
+        return stuff.isEmpty;
+      });
+    }
+
+    if (filter.name == "mod") {
+      final stuff = fancySplit(filter.content, ',').map((e) {
+        var s = e;
+
+        while (s.startsWith(' ')) {
+          s = s.substring(1);
+        }
+        while (s.endsWith(' ')) {
+          s = s.substring(0, s.length - 1);
+        }
+
+        if (s.startsWith('"') && s.endsWith('"')) {
+          s = s.substring(1, s.length - 1);
+        }
+
+        return s;
+      }).toList();
+      results.retainWhere((result) => stuff.every((modStuff) => modStuff.startsWith('"') && modStuff.endsWith('"') ? result.fromModName(modStuff) : result.fromModID(modStuff)));
+    }
+  }
+
+  return results;
+}
+
 class _SearchCellDialogState extends State<SearchCellDialog> {
   final _searchController = TextEditingController();
   var searchResults = <SearchQueryResult>[];
+  String? currentSelection;
+
+  _SearchCellDialogState({this.currentSelection}) : super();
 
   @override
   void initState() {
-    search("");
+    searchResults = handleCellQuery("");
     super.initState();
   }
 
@@ -58,168 +227,6 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  void search(String data) {
-    final parts = fancySplit(data, ' ');
-
-    final results = <SearchQueryResult>[];
-    final visited = <String>[];
-
-    for (var cat in categories) {
-      if (cat.title != "Tools") {
-        for (var item in cat.items) {
-          if (item is String) {
-            if (!visited.contains(item)) {
-              visited.add(item);
-              results.add(SearchQueryResult(item, cat.title));
-            }
-          } else if (item is CellCategory) {
-            for (var subitem in item.items) {
-              if (!visited.contains(subitem)) {
-                visited.add(subitem);
-                results.add(SearchQueryResult(subitem, '${cat.title}/${item.title}'));
-              }
-            }
-          }
-        }
-      }
-    }
-
-    for (var ref in referenceCells) {
-      results.add(SearchQueryResult(ref, "References"));
-    }
-
-    if (parts.first == "") {
-      searchResults = results;
-      return;
-    }
-
-    final filters = <SearchFilter>[];
-
-    while (true) {
-      if (parts.isEmpty) {
-        break;
-      }
-      if (parts.first.startsWith('@')) {
-        final str = parts.first.substring(1);
-
-        if (str.contains('(') && str.endsWith(')')) {
-          final i = str.indexOf('(');
-
-          final name = str.substring(0, i);
-          final content = str.substring(i + 1, str.length - 1);
-
-          filters.add(SearchFilter(name, content));
-        } else {
-          filters.add(SearchFilter(str, ""));
-        }
-        parts.removeAt(0);
-      } else {
-        break;
-      }
-    }
-
-    if (parts.isEmpty) {
-      parts.add("");
-    }
-
-    var i = 0;
-    var descs = <String>[];
-    while (true) {
-      if (i >= parts.length) {
-        break;
-      }
-      if (parts[i].startsWith('"') && parts[i].endsWith('"')) {
-        descs.add(parts.removeAt(i));
-      } else {
-        i++;
-      }
-    }
-
-    if (parts.isEmpty) {
-      parts.add("");
-    }
-
-    results.retainWhere((result) {
-      final desc = idToDesc(result.cell).toLowerCase();
-
-      for (var d in descs) {
-        if (desc.contains(d.toLowerCase())) {
-          return true;
-        }
-      }
-
-      return descs.isEmpty;
-    });
-
-    final name = parts.join(" ");
-    if (name.replaceAll(' ', '') != "") {
-      results.retainWhere(
-        (result) => idToString(
-          result.cell,
-        ).toLowerCase().contains(
-              name.toLowerCase(),
-            ),
-      );
-    }
-    for (var filter in filters) {
-      if (filter.name == "modded") {
-        results.retainWhere((result) => result.isModded);
-      }
-      if (filter.name == "vanilla") {
-        results.retainWhere((result) => result.isVanilla);
-      }
-      if (filter.name == "category" || filter.name == "cat" || filter.name == "categories" || filter.name == "cats") {
-        final stuff = fancySplit(filter.content, ',').map((e) {
-          var s = e;
-
-          while (s.startsWith(' ')) {
-            s = s.substring(1);
-          }
-          while (s.endsWith(' ')) {
-            s = s.substring(0, s.length - 1);
-          }
-
-          if (s.startsWith('"') && s.endsWith('"')) {
-            s = s.substring(1, s.length - 1);
-          }
-
-          return s;
-        }).toList();
-        results.retainWhere((result) {
-          for (var thing in stuff) {
-            if (result.categoryPath.contains(thing)) {
-              return true;
-            }
-          }
-
-          return stuff.isEmpty;
-        });
-      }
-
-      if (filter.name == "mod") {
-        final stuff = fancySplit(filter.content, ',').map((e) {
-          var s = e;
-
-          while (s.startsWith(' ')) {
-            s = s.substring(1);
-          }
-          while (s.endsWith(' ')) {
-            s = s.substring(0, s.length - 1);
-          }
-
-          if (s.startsWith('"') && s.endsWith('"')) {
-            s = s.substring(1, s.length - 1);
-          }
-
-          return s;
-        }).toList();
-        results.retainWhere((result) => stuff.every((modStuff) => modStuff.startsWith('"') && modStuff.endsWith('"') ? result.fromModName(modStuff) : result.fromModID(modStuff)));
-      }
-    }
-
-    searchResults = results;
   }
 
   @override
@@ -238,7 +245,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                   child: TextBox(
                     controller: _searchController,
                     onChanged: (value) {
-                      search(value);
+                      searchResults = handleCellQuery(value);
                       setState(() {});
                     },
                   ),
@@ -251,6 +258,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                     itemCount: searchResults.length,
                     itemBuilder: (ctx, i) {
                       final result = searchResults[i];
+                      final isSelected = currentSelection == null ? (game.currentSelection == result.cell) : (currentSelection == result.cell);
 
                       return SizedBox(
                         width: constraints.maxWidth * 0.8,
@@ -264,9 +272,13 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                           ),
                           title: Text(idToString(result.cell)),
                           subtitle: Text(idToDesc(result.cell)),
-                          tileColor: game.currentSelection == result.cell ? ConstantColorButtonState(Colors.successPrimaryColor) : ConstantColorButtonState(Colors.grey[130]),
+                          tileColor: isSelected ? ConstantColorButtonState(Colors.successPrimaryColor) : ConstantColorButtonState(Colors.grey[130]),
                           onPressed: () {
-                            game.currentSelection = result.cell;
+                            if(currentSelection == null) {
+                              game.currentSelection = result.cell;
+                            }
+                            currentSelection = result.cell;
+                            widget.onChanged?.call(result.cell);
                             setState(() {});
                           },
                         ),
@@ -283,7 +295,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
         Button(
           child: Text("Ok"),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, currentSelection);
           },
         ),
       ],

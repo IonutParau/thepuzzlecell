@@ -14,6 +14,7 @@ class ClearDialog extends StatefulWidget {
 class _ClearDialogState extends State<ClearDialog> {
   final _widthController = TextEditingController();
   final _heightController = TextEditingController();
+  var useBorder = false;
 
   @override
   void dispose() {
@@ -37,27 +38,41 @@ class _ClearDialogState extends State<ClearDialog> {
         height: 20.h,
         child: LayoutBuilder(builder: (context, constraints) {
           return Center(
-            child: Row(
+            child: Column(
               children: [
-                Spacer(),
-                SizedBox(
-                  width: constraints.maxWidth / 3,
-                  height: 7.h,
-                  child: TextBox(
-                    prefix: Text('Width'),
-                    controller: _widthController,
-                  ),
+                Row(
+                  children: [
+                    Spacer(),
+                    SizedBox(
+                      width: constraints.maxWidth / 3,
+                      height: 7.h,
+                      child: TextBox(
+                        prefix: Text('Width'),
+                        controller: _widthController,
+                      ),
+                    ),
+                    SizedBox(width: constraints.maxWidth / 10),
+                    SizedBox(
+                      width: constraints.maxWidth / 3,
+                      height: 7.h,
+                      child: TextBox(
+                        prefix: Text('Height'),
+                        controller: _heightController,
+                      ),
+                    ),
+                    Spacer(),
+                  ],
                 ),
-                SizedBox(width: constraints.maxWidth / 10),
-                SizedBox(
-                  width: constraints.maxWidth / 3,
-                  height: 7.h,
-                  child: TextBox(
-                    prefix: Text('Height'),
-                    controller: _heightController,
-                  ),
+                SizedBox(height: constraints.maxHeight / 20),
+                Row(
+                  children: [
+                    Spacer(),
+                    Text("Use Selected Cell as Border"),
+                    SizedBox(width: constraints.maxWidth / 20),
+                    Checkbox(checked: useBorder, onChanged: (v) => setState(() => useBorder = v ?? useBorder)),
+                    Spacer(),
+                  ],
                 ),
-                Spacer(),
               ],
             ),
           );
@@ -81,13 +96,28 @@ class _ClearDialogState extends State<ClearDialog> {
             game.isinitial = true;
             game.initial = grid.copy;
             game.itime = 0;
+            final g = Grid(w, h);
+            if(useBorder) {
+              final c = game.currentSelection;
+
+              for(var x = 0; x < w; x++) {
+                g.set(x, 0, Cell(x, 0)..id = c);
+                g.set(x, h - 1, Cell(x, h - 1)..id = c);
+              }
+
+              for(var y = 0; y < h; y++) {
+                g.set(0, y, Cell(0, y)..id = c);
+                g.set(w - 1, y, Cell(w - 1, y)..id = c);
+              }
+            }
+
             if (game.isMultiplayer) {
               game.sendToServer(
                 'setinit',
-                {"code": SavingFormat.encodeGrid(Grid(w, h))},
+                {"code": SavingFormat.encodeGrid(g)},
               );
             } else {
-              grid = Grid(w, h);
+              grid = g;
             }
             game.buildEmpty();
             game.overlays.remove("EditorMenu");

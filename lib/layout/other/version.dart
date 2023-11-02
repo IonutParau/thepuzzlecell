@@ -17,6 +17,8 @@ final List<String> changes = [
   "Added Area Denial cell and Ticked Bomb",
   "Improved cell selection menus",
   "Made boolean properties have the checkbox next to the name in the property editor",
+  "Used the Cell Search Dialog a lot more to improve cell selecting",
+  "Added borders to world clearing",
 ];
 
 IconData getTrailing(String change) {
