@@ -36,6 +36,15 @@ void doSentry(Cell cell, int x, int y) {
   final double interval = cell.data['gun_interval'].toDouble();
   final int bulletSpeed = cell.data['bullet_speed'].toInt();
   final bool isFriendly = cell.data['friendly'];
+    final bool needsPower = cell.data['needs_power'] ?? false;
+
+    if(needsPower) {
+       final double passiveCost = cell.data['passive_cost'].toDouble();
+
+       if(!electricManager.removePower(cell, x, y, passiveCost)) {
+           return;
+        }
+    }
 
   // TODO: make this use power
 
@@ -57,6 +66,10 @@ void doSentry(Cell cell, int x, int y) {
       }
 
       if(shoot) {
+        final double gunCost = cell.data['gun_cost'].toDouble();
+        if(needsPower && !electricManager.removePower(cell, x, y, gunCost)) {
+            continue;
+        }
         cell.data['time'] -= interval;
         cell.rot = rot;
         final bullet = Cell(x, y, rot)..id = "bullet";

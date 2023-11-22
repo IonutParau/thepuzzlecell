@@ -125,6 +125,7 @@ class ElectricManager {
     if (cell.id == "electric_mover") return true;
     if (cell.id == "electric_puller") return true;
     if (cell.id == "electric_battery") return true;
+    if (cell.id == "sentry") return true;
 
     return false;
   }

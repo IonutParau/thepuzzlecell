@@ -899,7 +899,6 @@ final categories = [
           "untransformable",
           "antipuzzle",
           "pushable",
-          "pullable",
           "grabbable",
           "swappable",
           "generatable",
@@ -3599,5 +3598,6 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Power Cost", "The amount of electric power the sentry consumes passively", "passive_cost", CellPropertyType.number, 1),
     CellProperty("Shoot Cost", "The amount of electric power the sentry consumes when shooting", "gun_cost", CellPropertyType.number, 5),
     CellProperty("Power", "The amount of electric power in the sentry gun", "electric_power", CellPropertyType.number, 500),
+    CellProperty("Needs power", "Whether this sentry gun needs power.", "needs_power", CellPropertyType.boolean, false)  
   ],
 };
