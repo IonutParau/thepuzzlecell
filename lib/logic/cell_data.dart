@@ -3304,19 +3304,19 @@ final cellInfo = <String, CellProfile>{
   ),
   "bullet": CellProfile(
     "Bullet",
-    "I have yet to meet someone who can outsmart bullet",
+    "I have yet to meet someone who can outsmart bullet\nA moving enemy with adjustable speed.",
   ),
   "sentry": CellProfile(
     "Sentry",
-    "Will kill enemies or players.",
+    "Shoots bullets towards targets.",
   ),
   "sentry_buster": CellProfile(
     "Sentry Buster",
-    "When the sentry buster enters the area, it will go to the nearest sentry and blow it up. It does NOT care if the sentry is friendly or not.",
+    "Goes to the nearest sentry, then explodes in a 3x3 area. It does NOT care if the sentry is friendly or not.",
   ),
   "puzzle_buster": CellProfile(
     "Puzzle Buster",
-    "It will hunt down puzzle cells and blow up when it gets near them",
+    "Hunts down puzzle cells, exploding in a 3x3 area if right next to one.",
   ),
 };
 
@@ -3589,15 +3589,15 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Terminal Velocity", "The limit of how fast it can fall downwards.", "speed_limit", CellPropertyType.number, 5),
   ],
   "bullet": [
-    CellProperty("Speed", "How fast the bullet is", "speed", CellPropertyType.integer, 1),
+    CellProperty("Speed", "How fast the bullet moves", "speed", CellPropertyType.integer, 1),
   ],
   "sentry": [
-    CellProperty("Shoot Interval", "The interval at which it shoots", "gun_interval", CellPropertyType.number, 2),
+    CellProperty("Cooldown", "The time it takes between shots", "gun_interval", CellPropertyType.number, 2),
     CellProperty("Bullet Speed", "The speed of the bullet it shoots", "bullet_speed", CellPropertyType.integer, 1),
     CellProperty("Friendly", "If true, it will kill enemies. If not, it will kill puzzle cells and keys. There are also common targets it will kill either way.", "friendly", CellPropertyType.boolean, false),
-    CellProperty("Power Cost", "The amount of electric power the sentry consumes passively", "passive_cost", CellPropertyType.number, 1),
-    CellProperty("Shoot Cost", "The amount of electric power the sentry consumes when shooting", "gun_cost", CellPropertyType.number, 5),
-    CellProperty("Power", "The amount of electric power in the sentry gun", "electric_power", CellPropertyType.number, 500),
+    CellProperty("Power Cost", "The amount of electric power consumed passively", "passive_cost", CellPropertyType.number, 1),
+    CellProperty("Shoot Cost", "The amount of electric power consumed when shooting", "gun_cost", CellPropertyType.number, 5),
+    CellProperty("Power", "The amount of remaining electric power", "electric_power", CellPropertyType.number, 500),
     CellProperty("Needs power", "Whether this sentry gun needs power.", "needs_power", CellPropertyType.boolean, false)  
   ],
 };
