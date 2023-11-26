@@ -899,6 +899,7 @@ final categories = [
           "untransformable",
           "antipuzzle",
           "pushable",
+          "pullable",
           "grabbable",
           "swappable",
           "generatable",
