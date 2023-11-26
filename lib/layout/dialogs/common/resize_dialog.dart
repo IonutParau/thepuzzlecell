@@ -46,12 +46,12 @@ class _ResizeDialogState extends State<ResizeDialog> {
           return Center(
             child: Column(
               children: [
+                Spacer(),
                 Row(
                   children: [
                     Spacer(),
                     SizedBox(
                       width: constraints.maxWidth / 3,
-                      height: 7.h,
                       child: TextBox(
                         prefix: Text('Width'),
                         controller: _widthController,
@@ -60,7 +60,6 @@ class _ResizeDialogState extends State<ResizeDialog> {
                     SizedBox(width: constraints.maxWidth / 10),
                     SizedBox(
                       width: constraints.maxWidth / 3,
-                      height: 7.h,
                       child: TextBox(
                         prefix: Text('Height'),
                         controller: _heightController,
@@ -69,10 +68,9 @@ class _ResizeDialogState extends State<ResizeDialog> {
                     Spacer(),
                   ],
                 ),
-                SizedBox(width: constraints.maxWidth / 10),
+                SizedBox(height: constraints.maxHeight / 20),
                 SizedBox(
                   width: constraints.maxWidth / 1.2,
-                  height: 7.h,
                   child: DropDownButton(
                     title: Text("${lang("resize_corner", "Resizing Corner")}: ${cornerToString(corner.index)}"),
                     items: [
@@ -88,6 +86,7 @@ class _ResizeDialogState extends State<ResizeDialog> {
                     ],
                   ),
                 ),
+                Spacer(),
               ],
             ),
           );

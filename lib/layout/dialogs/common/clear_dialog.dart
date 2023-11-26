@@ -4,8 +4,22 @@ import 'package:the_puzzle_cell/layout/tools/tools.dart';
 import 'package:the_puzzle_cell/utils/ScaleAssist.dart';
 import 'package:the_puzzle_cell/logic/logic.dart';
 
+enum BorderSelectionKind {
+    none,
+    selectedCell,
+    cellAtCorner;
+
+    String toName() {
+        return switch(this) {
+            BorderSelectionKind.none => "None",
+            BorderSelectionKind.selectedCell => "Selected Cell",
+            BorderSelectionKind.cellAtCorner => "Cell At Corner",
+        }; 
+    }
+}
+
 class ClearDialog extends StatefulWidget {
-  const ClearDialog({Key? key}) : super(key: key);
+  const ClearDialog({super.key});
 
   @override
   State<ClearDialog> createState() => _ClearDialogState();
@@ -14,7 +28,7 @@ class ClearDialog extends StatefulWidget {
 class _ClearDialogState extends State<ClearDialog> {
   final _widthController = TextEditingController();
   final _heightController = TextEditingController();
-  var useBorder = false;
+  var border = BorderSelectionKind.none;
 
   @override
   void dispose() {
@@ -40,12 +54,12 @@ class _ClearDialogState extends State<ClearDialog> {
           return Center(
             child: Column(
               children: [
+                Spacer(),
                 Row(
                   children: [
                     Spacer(),
                     SizedBox(
                       width: constraints.maxWidth / 3,
-                      height: 7.h,
                       child: TextBox(
                         prefix: Text('Width'),
                         controller: _widthController,
@@ -54,7 +68,6 @@ class _ClearDialogState extends State<ClearDialog> {
                     SizedBox(width: constraints.maxWidth / 10),
                     SizedBox(
                       width: constraints.maxWidth / 3,
-                      height: 7.h,
                       child: TextBox(
                         prefix: Text('Height'),
                         controller: _heightController,
@@ -67,12 +80,22 @@ class _ClearDialogState extends State<ClearDialog> {
                 Row(
                   children: [
                     Spacer(),
-                    Text("Use Selected Cell as Border"),
+                    Text("Border: "),
                     SizedBox(width: constraints.maxWidth / 20),
-                    Checkbox(checked: useBorder, onChanged: (v) => setState(() => useBorder = v ?? useBorder)),
+                    DropDownButton(
+                       title: Text(border.toName()),
+                       items: [
+                         for(var option in BorderSelectionKind.values)
+                           MenuFlyoutItem(
+                             text: Text(option.toName()),
+                             onPressed: () => setState(() => border = option),
+                           ), 
+                       ],
+                    ),
                     Spacer(),
                   ],
                 ),
+                Spacer(),
               ],
             ),
           );
@@ -97,8 +120,16 @@ class _ClearDialogState extends State<ClearDialog> {
             game.initial = grid.copy;
             game.itime = 0;
             final g = Grid(w, h);
+            final useBorder = switch(border) {
+                BorderSelectionKind.none => false,
+                _ => true,
+            };
             if(useBorder) {
-              final c = game.currentSelection;
+              final c = switch(border) {
+                BorderSelectionKind.none => "empty",
+                BorderSelectionKind.selectedCell => game.currentSelection,
+                BorderSelectionKind.cellAtCorner => grid.at(0, 0).id,
+              };
 
               for(var x = 0; x < w; x++) {
                 g.set(x, 0, Cell(x, 0)..id = c);
