@@ -46,8 +46,6 @@ void doSentry(Cell cell, int x, int y) {
         }
     }
 
-  // TODO: make this use power
-
   cell.data['time'] = (cell.data['time'] ?? 0.0) + 1.0;
   if(cell.data['time'] >= interval) {
     for(var rot in rotOrder) {
@@ -70,7 +68,7 @@ void doSentry(Cell cell, int x, int y) {
         if(needsPower && !electricManager.removePower(cell, x, y, gunCost)) {
             continue;
         }
-        cell.data['time'] -= interval;
+        cell.data['time'] = 0.0;
         cell.rot = rot;
         final bullet = Cell(x, y, rot)..id = "bullet";
         bullet.data['speed'] = bulletSpeed;
