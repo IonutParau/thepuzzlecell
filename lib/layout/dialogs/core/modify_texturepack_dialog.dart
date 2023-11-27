@@ -41,8 +41,8 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
                   child: ListTile(
                     leading: Image.asset(
                       idToTexture(cell),
-                      width: 5.w,
-                      height: 5.w,
+                      width: 7.w,
+                      height: 7.w,
                       fit: BoxFit.contain,
                       filterQuality: FilterQuality.none,
                     ),
@@ -86,6 +86,57 @@ class _ModifyTexturePackDialogState extends State<ModifyTexturePackDialog> {
         }),
       ),
       actions: [
+        Button(
+            child: Text('Nuke'),
+            onPressed:() {
+                final m = widget.tp.getMap();
+                final mcells = m.keys.toList();
+
+                for(var cell in mcells) {
+                    if(!cells.contains(cell)) {
+                        continue;
+                    }
+                    final p = widget.tp.fix(cell);
+                    final f = assetToFile('images/$p');
+                    if(f.existsSync()) {
+                        f.deleteSync();
+                    }
+                    m.remove(cell);
+                }
+
+                widget.tp.setMap(m);
+                setState(() {});
+            }
+        ),
+        Button(
+            child: Text('Create All'),
+            onPressed:() {
+                final m = widget.tp.getMap();
+
+                for(var cell in cells) { 
+                      final relativeFilePath =
+                          textureMapBackup['$cell.png'] ?? '$cell.png';
+
+                      final f = File(path.join(widget.tp.dir.path,
+                          path.joinAll(relativeFilePath.split('/'))));
+
+                      if(f.existsSync()) {
+                          continue;
+                      }
+
+                      f.createSync(recursive: true);
+                      final bytes =
+                          assetToFile('images/$relativeFilePath')
+                              .readAsBytesSync();
+                      f.writeAsBytesSync(bytes);
+
+                      m[cell] = relativeFilePath;
+                }
+
+                widget.tp.setMap(m);
+                setState(() {});
+            }
+        ),
         Button(
           child: Text('Ok'),
           onPressed: () => Navigator.pop(context),
