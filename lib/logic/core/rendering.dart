@@ -570,6 +570,11 @@ class GameRendering {
       ignoreSafety = true;
     }
 
+    if (cell.id == "checkpoint" && cell.data['checkpoint_enabled'] == true) {
+        file = "checkpoint_on";
+        ignoreSafety = true;
+    }
+
     if (cell.id == "electric_wire" && electricManager.directlyReadPower(cell) > 0) {
       file = 'electric_wire_on';
       ignoreSafety = true;

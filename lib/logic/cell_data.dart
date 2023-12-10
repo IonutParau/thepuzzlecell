@@ -509,6 +509,7 @@ HashMap<String, String> textureMap = HashMap.from({
   "mover_enemy.png": "movers/movers/mover_enemy.png",
   "mobile_enemy.png": "destroyers/enemy/mobile_enemy.png",
   "checkpoint.png": "puzzle/checkpoint.png",
+  "checkpoint_on.png": "puzzle/checkpoint_on.png",
   "mech_checkpoint.png": "mechanical/users/mech_checkpoint.png",
   "super_redirector.png": "rotators/super_redirector.png",
   "factory.png": "recreators/factory.png",

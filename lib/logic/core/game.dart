@@ -1770,6 +1770,7 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
 
     await Flame.images.load('mechanical/pixel_on.png');
     await Flame.images.load('electrical/electric_wire_on.png');
+    await Flame.images.load('puzzle/checkpoint_on.png');
 
     buttonManager = ButtonManager(this);
     syncFavorites();

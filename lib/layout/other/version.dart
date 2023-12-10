@@ -19,6 +19,7 @@ final List<String> changes = [
   "Made boolean properties have the checkbox next to the name in the property editor",
   "Used the Cell Search Dialog a lot more to improve cell selecting",
   "Added borders to world clearing",
+    "Added the Nuke and Create All buttons to the Modify Texture Packs dialog",
 ];
 
 IconData getTrailing(String change) {
