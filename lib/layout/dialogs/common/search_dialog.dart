@@ -33,12 +33,13 @@ class SearchQueryResult {
 
 class SearchCellDialog extends StatefulWidget {
   final String? currentSelection;
-  final void Function(String value)? onChanged;
+  final void Function(String selection)? onChanged;
+  final List<String> extras;
 
   @override
-  State<StatefulWidget> createState() => _SearchCellDialogState(currentSelection: currentSelection);
+  State<StatefulWidget> createState() => _SearchCellDialogState(currentSelection: currentSelection, extras: extras);
 
-  SearchCellDialog({this.currentSelection, this.onChanged}) : super();
+  const SearchCellDialog({this.currentSelection, this.onChanged, this.extras = const []}) : super();
 }
 
 final referenceCells = {
@@ -49,7 +50,7 @@ final referenceCells = {
   "mystic_x",
 };
 
-List<SearchQueryResult> handleCellQuery(String data) {
+List<SearchQueryResult> handleCellQuery(String data, List<String> extras) {
   final parts = fancySplit(data, ' ');
 
   final results = <SearchQueryResult>[];
@@ -78,6 +79,10 @@ List<SearchQueryResult> handleCellQuery(String data) {
   for (var ref in referenceCells) {
     results.add(SearchQueryResult(ref, "References"));
   }
+
+    for(var extra in extras) {
+        results.add(SearchQueryResult(extra, "Extras"));
+    }
 
   if (parts.first == "") {
     return results;
@@ -213,13 +218,14 @@ List<SearchQueryResult> handleCellQuery(String data) {
 class _SearchCellDialogState extends State<SearchCellDialog> {
   final _searchController = TextEditingController();
   var searchResults = <SearchQueryResult>[];
+  var extras = <String>[];
   String? currentSelection;
 
-  _SearchCellDialogState({this.currentSelection}) : super();
+  _SearchCellDialogState({this.currentSelection, this.extras = const []}) : super();
 
   @override
   void initState() {
-    searchResults = handleCellQuery("");
+    searchResults = handleCellQuery("", extras);
     super.initState();
   }
 
@@ -245,7 +251,7 @@ class _SearchCellDialogState extends State<SearchCellDialog> {
                   child: TextBox(
                     controller: _searchController,
                     onChanged: (value) {
-                      searchResults = handleCellQuery(value);
+                      searchResults = handleCellQuery(value, extras);
                       setState(() {});
                     },
                   ),

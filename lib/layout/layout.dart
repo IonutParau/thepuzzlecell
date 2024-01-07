@@ -10,7 +10,7 @@ import 'package:flame/components.dart' hide ButtonState;
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
-import 'package:fluent_ui/fluent_ui.dart' hide Tab, TabView, showDialog;
+import 'package:fluent_ui/fluent_ui.dart' hide Tab, showDialog;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide ButtonStyle, Chip, Colors, ListTile, Slider, SliderThemeData;
 import 'package:flutter/services.dart';

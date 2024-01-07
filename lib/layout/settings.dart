@@ -714,6 +714,49 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             lang('cursor_texture', 'Cursor Texture: '),
                             style: textStyle,
                           ),
+                          Button(
+                            child: Row(
+                                children: [
+                                      Image.asset(
+                                        "assets/images/${(storage.getString("cursor_texture") ?? "cursor") == "cursor"
+                                                ? "interface/cursor.png"
+                                                : (textureMap["${storage.getString("cursor_texture")!}.png"] ?? "${storage.getString("cursor_texture")!}.png")}",
+                                        fit: BoxFit.fill,
+                                        colorBlendMode: BlendMode.clear,
+                                        filterQuality: FilterQuality.none,
+                                        isAntiAlias: true,
+                                        width: 3.h,
+                                        height: 3.h,
+                                      ),
+                                    Text((storage.getString("cursor_texture") ?? "cursor") == "cursor" ? "Default" : (idToString(storage.getString("cursor_texture")!)), style: textStyle),
+                                ],
+                            ),
+                            onPressed: () async {
+                                await showDialog<void>(
+                                    context: context,
+                                    builder: (ctx) => SearchCellDialog(
+                                        currentSelection: storage.getString("cursor_texture") ?? "cursor",
+                                        extras: extraCursors,
+                                        onChanged: (cursor) {
+                                            storage.setString("cursor_texture", cursor).then((_) {
+                                                setState(() {});
+                                            });
+                                        },
+                                    ),
+                                );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 60.w,
+                      child: Row(
+                        children: [
+                          Text(
+                            lang('cursor_texture', 'Cursor Texture: '),
+                            style: textStyle,
+                          ),
                           SizedBox(
                             height: 5.h,
                             child: DropDownButton(
@@ -752,31 +795,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                           ),
                         ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '${lang('cursor_precision', 'Cursor Precision')}: ',
-                          style: textStyle,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                          height: 5.h,
-                          child: Slider(
-                            value: storage.getInt("cursor_precision")!.toDouble(),
-                            min: 1,
-                            max: 9,
-                            divisions: 9,
-                            onChanged: (v) => storage
-                                .setInt(
-                                  "cursor_precision",
-                                  (v + 0.5).toInt(),
-                                )
-                                .then((v) => setState(() {})),
-                            label: '${storage.getInt('cursor_precision')}',
-                          ),
-                        ),
-                      ],
                     ),
                     Row(
                       children: [

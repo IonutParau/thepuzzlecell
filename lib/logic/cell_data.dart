@@ -401,6 +401,7 @@ final cells = {
 
 final modded = <String>[];
 
+final extraCursors = ["cursor", "invis_tool", "trick_tool"];
 final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
 
 final textureMapBackup = HashMap<String, String>.from(textureMap);
@@ -3326,6 +3327,10 @@ final cellInfo = <String, CellProfile>{
   "neutrino": CellProfile(
     "Neutrino",
     "A very weakly interacting particle, that is only affected by gravity, and can also pass through other cells",
+  ),
+  "cursor": CellProfile(
+    "Cursor",
+    "The default multiplayer cursor",
   ),
 };
 
