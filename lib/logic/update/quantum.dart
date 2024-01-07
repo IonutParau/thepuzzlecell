@@ -1,4 +1,4 @@
-part of logic;
+part of '../logic.dart';
 
 bool blocksUnstable(Cell cell, int x, int y, int dir, Cell moving) {
   return false;
@@ -170,9 +170,17 @@ class QuantumInteraction {
     return QuantumInteraction(scale * other, flipWhenClose,
         flipDist: flipDist, distOff: distOff);
   }
+
+  QuantumInteraction operator /(num other) {
+        return QuantumInteraction(scale / other, flipWhenClose, flipDist: flipDist, distOff: distOff);
+    }
+
+    QuantumInteraction operator -() {
+        return QuantumInteraction(-scale, flipWhenClose, flipDist: flipDist, distOff: distOff);
+    }
 }
 
-void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
+void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions, [bool canPhaseThrough = false]) {
   final c = grid.at(x, y);
 
   // Forces
@@ -258,6 +266,40 @@ void physicsCell(int x, int y, Map<String, QuantumInteraction> interactions) {
   if (mx != 0 || my != 0) {
     var cx = vx == 0 ? x : x + mx ~/ 1;
     var cy = vy == 0 ? y : y + my ~/ 1;
+
+    if(canPhaseThrough) {
+        var ox = x, oy = y;
+        grid.set(x, y, Cell(0, 0));
+        cx = x;
+        cy = y;
+        while(true) {
+            if(!grid.inside(cx + mx ~/ 1, cy)) {
+                mx = 0;
+                c.data.remove("vel_x");
+            }
+            if(!grid.inside(cx, cy + my ~/ 1)) {
+                my = 0;
+                c.data.remove("vel_y");
+            }
+
+            cx += mx ~/ 1;
+            cy += my ~/ 1;
+
+            if(grid.inside(cx, cy)) {
+                if(grid.at(cx, cy).id == "empty") {
+                    grid.set(cx, cy, c);
+                    break;
+                }
+            } else {
+                grid.set(ox, oy, c);
+                break;
+            }
+
+            if(mx == 0 && my == 0) break;
+        }
+
+        return;
+    }
 
     if (grid.inside(cx, cy) && grid.at(cx, cy).id == "empty") {
       moveCell(x, y, cx, cy);
@@ -414,10 +456,25 @@ void quantums() {
         "graviton": gravitonAttract,
         "inverse_graviton": gravitonAttract * -1,
         "orbital": justAttract * 0.1,
+        "neutron": justRepell * 0.8,
       });
     },
     null,
     "neutron",
+  );
+  grid.updateCell(
+    (cell, x, y) {
+      physicsCell(x, y, {
+        "graviton": gravitonAttract,
+        "inverse_graviton": gravitonAttract * -1,
+        // the main 3
+        "proton": justAttract,
+        "neutron": justAttract,
+        "electron": justAttract,
+      }, true);
+    },
+    null,
+    "neutrino",
   );
   grid.updateCell((cell, x, y) {
     physicsCell(x, y, {
@@ -429,6 +486,7 @@ void quantums() {
       physicsCell(x, y, {
         "graviton": gravitonAttract,
         "inverse_graviton": gravitonAttract * -1,
+        "neutrino": gravitonAttract / 10,
       });
     },
     null,
@@ -449,8 +507,9 @@ void quantums() {
   grid.updateCell(
     (cell, x, y) {
       physicsCell(x, y, {
-        "graviton": gravitonAttract * -1,
+        "graviton": -gravitonAttract,
         "inverse_graviton": gravitonAttract,
+        "neutrino": -gravitonAttract / 10,
       });
     },
     null,
@@ -471,7 +530,7 @@ void quantums() {
         "muon": strangeToElectron * muonMass,
         "tau": strangeToElectron * tauMass,
         "strangelet": strangeToElectron,
-        "inverse_graviton": gravitonAttract * -1,
+        "inverse_graviton": -gravitonAttract,
       });
     },
     null,

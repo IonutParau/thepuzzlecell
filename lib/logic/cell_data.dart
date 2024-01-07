@@ -396,6 +396,7 @@ final cells = {
   "sentry",
   "sentry_buster",
   "puzzle_buster",
+  "neutrino",
 }.toList();
 
 final modded = <String>[];
@@ -405,6 +406,7 @@ final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeW
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
+    "neutrino.png": "missing.png",
   "sentry_buster.png": "destroyers/sentry_buster.png",
   "puzzle_buster.png": "destroyers/puzzle_buster.png",
   "sentry.png": "destroyers/sentry.png",
@@ -1322,6 +1324,7 @@ final categories = [
           "strangelet",
           "orbital",
           "quantum_destroyer",
+          "neutrino",
         ],
         "unstable_mover",
         max: 4,
@@ -3319,6 +3322,10 @@ final cellInfo = <String, CellProfile>{
   "puzzle_buster": CellProfile(
     "Puzzle Buster",
     "Hunts down puzzle cells, exploding in a 3x3 area if right next to one.",
+  ),
+  "neutrino": CellProfile(
+    "Neutrino",
+    "A very weakly interacting particle, that is only affected by gravity, and can also pass through other cells",
   ),
 };
 
