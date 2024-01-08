@@ -56,6 +56,7 @@ Future<void> benchmarkSelf() async {
 }
 
 void main(List<String> args) async {
+    try {
   if (args.isNotEmpty) {
     if (args[0] == "bench") {
       await benchmarkSelf();
@@ -115,6 +116,32 @@ void main(List<String> args) async {
   markdownManager.init();
 
   runApp(const MyApp());
+    } catch(e, st) {
+        runApp(MyAppCrashed(err: e, trace: st));
+    }
+}
+
+class MyAppCrashed extends StatelessWidget {
+    final dynamic err;
+    final StackTrace trace;
+
+    const MyAppCrashed({super.key, required this.err, required this.trace});
+
+    @override
+    Widget build(BuildContext context) {
+        return FluentApp(
+            title: 'TPC Crash Report (${err.runtimeType.toString()})',
+            theme: td,
+            darkTheme: td,
+            debugShowCheckedModeBanner: false,
+            home: ScaffoldPage(
+                header: Center(child: Text('$err')),
+                content: Center(
+                    child: Text('Trace: $trace'),
+                ),
+            ),
+        );
+    }
 }
 
 class MyApp extends StatefulWidget {
