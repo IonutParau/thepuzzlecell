@@ -48,6 +48,7 @@ final referenceCells = {
   "cellua",
   "poly",
   "mystic_x",
+  "quantum_tomato",
 };
 
 List<SearchQueryResult> handleCellQuery(String data, List<String> extras) {

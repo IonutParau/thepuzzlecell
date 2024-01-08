@@ -397,17 +397,20 @@ final cells = {
   "sentry_buster",
   "puzzle_buster",
   "neutrino",
+  "quantum_tomato",
 }.toList();
 
 final modded = <String>[];
 
 final extraCursors = ["cursor", "invis_tool", "trick_tool"];
-final cursorTextures = ["cursor", ...cells, "invis_tool", "trick_tool"]..removeWhere((e) => e == "empty");
+
+final cursorTextures = [...cells, ...extraCursors];
 
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
     "neutrino.png": "missing.png",
+    "quantum_tomato.png": "missing.png",
   "sentry_buster.png": "destroyers/sentry_buster.png",
   "puzzle_buster.png": "destroyers/puzzle_buster.png",
   "sentry.png": "destroyers/sentry.png",
@@ -3332,6 +3335,10 @@ final cellInfo = <String, CellProfile>{
     "Cursor",
     "The default multiplayer cursor",
   ),
+  "quantum_tomato": CellProfile(
+    "Quantum Tomato",
+    "idk what this does",
+  ),
 };
 
 enum CellPropertyType {
@@ -3613,5 +3620,9 @@ Map<String, List<CellProperty>> props = {
     CellProperty("Shoot Cost", "The amount of electric power consumed when shooting", "gun_cost", CellPropertyType.number, 5),
     CellProperty("Power", "The amount of remaining electric power", "electric_power", CellPropertyType.number, 500),
     CellProperty("Needs power", "Whether this sentry gun needs power.", "needs_power", CellPropertyType.boolean, false)  
+  ],
+  "quantum_tomato": [
+    CellProperty("Range", "The range (in a circle) the effects of this cell apply in", "range", CellPropertyType.number, 5),
+    CellProperty("Strength", "The strength of its effects", "strength", CellPropertyType.number, 2),
   ],
 };

@@ -1,5 +1,45 @@
 part of logic;
 
+void doQuantumTomato(Cell cell, int x, int y) {
+    final double range = cell.data['range']?.toDouble() ?? 5.0;
+    final double strength = cell.data['strength']?.toDouble() ?? 2.0;
+
+    final int r = range.ceil();
+    final double r2 = range * range;
+
+    for(int ox = -r; ox < r; ox++) {
+        for(int oy = -r; oy < r; oy++) {
+            final ex = x + ox,
+                ey = y + oy;
+
+            if(!grid.inside(ex, ey)) continue;
+
+            final e = grid.at(ex, ey);
+
+            if(e.id != "electron") continue;
+
+            final d = ox * ox + oy * oy;
+            if(d > r2) continue;
+
+            final a = atan2(oy, ox);
+            var offa = 90.0;
+            final dr = sqrt(d);
+            offa /= dr;
+            offa = 90.0 - offa;
+            final fd = a + offa / 180.0 * pi;
+
+            final fx = cos(fd) * strength;
+            final fy = cos(fd) * strength;
+
+            e.data['vel_x'] ??= 0.0;
+            e.data['vel_y'] ??= 0.0;
+
+            e.data['vel_x'] += fx;
+            e.data['vel_y'] += fy;
+        }
+    }
+}
+
 void references() {
   if (grid.movable) {
     for (var rot in rotOrder) {
@@ -82,5 +122,6 @@ void references() {
         push(x, y, cell.rot, 0);
       }, rot, "mystic_x");
     }
+    grid.updateCell(doQuantumTomato, null, "quantum_tomato");
   }
 }
