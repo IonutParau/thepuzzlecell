@@ -1176,7 +1176,7 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false, Map<String,
 
   for (var cx = x - radius; cx <= x + radius; cx++) {
     for (var cy = y - radius; cy <= y + radius; cy++) {
-      if (!grid.inside(cx.toInt(), cy.toInt())) return;
+      if (!grid.inside(cx.toInt(), cy.toInt())) continue;
 
       final d = pow(cx - x, 2) + pow(cy - y, 2);
       final ox = cx - x;
@@ -1185,7 +1185,7 @@ void doExplosive(Cell destroyer, int x, int y, [bool silent = false, Map<String,
       final c = grid.at(cx.toInt(), cy.toInt());
 
       if (!breakable(c, cx.toInt(), cy.toInt(), dirFromOff(ox.toInt(), oy.toInt()), BreakType.explode)) {
-        return;
+        continue;
       }
       if ((circular && d <= radius) || !circular || (cx == x && cy == y)) {
         grid.addBroken(c, x, y, "shrinking");

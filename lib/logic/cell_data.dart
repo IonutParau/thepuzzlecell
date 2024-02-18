@@ -409,8 +409,8 @@ final cursorTextures = [...cells, ...extraCursors];
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
-    "neutrino.png": "missing.png",
-    "quantum_tomato.png": "missing.png",
+    "neutrino.png": "quantum/neutrino.png",
+    "quantum_tomato.png": "quantum/quantum_tomato.png",
   "sentry_buster.png": "destroyers/sentry_buster.png",
   "puzzle_buster.png": "destroyers/puzzle_buster.png",
   "sentry.png": "destroyers/sentry.png",

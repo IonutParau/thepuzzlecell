@@ -1486,7 +1486,7 @@ class P6 {
               ),
             ) as Map<String, dynamic>;
 
-      grid.wrap = gridData["W"] == 1;
+      grid.wrap = gridData["W"] == true;
       if (gridData["M"] != null) {
         final memMap = gridData["M"] as Map<String, dynamic>;
 

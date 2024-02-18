@@ -49,6 +49,9 @@ void doSentry(Cell cell, int x, int y) {
   cell.data['time'] = (cell.data['time'] ?? 0.0) + 1.0;
   if(cell.data['time'] >= interval) {
     for(var rot in rotOrder) {
+        if(!grid.inside(frontX(x, rot), frontY(y, rot))) {
+            continue;
+        }
       if(grid.at(frontX(x, rot), frontY(y, rot)).id != "empty") {
         continue;
       }
