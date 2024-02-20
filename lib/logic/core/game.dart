@@ -2568,8 +2568,8 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
   }
 
   @override
-  KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    if (event is RawKeyDownEvent) {
+  KeyEventResult onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    if (event is KeyDownEvent) {
       final keysDown = keysPressed.map<String>((e) => e.keyLabel).toSet();
       if (keysPressed.contains(LogicalKeyboardKey.altLeft)) {
         // Alternative stuffz
@@ -2755,9 +2755,9 @@ class PuzzleGame extends FlameGame with TapDetector, KeyboardEvents {
         keys[key.keyLabel] = true;
       }
       return KeyEventResult.handled;
-    } else if (event is RawKeyUpEvent) {
+    } else if (event is KeyUpEvent) {
       for (var key in LogicalKeyboardKey.knownLogicalKeys) {
-        keys[key.keyLabel] = event.isKeyPressed(key);
+        keys[key.keyLabel] = keysPressed.contains(event.logicalKey);
       }
       //keysPressed.forEach((e) => keys[e] = true);
       return KeyEventResult.handled;
