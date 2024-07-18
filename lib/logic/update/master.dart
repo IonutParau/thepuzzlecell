@@ -229,6 +229,20 @@ void onMasterPowered(Cell cell, int x, int y) {
     MechanicalManager.spread(
         frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
   }
+  if (cell.id == "master_rotate") {
+    final cx = MasterState.current.x;
+    final cy = MasterState.current.y;
+    if (cx.isInfinite || cx.isNaN || cx.isNegative) return;
+    if (cy.isInfinite || cy.isNaN || cy.isNegative) return;
+
+    final r = mathManager.input(x, y, cell.rot - 1);
+    if (r.isInfinite || r.isNaN || r.isNegative) return;
+
+    grid.rotate(cx.toInt(), cy.toInt(), (r.toInt()-1)%4+1);
+    
+    MechanicalManager.spread(
+        frontX(x, cell.rot), frontY(y, cell.rot), 0, false, cell.rot);
+  }
 }
 
 num? customMasterNum(Cell cell, int x, int y, int dir) {

@@ -398,6 +398,7 @@ final cells = {
   "puzzle_buster",
   "neutrino",
   "quantum_tomato",
+  "master_rotate",
 }.toList();
 
 final modded = <String>[];
@@ -409,6 +410,7 @@ final cursorTextures = [...cells, ...extraCursors];
 final textureMapBackup = HashMap<String, String>.from(textureMap);
 
 HashMap<String, String> textureMap = HashMap.from({
+  "master_rotate": "master/controller/master_rotate.png",
     "neutrino.png": "quantum/neutrino.png",
     "quantum_tomato.png": "quantum/quantum_tomato.png",
   "sentry_buster.png": "destroyers/sentry_buster.png",
@@ -1659,6 +1661,7 @@ final categories = [
           "master_push_state",
           "master_select_xy",
           "master_fill_xy",
+          "master_rotate",
         ],
         "master_push_state",
       ),
@@ -3338,6 +3341,10 @@ final cellInfo = <String, CellProfile>{
   "quantum_tomato": CellProfile(
     "Quantum Tomato",
     "idk what this does",
+  ),
+  "master_rotate": CellProfile(
+    "Rotate Cell",
+    "Rotates the cell at the master state's position, rotation is specified by input number (n clockwise).",
   ),
 };
 
